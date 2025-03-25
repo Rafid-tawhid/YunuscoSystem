@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yunusco_group/launcher_screen.dart';
+import 'package:yunusco_group/providers/auth_provider.dart';
 import '../models/user_model.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
@@ -792,6 +795,32 @@ class DashboardHelpers {
   static Future<void> clearUser() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove("user");
+  }
+
+  static UserModel? currentUser;
+  static navigationUser(BuildContext context) {
+    var ap=context.read<AuthProvider>();
+    if(ap.isAuthenticated){
+      currentUser=ap.user;
+      switch(currentUser!.roleId){
+        case 31:
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) => new IEEntryScreenOne()));
+          break;
+        case 32:
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => new GetBarcodeScreen()));
+        default:
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (context) => new GetBarcodeScreen()));
+      }
+    }
   }
 
 }

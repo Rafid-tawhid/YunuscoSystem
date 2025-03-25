@@ -1,1 +1,36 @@
-class UserModel {  final String id;  final String name;  final String email;  final String token;  UserModel({required this.id, required this.name, required this.email, required this.token});  // Convert JSON to UserModel  factory UserModel.fromJson(Map<String, dynamic> json) {    return UserModel(      id: json['id'].toString(),      name: json['name'],      email: json['email'],      token: json['token'],    );  }  // Convert UserModel to JSON  Map<String, dynamic> toJson() {    return {      'id': id,      'name': name,      'email': email,      'token': token,    };  }}
+class UserModel {
+  UserModel({
+      this.userId, 
+      this.userName, 
+      this.loginName, 
+      this.roleId,});
+
+  UserModel.fromJson(dynamic json) {
+    userId = json['userId'];
+    userName = json['userName'];
+    loginName = json['loginName'];
+    roleId = json['roleId'];
+  }
+  num? userId;
+  String? userName;
+  String? loginName;
+  num? roleId;
+UserModel copyWith({  num? userId,
+  String? userName,
+  String? loginName,
+  num? roleId,
+}) => UserModel(  userId: userId ?? this.userId,
+  userName: userName ?? this.userName,
+  loginName: loginName ?? this.loginName,
+  roleId: roleId ?? this.roleId,
+);
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['userId'] = userId;
+    map['userName'] = userName;
+    map['loginName'] = loginName;
+    map['roleId'] = roleId;
+    return map;
+  }
+
+}
