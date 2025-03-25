@@ -809,13 +809,17 @@ class DashboardHelpers {
           case 31:
           // Navigate to IEEntryScreenOne();
             break;
-          case 32:
-          // Navigate to GetBarcodeScreen();
+          case 42:
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
             break;
           default:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              MaterialPageRoute(builder: (context) => LoginScreen()),
             );
         }
       } else {
