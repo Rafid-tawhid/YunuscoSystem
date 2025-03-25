@@ -11,7 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yunusco_group/launcher_screen.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
+import 'package:yunusco_group/screens/home_page.dart';
 import '../models/user_model.dart';
+import '../screens/login_screen.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
 
@@ -800,27 +802,30 @@ class DashboardHelpers {
   static UserModel? currentUser;
   static navigationUser(BuildContext context) {
     var ap=context.read<AuthProvider>();
-    if(ap.isAuthenticated){
-      currentUser=ap.user;
-      switch(currentUser!.roleId){
-        case 31:
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: (context) => new IEEntryScreenOne()));
-          break;
-        case 32:
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => new GetBarcodeScreen()));
-        default:
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => new GetBarcodeScreen()));
+    if (ap.isAuthenticated && ap.user != null) {
+      currentUser = ap.user;
+      if (currentUser?.roleId != null) {  // ✅ Added null check
+        switch (currentUser!.roleId) {
+          case 31:
+          // Navigate to IEEntryScreenOne();
+            break;
+          case 32:
+          // Navigate to GetBarcodeScreen();
+            break;
+          default:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+        }
+      } else {
+        debugPrint("User roleId is null!");
       }
     }
+    else{
+      Navigator.push(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
+    }
+
   }
 
 }
