@@ -806,16 +806,21 @@ class DashboardHelpers {
       currentUser = ap.user;
       if (currentUser?.roleId != null) {  // ✅ Added null check
         switch (currentUser!.roleId) {
-          case 31:
-          // Navigate to IEEntryScreenOne();
-            break;
-          case 42:
-
+          case 2:
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HomeScreen()),
             );
-            break;
+          // case 31:
+          // // Navigate to IEEntryScreenOne();
+          //   break;
+          // case 42:
+          //
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => HomeScreen()),
+          //   );
+          //   break;
           default:
             Navigator.push(
               context,
@@ -830,6 +835,13 @@ class DashboardHelpers {
       Navigator.push(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
     }
 
+  }
+
+  static String? token;
+  static void setToken(String? s) {
+    if(s!=null||s!=''){
+      token ??= s;
+    }
   }
 
 }

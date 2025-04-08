@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 
 import '../utils/constants.dart';
 
@@ -23,11 +24,9 @@ class CustomInterceptor implements InterceptorContract {
   FutureOr<BaseRequest> interceptRequest({required BaseRequest request}) {
     // Add Bearer token to the headers
     request.headers["Authorization"] = "Bearer ${AppConstants.token}";
-
     // Optionally log the request for debugging
     print("Request URL: ${request.url}");
     print("Request Headers: ${request.headers}");
-
     // Return the request after modification
     return request;
   }
@@ -37,10 +36,8 @@ class CustomInterceptor implements InterceptorContract {
     // Optionally log the response for debugging
     print("Response Status Code: ${response.statusCode}");
     print("Response Headers: ${response.headers}");
-
-    // You can handle specific status codes here (e.g., token expiration, errors)
-
-    // Return the response after processing
+    print("Response Token: ${response.headers['token']}");
+    DashboardHelpers.setToken(response.headers['token']??'');
     return response;
   }
 }

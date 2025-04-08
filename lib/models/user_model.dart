@@ -1,35 +1,69 @@
 class UserModel {
   UserModel({
-      this.userId, 
-      this.userName, 
-      this.loginName, 
-      this.roleId,});
+      String? userRoleName, 
+      String? designation, 
+      String? iDnum, 
+      num? userId, 
+      String? userName, 
+      String? loginName, 
+      num? roleId,}){
+    _userRoleName = userRoleName;
+    _designation = designation;
+    _iDnum = iDnum;
+    _userId = userId;
+    _userName = userName;
+    _loginName = loginName;
+    _roleId = roleId;
+}
 
   UserModel.fromJson(dynamic json) {
-    userId = json['userId'];
-    userName = json['userName'];
-    loginName = json['loginName'];
-    roleId = json['roleId'];
+    _userRoleName = json['userRoleName'];
+    _designation = json['designation'];
+    _iDnum = json['iDnum'];
+    _userId = json['userId'];
+    _userName = json['userName'];
+    _loginName = json['loginName'];
+    _roleId = json['roleId'];
   }
-  num? userId;
-  String? userName;
-  String? loginName;
-  num? roleId;
-UserModel copyWith({  num? userId,
+  String? _userRoleName;
+  String? _designation;
+  String? _iDnum;
+  num? _userId;
+  String? _userName;
+  String? _loginName;
+  num? _roleId;
+UserModel copyWith({  String? userRoleName,
+  String? designation,
+  String? iDnum,
+  num? userId,
   String? userName,
   String? loginName,
   num? roleId,
-}) => UserModel(  userId: userId ?? this.userId,
-  userName: userName ?? this.userName,
-  loginName: loginName ?? this.loginName,
-  roleId: roleId ?? this.roleId,
+}) => UserModel(  userRoleName: userRoleName ?? _userRoleName,
+  designation: designation ?? _designation,
+  iDnum: iDnum ?? _iDnum,
+  userId: userId ?? _userId,
+  userName: userName ?? _userName,
+  loginName: loginName ?? _loginName,
+  roleId: roleId ?? _roleId,
 );
+  String? get userRoleName => _userRoleName;
+  String? get designation => _designation;
+  String? get iDnum => _iDnum;
+  num? get userId => _userId;
+  String? get userName => _userName;
+  String? get loginName => _loginName;
+  num? get roleId => _roleId;
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['userId'] = userId;
-    map['userName'] = userName;
-    map['loginName'] = loginName;
-    map['roleId'] = roleId;
+    map['userRoleName'] = _userRoleName;
+    map['designation'] = _designation;
+    map['iDnum'] = _iDnum;
+    map['userId'] = _userId;
+    map['userName'] = _userName;
+    map['loginName'] = _loginName;
+    map['roleId'] = _roleId;
     return map;
   }
 
