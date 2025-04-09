@@ -47,8 +47,18 @@ dependencies:
   url_launcher: ^6.3.0
   fl_chart: ^0.70.2
   pie_chart: ^5.4.0
+  flutter_launcher_icons: ^0.13.1
+  firebase_core: ^2.24.1
+  firebase_messaging: ^14.7.5
+  flutter_local_notifications: ^19.0.0
 
 
+
+flutter_icons:
+  android: true
+  image_path: "assets/images/logo1-min.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/logo1-min.png"
 
 dev_dependencies:
   flutter_test:

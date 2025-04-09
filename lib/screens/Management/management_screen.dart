@@ -2,7 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
-import 'package:yunusco_group/screens/Management/widgets/morris_line_section.dart';
+import 'package:yunusco_group/screens/Management/widgets/finish_production_section.dart';
+import 'package:yunusco_group/screens/Management/widgets/sewing_target_achieve.dart';
 import 'package:yunusco_group/screens/Management/widgets/sewing_production_section.dart';
 import 'package:yunusco_group/screens/Management/widgets/unit_wise_sewing.dart';
 
@@ -83,25 +84,25 @@ class _ManagementScreenState extends State<ManagementScreen> {
               ),
               FinishProductionSection(finishProduction: provider.managementDashboardData!.finishProduction),
 
-              // Unit Wise Sewing Y Section
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Unit Wise Sewing Y',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              UnitWiseSewingYSection(unitWiseSewingY: provider.managementDashboardData!.unitWiseSewingY),
-
-              // Finish Fifteen Section
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Finish Fifteen',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              FinishFifteenSection(finishFifteen: provider.managementDashboardData!.finishFifteen),
+              // // Unit Wise Sewing Y Section
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Text(
+              //     'Unit Wise Sewing Y',
+              //     style: Theme.of(context).textTheme.titleLarge,
+              //   ),
+              // ),
+              // UnitWiseSewingYSection(unitWiseSewingY: provider.managementDashboardData!.unitWiseSewingY),
+              //
+              // // Finish Fifteen Section
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Text(
+              //     'Finish Fifteen',
+              //     style: Theme.of(context).textTheme.titleLarge,
+              //   ),
+              // ),
+              // FinishFifteenSection(finishFifteen: provider.managementDashboardData!.finishFifteen),
             ],
           ):
           Center(child: Text('Loading....'),),
@@ -259,32 +260,6 @@ class ProductionDataSection extends StatelessWidget {
 }
 
 
-
-
-
-
-class FinishProductionSection extends StatelessWidget {
-  final List<FinishProduction>? finishProduction;
-
-  FinishProductionSection({this.finishProduction});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: finishProduction?.map((data) {
-        return Card(
-          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: ListTile(
-            title: Text('Section: ${data.sections}'),
-            subtitle: Text(
-              'Table Running: ${data.tableRunning}\nTotal Target: ${data.totalTarget}\nSMV: ${data.smv}\nAchieveQty: ${data.achieveQty}\nAchieve Percent: ${data.achievePercent}%',
-            ),
-          ),
-        );
-      }).toList() ?? [],
-    );
-  }
-}
 
 class UnitWiseSewingYSection extends StatelessWidget {
   final List<UnitWiseSewingY>? unitWiseSewingY;

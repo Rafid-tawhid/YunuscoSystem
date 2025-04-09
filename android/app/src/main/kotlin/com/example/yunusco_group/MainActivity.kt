@@ -1,4 +1,4 @@
-package com.example.yunusco_group
+package com.system.yunusco_group
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
@@ -8,7 +9,8 @@ import 'package:yunusco_group/screens/home_page.dart';
 import 'launcher_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Required for async calls before runApp
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   runApp(MultiProvider(
       providers: [

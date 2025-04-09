@@ -55,7 +55,7 @@ class MorrisLineSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Morris Line Performance',
+                'Sewing Target vs Achieve (Last 15 days)',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
