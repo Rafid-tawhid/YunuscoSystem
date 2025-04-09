@@ -11,6 +11,8 @@ buildscript {
     }
 }
 
+
+
 allprojects {
     repositories {
         google()  // Required for Firebase dependencies

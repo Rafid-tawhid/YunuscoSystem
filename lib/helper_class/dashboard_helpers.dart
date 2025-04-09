@@ -837,10 +837,11 @@ class DashboardHelpers {
 
   }
 
-  static String? token;
   static void setToken(String? s) {
+
+    //when login
     if(s!=null||s!=''){
-      token ??= s;
+      AppConstants.token ??= s;
     }
   }
 
