@@ -12,6 +12,7 @@ import '../../models/management_dashboard_model.dart';
 class ManagementScreen extends StatefulWidget {
   const ManagementScreen({super.key});
 
+  ///
   @override
   State<ManagementScreen> createState() => _ManagementScreenState();
 }
