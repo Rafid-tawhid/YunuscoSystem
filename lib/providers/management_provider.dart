@@ -16,6 +16,8 @@ class ManagementProvider extends ChangeNotifier{
        //debugPrint('_managementDashboardData ${_managementDashboardData!.toJson()}');
     }
 
+    debugPrint('_managementDashboardData ${_managementDashboardData!.toJson()}');
+
     notifyListeners();
   }
 }

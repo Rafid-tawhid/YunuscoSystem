@@ -21,8 +21,8 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
   @override
   void initState() {
     super.initState();
-    var mp=context.read<ManagementProvider>();
-    mp.getAllManagementInfo();
+    var mp=context.read<MerchandisingProvider>();
+    mp.getAllMerchandisingInfo();
   }
 
   @override

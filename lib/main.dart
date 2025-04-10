@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
+import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/home_page.dart';
 
 import 'launcher_screen.dart';
@@ -17,6 +18,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => MerchandisingProvider()),
         ChangeNotifierProvider(create: (_) => ManagementProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
       ],
       child: MyApp()));
 }

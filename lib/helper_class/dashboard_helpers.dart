@@ -840,8 +840,10 @@ class DashboardHelpers {
   static void setToken(String? s) {
 
     //when login
-    if(s!=null||s!=''){
-      AppConstants.token ??= s;
+    if(AppConstants.token==''){
+      setString('token',s??'');
+      AppConstants.token=s??'';
+      debugPrint('Token has set');
     }
   }
 

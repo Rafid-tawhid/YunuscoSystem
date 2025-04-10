@@ -7,13 +7,16 @@ import 'package:yunusco_group/utils/constants.dart';
 class MerchandisingProvider extends ChangeNotifier{
 
   ApiService apiService=ApiService();
-  BuyerWiseValueModel? buyerWiseValueModel;
+  BuyerWiseValueModel? _buyerWiseValueModel;
+  BuyerWiseValueModel? get buyerWiseValueModel=>_buyerWiseValueModel;
 
   Future<void> getAllMerchandisingInfo() async {
+    debugPrint('This is data calling...}');
     var data= await apiService.getData2('${AppConstants.baseUrl}/Manufacturing/Cutting/ProductionDashBoard');
+    debugPrint('This is data ${data}');
     if(data!=null){
-      buyerWiseValueModel=BuyerWiseValueModel.fromJson(data['returnvalue']);
-      debugPrint('buyerWiseValueModel ${buyerWiseValueModel!.toJson()}');
+      _buyerWiseValueModel=BuyerWiseValueModel.fromJson(data['returnvalue']);
+    //  debugPrint('buyerWiseValueModel ${buyerWiseValueModel!.toJson()}');
     }
 
     notifyListeners();

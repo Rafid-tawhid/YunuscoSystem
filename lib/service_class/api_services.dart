@@ -9,7 +9,7 @@ import 'interceptor_class.dart'; // Optional for error message display
 
 class ApiService {
   // Define base URL
-  final String baseUrl = 'AppConstants.baseUrl';
+  final String baseUrl = AppConstants.baseUrl;
 
   // Create the client with the interceptor
   final client = InterceptedClient.build(interceptors: [CustomInterceptor(),]);
