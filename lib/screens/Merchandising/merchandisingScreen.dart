@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
@@ -9,6 +10,7 @@ import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_valu
 import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart.dart';
 
 import '../../models/buyer_wise_value_model.dart';
+import 'buyer_order_Screen.dart';
 
 class MerchandisingScreen extends StatefulWidget {
   const MerchandisingScreen({super.key});
@@ -28,7 +30,49 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Merchandising')),
+      appBar: AppBar(title: const Text('Merchandising'),
+      actions: [
+        IconButton(
+          onPressed: () {
+            showMenu(
+
+              context: context,
+              position: RelativeRect.fromLTRB(
+                // Position the menu below the button
+                MediaQuery.of(context).size.width - 160, // Right offset
+                80.0, // Top offset (adjust based on your app bar height)
+                MediaQuery.of(context).size.width, // Left offset
+                0, // Bottom offset
+              ),
+              items: [
+                PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      Text('Buyer Order'),
+                    ],
+                  ),
+                ),
+
+
+              ],
+              elevation: 8.0,
+            ).then((value) {
+              if (value != null) {
+                // Handle menu item selection
+                debugPrint('This is value ren ${value}');
+                switch (value) {
+                  case 1:
+                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerOrderScreen()));
+                    break;
+
+                }
+              }
+            });
+          },
+          icon: Icon(Icons.menu, color: Colors.black,),
+        )
+      ],),
       body: Consumer<MerchandisingProvider>(
         builder: (context, provider, _) {
           final model = provider.buyerWiseValueModel;

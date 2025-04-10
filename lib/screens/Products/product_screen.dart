@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +56,24 @@ class _MainProductScreenState extends State<MainProductScreen> {
     );
   }
 
+  String getRandomImageUrl() {
+    // List of image URLs
+    final List<String> imageUrls = [
+      'https://cdn.pixabay.com/photo/2016/12/06/09/30/blank-1886001_640.png',
+      'https://i.pinimg.com/564x/c1/1d/16/c11d164de692594acf53c9a855093139.jpg',
+      'https://t3.ftcdn.net/jpg/00/61/87/62/360_F_61876261_FUoySFWEGESVVmMuqJidqri9r5hA0ln5.jpg',
+      'https://assets.ajio.com/medias/sys_master/root/20230909/Ye7Z/64fb749cafa4cf41f5d49c15/-473Wx593H-466550113-red-MODEL.jpg',
+    ];
+
+    // Create a random number generator
+    final random = Random();
+
+    // Get a random index between 0 and the number of URLs minus 1
+    final randomIndex = random.nextInt(imageUrls.length);
+
+    // Return the randomly selected URL
+    return imageUrls[randomIndex];
+  }
 
   Widget _buildCategoryGrid(ProductProvider provider) {
     return Padding(
@@ -71,7 +91,8 @@ class _MainProductScreenState extends State<MainProductScreen> {
           return _buildCategoryItem(
             title: item["itemCode"]!,
             subtitle: item["catagoryName"]!,
-            image: item["catagoryImg"]!,
+            //image: item["catagoryImg"]!,
+            image: getRandomImageUrl(),
           );
         },
       ),

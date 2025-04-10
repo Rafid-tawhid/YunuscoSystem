@@ -21,4 +21,25 @@ class MerchandisingProvider extends ChangeNotifier{
 
     notifyListeners();
   }
+
+
+  List<Map<String,dynamic>> _allBuyerOrderList=[];
+  List<Map<String,dynamic>> get allBuyerOrderList=>_allBuyerOrderList;
+
+  Future<bool> getAllBuyerOrders() async{
+    var data=await apiService.getData('api/Merchandising/GetBuyerOrder');
+    if(data!=null){
+      _allBuyerOrderList.clear();
+      for(var i in data['returnvalue']){
+        _allBuyerOrderList.add(i);
+      }
+      notifyListeners();
+      debugPrint('_allBuyerOrderList ${_allBuyerOrderList.length}');
+      return true;
+    }
+    else {
+      return false;
+    }
+
+  }
 }
