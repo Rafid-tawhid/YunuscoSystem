@@ -12,7 +12,7 @@ class MerchandisingProvider extends ChangeNotifier{
 
   Future<void> getAllMerchandisingInfo() async {
     debugPrint('This is data calling...}');
-    var data= await apiService.getData2('${AppConstants.baseUrl}/Manufacturing/Cutting/ProductionDashBoard');
+    var data= await apiService.getData2('${AppConstants.baseUrl}Merchandising/MerManagementReport/BuyerWiseValue');
     debugPrint('This is data ${data}');
     if(data!=null){
       _buyerWiseValueModel=BuyerWiseValueModel.fromJson(data['returnvalue']);
