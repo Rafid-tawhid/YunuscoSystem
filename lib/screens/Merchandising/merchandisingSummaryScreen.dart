@@ -12,14 +12,14 @@ import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart
 import '../../models/buyer_wise_value_model.dart';
 import 'buyer_order_Screen.dart';
 
-class MerchandisingScreen extends StatefulWidget {
-  const MerchandisingScreen({super.key});
+class MerchandisingSummaryScreen extends StatefulWidget {
+  const MerchandisingSummaryScreen({super.key});
 
   @override
-  State<MerchandisingScreen> createState() => _MerchandisingScreenState();
+  State<MerchandisingSummaryScreen> createState() => _MerchandisingSummaryScreenState();
 }
 
-class _MerchandisingScreenState extends State<MerchandisingScreen> {
+class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen> {
   @override
   void initState() {
     super.initState();

@@ -41,7 +41,7 @@ const Color feedback = Color(0xFF2365A8);
 
 class AppColors {
   //TODO: for Light Theme color
-  static const Color primaryColorLight = Color(0xFF06113E);
+  static const Color primaryColorLightMain = Color(0xFF06113E);
   static const Color hintTextColorLight = Color(0xff9E9E9E);
   static const Color imageBGColorLight = Color(0xffE2F0FF);
   static const Color whiteColorLight = Color(0xFFFFFFFF);

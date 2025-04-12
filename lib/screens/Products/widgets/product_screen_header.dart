@@ -18,7 +18,7 @@ class _ProductScreenHeaderState extends State<ProductScreenHeader> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.primaryColorLight,
+        color: AppColors.primaryColorLightMain,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
@@ -23,6 +24,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => InventoryPorvider()),
         ChangeNotifierProvider(create: (_) => PlanningProvider()),
+        ChangeNotifierProvider(create: (_) => HrProvider()),
       ],
       child: MyApp()));
 }

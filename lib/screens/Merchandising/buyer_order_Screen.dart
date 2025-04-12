@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/screens/Merchandising/buyer_order_details.dart';
 
 import '../../providers/merchandising_provider.dart';
 import '../../utils/colors.dart';
@@ -209,7 +211,7 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
   void _showItemDetails(Map<String, dynamic> item) {
     // Implement item details view
     print('Selected item: $item');
-    DashboardHelpers.showAlert(msg: 'No Data');
+    Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerOrderDetailsScreen(buyerId: item['code'])));
   }
 
   void _addNewItem(BuildContext context) {
@@ -274,6 +276,7 @@ class _CodeNameSearchDelegate extends SearchDelegate {
       itemBuilder: (context, index) {
         final item = results[index];
         return ListTile(
+
           leading: CircleAvatar(
             backgroundColor: Colors.blue.withOpacity(0.2),
             child: Text(item['code']?.substring(0, 1) ?? '?'),
