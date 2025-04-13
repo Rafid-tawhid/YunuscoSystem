@@ -43,9 +43,10 @@ class _MainProductScreenState extends State<MainProductScreen> {
             Expanded(
               child: Consumer<ProductProvider>(
                 builder: (context, provider, _) {
-                  if (provider.allCategoryList.isEmpty) {
+                  if (provider.allBuyerList.isEmpty) {
                     return _buildLoadingShimmer();
                   }
+                  return _buildBuyerGrid(provider);
                   return provider.isSelectCat? _buildCategoryGrid(provider):_buildBuyerGrid(provider);
                 },
               ),
@@ -325,7 +326,7 @@ class _MainProductScreenState extends State<MainProductScreen> {
 
   void getAllCategoryAndBuyerInfo() async {
     var pp = context.read<ProductProvider>();
-    pp.getAllCategoryList();
+   // pp.getAllCategoryList();
     pp.getAllBuyerInfo();
   }
 }
