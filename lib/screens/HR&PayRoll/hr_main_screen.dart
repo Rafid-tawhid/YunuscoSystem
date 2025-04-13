@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/performence_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -44,7 +45,11 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
      {
        "code": 1,
        "name": "Attendance"
-     }
+     },
+     {
+       "code": 2,
+       "name": "Performance"
+     },
    ];
 
   @override
@@ -88,7 +93,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 2,
+          itemCount: 3,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -195,6 +200,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     }
     if(index==1){
       Navigator.push(context, CupertinoPageRoute(builder: (context)=>AttendanceDashboard()));
+    }
+    if(index==2){
+      Navigator.push(context, CupertinoPageRoute(builder: (context)=>PerformanceReportScreen()));
     }
   }
 }
