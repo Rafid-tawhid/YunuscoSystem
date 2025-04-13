@@ -59,6 +59,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
       ),
     );
   }
+  //
 
   Widget _buildDashboardCard(
       BuildContext context, {
