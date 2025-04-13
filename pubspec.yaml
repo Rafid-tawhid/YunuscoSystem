@@ -48,8 +48,8 @@ dependencies:
   fl_chart: ^0.70.2
   pie_chart: ^5.4.0
   flutter_launcher_icons: ^0.13.1
-  firebase_core: ^2.24.1
-  firebase_messaging: ^14.7.5
+  firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.5
   app_settings: ^6.1.1
   flutter_local_notifications: ^17.2.2
   shimmer: ^3.0.0
