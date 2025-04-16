@@ -12,6 +12,7 @@ import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart
 
 import '../../models/buyer_wise_value_model.dart';
 import 'buyer_order_Screen.dart';
+import 'costing_approval.dart';
 
 class MerchandisingScreen extends StatefulWidget {
   const MerchandisingScreen({super.key});
@@ -48,12 +49,20 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
             color: const Color(0xFF6A5ACD), // Slate blue
             destination: MerchandisingSummaryScreen(),
           ),
+
           _buildDashboardCard(
             context,
             title: "Buyer\nOrders",
             icon: Icons.list_alt_outlined,
             color: const Color(0xFF20B2AA), // Light sea green
             destination: BuyerOrderScreen(),
+          ),
+          _buildDashboardCard(
+            context,
+            title: "Approval\nList",
+            icon: Icons.list,
+            color: const Color(0xFFD97FF1), // Light sea green
+            destination: CostingApprovalListScreen(),
           ),
         ],
       ),

@@ -796,7 +796,9 @@ class DashboardHelpers {
 
   static Future<void> clearUser() async {
     final prefs = await SharedPreferences.getInstance();
+
     prefs.remove("user");
+    prefs.remove("token");
   }
 
   static UserModel? currentUser;

@@ -6,6 +6,7 @@ import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/buyer_order_details_model.dart';
+import '../models/costing_approval_list_model.dart';
 
 class MerchandisingProvider extends ChangeNotifier{
 
@@ -65,4 +66,25 @@ class MerchandisingProvider extends ChangeNotifier{
     }
 
   }
+
+
+  List<CostingApprovalListModel> _costingApprovalList=[];
+  List<CostingApprovalListModel> get costingApprovalList=>_costingApprovalList;
+  Future<bool> getCostingApprovalList(String uId) async{
+    var data=await apiService.getData2('http://192.168.15.6:8085/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=615');
+    if(data!=null){
+      _costingApprovalList.clear();
+      for(var i in data){
+        _costingApprovalList.add(CostingApprovalListModel.fromJson(i));
+      }
+      notifyListeners();
+      debugPrint('_costingApprovalList ${_costingApprovalList.length}');
+      return true;
+    }
+    else {
+      return false;
+    }
+
+  }
+
 }
