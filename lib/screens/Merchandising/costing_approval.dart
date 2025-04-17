@@ -328,9 +328,11 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
         hintStyle: TextStyle(color: Colors.black.withOpacity(0.7)),
       ),
       style: const TextStyle(color: Colors.black, fontSize: 16),
-      onChanged: (query) {
-
+      onChanged: (query) async {
+        mp.setLoading(true);
         mp.searchCostingApprovals(query);
+        await Future.delayed(Duration(milliseconds: 500));
+       mp.setLoading(false);
       },
     );
   }
