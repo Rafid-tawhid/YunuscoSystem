@@ -68,23 +68,76 @@ class MerchandisingProvider extends ChangeNotifier{
   }
 
 
+  bool _isLoading=false;
+  bool get isLoading=>_isLoading;
+
   List<CostingApprovalListModel> _costingApprovalList=[];
   List<CostingApprovalListModel> get costingApprovalList=>_costingApprovalList;
+  List<CostingApprovalListModel> _costingApprovalFilterList=[];
+  List<CostingApprovalListModel> get costingApprovalFilterList=>_costingApprovalFilterList;
+
   Future<bool> getCostingApprovalList(String uId) async{
-    var data=await apiService.getData2('http://192.168.15.6:8085/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=615');
-    if(data!=null){
-      _costingApprovalList.clear();
-      for(var i in data){
-        _costingApprovalList.add(CostingApprovalListModel.fromJson(i));
+    try {
+      setLoading(true);
+      var data = await apiService.getData2('http://192.168.15.6:8085/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=615');
+      if(data != null) {
+        _costingApprovalList.clear();
+        _costingApprovalFilterList.clear();
+        for(var i in data){
+          _costingApprovalList.add(CostingApprovalListModel.fromJson(i));
+        }
+        _costingApprovalFilterList.addAll(_costingApprovalList);
+        debugPrint('_costingApprovalList ${_costingApprovalList.length}');
+        notifyListeners();
+        return true;
       }
-      notifyListeners();
-      debugPrint('_costingApprovalList ${_costingApprovalList.length}');
-      return true;
-    }
-    else {
       return false;
+    } catch (e) {
+      setLoading(false);
+      debugPrint('Error fetching costing approval list: $e');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  setLoading(bool val){
+    _isLoading=val;
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _costingApprovalFilterList = List.from(_costingApprovalList);
+    notifyListeners();
+  }
+
+  Future<void> searchCostingApprovals(String query) async {
+    if (query.isEmpty) {
+      // If search query is empty, restore original list
+      _costingApprovalFilterList = List.from(_costingApprovalList);
+    } else {
+
+      // Filter the list based on search query
+      _costingApprovalFilterList = _costingApprovalList.where((item) {
+        // Convert all comparisons to lowercase for case-insensitive search
+        final searchLower = query.toLowerCase();
+        // Search in all relevant fields
+        return (item.finalStatus?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.costingCode?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.buyerName?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.styleName?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.catagoryName?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.styleRef?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.createdBy?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.submitToPerson?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.qtyType?.toLowerCase().contains(searchLower) ?? false) ||
+            (item.id?.toString().contains(searchLower) ?? false);
+      }).toList();
     }
 
+    notifyListeners();
   }
+
+
 
 }
