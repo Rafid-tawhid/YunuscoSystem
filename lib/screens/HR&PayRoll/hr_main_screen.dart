@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/performence_screen.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -50,6 +51,10 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
        "code": 2,
        "name": "Performance"
      },
+     {
+       "code": 4,
+       "name": "Self Leave"
+     },
    ];
 
   @override
@@ -93,7 +98,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 3,
+          itemCount: 4,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -203,6 +208,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     }
     if(index==2){
       Navigator.push(context, CupertinoPageRoute(builder: (context)=>PerformanceReportScreen()));
+    }
+    if(index==3){
+      Navigator.push(context, CupertinoPageRoute(builder: (context)=>LeaveApplicationScreen()));
     }
   }
 }

@@ -45,7 +45,6 @@ class HrProvider extends ChangeNotifier{
     else {
       return false;
     }
-
   }
 
 
@@ -53,5 +52,13 @@ class HrProvider extends ChangeNotifier{
     String month = date.month.toString().padLeft(2, '0');
     String day = date.day.toString().padLeft(2, '0');
     return '$month -$day - ${date.year}';
+  }
+
+
+  bool _showLeavHistory=false;
+  bool get showLeavHistory=>_showLeavHistory;
+  showAndHideLeaveHistory(){
+    _showLeavHistory=!_showLeavHistory;
+    notifyListeners();
   }
 }
