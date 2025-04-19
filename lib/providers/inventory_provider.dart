@@ -11,6 +11,7 @@ class InventoryPorvider extends ChangeNotifier{
   List<InventoryStockModel> _inventoryStockList=[];
   List<InventoryStockModel> get inventoryStockList=>_inventoryStockList;
 
+  //
   Future<bool> getInventoryStockSummery() async{
     var data=await apiService.getData('api/InventoryApi/StockSummary?storeType=4&toDate=');
     if(data!=null){
