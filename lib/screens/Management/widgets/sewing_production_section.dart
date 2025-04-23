@@ -47,7 +47,7 @@ class SewingProductionSection extends StatelessWidget {
                   ],
                 ),
                 const Divider(height: 24, color: Colors.grey),
-
+                //
                 // Metrics Grid
                 GridView.count(
                   shrinkWrap: true,
