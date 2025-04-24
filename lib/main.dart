@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,11 @@ import 'launcher_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await setupNotificationChannel();
+  if(Platform.isAndroid){
+    await Firebase.initializeApp();
+    await setupNotificationChannel();
+  }
+
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
