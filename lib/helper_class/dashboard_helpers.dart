@@ -809,7 +809,7 @@ class DashboardHelpers {
       if (currentUser?.roleId != null) {  // ✅ Added null check
         switch (currentUser!.roleId) {
           case 2:
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomeScreen()),
             );
@@ -824,7 +824,7 @@ class DashboardHelpers {
           //   );
           //   break;
           default:
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => LoginScreen()),
             );
@@ -840,7 +840,6 @@ class DashboardHelpers {
   }
 
   static void setToken(String? s) {
-
     //when login
     if(AppConstants.token==''){
       setString('token',s??'');

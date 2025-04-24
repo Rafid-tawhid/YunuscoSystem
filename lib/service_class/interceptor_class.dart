@@ -35,8 +35,7 @@ class CustomInterceptor implements InterceptorContract {
     // Optionally log the response for debugging
     print("Response Status Code: ${response.statusCode}");
     print("Response Headers: ${response.headers}");
-    print("Response Token: ${response.headers['token']}");
-    DashboardHelpers.setToken(response.headers['token']??'');
+    // print("Response Token: ${response.headers['token']}");
     return response;
   }
 }

@@ -5,6 +5,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+
+import 'api_services.dart';
 
 
 
@@ -119,12 +122,17 @@ class NotificationServices {
 
   static Future<void> _sendTokenToServer(String token) async {
     // Implement your API call here
-    debugPrint('Sending token to server...');
-    // ApiService apiService=ApiService();
-    // apiService.postData('endpoint', {
-    //   "deviceToken": "$token",
-    //   "time": DateTime.now()
-    // });
+
+
+    ApiService apiService=ApiService();
+   var res=await apiService.postData('login/CheckDeviceToken',{
+      "roleId": DashboardHelpers.currentUser!.roleId,
+      "FirebaseDeviceToken": token,
+      "Userid": DashboardHelpers.currentUser!.userId
+    });
+   if(res!=null){
+     debugPrint('Sending token to server successfully.....');
+   }
   }
 
   static void _handleForegroundMessage(RemoteMessage message) {
