@@ -133,6 +133,7 @@ class NotificationServices {
      debugPrint('Sending token to server successfully.....');
    }
   }
+  //
 
   static void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('Foreground message: ${message.notification?.title}');
