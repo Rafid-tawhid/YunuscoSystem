@@ -123,7 +123,6 @@ class NotificationServices {
   static Future<void> _sendTokenToServer(String token) async {
     // Implement your API call here
 
-//
     ApiService apiService=ApiService();
    var res=await apiService.postData2('http://192.168.15.6:8085/login/CheckDeviceToken',{
       "roleId": DashboardHelpers.currentUser!.roleId,

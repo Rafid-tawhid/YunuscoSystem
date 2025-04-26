@@ -37,12 +37,14 @@ class DashboardHelpers {
         fontSize: 16.0);
   }
 
-  // static Future<UserModel> setUserInfo() async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   var data = preferences.get('user');
-  //   debugPrint('FETCH USER DATA ${data}');
-  //   return userModel = UserModel.fromJson(jsonDecode(data.toString()));
-  // }
+
+  static Future<void> setUserInfo() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var data = preferences.get('user');
+    debugPrint('FETCH USER DATA ${data}');
+    currentUser = UserModel.fromJson(jsonDecode(data.toString()));
+
+  }
 
   static Future<String> getString(String key) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
