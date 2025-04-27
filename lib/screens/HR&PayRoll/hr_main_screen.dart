@@ -12,6 +12,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import 'attandence_screen.dart';
 import 'depertments_screen.dart';
+import 'employee_attendance.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
 
@@ -45,7 +46,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
      },
      {
        "code": 1,
-       "name": "Attendance"
+       "name": "Department\nAttendance"
      },
      {
        "code": 2,
@@ -54,6 +55,10 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
      {
        "code": 4,
        "name": "Self Leave"
+     },
+     {
+       "code": 5,
+       "name": "Employee\nAttendance"
      },
    ];
 
@@ -98,7 +103,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 4,
+          itemCount: 5,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -211,6 +216,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     }
     if(index==3){
       Navigator.push(context, CupertinoPageRoute(builder: (context)=>LeaveApplicationScreen()));
+    }
+    if(index==4){
+      Navigator.push(context, CupertinoPageRoute(builder: (context)=>AttendanceReportScreen()));
     }
   }
 }

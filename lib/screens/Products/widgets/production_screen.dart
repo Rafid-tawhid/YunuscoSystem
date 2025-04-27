@@ -7,14 +7,14 @@ import 'package:yunusco_group/screens/Products/widgets/production_widget.dart';
 
 import 'dept_chip.dart';
 
-class ProductionDashboard extends StatefulWidget {
-  const ProductionDashboard({super.key});
+class ProductionSummaryScreen extends StatefulWidget {
+  const ProductionSummaryScreen({super.key});
 
   @override
-  _ProductionDashboardState createState() => _ProductionDashboardState();
+  _ProductionSummaryScreenState createState() => _ProductionSummaryScreenState();
 }
 
-class _ProductionDashboardState extends State<ProductionDashboard> {
+class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
   DateTime _selectedDate = DateTime.now();
   String? _selectedDepartment;
 
@@ -25,7 +25,7 @@ class _ProductionDashboardState extends State<ProductionDashboard> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Production Dashboard'),
+        title: const Text('Production Summary'),
         centerTitle: true,
         elevation: 0,
       ),

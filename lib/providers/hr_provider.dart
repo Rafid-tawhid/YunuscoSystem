@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
+import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 class HrProvider extends ChangeNotifier{
@@ -60,5 +61,36 @@ class HrProvider extends ChangeNotifier{
   showAndHideLeaveHistory(){
     _showLeavHistory=!_showLeavHistory;
     notifyListeners();
+  }
+
+
+
+  List<EmployeeAttendanceModel> _employeeAttendanceList=[];
+  List<EmployeeAttendanceModel> get employeeAttendanceList =>_employeeAttendanceList;
+  bool _isLoading=false;
+  bool get isLoading=>_isLoading;
+
+  setLoading(bool val){
+    _isLoading=val;
+    notifyListeners();
+  }
+
+  Future<bool> getEmployeeAttendance(String name, String formattedFromDate, String formattedToDate) async{
+
+    setLoading(true);
+    var data=await apiService.getData('api/HrApi/JobCardReport?userName=$name&fromDate=$formattedFromDate&toDate=$formattedToDate&Departmant=0&Section=0&ProductionUnit=0&ProductionLine=0');
+    setLoading(false);
+    if(data!=null){
+      _employeeAttendanceList.clear();
+      for(var i in data){
+        _employeeAttendanceList.add(EmployeeAttendanceModel.fromJson(i));
+      }
+      notifyListeners();
+      debugPrint('_employeeAttendanceList ${_employeeAttendanceList.length}');
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }

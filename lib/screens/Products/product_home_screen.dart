@@ -35,7 +35,7 @@ class ProductHomeScreen extends StatelessWidget {
                   Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyersScreen()));
                 }
                 if(index==0){
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>ProductionDashboard()));
+                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>ProductionSummaryScreen()));
                 }
               },
               child: Container(
