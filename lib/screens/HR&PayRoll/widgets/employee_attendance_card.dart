@@ -118,12 +118,7 @@ class _AttendanceListItem extends StatelessWidget {
   }
 
   Widget _buildStatusIndicator() {
-    if (record.present == 1) {
-      return const CircleAvatar(
-        backgroundColor: Colors.green,
-        child: Icon(Icons.check, color: Colors.white),
-      );
-    } else if (record.absent == 1) {
+     if (record.absent == 1) {
       return const CircleAvatar(
         backgroundColor: Colors.red,
         child: Icon(Icons.close, color: Colors.white),
@@ -139,9 +134,15 @@ class _AttendanceListItem extends StatelessWidget {
         child: Icon(Icons.beach_access, color: Colors.white),
       );
     }
-    return const CircleAvatar(
+     if (record.present == 1) {
+       return const CircleAvatar(
+         backgroundColor: Colors.green,
+         child: Icon(Icons.check, color: Colors.white),
+       );
+     }
+     return const CircleAvatar(
       backgroundColor: Colors.grey,
-      child: Icon(Icons.help_outline, color: Colors.white),
+      child: Icon(Icons.stop_outlined, color: Colors.white),
     );
   }
 
