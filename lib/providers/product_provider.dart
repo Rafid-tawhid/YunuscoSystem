@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yunusco_group/models/buyer_wise_material_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
@@ -63,7 +64,9 @@ class ProductProvider extends ChangeNotifier{
   List<BuyerWiseMaterialModel> get buyerMaterialList=>_buyerMaterialList;
 
   Future<bool> getBuyerWiseMaterialList(String code) async {
+    setLoading(true);
     var data=await apiService.getData('api/PreSalesApi/BuyerWiseMaterialList?buyerId=$code');
+    setLoading(false);
     if(data!=null){
       _buyerMaterialList.clear();
       for(var i in data){
@@ -72,6 +75,30 @@ class ProductProvider extends ChangeNotifier{
       notifyListeners();
       debugPrint('_buyerMaterialList ${_buyerMaterialList.length}');
       return _buyerMaterialList.isNotEmpty?true:false;
+    }
+    else {
+      return false;
+    }
+  }
+
+
+  List<Map<String,dynamic>> _productionSummaryList=[];
+  List<Map<String,dynamic>> get productionSummaryList=>_productionSummaryList;
+
+
+  Future<bool> getProductionSummary(String month,String year,String section) async {
+
+    setLoading(true);
+    var data=await apiService.getData('api/Production/ProductionSummary?section=$section&month=$month&year=$year');
+    setLoading(false);
+    if(data!=null){
+      _productionSummaryList.clear();
+      for(var i in data['returnvalue']){
+        _productionSummaryList.add(i);
+      }
+      notifyListeners();
+      debugPrint('_productionSummaryList ${_productionSummaryList.length}');
+      return _productionSummaryList.isNotEmpty?true:false;
     }
     else {
       return false;

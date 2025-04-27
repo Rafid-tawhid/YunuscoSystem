@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
@@ -10,15 +11,15 @@ import 'package:yunusco_group/screens/Products/widgets/shimmer_image.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:flutter/services.dart';
 
-import 'buyer_wise_material_list.dart';
+import '../buyer_wise_material_list.dart';
 
 
-class MainProductScreen extends StatefulWidget {
+class BuyersScreen extends StatefulWidget {
   @override
-  _MainProductScreenState createState() => _MainProductScreenState();
+  _BuyersScreenState createState() => _BuyersScreenState();
 }
 
-class _MainProductScreenState extends State<MainProductScreen> {
+class _BuyersScreenState extends State<BuyersScreen> {
   @override
   void initState() {
     super.initState();
