@@ -117,6 +117,7 @@ class _AttendanceListItem extends StatelessWidget {
     );
   }
 
+  //
   Widget _buildStatusIndicator() {
      if (record.absent == 1) {
       return const CircleAvatar(
