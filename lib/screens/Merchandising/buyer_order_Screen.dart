@@ -62,7 +62,7 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
       decoration: BoxDecoration(
         color: Colors.deepPurple.withOpacity(.1),
         border: Border(
-          bottom: BorderSide(color: AppColors.black.withOpacity(0.2), width: 1),
+          bottom: BorderSide(color: myColors.black.withOpacity(0.2), width: 1),
         ),
       ),
       child: Row(
@@ -125,7 +125,7 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                     '${index + 1}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.black,
+                      color: myColors.black,
                     ),
                   ),
                 ),

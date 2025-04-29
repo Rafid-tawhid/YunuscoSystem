@@ -51,7 +51,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: myColors.primaryColor,
         child: Icon(Icons.add, color: Colors.white),
         onPressed: () => _addNewItem(context),
       ),
@@ -64,7 +64,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
       decoration: BoxDecoration(
         color: Colors.purple.withOpacity(0.1),
         border: Border(
-          bottom: BorderSide(color: AppColors.primaryColor.withOpacity(0.2), width: 1),
+          bottom: BorderSide(color: myColors.primaryColor.withOpacity(0.2), width: 1),
         ),
       ),
       child: Row(
@@ -74,7 +74,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
             'Total Items: ${pro.allPlanningList.length}',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: AppColors.black,
+              color: myColors.black,
             ),
           ),
           Text(
@@ -127,7 +127,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     '${index + 1}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.black,
+                      color: myColors.black,
                     ),
                   ),
                 ),

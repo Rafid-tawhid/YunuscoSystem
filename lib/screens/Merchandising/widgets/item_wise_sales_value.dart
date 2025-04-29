@@ -39,11 +39,11 @@ class ItemWiseSalesChart extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             SizedBox(
-              height: 350,
+              height: 360,
               child: PieChart(
                 PieChartData(
                   sectionsSpace: 2,
-                  centerSpaceRadius: 60,
+                  centerSpaceRadius: 40,
                   sections: items.asMap().entries.map((entry) {
                     int i = entry.key;
                     var item = entry.value;
@@ -51,8 +51,9 @@ class ItemWiseSalesChart extends StatelessWidget {
                     return PieChartSectionData(
                       value: item.quantity?.toDouble() ?? 0,
                       color: colors[i % colors.length],
-                      title: '',
-                      radius: 80,
+                      title: "${percent.toStringAsFixed(1)}%",
+                      radius: 120,
+                      titleStyle: TextStyle(color: Colors.white,fontSize: 12,fontWeight: FontWeight.bold)
                     );
                   }).toList(),
                 ),

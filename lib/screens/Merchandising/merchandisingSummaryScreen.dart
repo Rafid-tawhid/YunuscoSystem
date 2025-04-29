@@ -8,6 +8,8 @@ import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_qua
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart.dart';
+import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/buyer_wise_value_model.dart';
 import 'buyer_order_Screen.dart';
@@ -100,7 +102,7 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                             width: double.infinity,
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
-                              color: Colors.blue,
+                              color: myColors.orange,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(16),
                                 bottomRight: Radius.circular(16),
@@ -112,11 +114,11 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                                 children: [
                                   Text(
                                     'Costing',
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                   Text(
                                     provider.buyerWiseValueModel!.summary![0].costingCount.toString(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                 ],
                               ),
@@ -129,7 +131,7 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                             width: double.infinity,
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
-                              color: Colors.green,
+                              color: myColors.paste,
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(16),
                                 bottomLeft: Radius.circular(16),
@@ -141,11 +143,11 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                                 children: [
                                   Text(
                                     'Order Quantity',
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                   Text(
                                     provider.buyerWiseValueModel!.summary![0].orderQuantity.toString(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                 ],
                               ),
@@ -162,7 +164,7 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                             width: double.infinity,
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
-                              color: Colors.green,
+                              color: myColors.paste,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(16),
                                 bottomRight: Radius.circular(16),
@@ -174,11 +176,11 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                                 children: [
                                   Text(
                                     'Order Value',
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                   Text(
                                     provider.buyerWiseValueModel!.summary![0].orderValue.toString(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                 ],
                               ),
@@ -191,7 +193,7 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                             width: double.infinity,
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
-                              color: Colors.blue,
+                              color: myColors.orange,
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(16),
                                 bottomLeft: Radius.circular(16),
@@ -203,11 +205,11 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                                 children: [
                                   Text(
                                     'Purchase Value',
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                   Text(
                                     provider.buyerWiseValueModel!.summary![0].purchaseValue.toString(),
-                                    style: TextStyle(color: Colors.white),
+                                    style: AppConstants.customTextStyle(14, Colors.white, FontWeight.normal),
                                   ),
                                 ],
                               ),

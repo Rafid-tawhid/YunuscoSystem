@@ -13,12 +13,11 @@ class ProductScreenHeader extends StatefulWidget {
 }
 
 class _ProductScreenHeaderState extends State<ProductScreenHeader> {
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.primaryColorLightMain,
+        color: myColors.primaryColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -29,7 +28,7 @@ class _ProductScreenHeaderState extends State<ProductScreenHeader> {
       ),
       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Consumer<ProductProvider>(
-        builder: (context,provider,_)=>Row(
+        builder: (context, provider, _) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Hero(
@@ -37,7 +36,9 @@ class _ProductScreenHeaderState extends State<ProductScreenHeader> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                   borderRadius: BorderRadius.circular(50),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -51,7 +52,7 @@ class _ProductScreenHeaderState extends State<ProductScreenHeader> {
               ),
             ),
             Text(
-              provider.isSelectCat?'Categories':'Buyers',
+              provider.isSelectCat ? 'Categories' : 'Buyers',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -74,7 +75,7 @@ class _ProductScreenHeaderState extends State<ProductScreenHeader> {
                       value: 1,
                       child: Row(
                         children: [
-                          Icon(Icons.check, color:provider.isSelectCat? Colors.green:Colors.transparent),
+                          Icon(Icons.check, color: provider.isSelectCat ? Colors.green : Colors.transparent),
                           SizedBox(width: 8),
                           Text('Categories'),
                         ],
@@ -84,20 +85,19 @@ class _ProductScreenHeaderState extends State<ProductScreenHeader> {
                       value: 2,
                       child: Row(
                         children: [
-                          Icon(Icons.check, color:!provider.isSelectCat? Colors.green:Colors.transparent),
+                          Icon(Icons.check, color: !provider.isSelectCat ? Colors.green : Colors.transparent),
                           SizedBox(width: 8),
                           Text('Buyers'),
                         ],
                       ),
                     ),
-
                   ],
                   elevation: 8.0,
                 ).then((value) {
                   if (value != null) {
                     // Handle menu item selection
 
-                    debugPrint('This is value ren ${value}');
+                    debugPrint('This is value ren $value');
                     switch (value) {
                       case 1:
                         provider.setSelector(true);

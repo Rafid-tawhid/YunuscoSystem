@@ -31,7 +31,7 @@ class BuyerQtyPieChart extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: 350,
+          height: 360,
           child: PieChart(
             PieChartData(
               sectionsSpace: 2,
@@ -45,7 +45,7 @@ class BuyerQtyPieChart extends StatelessWidget {
                   value: item.value?.toDouble() ?? 0,
                   color: colors[i % colors.length],
                   title: "${((item.value ?? 0) / total * 100).toStringAsFixed(1)}%",
-                  radius: 100,
+                  radius: 160,
                   titleStyle: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,

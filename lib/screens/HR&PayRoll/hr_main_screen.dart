@@ -79,7 +79,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
                 fontWeight: FontWeight.bold,
                 fontSize: 24)),
         centerTitle: true,
-        backgroundColor: AppColors.primaryColorLightMain,
+        backgroundColor: myColors.primaryColor,
         elevation: 10,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(

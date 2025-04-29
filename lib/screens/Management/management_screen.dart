@@ -6,6 +6,8 @@ import 'package:yunusco_group/screens/Management/widgets/finish_production_secti
 import 'package:yunusco_group/screens/Management/widgets/sewing_target_achieve.dart';
 import 'package:yunusco_group/screens/Management/widgets/sewing_production_section.dart';
 import 'package:yunusco_group/screens/Management/widgets/unit_wise_sewing.dart';
+import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/management_dashboard_model.dart';
 
@@ -136,7 +138,7 @@ class ProductionDataSection extends StatelessWidget {
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: myColors.orange,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),
@@ -148,11 +150,11 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'This Month',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Sewing :${productionData!.first.sewingQty.toString()}',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -165,7 +167,7 @@ class ProductionDataSection extends StatelessWidget {
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.purple,
+                  color: myColors.paste,
                   borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
@@ -177,11 +179,11 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'Previous Month',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Sewing :${productionData!.first.cuttingQty.toString()}',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -198,7 +200,7 @@ class ProductionDataSection extends StatelessWidget {
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: myColors.paste,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),
@@ -210,11 +212,11 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'This Month',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Finish :${productionData!.first.finishQty.toString()}',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -227,7 +229,7 @@ class ProductionDataSection extends StatelessWidget {
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.purple,
+                  color: myColors.orange,
                   borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
@@ -239,11 +241,11 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'Previous Month',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Finish :${productionData!.first.moldingQty.toString()}',
-                        style: TextStyle(color: Colors.white),
+                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
