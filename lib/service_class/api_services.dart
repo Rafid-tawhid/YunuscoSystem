@@ -142,7 +142,7 @@ class ApiService {
   }
 
   Future<dynamic> putData(String endpoint, dynamic body) async {
-    debugPrint('SEND DATA ${body}');
+    debugPrint('SEND DATA $body');
     try {
       // Perform the POST request
       debugPrint('URL: ${AppConstants.baseUrl}$endpoint');

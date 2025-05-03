@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
+
+import '../../../models/self_leave_info.dart';
 
 class LeaveSummaryWidget extends StatelessWidget {
   const LeaveSummaryWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final leaveData = [
-      {'type': 'Sick Leave', 'total': 14, 'used': 1, 'remaining': 13},
-      {'type': 'Earn Leave', 'total': 6.28, 'used': 0, 'remaining': 6.28},
-      {'type': 'Casual Leave', 'total': 10, 'used': 0, 'remaining': 10},
-      {'type': 'Leave Without Pay', 'total': 120, 'used': 0, 'remaining': 120},
-      {'type': 'Maternity Leave', 'total': 112, 'used': 0, 'remaining': 106},
-      {'type': 'Special Leave', 'total': 28, 'used': 0, 'remaining': 28},
-    ];
+    // final leaveData = [
+    //   {'type': 'Sick Leave', 'total': 14, 'used': 1, 'remaining': 13},
+    //   {'type': 'Earn Leave', 'total': 6.28, 'used': 0, 'remaining': 6.28},
+    //   {'type': 'Casual Leave', 'total': 10, 'used': 0, 'remaining': 10},
+    //   {'type': 'Leave Without Pay', 'total': 120, 'used': 0, 'remaining': 120},
+    //   {'type': 'Maternity Leave', 'total': 112, 'used': 0, 'remaining': 106},
+    //   {'type': 'Special Leave', 'total': 28, 'used': 0, 'remaining': 28},
+    // ];
 
     return Card(
       elevation: 4,
@@ -22,65 +26,81 @@ class LeaveSummaryWidget extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Leave Balance Summary',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        child: Consumer<HrProvider>(
+          builder: (context,pro,_)=>Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Leave Balance Summary',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            ...leaveData.map((leave) => _buildLeaveRow(
-              leave['type'] as String,
-              leave['total'] as dynamic,
-              leave['used'] as int,
-              leave['remaining'] as dynamic,
-            )),
-          ],
+              const SizedBox(height: 16),
+              // In your parent widget:
+              CompactLeaveInfo(leaveInfo: pro.selfLeaveInfoTest)
+              // ...leaveData.map((leave) => _buildLeaveRow(
+              //   leave['type'] as String,
+              //   leave['total'] as dynamic,
+              //   leave['used'] as int,
+              //   leave['remaining'] as dynamic,
+              // )),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildLeaveRow(String type, dynamic total, int used, dynamic remaining) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+
+
+
+class CompactLeaveInfo extends StatelessWidget {
+  final SelfLeaveInfo leaveInfo;
+  final double rowHeight = 30.0;
+
+  const CompactLeaveInfo({Key? key, required this.leaveInfo}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: Column(
+        children: [
+          _buildRow('Sick Leave',
+              leaveInfo.sickLeave,
+              leaveInfo.sickLeavePolicyDays),
+          _buildRow('Casual Leave',
+              leaveInfo.casualLeave,
+              leaveInfo.casualLeavePolicyDays),
+          _buildRow('Maternity Leave',
+              leaveInfo.maternityLeave,
+              leaveInfo.maternityLeavePolicyDays),
+          _buildRow('Earn Leave',
+              leaveInfo.earnLeave,
+              leaveInfo.earnLeavePolicyDays),
+          _buildRow('Leave Without Pay',
+              leaveInfo.leaveWithoutPay,
+              leaveInfo.leaveWithoutPayPolicyDays),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(String title, num? used, num? total) {
+    final remaining = (total ?? 0) - (used ?? 0);
+
+    return SizedBox(
+      height: rowHeight,
       child: Row(
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              type,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
+          SizedBox(
+            width: 120,
+            child: Text(title, overflow: TextOverflow.ellipsis),
           ),
           Expanded(
-            child: Text(
-              total.toString(),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              used.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: used > 0 ? Colors.red : Colors.grey,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              remaining.toString(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
+            child: Text('$used/$total (Rem: $remaining)'),
           ),
         ],
       ),

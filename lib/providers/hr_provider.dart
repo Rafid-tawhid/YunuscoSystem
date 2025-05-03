@@ -5,6 +5,8 @@ import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../models/leave_data_model.dart';
+import '../models/leave_model.dart';
+import '../models/self_leave_info.dart';
 
 class HrProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
@@ -112,5 +114,104 @@ class HrProvider extends ChangeNotifier{
       debugPrint('_leaveDataList ${_leaveDataList.length}');
 
     }
+  }
+
+  SelfLeaveInfo? _selfLeaveInfo;
+  SelfLeaveInfo? get selfLeaveInfo=>_selfLeaveInfo;
+
+  var selfLeaveInfoTest =  SelfLeaveInfo.fromJson({
+    "IdCardNo": "35078",
+    "LeaveYear": "2025",
+    "SickLeave": 10.00,
+    "SickLeavePolicyId": 1,
+    "SickLeavePolicyType": "Sick Leave",
+    "SickLeavePolicyDays": 14,
+    "CasualLeave": 9.00,
+    "CasualLeavePolicyId": 3,
+    "CasualLeavePolicyType": "Casual Leave",
+    "CasualLeavePolicyDays": 10,
+    "MaternityLeave": 106.00,
+    "MaternityLeavePolicyId": 5,
+    "MaternityLeavePolicyType": "Maternity Leave",
+    "MaternityLeavePolicyDays": 112,
+    "EarnLeave": 18.55,
+    "EarnLeavePolicyId": 2,
+    "EarnLeavePolicyType": "Earn Leave",
+    "EarnLeavePolicyDays": 40,
+    "LeaveWithoutPay": 104.00,
+    "LeaveWithoutPayPolicyId": 4,
+    "LeaveWithoutPayPolicyType": "Leave Without Pay",
+    "LeaveWithoutPayPolicyDays": 120
+  });
+
+  List<LeaveBalance> _leaveTypeList=[];
+  List<LeaveBalance> get leaveTypeList=>_leaveTypeList;
+
+  Future<void> getLeaveApplicationInfo() async{
+    //var data=await apiService.getData('endpoint');
+    // if(data!=null){
+    //
+    // }
+
+    _leaveTypeList=convertToLeaveBalances(selfLeaveInfoTest.toJson());
+
+    debugPrint('leaveList ${_leaveTypeList.length}');
+
+  }
+
+  Future<void> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate, String reason,LeaveBalance leaveType) async{
+    apiService.postData2('http://192.168.15.6:8090/api/Leave/SubmitLeaveRequest', {
+      "UserId" : DashboardHelpers.currentUser!.userId,
+      "IdCardNo": DashboardHelpers.currentUser!.iDnum,
+      "LeaveFromDate": DashboardHelpers.convertDateTime(fromDate.toString(),pattern: 'yyyy-MM-dd'),
+      "LeaveToDate": DashboardHelpers.convertDateTime(toDate.toString(),pattern: 'yyyy-MM-dd'),
+      "LeaveType": leaveType.policyId,
+      "LeaveBalance": leaveType.total,
+      "Reasons": reason,
+      "remainingLeaveDay": leaveType.remaining,
+      "policyId": leaveType.policyId,
+      "IsFirst": false
+    });
+  }
+
+
+  List<LeaveBalance> convertToLeaveBalances(Map<String, dynamic> json) {
+    return [
+      LeaveBalance(
+        type: 'Sick Leave',
+        used: json['SickLeave'] ?? 0,
+        total: json['SickLeavePolicyDays'] ?? 0,
+        policyType: json['SickLeavePolicyType'] ?? '',
+        policyId: json['SickLeavePolicyId'] ?? 0,
+      ),
+      LeaveBalance(
+        type: 'Casual Leave',
+        used: json['CasualLeave'] ?? 0,
+        total: json['CasualLeavePolicyDays'] ?? 0,
+        policyType: json['CasualLeavePolicyType'] ?? '',
+        policyId: json['CasualLeavePolicyId'] ?? 0,
+      ),
+      LeaveBalance(
+        type: 'Maternity Leave',
+        used: json['MaternityLeave'] ?? 0,
+        total: json['MaternityLeavePolicyDays'] ?? 0,
+        policyType: json['MaternityLeavePolicyType'] ?? '',
+        policyId: json['MaternityLeavePolicyId'] ?? 0,
+      ),
+      LeaveBalance(
+        type: 'Earn Leave',
+        used: json['EarnLeave'] ?? 0,
+        total: json['EarnLeavePolicyDays'] ?? 0,
+        policyType: json['EarnLeavePolicyType'] ?? '',
+        policyId: json['EarnLeavePolicyId'] ?? 0,
+      ),
+      LeaveBalance(
+        type: 'Leave Without Pay',
+        used: json['LeaveWithoutPay'] ?? 0,
+        total: json['LeaveWithoutPayPolicyDays'] ?? 0,
+        policyType: json['LeaveWithoutPayPolicyType'] ?? '',
+        policyId: json['LeaveWithoutPayPolicyId'] ?? 0,
+      ),
+    ];
   }
 }
