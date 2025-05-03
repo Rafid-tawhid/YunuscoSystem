@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/leave_history.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/leave_model.dart';
 
@@ -78,109 +79,259 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if(pro.showLeavHistory) LeaveSummaryWidget(),
-                Row(
+                Column(
                   children: [
-                    const Text('Full Day'),
-                    Checkbox(
-                      value: _isFullDay,
-                      onChanged: (value) {
-                        setState(() {
-                          _isFullDay = value!;
-                        });
-                      },
-                    ),
-                    const Spacer(),
-                    Text('Balance: DayCount $_dayCount'),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                DropdownButtonFormField<LeaveBalance>(
-                  value: _leaveType,
-                  items: pro.leaveTypeList
-                      .map((type) => DropdownMenuItem(
-                    value: type,
-                    child: Text(type.policyType),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _leaveType = value!;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Leave type',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _selectDate(context, true),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'From Date *',
-                            border: OutlineInputBorder(),
+                    // Full Day Toggle
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Full Day Leave',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                           ),
-                          child: Text(
-                            _fromDate != null
-                                ? DateFormat('MM-dd-yyyy').format(_fromDate!)
-                                : 'Select date',
+                          const Spacer(),
+                          Switch(
+                            value: _isFullDay,
+                            onChanged: (value) {
+                              setState(() {
+                                _isFullDay = value;
+                              });
+                            },
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          Chip(
+                            backgroundColor: Colors.grey.shade300,
+                            label: Text(
+                              'Balance: $_dayCount days',
+                              style: TextStyle(
+                                color: myColors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _selectDate(context, false),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'To Date *',
-                            border: OutlineInputBorder(),
-                          ),
-                          child: Text(
-                            _toDate != null
-                                ? DateFormat('MM-dd-yyyy').format(_toDate!)
-                                : 'Select date',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _reasonController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Reasons *',
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter your reason for leave',
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_fromDate == null || _toDate == null || _reasonController.text.isEmpty||_leaveType==null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fill all required fields')),
-                        );
-                      } else {
-                        // Submit leave application logic
+                    const SizedBox(height: 24),
 
-                        var hp=context.read<HrProvider>();
-                        hp.submitApplicationForLeave(_fromDate,_toDate,_reasonController.text.trim(),_leaveType!);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Leave application submitted for $_dayCount days')),
-                        );
-                      }
-                    },
-                    child: const Text('Submit Application'),
-                  ),
-                ),
+                    // Leave Type Dropdown
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Leave Type *',
+                          style: TextStyle(fontSize: 14, color: Colors.black87),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: DropdownButtonFormField<LeaveBalance>(
+                            value: _leaveType,
+                            isExpanded: true,
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                            ),
+                            items: pro.leaveTypeList
+                                .map((type) => DropdownMenuItem(
+                              value: type,
+                              child: Text(
+                                type.policyType,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ))
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _leaveType = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Date Range Picker
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'From Date *',
+                                style: TextStyle(fontSize: 14, color: Colors.black87),
+                              ),
+                              const SizedBox(height: 8),
+                              InkWell(
+                                onTap: () => _selectDate(context, true),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 14),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today,
+                                          size: 20, color: Colors.grey.shade700),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        _fromDate != null
+                                            ? DateFormat('MMM dd, yyyy').format(_fromDate!)
+                                            : 'Select date',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: _fromDate != null
+                                              ? Colors.black
+                                              : Colors.grey.shade500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'To Date *',
+                                style: TextStyle(fontSize: 14, color: Colors.black87),
+                              ),
+                              const SizedBox(height: 8),
+                              InkWell(
+                                onTap: () => _selectDate(context, false),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 14),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today,
+                                          size: 20, color: Colors.grey.shade700),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        _toDate != null
+                                            ? DateFormat('MMM dd, yyyy').format(_toDate!)
+                                            : 'Select date',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: _toDate != null
+                                              ? Colors.black
+                                              : Colors.grey.shade500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Reason Field
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Reason *',
+                          style: TextStyle(fontSize: 14, color: Colors.black87),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _reasonController,
+                          maxLines: 4,
+                          decoration: InputDecoration(
+                            hintText: 'Enter your reason for leave...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.blue.shade400, width: 1.5),
+                            ),
+                            contentPadding: const EdgeInsets.all(16),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Submit Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: myColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          if (_fromDate == null ||
+                              _toDate == null ||
+                              _reasonController.text.isEmpty ||
+                              _leaveType == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please fill all required fields'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          } else {
+                            var hp = context.read<HrProvider>();
+                            hp.submitApplicationForLeave(
+                                _fromDate, _toDate, _reasonController.text.trim(), _leaveType!);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Leave application submitted for $_dayCount days'),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text(
+                          'SUBMIT APPLICATION',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  ],
+                )
               ],
             ),
           ),
