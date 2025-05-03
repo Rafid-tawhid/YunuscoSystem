@@ -47,7 +47,7 @@ class SelfLeaveInfo {
 }
 
   SelfLeaveInfo.fromJson(dynamic json) {
-    _idCardNo = json['IdCardNo'];
+    _idCardNo = json['IdCardNo']??'';
     _leaveYear = json['LeaveYear'];
     _sickLeave = json['SickLeave'];
     _sickLeavePolicyId = json['SickLeavePolicyId'];

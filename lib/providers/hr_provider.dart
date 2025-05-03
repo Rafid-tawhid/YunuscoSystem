@@ -119,43 +119,18 @@ class HrProvider extends ChangeNotifier{
   SelfLeaveInfo? _selfLeaveInfo;
   SelfLeaveInfo? get selfLeaveInfo=>_selfLeaveInfo;
 
-  var selfLeaveInfoTest =  SelfLeaveInfo.fromJson({
-    "IdCardNo": "35078",
-    "LeaveYear": "2025",
-    "SickLeave": 10.00,
-    "SickLeavePolicyId": 1,
-    "SickLeavePolicyType": "Sick Leave",
-    "SickLeavePolicyDays": 14,
-    "CasualLeave": 9.00,
-    "CasualLeavePolicyId": 3,
-    "CasualLeavePolicyType": "Casual Leave",
-    "CasualLeavePolicyDays": 10,
-    "MaternityLeave": 106.00,
-    "MaternityLeavePolicyId": 5,
-    "MaternityLeavePolicyType": "Maternity Leave",
-    "MaternityLeavePolicyDays": 112,
-    "EarnLeave": 18.55,
-    "EarnLeavePolicyId": 2,
-    "EarnLeavePolicyType": "Earn Leave",
-    "EarnLeavePolicyDays": 40,
-    "LeaveWithoutPay": 104.00,
-    "LeaveWithoutPayPolicyId": 4,
-    "LeaveWithoutPayPolicyType": "Leave Without Pay",
-    "LeaveWithoutPayPolicyDays": 120
-  });
-
   List<LeaveBalance> _leaveTypeList=[];
   List<LeaveBalance> get leaveTypeList=>_leaveTypeList;
 
   Future<void> getLeaveApplicationInfo() async{
-    //var data=await apiService.getData('endpoint');
-    // if(data!=null){
-    //
-    // }
+     var data=await apiService.getData('api/Leave/GetSingleEmpLeaveBalance/${35078}');
 
-    _leaveTypeList=convertToLeaveBalances(selfLeaveInfoTest.toJson());
-
+    if(data!=null){
+      _selfLeaveInfo=SelfLeaveInfo.fromJson(data['Results']);
+      _leaveTypeList=convertToLeaveBalances(_selfLeaveInfo!.toJson());
+    }
     debugPrint('leaveList ${_leaveTypeList.length}');
+    notifyListeners();
 
   }
 

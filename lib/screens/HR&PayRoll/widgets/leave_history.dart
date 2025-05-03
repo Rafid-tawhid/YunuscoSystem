@@ -39,7 +39,7 @@ class LeaveSummaryWidget extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               // In your parent widget:
-              CompactLeaveInfo(leaveInfo: pro.selfLeaveInfoTest)
+             if(pro.selfLeaveInfo!=null) CompactLeaveInfo(leaveInfo: pro.selfLeaveInfo!)
               // ...leaveData.map((leave) => _buildLeaveRow(
               //   leave['type'] as String,
               //   leave['total'] as dynamic,

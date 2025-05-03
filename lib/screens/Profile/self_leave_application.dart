@@ -198,8 +198,5 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
   Future<void> getLeaveApplicationData() async{
     var hp=context.read<HrProvider>();
     await hp.getLeaveApplicationInfo();
-    setState(() {
-
-    });
   }
 }
