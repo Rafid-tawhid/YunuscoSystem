@@ -73,7 +73,6 @@ class ItemWiseSalesChart extends StatelessWidget {
           final i = entry.key;
           final item = entry.value;
           final percent = ((item.quantity ?? 0) / total * 100).toStringAsFixed(2);
-
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(

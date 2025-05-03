@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
+
+import '../models/leave_data_model.dart';
 
 class HrProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
@@ -91,6 +94,23 @@ class HrProvider extends ChangeNotifier{
     }
     else {
       return false;
+    }
+  }
+
+
+  List<LeaveDataModel> _leaveDataList=[];
+  List<LeaveDataModel> get leaveDataList=>_leaveDataList;
+
+  void getPersonalAttendance() async{
+    var data=await apiService.getData('api/HrApi/LeaveHistoryList?EmployeeID=31401');
+    if(data!=null){
+      _leaveDataList.clear();
+      for(var i in data){
+        _leaveDataList.add(LeaveDataModel.fromJson(i));
+      }
+      notifyListeners();
+      debugPrint('_leaveDataList ${_leaveDataList.length}');
+
     }
   }
 }

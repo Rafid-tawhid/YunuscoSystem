@@ -72,6 +72,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Employee Attendance Report'),
         centerTitle: true,
