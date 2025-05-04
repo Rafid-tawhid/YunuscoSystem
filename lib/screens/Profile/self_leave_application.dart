@@ -79,6 +79,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if(pro.showLeavHistory) LeaveSummaryWidget(),
+                SizedBox(height: 12,),
                 Column(
                   children: [
                     // Full Day Toggle
@@ -137,6 +138,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                           child: DropdownButtonFormField<LeaveBalance>(
                             value: _leaveType,
                             isExpanded: true,
+                            hint: Text('Select Type'),
                             icon: const Icon(Icons.keyboard_arrow_down),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
