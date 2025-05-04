@@ -32,6 +32,7 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Merchandising'),
       actions: [
         IconButton(

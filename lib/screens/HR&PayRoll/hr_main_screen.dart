@@ -176,6 +176,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     name = name.toLowerCase();
 
     if (name.contains('accessories')) return Icons.shopping_bag_outlined;
+    if (name.contains('departments')) return Icons.work;
+    if (name.contains('attendance')) return Icons.person_pin_outlined;
+    if (name.contains('performance')) return Icons.favorite;
     if (name.contains('account')) return Icons.account_balance_outlined;
     if (name.contains('audit')) return Icons.assignment_turned_in_outlined;
     if (name.contains('commercial')) return Icons.business_center_outlined;

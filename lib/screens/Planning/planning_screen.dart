@@ -27,6 +27,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Planning Screen',),
         backgroundColor: Colors.deepPurple.withOpacity(.2),

@@ -31,6 +31,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Merchandising'),
       ),
       body: GridView.count(

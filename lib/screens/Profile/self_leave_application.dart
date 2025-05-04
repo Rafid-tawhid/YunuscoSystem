@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/leave_history.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -22,13 +23,20 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
   final TextEditingController _reasonController = TextEditingController();
   bool _isFullDay = true;
 
-  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
+  Future<void> _selectDate(BuildContext context, bool isFromDate, bool isPrevious) async {
+    final DateTime now = DateTime.now();
+    final DateTime initialDate = isPrevious ? now.subtract(const Duration(days: 1)) : now;
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDate: initialDate,
+      firstDate: isPrevious ? DateTime(2000) : DateTime(2000), // Allow any past date when isPrevious=false
+      lastDate: isPrevious ? now : DateTime(2100), // Allow any future date when isPrevious=false
+      selectableDayPredicate: isPrevious
+          ? (DateTime date) => date.isBefore(now) || date.isAtSameMomentAs(now)
+          : null, // No restrictions when isPrevious=false
     );
+
     if (picked != null) {
       setState(() {
         if (isFromDate) {
@@ -157,6 +165,8 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _leaveType = value;
+                                _fromDate=null;
+                                _toDate=null;
                               });
                             },
                           ),
@@ -166,6 +176,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                     const SizedBox(height: 24),
 
                     // Date Range Picker
+
                     Row(
                       children: [
                         Expanded(
@@ -178,7 +189,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                               ),
                               const SizedBox(height: 8),
                               InkWell(
-                                onTap: () => _selectDate(context, true),
+                                onTap: () => _leaveType==null?_showAlert(): _selectDate(context, true,_leaveType!.policyId==1),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 14),
@@ -220,7 +231,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                               ),
                               const SizedBox(height: 8),
                               InkWell(
-                                onTap: () => _selectDate(context, false),
+                                onTap: () =>_leaveType==null?_showAlert(): _selectDate(context, false,_leaveType!.policyId==1),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 14),
@@ -351,5 +362,9 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
   Future<void> getLeaveApplicationData() async{
     var hp=context.read<HrProvider>();
     await hp.getLeaveApplicationInfo();
+  }
+
+  _showAlert() {
+    DashboardHelpers.showAlert(msg: 'Select Leave type');
   }
 }
