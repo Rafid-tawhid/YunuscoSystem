@@ -107,7 +107,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                           Chip(
                             backgroundColor: Colors.grey.shade300,
                             label: Text(
-                              'Balance: $_dayCount days',
+                              'Selected: $_dayCount days',
                               style: TextStyle(
                                 color: myColors.black,
                                 fontWeight: FontWeight.bold,

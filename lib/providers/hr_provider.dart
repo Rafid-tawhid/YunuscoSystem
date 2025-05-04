@@ -123,7 +123,7 @@ class HrProvider extends ChangeNotifier{
   List<LeaveBalance> get leaveTypeList=>_leaveTypeList;
 
   Future<void> getLeaveApplicationInfo() async{
-     var data=await apiService.getData('api/Leave/GetSingleEmpLeaveBalance/${35078}');
+     var data=await apiService.getData2('http://192.168.15.6:8090/api/Leave/GetSingleEmpLeaveBalance/${35078}');
 
     if(data!=null){
       _selfLeaveInfo=SelfLeaveInfo.fromJson(data['Results']);
