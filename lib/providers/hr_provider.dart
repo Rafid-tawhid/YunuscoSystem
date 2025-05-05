@@ -117,7 +117,6 @@ class HrProvider extends ChangeNotifier{
 
     }
   }
-  //
 
   SelfLeaveInfo? _selfLeaveInfo;
   SelfLeaveInfo? get selfLeaveInfo=>_selfLeaveInfo;
