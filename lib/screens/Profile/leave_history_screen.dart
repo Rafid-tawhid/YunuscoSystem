@@ -44,7 +44,8 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
           ),
         ),
         child: Consumer<HrProvider>(
-          builder: (context,pro,_)=>pro.leaveDataList.isEmpty
+          builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator(),):
+          pro.leaveDataList.isEmpty
               ? const Center(
             child: Text(
               'No leave applications found',
@@ -243,7 +244,9 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
 
   void getAttendanceHistory() async{
     var hp=context.read<HrProvider>();
-    hp.getPersonalAttendance();
+    if(hp.leaveDataList.isEmpty){
+      hp.getPersonalAttendance();
+    }
   }
 }
 

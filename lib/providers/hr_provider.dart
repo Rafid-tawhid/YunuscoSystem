@@ -104,7 +104,9 @@ class HrProvider extends ChangeNotifier{
   List<LeaveDataModel> get leaveDataList=>_leaveDataList;
 
   void getPersonalAttendance() async{
+    setLoading(true);
     var data=await apiService.getData('api/HrApi/LeaveHistoryList?EmployeeID=${DashboardHelpers.currentUser!.iDnum}');
+    setLoading(false);
     if(data!=null){
       _leaveDataList.clear();
       for(var i in data){
@@ -115,6 +117,7 @@ class HrProvider extends ChangeNotifier{
 
     }
   }
+  //
 
   SelfLeaveInfo? _selfLeaveInfo;
   SelfLeaveInfo? get selfLeaveInfo=>_selfLeaveInfo;
