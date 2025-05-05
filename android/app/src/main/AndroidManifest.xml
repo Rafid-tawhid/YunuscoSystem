@@ -2,7 +2,7 @@
     <application
         android:label="Yunusco Group"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -38,7 +38,7 @@
         <!-- Notification icon (optional) -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher" />
+            android:resource="@drawable/ic_launcher" />
         <!-- Firebase Notification Channel (Required) -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

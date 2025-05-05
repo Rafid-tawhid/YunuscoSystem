@@ -104,7 +104,7 @@ class HrProvider extends ChangeNotifier{
   List<LeaveDataModel> get leaveDataList=>_leaveDataList;
 
   void getPersonalAttendance() async{
-    var data=await apiService.getData('api/HrApi/LeaveHistoryList?EmployeeID=31401');
+    var data=await apiService.getData('api/HrApi/LeaveHistoryList?EmployeeID=${DashboardHelpers.currentUser!.iDnum}');
     if(data!=null){
       _leaveDataList.clear();
       for(var i in data){
@@ -134,8 +134,8 @@ class HrProvider extends ChangeNotifier{
 
   }
 
-  Future<void> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate, String reason,LeaveBalance leaveType) async{
-    apiService.postData2('http://192.168.15.6:8090/api/Leave/SubmitLeaveRequest', {
+  Future<bool> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate, String reason,LeaveBalance leaveType) async{
+    var data=await apiService.postData2('http://192.168.15.6:8090/api/Leave/SubmitLeaveRequest', {
       "UserId" : DashboardHelpers.currentUser!.userId,
       "IdCardNo": DashboardHelpers.currentUser!.iDnum,
       "LeaveFromDate": DashboardHelpers.convertDateTime(fromDate.toString(),pattern: 'yyyy-MM-dd'),
@@ -147,6 +147,7 @@ class HrProvider extends ChangeNotifier{
       "policyId": leaveType.policyId,
       "IsFirst": false
     });
+    return data==null?false:true;
   }
 
 

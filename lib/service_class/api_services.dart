@@ -219,45 +219,46 @@ class ApiService {
         debugPrint('responseBody ${response}');
 
         Fluttertoast.showToast(
-            msg: response['message'] ?? "Resource Not Found");
+            msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
         break;
       case 400:
         EasyLoading.dismiss();
         print("Bad Request: $responseBody");
-        Fluttertoast.showToast(msg: "Bad Request: $responseBody");
+        var response = jsonDecode(responseBody);
+        Fluttertoast.showToast(msg:response['Message'] ??response['msg']?? "Bad Request: $responseBody",toastLength: Toast.LENGTH_LONG);
         break;
       case 401:
         EasyLoading.dismiss();
         print("Unauthorized Access: $responseBody");
-        Fluttertoast.showToast(msg: "Unauthorized Access");
+        Fluttertoast.showToast(msg: "Unauthorized Access",toastLength: Toast.LENGTH_LONG);
         break;
       case 403:
         EasyLoading.dismiss();
         print("Forbidden: $responseBody");
-        Fluttertoast.showToast(msg: "Forbidden Access");
+        Fluttertoast.showToast(msg: "Forbidden Access",toastLength: Toast.LENGTH_LONG);
         break;
       case 404:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
         debugPrint('responseBody ${response}');
         Fluttertoast.showToast(
-            msg: response['message'] ?? "Resource Not Found");
+            msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
       case 409:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
         debugPrint('responseBody ${response}');
         Fluttertoast.showToast(
-            msg: response['message'] ?? "Resource Not Found");
+            msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
         break;
       case 500:
         EasyLoading.dismiss();
         print("Internal Server Error: $responseBody");
-        Fluttertoast.showToast(msg: "Internal Server Error");
+        Fluttertoast.showToast(msg: "Internal Server Error",toastLength: Toast.LENGTH_LONG);
         break;
       default:
         EasyLoading.dismiss();
         print("Unhandled Error: $responseBody");
-        Fluttertoast.showToast(msg: "Error $statusCode: $responseBody");
+        Fluttertoast.showToast(msg: "Error $statusCode: $responseBody",toastLength: Toast.LENGTH_LONG);
         break;
     }
   }

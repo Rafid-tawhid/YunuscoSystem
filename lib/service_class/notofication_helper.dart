@@ -136,7 +136,8 @@ class NotificationServices {
   //
 
   static void _handleForegroundMessage(RemoteMessage message) {
-    debugPrint('Foreground message: ${message.notification?.title}');
+    debugPrint('Foreground message Title: ${message.notification?.title}');
+    debugPrint('Notification Data: ${message.data}');
     _showNotification(message); // Your existing notification display logic
   }
 
@@ -148,7 +149,7 @@ class NotificationServices {
 
   static Future<void> initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@drawable/ic_launcher');
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -195,7 +196,7 @@ class NotificationServices {
             'high_importance_channel',
             'High Importance Notifications',
             channelDescription: 'This channel is used for important notifications.',
-            icon: android?.smallIcon ?? '@mipmap/ic_launcher',
+            icon: android?.smallIcon ?? '@drawable/ic_launcher',
             importance: Importance.max,
             priority: Priority.high,
           ),

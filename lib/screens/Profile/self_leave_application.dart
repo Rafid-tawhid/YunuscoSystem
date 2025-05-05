@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/leave_history.dart';
+import 'package:yunusco_group/screens/home_page.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/leave_model.dart';
@@ -307,7 +308,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_fromDate == null ||
                               _toDate == null ||
                               _reasonController.text.isEmpty ||
@@ -319,17 +320,38 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                               ),
                             );
                           } else {
-                            var hp = context.read<HrProvider>();
-                            hp.submitApplicationForLeave(
-                                _fromDate, _toDate, _reasonController.text.trim(), _leaveType!);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Leave application submitted for $_dayCount days'),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: Colors.green,
-                              ),
+
+                            final shouldProceed = await DashboardHelpers.showConfirmDialog(
+                              context: context,
+                              title: 'Double Check Everything',
+                              message: 'Please verify all details before proceeding.\nThis action cannot be undone.',
+                              confirmText: 'APPLY',
+                              cancelText: 'GO BACK',
+                              onSubmit: (){
+                                debugPrint('on apply');
+                              },
+                              onCancel: (){
+                                debugPrint('on cancel');
+                                // Navigator.pop(context);
+                              },
                             );
-                            Navigator.pop(context);
+                            if (shouldProceed == true) {
+                              var hp = context.read<HrProvider>();
+                             var response= await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!);
+                              if(response){
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Leave application submitted for $_dayCount days'),
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              }
+
+
+                             // Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                            }
                           }
                         },
                         child: const Text(
@@ -353,6 +375,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
     );
   }
 
+
   @override
   void dispose() {
     _reasonController.dispose();
@@ -367,4 +390,9 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
   _showAlert() {
     DashboardHelpers.showAlert(msg: 'Select Leave type');
   }
+
+
+
+
+
 }

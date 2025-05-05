@@ -18,7 +18,7 @@ import '../utils/colors.dart';
 import '../utils/constants.dart';
 
 class DashboardHelpers {
- // static UserModel? userModel;
+  // static UserModel? userModel;
   static String? selectedId;
   static String? idNo;
   static String? expDate;
@@ -26,24 +26,15 @@ class DashboardHelpers {
   static AnimationController? localAnimationController;
   static String profileImageUrl = '';
 
-
   static void showAlert({required String msg}) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.SNACKBAR,
-        backgroundColor: Colors.black.withOpacity(.5),
-        textColor: Colors.white,
-        fontSize: 16.0);
+    Fluttertoast.showToast(msg: msg, toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.SNACKBAR, backgroundColor: Colors.black.withOpacity(.5), textColor: Colors.white, fontSize: 16.0);
   }
-
 
   static Future<void> setUserInfo() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var data = preferences.get('user');
     debugPrint('FETCH USER DATA ${data}');
     currentUser = UserModel.fromJson(jsonDecode(data.toString()));
-
   }
 
   static Future<String> getString(String key) async {
@@ -56,14 +47,12 @@ class DashboardHelpers {
     sp.setString(key, val);
   }
 
-
   static String convertDateTime(String dateTimeString, {String? pattern}) {
     // Parse the original date-time string into a DateTime object
     DateTime originalDateTime = DateTime.parse(dateTimeString);
 
     // Create a DateFormat object for the desired format
-    DateFormat desiredFormat =
-        DateFormat(pattern ?? 'd MMM yyyy HH:mm:aa');
+    DateFormat desiredFormat = DateFormat(pattern ?? 'd MMM yyyy HH:mm:aa');
 
     // Format the date according to the desired format
     String formattedDate = desiredFormat.format(originalDateTime);
@@ -116,20 +105,15 @@ class DashboardHelpers {
                         style: AppConstants.customTextStyle(14, Colors.black, FontWeight.bold),
                       ),
                       onPressed: () {
-                        completer
-                            .complete(null); // Complete with null if canceled
+                        completer.complete(null); // Complete with null if canceled
                         Navigator.of(context).pop(); // Close the bottom sheet
                       },
                     ),
                     CupertinoButton(
-                      child: Text('Done',
-                          style:
-                              AppConstants.customTextStyle(14, myColors.green, FontWeight.bold)),
+                      child: Text('Done', style: AppConstants.customTextStyle(14, myColors.green, FontWeight.bold)),
                       onPressed: () {
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
-                        completer.complete(
-                            formattedDate); // Complete with selected date
+                        String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+                        completer.complete(formattedDate); // Complete with selected date
                         Navigator.of(context).pop(); // Close the bottom sheet
                       },
                     ),
@@ -211,16 +195,13 @@ class DashboardHelpers {
     minutes %= 60;
 
     // Format the time components back into a string
-    String newTimeString =
-        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+    String newTimeString = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
 
     return newTimeString;
   }
 
-
   static Future<void> openMap(latitude, longitude) async {
-    final googleMapsUrl =
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    final googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     final appleMapsUrl = 'https://maps.apple.com/?q=$latitude,$longitude';
 
     if (await canLaunch(googleMapsUrl)) {
@@ -242,8 +223,7 @@ class DashboardHelpers {
     return MediaQuery.of(context).viewInsets.bottom > 0;
   }
 
-  static String getFirstCharacterCombinationName(
-      String firstName, String? lastName) {
+  static String getFirstCharacterCombinationName(String firstName, String? lastName) {
     if (lastName == null) {
       if (firstName.contains(' ')) {
         List<String> nameParts = firstName.split(' ');
@@ -322,8 +302,7 @@ class DashboardHelpers {
     }
 
     int hours = decimalHours.floor(); // Get the integer part as hours
-    int minutes = ((decimalHours - hours) * 60)
-        .round(); // Convert the decimal part to minutes
+    int minutes = ((decimalHours - hours) * 60).round(); // Convert the decimal part to minutes
 
     return '${hours}hr ${minutes}min';
   }
@@ -333,8 +312,7 @@ class DashboardHelpers {
     showAlert(msg: 'Copied!');
   }
 
-  static void showAnimatedDialog(
-      BuildContext context, String message, String? title) {
+  static void showAnimatedDialog(BuildContext context, String message, String? title) {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -383,9 +361,7 @@ class DashboardHelpers {
                   ),
                   SizedBox(height: 12),
                   // Alert Content
-                  Text(message,
-                      textAlign: TextAlign.left,
-                      style: AppConstants.customTextStyle(14, myColors.greyTxt, FontWeight.w500)),
+                  Text(message, textAlign: TextAlign.left, style: AppConstants.customTextStyle(14, myColors.greyTxt, FontWeight.w500)),
                   SizedBox(height: 20),
                   // Action Buttons
                   Row(
@@ -403,8 +379,7 @@ class DashboardHelpers {
                           FocusScope.of(context).unfocus();
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           child: Text(
                             'Close',
                             style: AppConstants.customTextStyle(16, Colors.black, FontWeight.w600),
@@ -431,47 +406,97 @@ class DashboardHelpers {
     );
   }
 
-  static showCustomAnimatedDialog(
-      {required BuildContext context, required Widget child, double? height}) {
-    showGeneralDialog(
+
+  static Future<bool?> showConfirmDialog({
+    required BuildContext context,
+    String title = 'Please Confirm',
+    String message = 'Are you sure you want to proceed?',
+    String confirmText = 'CONFIRM',
+    String cancelText = 'CANCEL',
+    double? height,
+    Function? onCancel,
+    Function? onSubmit
+  }) {
+    return showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
       barrierLabel: "Dismiss",
       barrierColor: Colors.black.withOpacity(0.5),
-      // Background dimming
-      transitionDuration: Duration(milliseconds: 200),
-      // Animation duration
+      transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (context, anim1, anim2) {
         return Center(
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: height == null
-                ? height
-                : MediaQuery.of(context).size.height / 1.8,
-            padding: EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width * 0.85,
+            height: height ?? MediaQuery.of(context).size.height * 0.35,
+            padding: const EdgeInsets.all(25),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26,
-                  blurRadius: 10,
-                  spreadRadius: 2,
+                  blurRadius: 15,
+                  spreadRadius: 1,
                 ),
               ],
             ),
             child: Material(
               type: MaterialType.transparency,
-              child: child,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.warning_rounded, size: 50, color: Colors.amber),
+                  const SizedBox(height: 15),
+                  Text(title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false); // Return false for cancel
+                          if (onCancel != null) onCancel();
+                        },
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size(120, 45),
+                        ),
+                        child: Text(cancelText, style: const TextStyle(fontSize: 16)),
+                      ),
+                      ElevatedButton(
+                        onPressed: (){
+                          Navigator.of(context).pop(true); // Return true for confirm
+                          if (onSubmit != null) onSubmit();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade100,
+                          foregroundColor: Colors.green,
+                          minimumSize: const Size(120, 45),
+                          elevation: 0,
+                        ),
+                        child: Text(confirmText, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
       transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
-          scale: anim1.value,
+          scale: Curves.easeOutCubic.transform(anim1.value),
           child: Opacity(
-            opacity: anim1.value,
+            opacity: Curves.easeOutCubic.transform(anim1.value),
             child: child,
           ),
         );
@@ -479,12 +504,7 @@ class DashboardHelpers {
     );
   }
 
-  static Future<dynamic> showBottomDialog(
-      {required BuildContext context,
-      bool? dragable,
-      bool? dismissible,
-      double? height,
-      required Widget child}) {
+  static Future<dynamic> showBottomDialog({required BuildContext context, bool? dragable, bool? dismissible, double? height, required Widget child}) {
     return showModalBottomSheet(
       context: context,
       enableDrag: dragable ?? true,
@@ -531,12 +551,9 @@ class DashboardHelpers {
     }
   }
 
-
-
   static String formatTime24Hour(TimeOfDay time) {
     final String hour = time.hour.toString().padLeft(2, '0'); // Ensure 2 digits
-    final String minute =
-        time.minute.toString().padLeft(2, '0'); // Ensure 2 digits
+    final String minute = time.minute.toString().padLeft(2, '0'); // Ensure 2 digits
     return '$hour:$minute';
   }
 
@@ -566,8 +583,7 @@ class DashboardHelpers {
             children: [
               // Action Bar
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -640,8 +656,7 @@ class DashboardHelpers {
     return pickedDate;
   }
 
-  static Future<TimeOfDay?> pickTime(
-      BuildContext context, TimeOfDay? initialTime) async {
+  static Future<TimeOfDay?> pickTime(BuildContext context, TimeOfDay? initialTime) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
@@ -719,8 +734,7 @@ class DashboardHelpers {
     }
   }
 
-  static Future<void> openNumber(
-      {required String number, bool isMessage = false}) async {
+  static Future<void> openNumber({required String number, bool isMessage = false}) async {
     final uri = isMessage
         ? Uri(scheme: 'sms', path: number) // Open message app
         : Uri(scheme: 'tel', path: number); // Open dial pad
@@ -732,14 +746,12 @@ class DashboardHelpers {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchLatLngs(
-      List<String> zipCodes) async {
+  static Future<List<Map<String, dynamic>>> fetchLatLngs(List<String> zipCodes) async {
     const apiKey = 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY';
     List<Map<String, dynamic>> coordinates = [];
 
     for (String zipCode in zipCodes) {
-      final url =
-          'https://maps.googleapis.com/maps/api/geocode/json?address=$zipCode&key=$apiKey';
+      final url = 'https://maps.googleapis.com/maps/api/geocode/json?address=$zipCode&key=$apiKey';
 
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -775,12 +787,10 @@ class DashboardHelpers {
     }
   }
 
-
   static String removeSpecialCharacters(String input) {
     // Replace all non-alphanumeric characters (except spaces) with an empty string
     return input.replaceAll(RegExp(r'[^\w\s]'), '');
   }
-
 
   static Future<void> saveUser(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
@@ -804,11 +814,13 @@ class DashboardHelpers {
   }
 
   static UserModel? currentUser;
+
   static navigationUser(BuildContext context) {
-    var ap=context.read<AuthProvider>();
+    var ap = context.read<AuthProvider>();
     if (ap.isAuthenticated && ap.user != null) {
       currentUser = ap.user;
-      if (currentUser?.roleId != null) {  // ✅ Added null check
+      if (currentUser?.roleId != null) {
+        // ✅ Added null check
         switch (currentUser!.roleId) {
           case 2:
             Navigator.pushReplacement(
@@ -834,21 +846,17 @@ class DashboardHelpers {
       } else {
         debugPrint("User roleId is null!");
       }
+    } else {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
     }
-    else{
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
-    }
-
   }
 
   static void setToken(String? s) {
     //when login
-    if(AppConstants.token==''){
-      setString('token',s??'');
-      AppConstants.token=s??'';
+    if (AppConstants.token == '') {
+      setString('token', s ?? '');
+      AppConstants.token = s ?? '';
       debugPrint('Token has set');
     }
   }
-
 }
-
