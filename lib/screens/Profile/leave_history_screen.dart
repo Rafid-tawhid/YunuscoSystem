@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/leave_data_model.dart';
 
@@ -27,10 +29,14 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leave Applications'),
+
+        title:  Text('Leave Applications',style: customTextStyle(18, Colors.white, FontWeight.w600),),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.blue.shade800,
+        backgroundColor: myColors.primaryColor,
+        iconTheme: IconThemeData(
+          color: Colors.white, // Custom color for this AppBar's icons
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -62,13 +68,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add new leave application
-        },
-        backgroundColor: Colors.blue.shade800,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+
     );
   }
 
@@ -118,10 +118,10 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
               children: [
                 Text(
                   leave.leavePolicyType ?? 'Unknown Leave Type',
-                  style: const TextStyle(
+                  style:  TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+                    color: myColors.primaryColor,
                   ),
                 ),
                 Container(

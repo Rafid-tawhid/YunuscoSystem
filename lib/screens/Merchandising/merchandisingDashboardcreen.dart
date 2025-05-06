@@ -11,6 +11,8 @@ import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_valu
 import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart.dart';
 
 import '../../models/buyer_wise_value_model.dart';
+import '../../utils/colors.dart';
+import '../../utils/constants.dart';
 import 'buyer_order_Screen.dart';
 import 'costing_approval.dart';
 
@@ -32,7 +34,14 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Merchandising'),
+      appBar: AppBar(
+        title: Text(
+          'Merchandising',
+          style: customTextStyle(18, Colors.white, FontWeight.w600),
+        ),
+        centerTitle: true,
+        backgroundColor: myColors.primaryColor,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: GridView.count(
         padding: const EdgeInsets.all(16),

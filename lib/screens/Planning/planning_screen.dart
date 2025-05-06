@@ -4,6 +4,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
 import '../../providers/planning_provider.dart';
+import '../../utils/constants.dart';
 
 class PlanningScreen extends StatefulWidget {
 
@@ -29,9 +30,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Planning Screen',),
-        backgroundColor: Colors.deepPurple.withOpacity(.2),
-        elevation: 0,
+        title: Text(
+          'Planning Screen',
+          style: customTextStyle(18, Colors.white, FontWeight.w600),
+        ),
+        centerTitle: true,
+        backgroundColor: myColors.primaryColor,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -51,11 +56,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: myColors.primaryColor,
-        child: Icon(Icons.add, color: Colors.white),
-        onPressed: () => _addNewItem(context),
-      ),
+
     );
   }
 
@@ -105,6 +106,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
   Widget _buildListItem(Map<String, dynamic> item, int index) {
     return Card(
       elevation: 1,
+      color: Colors.white,
       margin: EdgeInsets.symmetric(vertical: 4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -215,11 +217,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
     // Implement item details view
     print('Selected item: $item');
     DashboardHelpers.showAlert(msg: 'No Data Found');
-  }
-
-  void _addNewItem(BuildContext context) {
-    // Implement add new item functionality
-    print('Add new item');
   }
 }
 

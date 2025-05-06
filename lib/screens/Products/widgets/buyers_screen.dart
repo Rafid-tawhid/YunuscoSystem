@@ -35,11 +35,83 @@ class _BuyersScreenState extends State<BuyersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        centerTitle: true,
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
+        title: Consumer<ProductProvider>(
+          builder: (context, provider, _) => Text(
+            provider.isSelectCat ? 'Categories' : 'Buyers',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              var provider=context.read<ProductProvider>();
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  // Position the menu below the button
+                  MediaQuery.of(context).size.width - 160, // Right offset
+                  80.0, // Top offset (adjust based on your app bar height)
+                  MediaQuery.of(context).size.width, // Left offset
+                  0, // Bottom offset
+                ),
+                items: [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Icon(Icons.check, color: provider.isSelectCat ? Colors.green : Colors.transparent),
+                        SizedBox(width: 8),
+                        Text('Categories'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Row(
+                      children: [
+                        Icon(Icons.check, color: !provider.isSelectCat ? Colors.green : Colors.transparent),
+                        SizedBox(width: 8),
+                        Text('Buyers'),
+                      ],
+                    ),
+                  ),
+                ],
+                elevation: 8.0,
+              ).then((value) {
+                if (value != null) {
+                  // Handle menu item selection
+
+                  debugPrint('This is value ren $value');
+                  switch (value) {
+                    case 1:
+                      provider.setSelector(true);
+                      break;
+                    case 2:
+                      provider.setSelector(false);
+                      break;
+                  }
+                }
+              });
+            },
+            icon: Icon(Icons.menu, color: Colors.white),
+          )
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
             // App Header
-            ProductScreenHeader(),
+            // ProductScreenHeader(),
             // Category List
             Expanded(
               child: Consumer<ProductProvider>(

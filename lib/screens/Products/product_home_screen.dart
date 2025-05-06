@@ -19,8 +19,12 @@ class ProductHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Production Menu'),
+        title:  Text('Production Menu',style: customTextStyle(18, Colors.white, FontWeight.w600),),
         centerTitle: true,
+        backgroundColor: myColors.primaryColor,
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -56,7 +60,7 @@ class ProductHomeScreen extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [
                       colorPrimaryMain,
-                      Colors.purpleAccent.shade200,
+                      Color(0XFF260378),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(20),
@@ -90,24 +94,13 @@ class ProductHomeScreen extends StatelessWidget {
                         children: [
                           Icon(
                             index == 0 ? Icons.assessment : Icons.people,
-                            size: 40,
+                            size: 44,
                             color: Colors.white,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             _list[index],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 2,
-                                  color: Colors.black26,
-                                  offset: Offset(1, 1),
-                                ),
-                              ],
-                            ),
+                            style:customTextStyle(18, Colors.white, FontWeight.w500),
                             textAlign: TextAlign.center,
                           ),
                         ],

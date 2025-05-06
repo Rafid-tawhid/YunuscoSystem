@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_attendance_card.dart';
+import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 class AttendanceReportScreen extends StatefulWidget {
   const AttendanceReportScreen({super.key});
@@ -74,9 +76,13 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Employee Attendance Report'),
+        title:  Text('Employee Attendance Report',style: customTextStyle(18, Colors.white, FontWeight.w600),),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: myColors.primaryColor,
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -144,18 +150,14 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                 child: ElevatedButton(
                   onPressed: _searchAttendance,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: myColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
+                  child:  Text(
                     'Find Attendance',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: customTextStyle(16, Colors.white, FontWeight.w500),
                   ),
                 ),
               ),

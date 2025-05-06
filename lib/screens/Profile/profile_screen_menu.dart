@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../utils/colors.dart';
+import '../HR&PayRoll/performence_screen.dart';
 import 'employee_attendance.dart';
 import 'leave_history_screen.dart';
 
@@ -15,42 +17,38 @@ class ProfileScreenMenu extends StatefulWidget {
 }
 
 class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
-  List<Color> cardColors = [
-    Color(0xFFE3F2FD), // Light Blue
-    Color(0xFFE8F5E9), // Light Green
-    Color(0xFFFFF8E1), // Light Amber
-    Color(0xFFF3E5F5), // Light Purple
-    Color(0xFFFFEBEE), // Light Red
-    Color(0xFFE0F7FA), // Light Cyan
+
+
+  final List<Color> cardColors = [
+    Color(0xFFFCE4EC), // Light Pink (for leave)
+    Color(0xFFE1F5FE), // Light Blue (for history)
+    Color(0xFFE8F5E9), // Light Green (for performance)
+    Color(0xFFFFF8E1), // Light Amber (for attendance)
   ];
 
-  List<Color> iconColors = [
-    Color(0xFFE53935), // Red
-    Color(0xFF00ACC1), // Teal
-    Color(0xFF1E88E5), // Blue
+  final List<Color> iconColors = [
+    Color(0xFFEC407A), // Pink
+    Color(0xFF039BE5), // Blue
     Color(0xFF43A047), // Green
-    Color(0xFFFB8C00), // Orange
-    Color(0xFF8E24AA), // Purple
+    Color(0xFFFFA000), // Amber
   ];
 
-  List<Map<String, dynamic>> menuList = [
-    {
-      "code": 1,
-      "name": "Self Leave"
-    },
-    {
-      "code": 2,
-      "name": "Leave\nHistory"
-    },
-    {
-      "code": 3,
-      "name": "Performance"
-    },
-    {
-      "code": 4,
-      "name": "Attendance\nHistory"
-    },
+  final List<IconData> menuIcons = [
+    Icons.airplanemode_active, // For Self Leave
+    Icons.history,             // For Leave History
+    Icons.trending_up,         // For Performance
+    Icons.calendar_today,     // For Attendance History
   ];
+
+  // Menu list with all properties
+  late List<Map<String, dynamic>> menuList = [];
+
+
+  @override
+  void initState() {
+    setMenuList();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,14 +58,8 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
         iconTheme: IconThemeData(
           color: Colors.white, // Your primary color
         ),
-        actionsIconTheme: IconThemeData(
-            color: Colors.white
-        ),
-        title: Text('Dashboard',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24)),
+        actionsIconTheme: IconThemeData(color: Colors.white),
+        title: Text('Dashboard', style: customTextStyle(20, Colors.white, FontWeight.w600)),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
         elevation: 10,
@@ -97,7 +89,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
-            final iconData = _getDepartmentIcon(index);
+            final iconData = menu['icon'];
             return Container(
               decoration: BoxDecoration(
                 color: cardColors[colorIndex],
@@ -157,45 +149,58 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
           },
         ),
       ),
-
     );
   }
 
-// Helper function to assign icons
-  IconData _getDepartmentIcon(int index) {
-
-    if(index==0){
-      return Icons.leave_bags_at_home_sharp;
-    }
-    else if(index==1){
-      return Icons.history_outlined;
-    }
-    else if(index==2){
-      return Icons.add_chart_outlined;
-    }
-    else if(index==3){
-      return Icons.history_edu;
-    }
-
-    return Icons.work_outlined;
-  }
 
   void goToScreen(index) {
     debugPrint('This is called ${index}');
     if (index == 0) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>LeaveApplicationScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveApplicationScreen()));
     }
     if (index == 1) {
-     //
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>LeaveHistoryScreen()));
+      //
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
     }
     if (index == 2) {
-      DashboardHelpers.showAlert(msg: 'No Data');
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
     if (index == 3) {
       //
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>AttendanceReportScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));
     }
+  }
 
+  void setMenuList() {
+     menuList = [
+      {
+        "code": 1,
+        "name": "Self Leave",
+        "cardColor": cardColors[0],
+        "iconColor": iconColors[0],
+        "icon": menuIcons[0],
+      },
+      {
+        "code": 2,
+        "name": "Leave\nHistory",
+        "cardColor": cardColors[1],
+        "iconColor": iconColors[1],
+        "icon": menuIcons[1],
+      },
+      {
+        "code": 3,
+        "name": "Performance",
+        "cardColor": cardColors[2],
+        "iconColor": iconColors[2],
+        "icon": menuIcons[2],
+      },
+      {
+        "code": 4,
+        "name": "Attendance\nHistory",
+        "cardColor": cardColors[3],
+        "iconColor": iconColors[3],
+        "icon": menuIcons[3],
+      },
+    ];
   }
 }
