@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -57,8 +58,6 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
         child: Consumer<InventoryPorvider>(builder: (context,provider,_)=>Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildSummaryCards(provider),
-            SizedBox(height: 24),
             _buildStockMovementChart(provider),
             SizedBox(height: 24),
             _buildInventoryTable(provider),
@@ -98,7 +97,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
         ),
         SizedBox(width: 12),
         _buildSummaryCard(
-          title: "Current Stock",
+          title: "Current",
           value: totalBalance.toStringAsFixed(0),
           icon: Icons.inventory,
           color: Colors.blue,
@@ -141,12 +140,11 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 8),
               Text(
                 value,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[800],
                 ),
@@ -159,29 +157,22 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
   }
 
   Widget _buildStockMovementChart(InventoryPorvider pro) {
-    return Card(
-      elevation: 3,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              "Stock Movement",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            "Stock Movement",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
             ),
-            SizedBox(height: 16),
-
-          ],
-        ),
+          ),
+          SizedBox(height: 12,),
+          _buildSummaryCards(pro),
+        ],
       ),
     );
   }
@@ -198,52 +189,96 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              "Inventory Details",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Inventory Details",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                Text(DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'dd-MMM-yyyy'))
+              ],
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 12),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 24,
-                columns: [
-                  DataColumn(label: Text("Store Type")),
-                  DataColumn(label: Text("Currency"), numeric: true),
-                  DataColumn(label: Text("In Qty"), numeric: true),
-                  DataColumn(label: Text("Out Qty"), numeric: true),
-                  DataColumn(label: Text("Balance"), numeric: true),
-                  DataColumn(label: Text("Value"), numeric: true),
-                ],
-                rows: pro.inventoryStockList.map((item) {
-                  return DataRow(cells: [
-                    DataCell(Text(item.storeType ?? 'Unknown')),
-                    DataCell(Text(item.currency ?? '-')),
-                    DataCell(Text(
-                      (item.goodsINQty ?? 0).toStringAsFixed(0),
-                      style: TextStyle(color: Colors.green[700]),
-                    )),
-                    DataCell(Text(
-                      (item.goodsOutQty ?? 0).toStringAsFixed(0),
-                      style: TextStyle(color: Colors.red[700]),
-                    )),
-                    DataCell(Text(
-                      (item.balanceQty ?? 0).toStringAsFixed(0),
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )),
-                    DataCell(Text(
-                      '${item.currency} ${(item.balanceValue ?? 0).toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue[700],
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.grey[200]!),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columnSpacing: 16,
+                      horizontalMargin: 8,
+                      headingRowHeight: 36,
+                      dataRowHeight: 40,
+                      headingTextStyle: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue[800],
                       ),
-                    )),
-                  ]);
-                }).toList(),
+                      dataTextStyle: TextStyle(
+                        fontSize: 12,
+                      ),
+                      columns: [
+                        DataColumn(label: _buildHeader("Store")),
+                        DataColumn(label: _buildHeader("Currency"), numeric: true),
+                        DataColumn(label: _buildHeader("In"), numeric: true),
+                        DataColumn(label: _buildHeader("Out"), numeric: true),
+                        DataColumn(label: _buildHeader("Balance"), numeric: true),
+                        DataColumn(label: _buildHeader("Value"), numeric: true),
+                      ],
+                      rows: pro.inventoryStockList.map((item) {
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(
+                              item.storeType?.replaceAll("Store", "").trim() ?? '--',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            )),
+                            DataCell(Text(item.currency ?? '-')),
+                            DataCell(Text(
+                              (item.goodsINQty ?? 0).toStringAsFixed(0),
+                              style: TextStyle(
+                                color: Colors.green[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )),
+                            DataCell(Text(
+                              (item.goodsOutQty ?? 0).toStringAsFixed(0),
+                              style: TextStyle(
+                                color: Colors.red[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )),
+                            DataCell(Text(
+                              (item.balanceQty ?? 0).toStringAsFixed(0),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[800],
+                              ),
+                            )),
+                            DataCell(Text(
+                              '${(item.balanceValue ?? 0).toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[700],
+                              ),
+                            )),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -285,6 +320,16 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
     // Implement export functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Exporting inventory data...")),
+    );
+  }
+
+  Widget _buildHeader(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 4),
+      child: Text(
+        text,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 }
