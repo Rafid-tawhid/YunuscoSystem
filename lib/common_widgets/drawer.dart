@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import '../helper_class/dashboard_helpers.dart';
+import '../providers/auth_provider.dart';
+import '../screens/login_screen.dart';
 
 
 class MyDrawer extends StatelessWidget {
@@ -16,9 +20,10 @@ class MyDrawer extends StatelessWidget {
          if(DashboardHelpers.currentUser!=null) DrawerHeader(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.blue.shade400, Colors.purple.shade400],
+                colors: [
+                  Color(0xFF000044),
+                  Color(0xFF1A0033), // Adds a subtle purple tone
+                ],
               ),
             ),
             child: Column(
@@ -89,12 +94,8 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.exit_to_app, color: Colors.red),
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () async {
-
-              // await showLogoutAlert(context);
-              // // Handle logout
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   const SnackBar(content: Text('Logging out...')),
-              // );
+              await context.read<AuthProvider>().logout();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
             },
           ),
         ],
