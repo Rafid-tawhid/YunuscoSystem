@@ -105,14 +105,14 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           const Spacer(),
-                          Switch(
-                            value: _isFullDay,
-                            onChanged: (value) {
-                              setState(() {
-                                _isFullDay = value;
-                              });
-                            },
-                          ),
+                          // Switch(
+                          //   value: _isFullDay_isFullDay,
+                          //   onChanged: (value) {
+                          //     setState(() {
+                          //       _isFullDay = value;
+                          //     });
+                          //   },
+                          // ),
                           const SizedBox(width: 8),
                           Chip(
                             backgroundColor: Colors.grey.shade300,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/inventory_stock_model.dart';
 
@@ -30,6 +31,9 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text('Inventory', style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
         centerTitle: true,
         elevation: 0,
         flexibleSpace: Container(
@@ -37,7 +41,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.indigo[800]!, Colors.purple[600]!],
+              colors: [Colors.indigo[800]!,myColors.primaryColor],
             ),
           ),
         ),

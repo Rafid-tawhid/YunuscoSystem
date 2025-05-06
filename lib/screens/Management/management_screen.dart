@@ -137,7 +137,7 @@ class ProductionDataSection extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             'Summary This Month',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
           ),
         ),
         Row(
