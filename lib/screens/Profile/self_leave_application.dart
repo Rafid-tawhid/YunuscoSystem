@@ -113,6 +113,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                           //     });
                           //   },
                           // ),
+                          //
                           const SizedBox(width: 8),
                           Chip(
                             backgroundColor: Colors.grey.shade300,
