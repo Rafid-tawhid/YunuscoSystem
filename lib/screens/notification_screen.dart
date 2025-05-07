@@ -1,72 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/notofication_provider.dart';
 
 import '../models/notification_model.dart';
 
-class NotificationsScreen extends StatelessWidget {
-  final List<NotificationModel> notifications = [
-    NotificationModel(
-      employeeIdCardNo: "EMP-001",
-      applaiedForEmployee: "John Doe",
-      departmentName: "Engineering",
-      leaveFromDate: "2023-06-15",
-      leaveToDate: "2023-06-18",
-      leaveCreationDate: "2023-06-10",
-      leaveType: "Annual Leave",
-      reasons: "Family vacation",
-      dayCount: 3,
-      leaveStatus: "Pending",
-      appliedByName: "John Doe",
-    ),
-    NotificationModel(
-      employeeIdCardNo: "EMP-002",
-      applaiedForEmployee: "Jane Smith",
-      departmentName: "Marketing",
-      leaveFromDate: "2023-06-20",
-      leaveToDate: "2023-06-22",
-      leaveCreationDate: "2023-06-12",
-      leaveType: "Sick Leave",
-      reasons: "Medical appointment",
-      dayCount: 2,
-      leaveStatus: "Approved",
-      appliedByName: "Jane Smith",
-    ),
-    NotificationModel(
-      employeeIdCardNo: "EMP-003",
-      applaiedForEmployee: "Robert Johnson",
-      departmentName: "HR",
-      leaveFromDate: "2023-06-25",
-      leaveToDate: "2023-06-30",
-      leaveCreationDate: "2023-06-18",
-      leaveType: "Emergency Leave",
-      reasons: "Family emergency",
-      dayCount: 5,
-      leaveStatus: "Rejected",
-      appliedByName: "Robert Johnson",
-    ),
-  ];
+class NotificationsScreen extends StatefulWidget {
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((v) {
+      getAllNotifications();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        centerTitle: true,
-      ),
-      body: notifications.isEmpty
-          ? const Center(child: Text('No notification found'))
-          : ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return _buildNotificationCard(notification);
-        },
-      ),
-    );
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text('Notifications'),
+          centerTitle: true,
+        ),
+        body: Consumer<NotificationProvider>(
+          builder: (context, pro, _) => pro.isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : pro.allNotification.isEmpty
+                  ? const Center(child: Text('No notification found'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: pro.allNotification.length,
+                      itemBuilder: (context, index) {
+                        final notification = pro.allNotification[index];
+                        return _buildNotificationCard(notification);
+                      },
+                    ),
+        ));
   }
-
 
   Widget _buildNotificationCard(NotificationModel notification) {
     return Card(
@@ -115,7 +93,7 @@ class NotificationsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'From: ${_formatDate(notification.leaveFromDate)} '
-                  'To: ${_formatDate(notification.leaveToDate)}',
+              'To: ${_formatDate(notification.leaveToDate)}',
             ),
             const SizedBox(height: 8),
             if (notification.reasons != null && notification.reasons!.isNotEmpty)
@@ -173,4 +151,8 @@ class NotificationsScreen extends StatelessWidget {
     }
   }
 
+  void getAllNotifications() async {
+    var np = context.read<NotificationProvider>();
+    np.getAllNotification(DashboardHelpers.currentUser!.iDnum.toString());
+  }
 }

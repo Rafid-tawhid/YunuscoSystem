@@ -340,7 +340,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
   Future<void> getAllData(BuildContext context) async {
     try {
       final mp = context.read<MerchandisingProvider>();
-      // Use Future.microtask if you need to avoid direct execution in initState
+      // Use Future.micro task if you need to avoid direct execution in initState
       await mp.getCostingApprovalList('1212'); // Consider using a real user ID
     } catch (e) {
       debugPrint('Error loading data: $e');

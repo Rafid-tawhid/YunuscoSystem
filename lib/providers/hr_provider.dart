@@ -3,6 +3,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/leave_data_model.dart';
 import '../models/leave_model.dart';
@@ -14,7 +15,7 @@ class HrProvider extends ChangeNotifier{
   List<Map<String,dynamic>> get hrMenuList =>_hrMenuList;
 
   Future<bool> getHRMenuList() async{
-    var data=await apiService.getData('api/HrApi/AllDepartment');
+    var data=await apiService.getData2('${AppConstants.liveUrl}api/HrApi/AllDepartment');
     if(data!=null){
       _hrMenuList.clear();
       for(var i in data['returnvalue']){
@@ -127,7 +128,7 @@ class HrProvider extends ChangeNotifier{
   Future<void> getLeaveApplicationInfo() async{
 
     setLoading(true);
-     var data=await apiService.getData2('http://192.168.15.6:8090/api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
+     var data=await apiService.getData('api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
      setLoading(false);
 
     if(data!=null){
@@ -140,7 +141,7 @@ class HrProvider extends ChangeNotifier{
   }
 
   Future<bool> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate, String reason,LeaveBalance leaveType) async{
-    var data=await apiService.postData2('http://192.168.15.6:8090/api/Leave/SubmitLeaveRequest', {
+    var data=await apiService.postData('api/Leave/SubmitLeaveRequest', {
       "UserId" : DashboardHelpers.currentUser!.userId,
       "IdCardNo": DashboardHelpers.currentUser!.iDnum,
       "LeaveFromDate": DashboardHelpers.convertDateTime(fromDate.toString(),pattern: 'yyyy-MM-dd'),

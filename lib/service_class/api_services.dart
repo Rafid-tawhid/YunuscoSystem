@@ -73,7 +73,8 @@ class ApiService {
   Future<dynamic> postData(String endpoint, dynamic body) async {
     try {
       // Perform the POST request
-      debugPrint('URL: ${AppConstants.baseUrl}$endpoint');
+      debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint');
+      debugPrint('My Sending Data: $body');
 
       final response = await client.post(
         Uri.parse('${AppConstants.baseUrl}$endpoint/'),

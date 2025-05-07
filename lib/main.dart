@@ -11,31 +11,32 @@ import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
+import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/providers/planning_provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/home_page.dart';
+import 'package:yunusco_group/service_class/notofication_helper.dart';
 import 'package:yunusco_group/utils/server_key.dart';
 
 import 'launcher_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(Platform.isAndroid){
+  if (Platform.isAndroid) {
     await Firebase.initializeApp();
     await setupNotificationChannel();
   }
 
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => MerchandisingProvider()),
-        ChangeNotifierProvider(create: (_) => ManagementProvider()),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
-        ChangeNotifierProvider(create: (_) => InventoryPorvider()),
-        ChangeNotifierProvider(create: (_) => PlanningProvider()),
-        ChangeNotifierProvider(create: (_) => HrProvider()),
-      ],
-      child: MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => AuthProvider()),
+    ChangeNotifierProvider(create: (_) => MerchandisingProvider()),
+    ChangeNotifierProvider(create: (_) => ManagementProvider()),
+    ChangeNotifierProvider(create: (_) => ProductProvider()),
+    ChangeNotifierProvider(create: (_) => InventoryPorvider()),
+    ChangeNotifierProvider(create: (_) => PlanningProvider()),
+    ChangeNotifierProvider(create: (_) => HrProvider()),
+    ChangeNotifierProvider(create: (_) => NotificationProvider()),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -45,16 +46,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      builder: EasyLoading.init(),
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: LauncherScreen()
-    );
+        title: 'Flutter Demo',
+        navigatorKey: NavigationService.navigatorKey,
+        builder: EasyLoading.init(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: LauncherScreen());
   }
-
 }
 
 Future<void> setupNotificationChannel() async {
@@ -70,11 +70,8 @@ Future<void> setupNotificationChannel() async {
     importance: Importance.high,
   );
 
-  await FlutterLocalNotificationsPlugin()
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  await FlutterLocalNotificationsPlugin().resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
 
   // var server_key=await ServerKey.server_token();
   // debugPrint('server_key ${server_key}');
-
 }

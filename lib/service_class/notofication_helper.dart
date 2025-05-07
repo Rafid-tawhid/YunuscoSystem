@@ -1,15 +1,24 @@
 import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/notofication_provider.dart';
+import 'package:yunusco_group/screens/notification_screen.dart';
+
+import '../screens/login_screen.dart';
 import 'api_services.dart';
 
 
+class NavigationService {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+}
 
 class NotificationServices {
 
@@ -124,7 +133,7 @@ class NotificationServices {
     // Implement your API call here
 
     ApiService apiService=ApiService();
-   var res=await apiService.postData('login/CheckDeviceToken',{
+   var res=await apiService.postData('api/user/CheckDeviceToken',{
       "roleId": DashboardHelpers.currentUser!.roleId,
       "FirebaseDeviceToken": token,
       "Userid": DashboardHelpers.currentUser!.userId
@@ -138,6 +147,12 @@ class NotificationServices {
   static void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('Foreground message Title: ${message.notification?.title}');
     debugPrint('Notification Data: ${message.data}');
+
+    //count increase
+    final context = NavigationService.navigatorKey.currentContext;
+    var np=context!.read<NotificationProvider>();
+    np.addCount();
+
     _showNotification(message); // Your existing notification display logic
   }
 
@@ -210,17 +225,28 @@ class NotificationServices {
       );
     }
   }
-
   static void _handleNotificationClick(RemoteMessage message) {
     debugPrint("Notification clicked with data: ${message.data}");
-    // Add your navigation logic here based on message data
+    // Extract navigation route from payload or use default
+    _navigateToRoute(message.data);
   }
 
   static void _handleNotificationClickFromTap(String? payload) {
     if (payload != null) {
       final data = jsonDecode(payload) as Map<String, dynamic>;
       debugPrint("Notification clicked with payload: $data");
-      // Add your navigation logic here based on payload
+      _navigateToRoute(data);
     }
   }
+
+  static void _navigateToRoute(Map<String, dynamic> data) {
+    // Use navigatorKey from your MaterialApp
+    final context = NavigationService.navigatorKey.currentContext;
+    if (context == null) return;
+
+    Navigator.push(context, CupertinoPageRoute(builder: (context) => NotificationsScreen()));
+  }
 }
+
+
+

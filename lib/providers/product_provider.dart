@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yunusco_group/models/buyer_wise_material_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 class ProductProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
@@ -89,7 +90,7 @@ class ProductProvider extends ChangeNotifier{
   Future<bool> getProductionSummary(String month,String year,String section) async {
 
     setLoading(true);
-    var data=await apiService.getData('api/Production/ProductionSummary?section=$section&month=$month&year=$year');
+    var data=await apiService.getData2('${AppConstants.liveUrl}api/Production/ProductionSummary?section=$section&month=$month&year=$year');
     setLoading(false);
     if(data!=null){
       _productionSummaryList.clear();

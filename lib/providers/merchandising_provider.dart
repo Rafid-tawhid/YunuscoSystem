@@ -16,7 +16,7 @@ class MerchandisingProvider extends ChangeNotifier{
 
   Future<void> getAllMerchandisingInfo() async {
     debugPrint('This is data calling...}');
-    var data= await apiService.getData2('${AppConstants.baseUrl}Merchandising/MerManagementReport/BuyerWiseValue');
+    var data= await apiService.getData2('${AppConstants.liveUrl}Merchandising/MerManagementReport/BuyerWiseValue');
     debugPrint('This is data ${data}');
     if(data!=null){
       _buyerWiseValueModel=BuyerWiseValueModel.fromJson(data['returnvalue']);
@@ -31,7 +31,7 @@ class MerchandisingProvider extends ChangeNotifier{
   List<Map<String,dynamic>> get allBuyerOrderList=>_allBuyerOrderList;
 
   Future<bool> getAllBuyerOrders() async{
-    var data=await apiService.getData('api/Merchandising/GetBuyerOrder');
+    var data=await apiService.getData2('${AppConstants.liveUrl}api/Merchandising/GetBuyerOrder');
     if(data!=null){
       _allBuyerOrderList.clear();
       for(var i in data['returnvalue']){
@@ -79,7 +79,7 @@ class MerchandisingProvider extends ChangeNotifier{
   Future<bool> getCostingApprovalList(String uId) async{
     try {
       setLoading(true);
-      var data = await apiService.getData2('http://192.168.15.6:8085/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=615');
+      var data = await apiService.getData2('${AppConstants.liveUrl}Merchandising/Merchandising/GetCostingApprovalListAPI?userId=615');
       if(data != null) {
         _costingApprovalList.clear();
         _costingApprovalFilterList.clear();

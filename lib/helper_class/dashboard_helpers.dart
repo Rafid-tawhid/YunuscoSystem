@@ -853,16 +853,6 @@ class DashboardHelpers {
               context,
               MaterialPageRoute(builder: (context) => HomeScreen()),
             );
-          // case 31:
-          // // Navigate to IEEntryScreenOne();
-          //   break;
-          // case 42:
-          //
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => HomeScreen()),
-          //   );
-          //   break;
           default:
             Navigator.pushReplacement(
               context,
@@ -871,6 +861,7 @@ class DashboardHelpers {
         }
       } else {
         debugPrint("User roleId is null!");
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
       }
     } else {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
