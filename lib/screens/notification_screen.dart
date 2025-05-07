@@ -1,31 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../models/notification_model.dart';
+
 class NotificationsScreen extends StatelessWidget {
-  final List<NotificationItem> notifications = [
-    NotificationItem(
-      title: "Quality Check Approved",
-      description: "Your batch #GAR-2023-456 passed all quality tests",
-      time: DateTime.now().subtract(Duration(minutes: 5)),
-      icon: Icons.verified,
-      color: Colors.green,
-      isRead: false,
+  final List<NotificationModel> notifications = [
+    NotificationModel(
+      employeeIdCardNo: "EMP-001",
+      applaiedForEmployee: "John Doe",
+      departmentName: "Engineering",
+      leaveFromDate: "2023-06-15",
+      leaveToDate: "2023-06-18",
+      leaveCreationDate: "2023-06-10",
+      leaveType: "Annual Leave",
+      reasons: "Family vacation",
+      dayCount: 3,
+      leaveStatus: "Pending",
+      appliedByName: "John Doe",
     ),
-    NotificationItem(
-      title: "New Defect Reported",
-      description: "Stitching issue detected in Batch #GAR-2023-123",
-      time: DateTime.now().subtract(Duration(hours: 2)),
-      icon: Icons.warning_rounded,
-      color: Colors.orange,
-      isRead: true,
+    NotificationModel(
+      employeeIdCardNo: "EMP-002",
+      applaiedForEmployee: "Jane Smith",
+      departmentName: "Marketing",
+      leaveFromDate: "2023-06-20",
+      leaveToDate: "2023-06-22",
+      leaveCreationDate: "2023-06-12",
+      leaveType: "Sick Leave",
+      reasons: "Medical appointment",
+      dayCount: 2,
+      leaveStatus: "Approved",
+      appliedByName: "Jane Smith",
     ),
-    NotificationItem(
-      title: "Daily Summary Ready",
-      description: "View your quality report for May 15, 2023",
-      time: DateTime.now().subtract(Duration(days: 1)),
-      icon: Icons.summarize,
-      color: Colors.blue,
-      isRead: true,
+    NotificationModel(
+      employeeIdCardNo: "EMP-003",
+      applaiedForEmployee: "Robert Johnson",
+      departmentName: "HR",
+      leaveFromDate: "2023-06-25",
+      leaveToDate: "2023-06-30",
+      leaveCreationDate: "2023-06-18",
+      leaveType: "Emergency Leave",
+      reasons: "Family emergency",
+      dayCount: 5,
+      leaveStatus: "Rejected",
+      appliedByName: "Robert Johnson",
     ),
   ];
 
@@ -34,128 +51,126 @@ class NotificationsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Notifications",
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-        actions: [
-          TextButton(
-            child: Text("Mark all read",
-                style: TextStyle(color: Theme.of(context).primaryColor)),
-            onPressed: () {},
-          )
-        ],
+        title: const Text('Notifications'),
+        centerTitle: true,
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  final notification = notifications[index];
-                  return _NotificationCard(notification: notification);
-                },
-                childCount: notifications.length,
-              ),
-            ),
-          ),
-        ],
+      body: notifications.isEmpty
+          ? const Center(child: Text('No notification found'))
+          : ListView.builder(
+        padding: const EdgeInsets.all(8),
+        itemCount: notifications.length,
+        itemBuilder: (context, index) {
+          final notification = notifications[index];
+          return _buildNotificationCard(notification);
+        },
       ),
     );
   }
-}
 
-class _NotificationCard extends StatelessWidget {
-  final NotificationItem notification;
 
-  const _NotificationCard({required this.notification});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildNotificationCard(NotificationModel notification) {
     return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: notification.isRead
-          ? Colors.white
-          : Theme.of(context).cardColor,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {},
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: notification.color.withOpacity(0.2),
-                  shape: BoxShape.circle,
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+      elevation: 2,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  notification.applaiedForEmployee ?? 'Unknown Employee',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-                child: Icon(notification.icon,
-                    color: notification.color, size: 24),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(notification.title,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              color: notification.isRead
-                                  ? Colors.grey[800]
-                                  : Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        ),
-                        Text('2 min ago',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 12)),
-                      ],
-                    ),
-                    SizedBox(height: 4),
-                    Text(notification.description,
-                        style: GoogleFonts.poppins(color: Colors.grey[600])),
-                  ],
-                ),
-              ),
-              if (!notification.isRead) ...[
-                SizedBox(width: 8),
                 Container(
-                  width: 8,
-                  height: 8,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    shape: BoxShape.circle,
+                    color: _getStatusColor(notification.leaveStatus),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    notification.leaveStatus ?? 'Pending',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${notification.leaveType} (${notification.dayCount} days)',
+              style: const TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'From: ${_formatDate(notification.leaveFromDate)} '
+                  'To: ${_formatDate(notification.leaveToDate)}',
+            ),
+            const SizedBox(height: 8),
+            if (notification.reasons != null && notification.reasons!.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Reason:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(notification.reasons!),
+                ],
+              ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Applied by: ${notification.appliedByName ?? 'Unknown'}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                Text(
+                  _formatDate(notification.leaveCreationDate),
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
-}
 
-class NotificationItem {
-  final String title;
-  final String description;
-  final DateTime time;
-  final IconData icon;
-  final Color color;
-  final bool isRead;
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
 
-  NotificationItem({
-    required this.title,
-    required this.description,
-    required this.time,
-    required this.icon,
-    required this.color,
-    this.isRead = false,
-  });
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day}/${date.month}/${date.year}';
+    } catch (e) {
+      return dateString; // Return original if parsing fails
+    }
+  }
+
 }
