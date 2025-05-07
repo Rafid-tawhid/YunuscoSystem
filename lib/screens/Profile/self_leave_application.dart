@@ -131,49 +131,51 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                     const SizedBox(height: 24),
 
                     // Leave Type Dropdown
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Leave Type *',
-                          style: TextStyle(fontSize: 14, color: Colors.black87),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
+                    Consumer<HrProvider>(
+                      builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator(),):Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Leave Type *',
+                            style: TextStyle(fontSize: 14, color: Colors.black87),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: DropdownButtonFormField<LeaveBalance>(
-                            value: _leaveType,
-                            isExpanded: true,
-                            hint: Text('Select Type'),
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
+                          const SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            items: pro.leaveTypeList
-                                .map((type) => DropdownMenuItem(
-                              value: type,
-                              child: Text(
-                                type.policyType,
-                                style: const TextStyle(fontSize: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: DropdownButtonFormField<LeaveBalance>(
+                              value: _leaveType,
+                              isExpanded: true,
+                              hint: Text('Select Type'),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
                               ),
-                            ))
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _leaveType = value;
-                                _fromDate=null;
-                                _toDate=null;
-                              });
-                            },
+                              items: pro.leaveTypeList
+                                  .map((type) => DropdownMenuItem(
+                                value: type,
+                                child: Text(
+                                  type.policyType,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ))
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _leaveType = value;
+                                  _fromDate=null;
+                                  _toDate=null;
+                                });
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 24),
 

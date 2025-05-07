@@ -77,8 +77,8 @@ class _NotificationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       color: notification.isRead
-          ? Theme.of(context).cardColor
-          : Theme.of(context).primaryColor.withOpacity(0.05),
+          ? Colors.white
+          : Theme.of(context).cardColor,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {},
