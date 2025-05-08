@@ -106,7 +106,7 @@ class HrProvider extends ChangeNotifier{
 
   void getPersonalAttendance() async{
     setLoading(true);
-    var data=await apiService.getData('api/HrApi/LeaveHistoryList?EmployeeID=${DashboardHelpers.currentUser!.iDnum}');
+    var data=await apiService.getData('api/HrApi/LeaveHistoryList/${DashboardHelpers.currentUser!.iDnum}');
     setLoading(false);
     if(data!=null){
       _leaveDataList.clear();
