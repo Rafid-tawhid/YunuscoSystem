@@ -106,11 +106,12 @@ class HrProvider extends ChangeNotifier{
 
   void getPersonalAttendance() async{
     setLoading(true);
-    var data=await apiService.getData('api/HrApi/LeaveHistoryList/${DashboardHelpers.currentUser!.iDnum}');
+
+    var data=await apiService.getData('api/Leave/GetRcntPenLevLst/${DashboardHelpers.currentUser!.iDnum}');
     setLoading(false);
     if(data!=null){
       _leaveDataList.clear();
-      for(var i in data){
+      for(var i in data['Results']){
         _leaveDataList.add(LeaveDataModel.fromJson(i));
       }
       notifyListeners();

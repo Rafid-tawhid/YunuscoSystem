@@ -876,4 +876,43 @@ class DashboardHelpers {
       debugPrint('Token has set');
     }
   }
+
+
+
+  static double daysBetween(String dateStr1, String dateStr2) {
+    /**
+     * Calculates days between two date-time strings (supports multiple formats).
+     * Returns fractional days (e.g., 3.75 = 3 days and 18 hours).
+     * Negative if dateStr2 is earlier than dateStr1.
+     */
+
+    // Try common formats (add more if needed)
+    final possibleFormats = [
+      "yyyy-MM-dd HH:mm:ss",
+      "yyyy-MM-dd HH:mm",
+      "yyyy-MM-dd",
+      "MM/dd/yyyy HH:mm:ss",
+      "MM/dd/yyyy HH:mm",
+      "MM/dd/yyyy",
+      "dd-MM-yyyy HH:mm:ss",
+      "dd-MM-yyyy HH:mm",
+      "dd-MM-yyyy",
+    ];
+
+    DateTime? parseDate(String dateStr) {
+      for (final format in possibleFormats) {
+        try {
+          return DateFormat(format).parse(dateStr);
+        } catch (e) {
+          continue;
+        }
+      }
+      throw FormatException("Unrecognized date format: $dateStr");
+    }
+
+    final date1 = parseDate(dateStr1);
+    final date2 = parseDate(dateStr2);
+
+    return date2!.difference(date1!).inSeconds / 86400; // 86400 seconds = 1 day
+  }
 }

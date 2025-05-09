@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -63,7 +64,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
             itemCount: pro.leaveDataList.length,
             itemBuilder: (context, index) {
               final leave = pro.leaveDataList[index];
-              return _buildLeaveCard(leave, context);
+              return _buildLeaveCard(leave);
             },
           ),
         ),
@@ -72,174 +73,181 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
     );
   }
 
-  Widget _buildLeaveCard(LeaveDataModel leave, BuildContext context) {
-    final dateFormat = DateFormat('MMM dd, yyyy');
-    DateTime? fromDate;
-    DateTime? toDate;
 
-    try {
-      if (leave.leaveFromDate != null) {
-        fromDate = DateTime.parse(leave.leaveFromDate!);
-      }
-      if (leave.leaveToDate != null) {
-        toDate = DateTime.parse(leave.leaveToDate!);
-      }
-    } catch (e) {
-      debugPrint('Error parsing date: $e');
-    }
-
-    final duration = fromDate != null && toDate != null
-        ? toDate.difference(fromDate).inDays + 1
-        : 0;
-
-    Color statusColor = Colors.grey;
-    if (leave.status?.toLowerCase() == 'approved') {
-      statusColor = Colors.green;
-    } else if (leave.status?.toLowerCase() == 'rejected') {
-      statusColor = Colors.red;
-    } else if (leave.status?.toLowerCase() == 'pending') {
-      statusColor = Colors.orange;
-    }
-
+  Widget _buildLeaveCard(LeaveDataModel leave) {
     return Card(
-      elevation: 3,
+      elevation: 4,
       color: Colors.white,
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      margin: const EdgeInsets.all(8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  leave.leavePolicyType ?? 'Unknown Leave Type',
-                  style:  TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: myColors.primaryColor,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: statusColor,
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    leave.status ?? 'Unknown',
-                    style: TextStyle(
-                      color: statusColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+          // Header row with employee info
+          Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+               'Employee Id : ${leave.employeeIdCardNo}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            Chip(
+              label: Text(
+                leave.leaveStatus ?? 'Pending',
+                style: const TextStyle(color: Colors.white),),
+                backgroundColor: _getStatusColor(leave.leaveStatus),
+              ),
               ],
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildDateInfo(
-                  icon: Icons.calendar_today,
-                  label: 'From',
-                  date:  leave.leaveFromDate?? 'N/A',
+            const SizedBox(height: 8),
+
+            // Applied for employee (if different)
+            if (leave.applaiedForEmployee != null && leave.applaiedForEmployee != leave.employeeIdCardNo)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  'Applied for: ${leave.applaiedForEmployee}',
+                  style: TextStyle(color: Colors.grey[600]),
                 ),
-                const SizedBox(width: 16),
-                _buildDateInfo(
-                  icon: Icons.calendar_today,
-                  label: 'To',
-                  date: leave.leaveToDate?? 'N/A',
-                ),
-                const Spacer(),
-                Chip(
-                  backgroundColor: Colors.blue.shade50,
-                  label: Text(
-                    '$duration ${duration == 1 ? 'day' : 'days'}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ),
-              ],
+              ),
+
+            // Department info
+            Text(
+              '${leave.departmentName ?? 'No Department'}',
+              style: TextStyle(color: Colors.grey[600]),
             ),
-            const SizedBox(height: 12),
-            if (leave.leaveBalance != null) ...[
-              Row(
+            const Divider(height: 20, thickness: 1),
+
+            // Leave dates
+            _buildInfoRow('Leave Dates',
+                '${_formatDate(leave.leaveFromDate)} to ${_formatDate(leave.leaveToDate)}'),
+
+            // Leave type and days
+            _buildInfoRow('Leave Type',
+                '${leave.leaveType} (${leave.dayCount?.toStringAsFixed(1) ?? '0'} days)'),
+
+            // Leave balances
+            if (leave.sl != null || leave.el != null || leave.cl != null)
+              _buildLeaveBalances(leave.sl, leave.el, leave.cl),
+
+            // Reason for leave
+            if (leave.reasons != null && leave.reasons!.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.account_balance_wallet,
-                      size: 16, color: Colors.grey),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Balance: ${leave.leaveBalance} days',
-                    style: const TextStyle(color: Colors.grey),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Reason:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  Text(leave.reasons!),
                 ],
               ),
-              const SizedBox(height: 8),
-            ],
-            if (leave.reasons?.isNotEmpty ?? false) ...[
-              const Divider(height: 20),
-              const Text(
-                'Reason:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                leave.reasons!,
-                style: const TextStyle(color: Colors.black87),
-              ),
-            ],
+
+            const Divider(height: 20, thickness: 1),
+
+            // Footer with applied/passed by info
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     if (leave.appliedByName != null)
+            //       Text(
+            //         'Applied by: ${leave.appliedByName}',
+            //         style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            //       ),
+            //     if (leave.passedByName != null)
+            //       Text(
+            //         'Approved by: ${leave.passedByName}',
+            //         style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            //       ),
+            //   ],
+            // ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDateInfo({
-    required IconData icon,
-    required String label,
-    required String date,
-  }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: Colors.grey),
-        const SizedBox(width: 4),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+// Helper widget for consistent info rows
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(
-              date,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ],
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(value)),
+        ],
+      ),
     );
+  }
+
+// Helper widget to show leave balances
+  Widget _buildLeaveBalances(num? sl, num? el, num? cl) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 100,
+            child: Text(
+              'Balances:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          if (sl != null) _buildBalanceChip('SL: $sl', Colors.blue),
+          if (el != null) _buildBalanceChip('EL: $el', Colors.green),
+          if (cl != null) _buildBalanceChip('CL: $cl', Colors.orange),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBalanceChip(String text, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: Chip(
+        label: Text(text, style: const TextStyle(fontSize: 12)),
+        backgroundColor: color.withOpacity(0.2),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    );
+  }
+
+// Helper function to format dates
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('MMM dd, yyyy').format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
+// Helper function to get status color
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'pending':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
   }
 
   void getAttendanceHistory() async{
