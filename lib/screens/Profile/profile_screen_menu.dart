@@ -154,7 +154,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
 
 
   void goToScreen(index) {
-    debugPrint('This is called ${index}');
+    debugPrint('This is INDEX ${index}');
     if (index == 0) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveApplicationScreen()));
     }

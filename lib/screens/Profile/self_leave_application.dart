@@ -322,7 +322,16 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
-                          } else {
+                          }
+                          else if(_fromDate!.isAfter(_toDate!)){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Form date ca\'nt be after to date'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                          else {
 
                             final shouldProceed = await DashboardHelpers.showConfirmDialog(
                               context: context,
