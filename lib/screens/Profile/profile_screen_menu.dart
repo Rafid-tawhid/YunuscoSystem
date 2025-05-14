@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -7,6 +8,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../utils/colors.dart';
 import '../HR&PayRoll/performence_screen.dart';
 import 'employee_attendance.dart';
+import 'leave_history.dart';
 import 'leave_history_screen.dart';
 
 class ProfileScreenMenu extends StatefulWidget {
@@ -35,8 +37,8 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
 
   final List<IconData> menuIcons = [
     Icons.airplanemode_active, // For Self Leave
-    Icons.history,             // For Leave History
-    Icons.trending_up,         // For Performance// For Attendance History
+    Icons.trending_up,             // For Leave History
+    Icons.history,         // For Performance// For Attendance History
   ];
 
   // Menu list with all properties
@@ -84,7 +86,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 4,
+          itemCount: 3,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -158,11 +160,11 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveApplicationScreen()));
     }
     if (index == 1) {
-      //
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
     if (index == 2) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
+
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
     }
 
   }
@@ -178,18 +180,18 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
       },
       {
         "code": 2,
-        "name": "Leave\nHistory",
+        "name": "My\nPerformance",
         "cardColor": cardColors[1],
         "iconColor": iconColors[1],
         "icon": menuIcons[1],
       },
-      {
-        "code": 3,
-        "name": "Performance",
-        "cardColor": cardColors[2],
-        "iconColor": iconColors[2],
-        "icon": menuIcons[2],
-      },
+       {
+         "code": 3,
+         "name": "Leave\nHistory",
+         "cardColor": cardColors[2],
+         "iconColor": iconColors[2],
+         "icon": menuIcons[2],
+       },
 
     ];
   }

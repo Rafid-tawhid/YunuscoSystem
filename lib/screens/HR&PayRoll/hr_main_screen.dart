@@ -10,19 +10,18 @@ import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../Profile/leave_history_screen.dart';
 import 'attandence_screen.dart';
 import 'depertments_screen.dart';
 import '../Profile/employee_attendance.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
-
   @override
   State<HrMainMenuScreen> createState() => _DepartmentListScreenState();
 }
 
 class _DepartmentListScreenState extends State<HrMainMenuScreen> {
-
-   List<Color> cardColors = [
+  List<Color> cardColors = [
     Color(0xFFE3F2FD), // Light Blue
     Color(0xFFE8F5E9), // Light Green
     Color(0xFFFFF8E1), // Light Amber
@@ -31,7 +30,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Color(0xFFE0F7FA), // Light Cyan
   ];
 
-   List<Color> iconColors = [
+  List<Color> iconColors = [
     Color(0xFF1E88E5), // Blue
     Color(0xFF43A047), // Green
     Color(0xFFFB8C00), // Orange
@@ -39,28 +38,33 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Color(0xFFE53935), // Red
     Color(0xFF00ACC1), // Teal
   ];
-   List<Map<String,dynamic>> menuList=[
-     {
-       "code": 1,
-       "name": "Departments"
-     },
-     {
-       "code": 1,
-       "name": "Department\nAttendance"
-     },
-     {
-       "code": 2,
-       "name": "Performance"
-     },
-     {
-       "code": 4,
-       "name": "Self Leave"
-     },
-     {
-       "code": 5,
-       "name": "Employee\nAttendance"
-     },
-   ];
+  List<Map<String, dynamic>> menuList = [
+    {
+      "code": 1,
+      "name": "Departments",
+      "icon": Icons.work, // From your function (name.contains('departments'))
+    },
+    {
+      "code": 1,
+      "name": "Department\nAttendance",
+      "icon": Icons.person_pin_outlined, // Matches 'attendance' in your function
+    },
+    {
+      "code": 2,
+      "name": "Performance",
+      "icon": Icons.favorite, // Direct match in your function
+    },
+    {
+      "code": 4,
+      "name": "Leave History",
+      "icon": Icons.history, // From your function's last condition
+    },
+    {
+      "code": 5,
+      "name": "Employee\nAttendance",
+      "icon": Icons.person_pin_outlined, // Same as department attendance
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +74,8 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         iconTheme: IconThemeData(
           color: Colors.white, // Your primary color
         ),
-        actionsIconTheme: IconThemeData(
-          color: Colors.white
-        ),
-        title: Text('Dashboard',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24)),
+        actionsIconTheme: IconThemeData(color: Colors.white),
+        title: Text('Dashboard', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
         elevation: 10,
@@ -103,11 +101,11 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 3,
+          itemCount: 4,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
-            final iconData = _getDepartmentIcon(menu['name']);
+            final iconData = menu['icon'];
             return Container(
               decoration: BoxDecoration(
                 color: cardColors[colorIndex],
@@ -167,61 +165,27 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
           },
         ),
       ),
-
     );
   }
 
-// Helper function to assign icons
-  IconData _getDepartmentIcon(String name) {
-    name = name.toLowerCase();
-
-    if (name.contains('accessories')) return Icons.shopping_bag_outlined;
-    if (name.contains('departments')) return Icons.work;
-    if (name.contains('attendance')) return Icons.person_pin_outlined;
-    if (name.contains('performance')) return Icons.favorite;
-    if (name.contains('account')) return Icons.account_balance_outlined;
-    if (name.contains('audit')) return Icons.assignment_turned_in_outlined;
-    if (name.contains('commercial')) return Icons.business_center_outlined;
-    if (name.contains('production')) return Icons.factory_outlined;
-    if (name.contains('customer')) return Icons.headset_mic_outlined;
-    if (name.contains('hr')) return Icons.people_alt_outlined;
-    if (name.contains('ie')) return Icons.engineering_outlined;
-    if (name.contains('lab')) return Icons.science_outlined;
-    if (name.contains('management')) return Icons.leaderboard_outlined;
-    if (name.contains('merchandising')) return Icons.store_mall_directory_outlined;
-    if (name.contains('mis')) return Icons.laptop_mac_outlined;
-    if (name.contains('planning')) return Icons.calendar_today_outlined;
-    if (name.contains('product dev')) return Icons.developer_board_outlined;
-    if (name.contains('quality')) return Icons.verified_outlined;
-    if (name.contains('sales')) return Icons.attach_money_outlined;
-    if (name.contains('sample')) return Icons.content_cut_outlined;
-    if (name.contains('store')) return Icons.storefront_outlined;
-    if (name.contains('supply')) return Icons.local_shipping_outlined;
-    if (name.contains('technical')) return Icons.build_outlined;
-    if (name.contains('design')) return Icons.design_services_outlined;
-    if (name.contains('digital')) return Icons.online_prediction_outlined;
-    if (name.contains('admin')) return Icons.admin_panel_settings_outlined;
-    if (name.contains('business')) return Icons.business_outlined;
-
-    return Icons.work_outlined;
-  }
 
   void goToScreen(index) {
     debugPrint('This is called ${index}');
-    if(index==0){
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>HrDepartmentListApp()));
+    if (index == 0) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => HrDepartmentListApp()));
     }
-    if(index==1){
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>AttendanceDashboard()));
+    if (index == 1) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceDashboard()));
     }
-    if(index==2){
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>PerformanceReportScreen()));
+    if (index == 2) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
-    if(index==3){
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>LeaveApplicationScreen()));
+    if (index == 3) {
+
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
     }
-    if(index==4){
-      Navigator.push(context, CupertinoPageRoute(builder: (context)=>AttendanceReportScreen()));
-    }
+    // if (index == 4) {
+    //   Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));
+    // }
   }
 }

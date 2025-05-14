@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
+import 'package:yunusco_group/models/single_emp_leave_history_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -106,8 +107,8 @@ class HrProvider extends ChangeNotifier{
 
   void getPersonalAttendance() async{
     setLoading(true);
-
-    var data=await apiService.getData('api/Leave/GetRcntPenLevLst/${DashboardHelpers.currentUser!.iDnum}');
+    //http://192.168.15.6:8090/api/Leave/GetRcntPenLevLst?IdCard=31401
+    var data=await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=${DashboardHelpers.currentUser!.iDnum}');
     setLoading(false);
     if(data!=null){
       _leaveDataList.clear();
@@ -196,5 +197,25 @@ class HrProvider extends ChangeNotifier{
         policyId: json['LeaveWithoutPayPolicyId'] ?? 0,
       ),
     ];
+  }
+
+
+  List<SingleEmpLeaveHistoryModel> _singleEmpLeaveList=[];
+  List<SingleEmpLeaveHistoryModel> get singleEmpLeaveList=>_singleEmpLeaveList;
+
+  Future<void> getSingleEmployeeLeaveHistory() async{
+    setLoading(true);
+    var data=await apiService.getData('api/Leave/SingleEmpLeaveHistory?IdCard=${DashboardHelpers.currentUser!.iDnum}');
+    setLoading(false);
+
+    if(data!=null){
+      _singleEmpLeaveList.clear();
+      for(var i in data['Results']){
+        _singleEmpLeaveList.add(SingleEmpLeaveHistoryModel.fromJson(i));
+      }
+    }
+    debugPrint('_singleEmpLeaveList ${_singleEmpLeaveList.length}');
+    notifyListeners();
+
   }
 }
