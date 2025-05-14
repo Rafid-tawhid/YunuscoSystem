@@ -190,13 +190,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
         "iconColor": iconColors[2],
         "icon": menuIcons[2],
       },
-      {
-        "code": 4,
-        "name": "Attendance\nHistory",
-        "cardColor": cardColors[3],
-        "iconColor": iconColors[3],
-        "icon": menuIcons[3],
-      },
+
     ];
   }
 }
