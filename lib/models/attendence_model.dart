@@ -15,12 +15,12 @@ class AttendenceModel {
 }
 
   AttendenceModel.fromJson(dynamic json) {
-    _departmentName = json['departmentName'];
-    _deparmentId = json['deparmentId'];
-    _date = json['date'];
+    _departmentName = json['DepartmentName'];
+    _deparmentId = json['DeparmentId'];
+    _date = json['Date'];
     _present = json['present'];
-    _absent = json['absent'];
-    _leave = json['leave'];
+    _absent = json['Absent'];
+    _leave = json['Leave'];
   }
   String? _departmentName;
   num? _deparmentId;
@@ -50,12 +50,12 @@ AttendenceModel copyWith({  String? departmentName,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['departmentName'] = _departmentName;
-    map['deparmentId'] = _deparmentId;
-    map['date'] = _date;
+    map['DepartmentName'] = _departmentName;
+    map['DeparmentId'] = _deparmentId;
+    map['Date'] = _date;
     map['present'] = _present;
-    map['absent'] = _absent;
-    map['leave'] = _leave;
+    map['Absent'] = _absent;
+    map['Leave'] = _leave;
     return map;
   }
 

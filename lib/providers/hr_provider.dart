@@ -40,7 +40,7 @@ class HrProvider extends ChangeNotifier{
 
     String date= formatDateSlash(datetime);
 
-    var data=await apiService.getData('api/HrApi/DepartmentAttendance?Date=${date}&Department=0');
+    var data=await apiService.getData('api/User/DepartmentAttendance?Date=${date}&Department=0');
     if(data!=null){
       _allDeptAttendanceList.clear();
       for(var i in data){
