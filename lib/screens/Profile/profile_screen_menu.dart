@@ -36,8 +36,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
   final List<IconData> menuIcons = [
     Icons.airplanemode_active, // For Self Leave
     Icons.history,             // For Leave History
-    Icons.trending_up,         // For Performance
-    Icons.calendar_today,     // For Attendance History
+    Icons.trending_up,         // For Performance// For Attendance History
   ];
 
   // Menu list with all properties
@@ -165,10 +164,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
     if (index == 2) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
-    if (index == 3) {
-      //
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));
-    }
+
   }
 
   void setMenuList() {

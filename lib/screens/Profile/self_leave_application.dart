@@ -332,7 +332,6 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                             );
                           }
                           else {
-
                             final shouldProceed = await DashboardHelpers.showConfirmDialog(
                               context: context,
                               title: 'Double Check Everything',
