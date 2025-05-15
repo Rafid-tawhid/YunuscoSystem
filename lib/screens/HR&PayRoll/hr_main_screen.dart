@@ -61,7 +61,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     },
     {
       "code": 5,
-      "name": "Employee\nAttendance",
+      "name": "Job Card",
       "icon": Icons.person_pin_outlined, // Same as department attendance
     },
   ];
@@ -101,7 +101,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 4,
+          itemCount: 5,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -181,11 +181,10 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
     if (index == 3) {
-
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
     }
-    // if (index == 4) {
-    //   Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));
-    // }
+    if (index == 4) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));
+    }
   }
 }

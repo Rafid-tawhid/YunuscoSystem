@@ -85,7 +85,7 @@ class HrProvider extends ChangeNotifier{
   Future<bool> getEmployeeAttendance(String name, String formattedFromDate, String formattedToDate) async{
 
     setLoading(true);
-    var data=await apiService.getData('api/HrApi/JobCardReport?userName=$name&fromDate=$formattedFromDate&toDate=$formattedToDate&Departmant=0&Section=0&ProductionUnit=0&ProductionLine=0');
+    var data=await apiService.getData('api/User/EmpJobcardReport?IdCard=$name&fromDate=$formattedFromDate&toDate=$formattedToDate&Departmant=0&Section=0&ProductionUnit=0&ProductionLine=0');
     setLoading(false);
     if(data!=null){
       _employeeAttendanceList.clear();
