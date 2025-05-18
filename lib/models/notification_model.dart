@@ -1,8 +1,10 @@
 class NotificationModel {
   NotificationModel({
+      num? leaveId, 
       String? employeeIdCardNo, 
       String? applaiedForEmployee, 
       String? departmentName, 
+      dynamic departmentId, 
       String? joiningDate, 
       String? leaveFromDate, 
       String? leaveToDate, 
@@ -18,9 +20,11 @@ class NotificationModel {
       String? passedByName, 
       String? leaveStatus, 
       num? currentApprover,}){
+    _leaveId = leaveId;
     _employeeIdCardNo = employeeIdCardNo;
     _applaiedForEmployee = applaiedForEmployee;
     _departmentName = departmentName;
+    _departmentId = departmentId;
     _joiningDate = joiningDate;
     _leaveFromDate = leaveFromDate;
     _leaveToDate = leaveToDate;
@@ -39,9 +43,11 @@ class NotificationModel {
 }
 
   NotificationModel.fromJson(dynamic json) {
+    _leaveId = json['LeaveId'];
     _employeeIdCardNo = json['EmployeeIdCardNo'];
     _applaiedForEmployee = json['ApplaiedForEmployee'];
     _departmentName = json['DepartmentName'];
+    _departmentId = json['DepartmentId'];
     _joiningDate = json['JoiningDate'];
     _leaveFromDate = json['LeaveFromDate'];
     _leaveToDate = json['LeaveToDate'];
@@ -58,9 +64,11 @@ class NotificationModel {
     _leaveStatus = json['LeaveStatus'];
     _currentApprover = json['CurrentApprover'];
   }
+  num? _leaveId;
   String? _employeeIdCardNo;
   String? _applaiedForEmployee;
   String? _departmentName;
+  dynamic _departmentId;
   String? _joiningDate;
   String? _leaveFromDate;
   String? _leaveToDate;
@@ -76,9 +84,11 @@ class NotificationModel {
   String? _passedByName;
   String? _leaveStatus;
   num? _currentApprover;
-NotificationModel copyWith({  String? employeeIdCardNo,
+NotificationModel copyWith({  num? leaveId,
+  String? employeeIdCardNo,
   String? applaiedForEmployee,
   String? departmentName,
+  dynamic departmentId,
   String? joiningDate,
   String? leaveFromDate,
   String? leaveToDate,
@@ -94,9 +104,11 @@ NotificationModel copyWith({  String? employeeIdCardNo,
   String? passedByName,
   String? leaveStatus,
   num? currentApprover,
-}) => NotificationModel(  employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
+}) => NotificationModel(  leaveId: leaveId ?? _leaveId,
+  employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
   applaiedForEmployee: applaiedForEmployee ?? _applaiedForEmployee,
   departmentName: departmentName ?? _departmentName,
+  departmentId: departmentId ?? _departmentId,
   joiningDate: joiningDate ?? _joiningDate,
   leaveFromDate: leaveFromDate ?? _leaveFromDate,
   leaveToDate: leaveToDate ?? _leaveToDate,
@@ -113,9 +125,11 @@ NotificationModel copyWith({  String? employeeIdCardNo,
   leaveStatus: leaveStatus ?? _leaveStatus,
   currentApprover: currentApprover ?? _currentApprover,
 );
+  num? get leaveId => _leaveId;
   String? get employeeIdCardNo => _employeeIdCardNo;
   String? get applaiedForEmployee => _applaiedForEmployee;
   String? get departmentName => _departmentName;
+  dynamic get departmentId => _departmentId;
   String? get joiningDate => _joiningDate;
   String? get leaveFromDate => _leaveFromDate;
   String? get leaveToDate => _leaveToDate;
@@ -134,9 +148,11 @@ NotificationModel copyWith({  String? employeeIdCardNo,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['LeaveId'] = _leaveId;
     map['EmployeeIdCardNo'] = _employeeIdCardNo;
     map['ApplaiedForEmployee'] = _applaiedForEmployee;
     map['DepartmentName'] = _departmentName;
+    map['DepartmentId'] = _departmentId;
     map['JoiningDate'] = _joiningDate;
     map['LeaveFromDate'] = _leaveFromDate;
     map['LeaveToDate'] = _leaveToDate;

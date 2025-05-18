@@ -1,33 +1,35 @@
 class UserModel {
   UserModel({
-      String? userRoleName, 
-      dynamic tokenInfo, 
-      String? designation, 
-      String? iDnum, 
-      num? userId, 
-      String? userName, 
-      String? loginName, 
-      dynamic password, 
-      num? roleId, 
-      dynamic isActive, 
-      dynamic passwordChanged, 
-      dynamic customerCode, 
-      dynamic userEmail, 
-      dynamic lastLogin, 
-      dynamic rboid, 
-      dynamic businessUnitId, 
-      dynamic employeeId, 
-      dynamic teamId, 
-      dynamic creator, 
-      dynamic createDate, 
-      dynamic modifier, 
-      dynamic modifiedDate, 
-      dynamic hasAuthority, 
-      dynamic firebaseDeviceToken,}){
+    String? userRoleName,
+    dynamic tokenInfo,
+    String? designation,
+    String? iDnum,
+    bool? isDepartmentHead,
+    num? userId,
+    String? userName,
+    String? loginName,
+    dynamic password,
+    num? roleId,
+    dynamic isActive,
+    dynamic passwordChanged,
+    dynamic customerCode,
+    dynamic userEmail,
+    dynamic lastLogin,
+    dynamic rboid,
+    dynamic businessUnitId,
+    dynamic employeeId,
+    dynamic teamId,
+    dynamic creator,
+    dynamic createDate,
+    dynamic modifier,
+    dynamic modifiedDate,
+    dynamic hasAuthority,
+    dynamic firebaseDeviceToken,}){
     _userRoleName = userRoleName;
     _tokenInfo = tokenInfo;
     _designation = designation;
     _iDnum = iDnum;
+    _isDepartmentHead = isDepartmentHead;
     _userId = userId;
     _userName = userName;
     _loginName = loginName;
@@ -48,13 +50,14 @@ class UserModel {
     _modifiedDate = modifiedDate;
     _hasAuthority = hasAuthority;
     _firebaseDeviceToken = firebaseDeviceToken;
-}
+  }
 
   UserModel.fromJson(dynamic json) {
     _userRoleName = json['UserRoleName'];
     _tokenInfo = json['TokenInfo'];
     _designation = json['Designation'];
     _iDnum = json['IDnum'];
+    _isDepartmentHead = json['IsDepartmentHead']??false;
     _userId = json['UserId'];
     _userName = json['UserName'];
     _loginName = json['LoginName'];
@@ -80,6 +83,7 @@ class UserModel {
   dynamic _tokenInfo;
   String? _designation;
   String? _iDnum;
+  bool? _isDepartmentHead;
   num? _userId;
   String? _userName;
   String? _loginName;
@@ -100,59 +104,62 @@ class UserModel {
   dynamic _modifiedDate;
   dynamic _hasAuthority;
   dynamic _firebaseDeviceToken;
-UserModel copyWith({  String? userRoleName,
-  dynamic tokenInfo,
-  String? designation,
-  String? iDnum,
-  num? userId,
-  String? userName,
-  String? loginName,
-  dynamic password,
-  num? roleId,
-  dynamic isActive,
-  dynamic passwordChanged,
-  dynamic customerCode,
-  dynamic userEmail,
-  dynamic lastLogin,
-  dynamic rboid,
-  dynamic businessUnitId,
-  dynamic employeeId,
-  dynamic teamId,
-  dynamic creator,
-  dynamic createDate,
-  dynamic modifier,
-  dynamic modifiedDate,
-  dynamic hasAuthority,
-  dynamic firebaseDeviceToken,
-}) => UserModel(  userRoleName: userRoleName ?? _userRoleName,
-  tokenInfo: tokenInfo ?? _tokenInfo,
-  designation: designation ?? _designation,
-  iDnum: iDnum ?? _iDnum,
-  userId: userId ?? _userId,
-  userName: userName ?? _userName,
-  loginName: loginName ?? _loginName,
-  password: password ?? _password,
-  roleId: roleId ?? _roleId,
-  isActive: isActive ?? _isActive,
-  passwordChanged: passwordChanged ?? _passwordChanged,
-  customerCode: customerCode ?? _customerCode,
-  userEmail: userEmail ?? _userEmail,
-  lastLogin: lastLogin ?? _lastLogin,
-  rboid: rboid ?? _rboid,
-  businessUnitId: businessUnitId ?? _businessUnitId,
-  employeeId: employeeId ?? _employeeId,
-  teamId: teamId ?? _teamId,
-  creator: creator ?? _creator,
-  createDate: createDate ?? _createDate,
-  modifier: modifier ?? _modifier,
-  modifiedDate: modifiedDate ?? _modifiedDate,
-  hasAuthority: hasAuthority ?? _hasAuthority,
-  firebaseDeviceToken: firebaseDeviceToken ?? _firebaseDeviceToken,
-);
+  UserModel copyWith({  String? userRoleName,
+    dynamic tokenInfo,
+    String? designation,
+    String? iDnum,
+    bool? isDepartmentHead,
+    num? userId,
+    String? userName,
+    String? loginName,
+    dynamic password,
+    num? roleId,
+    dynamic isActive,
+    dynamic passwordChanged,
+    dynamic customerCode,
+    dynamic userEmail,
+    dynamic lastLogin,
+    dynamic rboid,
+    dynamic businessUnitId,
+    dynamic employeeId,
+    dynamic teamId,
+    dynamic creator,
+    dynamic createDate,
+    dynamic modifier,
+    dynamic modifiedDate,
+    dynamic hasAuthority,
+    dynamic firebaseDeviceToken,
+  }) => UserModel(  userRoleName: userRoleName ?? _userRoleName,
+    tokenInfo: tokenInfo ?? _tokenInfo,
+    designation: designation ?? _designation,
+    iDnum: iDnum ?? _iDnum,
+    isDepartmentHead: isDepartmentHead ?? _isDepartmentHead,
+    userId: userId ?? _userId,
+    userName: userName ?? _userName,
+    loginName: loginName ?? _loginName,
+    password: password ?? _password,
+    roleId: roleId ?? _roleId,
+    isActive: isActive ?? _isActive,
+    passwordChanged: passwordChanged ?? _passwordChanged,
+    customerCode: customerCode ?? _customerCode,
+    userEmail: userEmail ?? _userEmail,
+    lastLogin: lastLogin ?? _lastLogin,
+    rboid: rboid ?? _rboid,
+    businessUnitId: businessUnitId ?? _businessUnitId,
+    employeeId: employeeId ?? _employeeId,
+    teamId: teamId ?? _teamId,
+    creator: creator ?? _creator,
+    createDate: createDate ?? _createDate,
+    modifier: modifier ?? _modifier,
+    modifiedDate: modifiedDate ?? _modifiedDate,
+    hasAuthority: hasAuthority ?? _hasAuthority,
+    firebaseDeviceToken: firebaseDeviceToken ?? _firebaseDeviceToken,
+  );
   String? get userRoleName => _userRoleName;
   dynamic get tokenInfo => _tokenInfo;
   String? get designation => _designation;
   String? get iDnum => _iDnum;
+  bool? get isDepartmentHead => _isDepartmentHead;
   num? get userId => _userId;
   String? get userName => _userName;
   String? get loginName => _loginName;
@@ -180,6 +187,7 @@ UserModel copyWith({  String? userRoleName,
     map['TokenInfo'] = _tokenInfo;
     map['Designation'] = _designation;
     map['IDnum'] = _iDnum;
+    map['IsDepartmentHead'] = _isDepartmentHead;
     map['UserId'] = _userId;
     map['UserName'] = _userName;
     map['LoginName'] = _loginName;
@@ -204,3 +212,5 @@ UserModel copyWith({  String? userRoleName,
   }
 
 }
+
+//

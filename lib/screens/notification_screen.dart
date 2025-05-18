@@ -112,13 +112,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green
+              ),
               onPressed: () {
                 if (_rejectReasonController.text.isNotEmpty) {
                   _handleLeaveAction(context, notification, false);
                   Navigator.pop(context);
                 }
               },
-              child: const Text('Submit'),
+              child: const Text('Submit',style: TextStyle(color: Colors.white),),
             ),
           ],
         );
@@ -298,28 +301,32 @@ class NotificationDetailsSheet extends StatelessWidget {
 
           if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),
-            Row(
+            DashboardHelpers.currentUser!.isDepartmentHead!? Row(
               children: [
                 if (onReject != null)
                   Expanded(
                     child: OutlinedButton(
                       onPressed: onReject,
-                      child: const Text('Reject'),
+                      child: const Text('Reject',),
                     ),
                   ),
                 if (onAccept != null) ...[
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green
+                      ),
                       onPressed: onAccept,
-                      child: const Text('Approve'),
+                      child: const Text('Approve',style: TextStyle(color: Colors.white),),
                     ),
                   ),
                 ],
               ],
-            ),
+            ):
+            SizedBox.shrink(),
           ],
-          const SizedBox(height: 8),
+          const SizedBox(height: 40),
         ],
       ),
     );
