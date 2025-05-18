@@ -76,7 +76,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:  Text('Employee Attendance Report',style: customTextStyle(18, Colors.white, FontWeight.w600),),
+        title:  Text('Employee JobCard Report',style: customTextStyle(18, Colors.white, FontWeight.w600),),
         centerTitle: true,
         elevation: 0,
         backgroundColor: myColors.primaryColor,

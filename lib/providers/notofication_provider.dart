@@ -25,7 +25,7 @@ class NotificationProvider extends ChangeNotifier {
   Future<bool> getAllNotification(String userId) async{
     try {
       setLoading(true);
-      var data = await apiService.getData('api/Leave/GetRcntPenLevLst/$userId');
+      var data = await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=${userId}');
       if(data != null) {
         _getAllNotification.clear();
         for(var i in data['Results']){
