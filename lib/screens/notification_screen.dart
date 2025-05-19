@@ -143,6 +143,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       //   rejectReason: isApproved ? null : _rejectReasonController.text,
       // );
 
+      if(isApproved){
+        var data=[
+          {
+            "leaveId": 97391,
+            "approvalLevel": 2, // dpt head = 1, final madam = 2
+            "note": "Testing Approval", // reason provided by madam / dpt head to reject or approve
+            "isApprove": true
+          }
+        ];
+        provider.acceptLeaveApproval(data);
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),

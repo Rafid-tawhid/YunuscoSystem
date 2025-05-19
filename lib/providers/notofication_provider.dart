@@ -44,4 +44,8 @@ class NotificationProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
+
+  void acceptLeaveApproval(dynamic data) async{
+    apiService.postData('api/Leave/ApproveLeave', data);
+  }
 }
