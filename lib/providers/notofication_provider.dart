@@ -32,7 +32,7 @@ class NotificationProvider extends ChangeNotifier {
           _getAllNotification.add(NotificationModel.fromJson(i));
         }
         debugPrint('_getAllNotification ${_getAllNotification.length}');
-        notifyListeners();
+
         return true;
       }
       return false;
@@ -41,15 +41,12 @@ class NotificationProvider extends ChangeNotifier {
       debugPrint('Error fetching costing approval list: $e');
       return false;
     } finally {
+      notifyListeners();
       setLoading(false);
     }
   }
 
-  void acceptLeaveApproval(dynamic data) async{
-    apiService.postData('api/Leave/ApproveLeave', data);
-  }
-
-  void rejectLeaveApproval(dynamic data) async{
-    apiService.postData('api/Leave/ApproveLeave', data);
+  Future<void> acceptLeaveApproval(dynamic data) async{
+    await apiService.postData('api/Leave/ApproveLeave', data);
   }
 }

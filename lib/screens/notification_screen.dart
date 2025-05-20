@@ -135,51 +135,35 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       bool isApproved,
       ) async {
     final provider = context.read<NotificationProvider>();
+    final currentUser = DashboardHelpers.currentUser;
 
     try {
-      // await provider.updateLeaveStatus(
-      //   notificationId: notification.u, // Assuming your model has an id field
-      //   isApproved: isApproved,
-      //   rejectReason: isApproved ? null : _rejectReasonController.text,
-      // );
+      final approvalLevel = currentUser?.userId == 11 ? 2 : 1;
+      final note = isApproved ? "N/A" : _rejectReasonController.text.trim();
 
-      if(isApproved){
-        var data=[
-          {
-            "leaveId": notification.leaveId,
-            "approvalLevel": DashboardHelpers.currentUser!.userId==11?2:1, // dpt head = 1, final madam = 2
-            "note": "N/A", // reason provided by madam / dpt head to reject or approve
-            "isApprove": isApproved
-          }
-        ];
-        provider.acceptLeaveApproval(data);
-      }
-      //reject with note
-      if(!isApproved){
-        var data=[
-          {
-            "leaveId": notification.leaveId,
-            "approvalLevel": DashboardHelpers.currentUser!.userId==11?2:1, // dpt head = 1, final madam = 2
-            "note": _rejectReasonController.text.trim(), // reason provided by madam / dpt head to reject or approve
-            "isApprove": isApproved
-          }
-        ];
-        provider.acceptLeaveApproval(data);
-      }
+      final data = [
+        {
+          "leaveId": notification.leaveId,
+          "approvalLevel": approvalLevel,
+          "note": note,
+          "isApprove": isApproved,
+        }
+      ];
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
-        );
-        Navigator.pop(context); // Close bottom sheet
-        _loadNotifications(); // Refresh list
-      }
+      await provider.acceptLeaveApproval(data);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
+      );
+      Navigator.pop(context);
+      _loadNotifications();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update status: ${e.toString()}')),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update status: ${e.toString()}')),
+      );
     }
   }
 }
