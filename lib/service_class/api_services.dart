@@ -73,7 +73,7 @@ class ApiService {
   Future<dynamic> postData(String endpoint, dynamic body) async {
     try {
       // Perform the POST request
-      debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint');
+      debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint/');
       debugPrint('My Sending Data: $body');
 
       final response = await client.post(
@@ -118,7 +118,7 @@ class ApiService {
         Uri.parse(endpoint),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+          'Authorization': 'Bearer ${AppConstants.token}', // Optional
         },
         body: jsonEncode(body),
       );
@@ -212,6 +212,7 @@ class ApiService {
 
   // Error handling based on status code
   void _handleError(int statusCode, String responseBody) {
+    debugPrint('ERROR RESPONSE : ${responseBody}');
     switch (statusCode) {
       case 204:
         EasyLoading.dismiss();

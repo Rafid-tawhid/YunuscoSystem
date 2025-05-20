@@ -25,7 +25,7 @@ class NotificationProvider extends ChangeNotifier {
   Future<bool> getAllNotification(String userId) async{
     try {
       setLoading(true);
-      var data = await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=${userId}');
+      var data = await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=$userId');
       if(data != null) {
         _getAllNotification.clear();
         for(var i in data['Results']){
@@ -46,6 +46,10 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   void acceptLeaveApproval(dynamic data) async{
+    apiService.postData('api/Leave/ApproveLeave', data);
+  }
+
+  void rejectLeaveApproval(dynamic data) async{
     apiService.postData('api/Leave/ApproveLeave', data);
   }
 }

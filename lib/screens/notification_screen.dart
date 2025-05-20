@@ -146,10 +146,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if(isApproved){
         var data=[
           {
-            "leaveId": 97391,
-            "approvalLevel": 2, // dpt head = 1, final madam = 2
-            "note": "Testing Approval", // reason provided by madam / dpt head to reject or approve
-            "isApprove": true
+            "leaveId": notification.leaveId,
+            "approvalLevel": DashboardHelpers.currentUser!.userId==11?2:1, // dpt head = 1, final madam = 2
+            "note": "N/A", // reason provided by madam / dpt head to reject or approve
+            "isApprove": isApproved
+          }
+        ];
+        provider.acceptLeaveApproval(data);
+      }
+      //reject with note
+      if(!isApproved){
+        var data=[
+          {
+            "leaveId": notification.leaveId,
+            "approvalLevel": DashboardHelpers.currentUser!.userId==11?2:1, // dpt head = 1, final madam = 2
+            "note": _rejectReasonController.text.trim(), // reason provided by madam / dpt head to reject or approve
+            "isApprove": isApproved
           }
         ];
         provider.acceptLeaveApproval(data);
