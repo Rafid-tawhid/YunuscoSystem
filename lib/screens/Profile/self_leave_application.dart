@@ -348,7 +348,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                             );
                             if (shouldProceed == true) {
                               var hp = context.read<HrProvider>();
-                             var response= await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!);
+                             var response= await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!,_dayCount);
                               if(response){
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

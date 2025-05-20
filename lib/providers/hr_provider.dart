@@ -142,14 +142,14 @@ class HrProvider extends ChangeNotifier{
 
   }
 
-  Future<bool> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate, String reason,LeaveBalance leaveType) async{
+  Future<bool> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate, String reason,LeaveBalance leaveType,int dayCount) async{
     var data=await apiService.postData('api/Leave/SubmitLeaveRequest', {
       "UserId" : DashboardHelpers.currentUser!.userId,
       "IdCardNo": DashboardHelpers.currentUser!.iDnum,
       "LeaveFromDate": DashboardHelpers.convertDateTime(fromDate.toString(),pattern: 'yyyy-MM-dd'),
       "LeaveToDate": DashboardHelpers.convertDateTime(toDate.toString(),pattern: 'yyyy-MM-dd'),
       "LeaveType": leaveType.policyId,
-      "LeaveBalance": leaveType.total,
+      "LeaveBalance": dayCount,
       "Reasons": reason,
       "remainingLeaveDay": leaveType.remaining,
       "policyId": leaveType.policyId,
