@@ -204,9 +204,7 @@ class HrProvider extends ChangeNotifier{
   List<SingleEmpLeaveHistoryModel> get singleEmpLeaveList=>_singleEmpLeaveList;
 
   Future<void> getSingleEmployeeLeaveHistory() async{
-    setLoading(true);
     var data=await apiService.getData('api/Leave/SingleEmpLeaveHistory?IdCard=${DashboardHelpers.currentUser!.iDnum}');
-    setLoading(false);
 
     if(data!=null){
       _singleEmpLeaveList.clear();
