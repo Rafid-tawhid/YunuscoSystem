@@ -834,7 +834,6 @@ class DashboardHelpers {
 
   static Future<void> clearUser() async {
     final prefs = await SharedPreferences.getInstance();
-
     prefs.remove("user");
     prefs.remove("token");
   }
@@ -914,5 +913,11 @@ class DashboardHelpers {
     final date2 = parseDate(dateStr2);
 
     return date2!.difference(date1!).inSeconds / 86400; // 86400 seconds = 1 day
+  }
+
+  static Future<void> saveUserModules(String roles, List<String> loginModules) async {
+    loginModules.add('0');
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList(roles, loginModules);
   }
 }

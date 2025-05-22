@@ -11,7 +11,6 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final TextEditingController _rejectReasonController = TextEditingController();
 
   @override
   void initState() {
@@ -23,7 +22,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   void dispose() {
-    _rejectReasonController.dispose();
+
     super.dispose();
   }
 
@@ -67,65 +66,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _showNotificationDetails(BuildContext context, NotificationModel notification) {
+    final remarksController = TextEditingController();
+    final detailsSheet = NotificationDetailsSheet(
+      notification: notification,
+      controller: remarksController,
+      onAccept: notification.leaveStatus?.toLowerCase() == 'pending'
+          ? () => _handleLeaveAction(context, notification, true, remarksController.text)
+          : null,
+      onReject: notification.leaveStatus?.toLowerCase() == 'pending'
+          ? () => _handleLeaveAction(context, notification, false, remarksController.text)
+          : null,
+    );
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
       isScrollControlled: true,
-      builder: (context) {
-        return NotificationDetailsSheet(
-          notification: notification,
-          onAccept: notification.leaveStatus?.toLowerCase() == 'pending'
-              ? () => _handleLeaveAction(context, notification, true)
-              : null,
-          onReject: notification.leaveStatus?.toLowerCase() == 'pending'
-              ? () => _showRejectReasonDialog(context, notification)
-              : null,
-        );
-      },
-    );
-  }
-
-  void _showRejectReasonDialog(BuildContext context, NotificationModel notification) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Reject Leave'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Please specify the reason for rejection:'),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _rejectReasonController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter reason...',
-                ),
-                maxLines: 3,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green
-              ),
-              onPressed: () {
-                if (_rejectReasonController.text.isNotEmpty) {
-                  _handleLeaveAction(context, notification, false);
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Submit',style: TextStyle(color: Colors.white),),
-            ),
-          ],
-        );
-      },
+      builder: (context) => detailsSheet,
     );
   }
 
@@ -133,39 +90,39 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       BuildContext context,
       NotificationModel notification,
       bool isApproved,
+      String remarks,
       ) async {
     final provider = context.read<NotificationProvider>();
-    final currentUser = DashboardHelpers.currentUser;
 
     try {
-      final approvalLevel = currentUser?.userId == 11 ? 2 : 1;
-      final note = isApproved ? "N/A" : _rejectReasonController.text.trim();
-
-      final data = [
+      var data = [
         {
           "leaveId": notification.leaveId,
-          "approvalLevel": approvalLevel,
-          "note": note,
-          "isApprove": isApproved,
+          "approvalLevel": DashboardHelpers.currentUser!.userId == 11 ? 2 : 1,
+          "note": isApproved ? "N/A" : remarks.isNotEmpty ? remarks : "N/A",
+          "isApprove": isApproved
         }
       ];
 
-      await provider.acceptLeaveApproval(data);
+      provider.acceptLeaveApproval(data);
 
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
-      );
-      Navigator.pop(context);
-      _loadNotifications();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
+        );
+        Navigator.pop(context);
+        _loadNotifications();
+      }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update status: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update status: ${e.toString()}')),
+        );
+      }
     }
   }
+
+
 }
 
 class _NotificationListItem extends StatelessWidget {
@@ -269,11 +226,13 @@ class NotificationDetailsSheet extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback? onAccept;
   final VoidCallback? onReject;
+  final TextEditingController? controller;
 
-  const NotificationDetailsSheet({
+  NotificationDetailsSheet({
     required this.notification,
     this.onAccept,
     this.onReject,
+    this.controller
   });
 
   @override
@@ -284,7 +243,7 @@ class NotificationDetailsSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20,),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -307,15 +266,34 @@ class NotificationDetailsSheet extends StatelessWidget {
           _DetailRow(label: 'Applied By', value: notification.appliedByName),
           _DetailRow(label: 'Applied On', value: _formatDate(notification.leaveCreationDate)),
 
+          // Add remarks text field here
+          if (onReject != null) ...[
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: 'Remarks (Optional)',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey.shade400,
+                    width: .5
+                  )
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              ),
+              maxLines: 2,
+            ),
+          ],
+
           if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),
-            DashboardHelpers.currentUser!.isDepartmentHead!? Row(
+            DashboardHelpers.currentUser!.isDepartmentHead! ? Row(
               children: [
                 if (onReject != null)
                   Expanded(
                     child: OutlinedButton(
                       onPressed: onReject,
-                      child: const Text('Reject',),
+                      child: const Text('Reject'),
                     ),
                   ),
                 if (onAccept != null) ...[
@@ -323,16 +301,15 @@ class NotificationDetailsSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green
+                          backgroundColor: Colors.green
                       ),
                       onPressed: onAccept,
-                      child: const Text('Approve',style: TextStyle(color: Colors.white),),
+                      child: const Text('Approve', style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ],
               ],
-            ):
-            SizedBox.shrink(),
+            ) : SizedBox.shrink(),
           ],
           const SizedBox(height: 40),
         ],
