@@ -10,6 +10,7 @@ import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
 import 'attandence_screen.dart';
 import 'depertments_screen.dart';
@@ -56,7 +57,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     },
     {
       "code": 4,
-      "name": "Leave History",
+      "name": "Leave Reports",
       "icon": Icons.history, // From your function's last condition
     },
     {
@@ -181,7 +182,8 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
     if (index == 3) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
+      //Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
     }
     if (index == 4) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));

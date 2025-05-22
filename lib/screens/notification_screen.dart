@@ -266,48 +266,53 @@ class NotificationDetailsSheet extends StatelessWidget {
           _DetailRow(label: 'Applied By', value: notification.appliedByName),
           _DetailRow(label: 'Applied On', value: _formatDate(notification.leaveCreationDate)),
 
-          // Add remarks text field here
-          if (onReject != null) ...[
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                labelText: 'Remarks (Optional)',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                    width: .5
-                  )
-                ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-              ),
-              maxLines: 2,
-            ),
-          ],
 
           if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),
-            DashboardHelpers.currentUser!.isDepartmentHead! ? Row(
+            DashboardHelpers.currentUser!.isDepartmentHead! ? Column(
               children: [
-                if (onReject != null)
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: onReject,
-                      child: const Text('Reject'),
-                    ),
-                  ),
-                if (onAccept != null) ...[
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                      labelText: 'Remarks (Optional)',
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade400,
+                              width: .5
+                          )
                       ),
-                      onPressed: onAccept,
-                      child: const Text('Approve', style: TextStyle(color: Colors.white)),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                     ),
+                    maxLines: 2,
                   ),
-                ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    if (onReject != null)
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: onReject,
+                          child: const Text('Reject'),
+                        ),
+                      ),
+                    if (onAccept != null) ...[
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green
+                          ),
+                          onPressed: onAccept,
+                          child: const Text('Approve', style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ) : SizedBox.shrink(),
           ],

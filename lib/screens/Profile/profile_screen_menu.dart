@@ -86,7 +86,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 3,
+          itemCount:3,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -163,8 +163,8 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
     if (index == 2) {
-
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
+     // Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
     }
 
   }

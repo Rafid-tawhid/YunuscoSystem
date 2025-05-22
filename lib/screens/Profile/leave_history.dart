@@ -18,7 +18,7 @@ class EmployeeLeaveHistoryScreen extends StatelessWidget {
     hp.getSingleEmployeeLeaveHistory();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Leave History'),
+        title: const Text('Leave Reports'),
         centerTitle: true,
         elevation: 0,
       ),
