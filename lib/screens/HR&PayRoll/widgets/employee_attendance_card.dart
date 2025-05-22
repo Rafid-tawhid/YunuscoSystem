@@ -144,7 +144,7 @@ class _AttendanceListItem extends StatelessWidget {
      }
      return const CircleAvatar(
       backgroundColor: Colors.grey,
-      child: Icon(Icons.stop_outlined, color: Colors.white),
+      child: Icon(Icons.highlight_off, color: Colors.white),
     );
   }
 
