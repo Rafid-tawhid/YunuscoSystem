@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_attendance_card.dart';
@@ -71,6 +72,14 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
     // Add your API call logic here
   }
 
+
+  @override
+  void initState() {
+    //set your id
+    setYourIdToTextFielld();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,6 +101,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
               // Username Field
               TextField(
                 controller: _usernameController,
+                enabled: DashboardHelpers.currentUser!.isDepartmentHead,
                 decoration: InputDecoration(
                   labelText: 'Username',
                   hintText: 'Enter employee username',
@@ -168,5 +178,11 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
         ),
       ),
     );
+  }
+
+  void setYourIdToTextFielld() {
+    setState(() {
+      _usernameController.text=DashboardHelpers.currentUser!.loginName??'';
+    });
   }
 }
