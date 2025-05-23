@@ -155,7 +155,7 @@ class _AttendanceListItem extends StatelessWidget {
     if (record.leave == 1) return 'On Leave';
     return 'Unknown';
   }
-  //
+
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
