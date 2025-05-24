@@ -56,7 +56,8 @@ dependencies:
   simple_month_year_picker: ^1.1.0
   pdf: ^3.10.0
   printing: ^5.9.1
-  path_provider: ^2.1.1
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.0+1
 #  googleapis_auth: ^2.0.0
 
 

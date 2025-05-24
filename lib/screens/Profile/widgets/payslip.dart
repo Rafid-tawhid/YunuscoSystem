@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../../../common_widgets/custom_button.dart';
 import '../../../models/payslip_model.dart';
@@ -60,11 +63,24 @@ class PayslipScreen extends StatelessWidget {
         child: CustomElevatedButton(
           text: 'Download Payslip',
           onPressed: () async {
-            final pdfFile = await createAndSavePdf();
-            print('PDF saved to: ${pdfFile.path}');
+            final pdfFile = await PayslipPDFGenerator.generatePayslipPDF(payslip);
 
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved')));
+            // Save to gallery
+           var saved=  await PayslipPDFGenerator.savePDFToGallery(pdfFile);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(saved
+                    ? 'Payslip saved to Downloads folder'
+                    : 'Failed to save payslip'),
+              ),
+            );
 
+
+
+            // Optional: Open the PDF for viewing
+            await Printing.layoutPdf(
+              onLayout: (PdfPageFormat format) async => pdfFile.readAsBytes(),
+            );
           },
           icon: Icon(Icons.download),
         ),
@@ -300,5 +316,30 @@ class PayslipScreen extends StatelessWidget {
     final month = int.tryParse(monthNumber);
     if (month == null || month < 1 || month > 12) return 'N/A';
     return DateFormat('MMMM').format(DateTime(2023, month));
+  }
+
+  Future<File> createAndSavePdf(PayslipModel payslip) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              pw.Text('Payslip for ${payslip.fullName}'),
+              pw.Text('ID: ${payslip.idCardNo}'),
+              pw.Text('Net Payable: ${payslip.netPayable}'),
+              // Add more fields as needed
+            ],
+          );
+        },
+      ),
+    );
+
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/payslip_${payslip.idCardNo}.pdf');
+    await file.writeAsBytes(await pdf.save());
+
+    return file;
   }
 }
