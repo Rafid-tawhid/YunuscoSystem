@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
+import 'package:yunusco_group/models/payslip_model.dart';
 import 'package:yunusco_group/models/single_emp_leave_history_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -215,5 +216,29 @@ class HrProvider extends ChangeNotifier{
     debugPrint('_singleEmpLeaveList ${_singleEmpLeaveList.length}');
     notifyListeners();
 
+  }
+  
+  
+
+  Future<PayslipModel?> getPaySlipInfo() async{
+    var response=await apiService.postData('api/hr/GetPayslip', {
+        "Company": 1,
+        "DepartmenmtId": 0,
+        "SectionId": 0,
+        "UnitiD": 0,
+        "LineId": 0,
+        "DesignationId": 0,
+        "SalaryMonth": "October",
+        "SalaryYear": 2024,
+        "ReportType": 6,
+        "CompanyText": "Yunusco (BD) Limited",
+        "IdList": "11510",
+        "Grade": 0,
+        "DivisionId": 0,
+        "IsM": false,
+        "UserType": "COM"
+    });
+
+    return response==null?null:PayslipModel.fromJson(response['Data'][0]);
   }
 }

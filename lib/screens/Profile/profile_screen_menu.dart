@@ -8,6 +8,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../utils/colors.dart';
 import '../HR&PayRoll/performence_screen.dart';
 import 'employee_attendance.dart';
+import 'hr_pay_slip.dart';
 import 'leave_history.dart';
 import 'leave_history_screen.dart';
 
@@ -39,6 +40,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
     Icons.airplanemode_active, // For Self Leave
     Icons.trending_up,             // For Leave History
     Icons.history,         // For Performance// For Attendance History
+    CupertinoIcons.doc,         // For Performance// For Attendance History
   ];
 
   // Menu list with all properties
@@ -86,7 +88,7 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount:3,
+          itemCount:4,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -166,6 +168,9 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
      // Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
     }
+    if (index == 3) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeePaySlip()));
+    }
 
   }
 
@@ -191,6 +196,13 @@ class _ProfileScreenMenuState extends State<ProfileScreenMenu> {
          "cardColor": cardColors[2],
          "iconColor": iconColors[2],
          "icon": menuIcons[2],
+       },
+       {
+         "code": 4,
+         "name": "Pay Slip",
+         "cardColor": cardColors[3],
+         "iconColor": iconColors[3],
+         "icon": menuIcons[3],
        },
 
     ];
