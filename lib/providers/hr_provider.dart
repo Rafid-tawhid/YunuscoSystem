@@ -220,7 +220,8 @@ class HrProvider extends ChangeNotifier{
   
   
 
-  Future<PayslipModel?> getPaySlipInfo() async{
+  Future<PayslipModel?> getPaySlipInfo(String month,String year) async{
+    setLoading(true);
     var response=await apiService.postData('api/hr/GetPayslip', {
         "Company": 1,
         "DepartmenmtId": 0,
@@ -228,17 +229,17 @@ class HrProvider extends ChangeNotifier{
         "UnitiD": 0,
         "LineId": 0,
         "DesignationId": 0,
-        "SalaryMonth": "October",
-        "SalaryYear": 2024,
+        "SalaryMonth": month,
+        "SalaryYear": year,
         "ReportType": 6,
         "CompanyText": "Yunusco (BD) Limited",
-        "IdList": "11510",
+        "IdList": DashboardHelpers.currentUser!.iDnum,
         "Grade": 0,
         "DivisionId": 0,
         "IsM": false,
         "UserType": "COM"
     });
-
-    return response==null?null:PayslipModel.fromJson(response['Data'][0]);
+    setLoading(false);
+    return response==null?null:response['Data'].isEmpty?null: PayslipModel.fromJson(response['Data'][0]);
   }
 }

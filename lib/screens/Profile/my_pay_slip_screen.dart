@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/Profile/widgets/payslip.dart';
 
@@ -14,20 +15,18 @@ class EmployeePaySlip extends StatefulWidget {
 class _EmployeePaySlipState extends State<EmployeePaySlip> {
   final _formKey = GlobalKey<FormState>();
   final _employeeIdController = TextEditingController();
-  int? _selectedMonth;
+  String? _selectedMonth;
   int? _selectedYear;
-  bool _isLoading = false;
 
   Future<void> _selectMonth(BuildContext context) async {
-    final DateTime now = DateTime.now();
     final List<String> months = DateFormat.MMMM().dateSymbols.MONTHS;
 
-    final int? picked = await showDialog<int>(
+    final String? pickedMonth = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text('Select Month'),
+          title: const Text('Select Month'),
           content: SizedBox(
             width: double.maxFinite,
             child: SizedBox(
@@ -38,7 +37,7 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     title: Text(months[index]),
-                    onTap: () => Navigator.pop(context, index + 1),
+                    onTap: () => Navigator.pop(context, months[index]),
                   );
                 },
               ),
@@ -48,9 +47,9 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
       },
     );
 
-    if (picked != null) {
+    if (pickedMonth != null) {
       setState(() {
-        _selectedMonth = picked;
+        _selectedMonth = pickedMonth; // Now stores the month name directly
       });
     }
   }
@@ -94,9 +93,10 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()&&_selectedMonth!=null&&_selectedYear!=null) {
       var hp=context.read<HrProvider>();
-      var data= await hp.getPaySlipInfo();
+
+      var data= await hp.getPaySlipInfo(_selectedMonth!,_selectedYear.toString());
       if(data!=null){
         // Navigate to the payslip screen
         Navigator.push(
@@ -108,7 +108,20 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
           ),
         );
       }
+      else {
+        DashboardHelpers.showAlert(msg: 'Something went wrong');
+      }
     }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select all field')));
+    }
+  }
+
+
+  @override
+  void initState() {
+    _employeeIdController.text=DashboardHelpers.currentUser!.iDnum??'';
+    super.initState();
   }
 
   @override
@@ -133,6 +146,7 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
             children: [
               TextFormField(
                 controller: _employeeIdController,
+                enabled: false,
                 decoration: InputDecoration(
                   labelText: 'Employee ID',
                   border: OutlineInputBorder(),
@@ -162,8 +176,7 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              _selectedMonth == null ? 'Select month' : DateFormat.MMMM().format(DateTime(2000, _selectedMonth!)),
-                            ),
+                              _selectedMonth == null ? 'Select month' : _selectedMonth??''),
                             Icon(Icons.arrow_drop_down),
                           ],
                         ),
@@ -193,10 +206,12 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
                 ],
               ),
               SizedBox(height: 30),
-              CustomElevatedButton(
-                isLoading: _isLoading,
-                text: 'Submit',
-                onPressed: _submitForm,
+              Consumer<HrProvider>(
+                builder: (context,pro,_)=>CustomElevatedButton(
+                  isLoading: pro.isLoading,
+                  text: 'Submit',
+                  onPressed: _submitForm,
+                ),
               )
             ],
           ),

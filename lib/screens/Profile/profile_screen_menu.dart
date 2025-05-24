@@ -8,7 +8,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../utils/colors.dart';
 import '../HR&PayRoll/performence_screen.dart';
 import 'employee_attendance.dart';
-import 'hr_pay_slip.dart';
+import 'my_pay_slip_screen.dart';
 import 'leave_history.dart';
 import 'leave_history_screen.dart';
 

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:printing/printing.dart';
 import '../../../common_widgets/custom_button.dart';
 import '../../../models/payslip_model.dart';
+import 'generate_pdf.dart';
 
 class PayslipScreen extends StatelessWidget {
   final PayslipModel payslip;
@@ -44,8 +47,7 @@ class PayslipScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Attendance Summary
-            if (payslip.presentDays != null || payslip.absentDays != null)
-              _buildAttendanceSection(),
+            if (payslip.presentDays != null || payslip.absentDays != null) _buildAttendanceSection(),
 
             // Footer
             const SizedBox(height: 32),
@@ -57,8 +59,12 @@ class PayslipScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: CustomElevatedButton(
           text: 'Download Payslip',
-          onPressed: () {
-            // Implement download functionality
+          onPressed: () async {
+            final pdfFile = await createAndSavePdf();
+            print('PDF saved to: ${pdfFile.path}');
+
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved')));
+
           },
           icon: Icon(Icons.download),
         ),
@@ -77,8 +83,8 @@ class PayslipScreen extends StatelessWidget {
             Text(
               payslip.company ?? 'Company Name',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             if (payslip.companyBang != null)
               Text(
@@ -89,9 +95,9 @@ class PayslipScreen extends StatelessWidget {
             Text(
               'PAYSLIP',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -113,17 +119,15 @@ class PayslipScreen extends StatelessWidget {
         child: Table(
           columnWidths: const {
             0: FlexColumnWidth(1),
-            1: FlexColumnWidth(2),
+            1: FlexColumnWidth(1),
             2: FlexColumnWidth(1),
-            3: FlexColumnWidth(2),
+            3: FlexColumnWidth(1),
           },
           children: [
             _buildTableRow('Employee ID', payslip.idCardNo ?? 'N/A', 'Name', payslip.fullName ?? 'N/A'),
-            if (payslip.fullNameBang != null)
-              _buildTableRow('', '', 'Name (Bangla)', payslip.fullNameBang ?? 'N/A'),
+            if (payslip.fullNameBang != null) _buildTableRow('', '', 'Name (Bangla)', payslip.fullNameBang ?? 'N/A'),
             _buildTableRow('Designation', payslip.designationName ?? 'N/A', 'Department', payslip.departmentName ?? 'N/A'),
-            if (payslip.designationNameBang != null || payslip.departmentNameBang != null)
-              _buildTableRow('', payslip.designationNameBang ?? '', '', payslip.departmentNameBang ?? ''),
+            if (payslip.designationNameBang != null || payslip.departmentNameBang != null) _buildTableRow('', payslip.designationNameBang ?? '', '', payslip.departmentNameBang ?? ''),
             _buildTableRow('Grade', payslip.gradeName ?? 'N/A', 'Joining Date', payslip.joiningDate ?? 'N/A'),
           ],
         ),
@@ -190,8 +194,7 @@ class PayslipScreen extends StatelessWidget {
                 _buildAttendanceRow('Total Working Days', payslip.totalWorkingDays),
                 _buildAttendanceRow('Present Days', payslip.presentDays),
                 _buildAttendanceRow('Absent Days', payslip.absentDays),
-                if (payslip.lateDays != null)
-                  _buildAttendanceRow('Late Days', payslip.lateDays),
+                if (payslip.lateDays != null) _buildAttendanceRow('Late Days', payslip.lateDays),
               ],
             ),
           ],
@@ -254,12 +257,9 @@ class PayslipScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountRow(String label, dynamic value, NumberFormat? format,
-      {bool isDeduction = false, bool isTotal = false}) {
+  Widget _buildAmountRow(String label, dynamic value, NumberFormat? format, {bool isDeduction = false, bool isTotal = false}) {
     final amount = value?.toString() ?? 'N/A';
-    final formattedAmount = format != null && value != null
-        ? format.format(value is String ? double.tryParse(value) ?? 0 : value)
-        : amount;
+    final formattedAmount = format != null && value != null ? format.format(value is String ? double.tryParse(value) ?? 0 : value) : amount;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
