@@ -916,8 +916,6 @@ class DashboardHelpers {
   }
 
   static Future<void> saveUserModules(String roles, List<String> loginModules) async {
-    loginModules.add('0');//profile
-    loginModules.add('33');//notification
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList(roles, loginModules);
   }

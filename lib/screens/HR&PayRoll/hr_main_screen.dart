@@ -12,9 +12,10 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
+import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
 import 'depertments_screen.dart';
-import '../Profile/employee_attendance.dart';
+import '../Profile/employee_jobcard_report.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
   @override
@@ -22,50 +23,42 @@ class HrMainMenuScreen extends StatefulWidget {
 }
 
 class _DepartmentListScreenState extends State<HrMainMenuScreen> {
-  List<Color> cardColors = [
-    Color(0xFFE3F2FD), // Light Blue
-    Color(0xFFE8F5E9), // Light Green
-    Color(0xFFFFF8E1), // Light Amber
-    Color(0xFFF3E5F5), // Light Purple
-    Color(0xFFFFEBEE), // Light Red
-    Color(0xFFE0F7FA), // Light Cyan
+  final List<Color> cardColors = [
+    Color(0xFFE3F2FD), // Department Attendance (Light Blue - Professional)
+    Color(0xFFE8F5E9), // Performance (Light Green - Growth)
+    Color(0xFFFFF3E0), // Leave Applications (Light Orange - Action/Pending)
+    Color(0xFFEDE7F6), // Job Card (Light Purple - Organization)
+    Color(0xFFFCE4EC), // Self Leave (Light Pink - Personal/Urgent)
+    Color(0xFFE0F7FA), // Leave History (Light Cyan - Past Records)
+    Color(0xFFE8EAF6), // Pay Slip (Light Indigo - Financial)
   ];
 
-  List<Color> iconColors = [
-    Color(0xFF1E88E5), // Blue
-    Color(0xFF43A047), // Green
-    Color(0xFFFB8C00), // Orange
-    Color(0xFF8E24AA), // Purple
-    Color(0xFFE53935), // Red
-    Color(0xFF00ACC1), // Teal
+  final List<IconData> menuIcons = [
+    Icons.people_alt,          // Department Attendance (team focus)
+    Icons.assessment,          // Performance (metrics)
+    Icons.work_history,        // Leave Applications (work timeline)
+    Icons.assignment,          // Job Card (task assignment)
+    Icons.airplane_ticket,     // Self Leave (personal time off)
+    Icons.history_toggle_off,  // Leave History (past records)
+    Icons.receipt,             // Pay Slip (financial document)
   ];
-  List<Map<String, dynamic>> menuList = [
-    {
-      "code": 1,
-      "name": "Departments",
-      "icon": Icons.work, // From your function (name.contains('departments'))
-    },
-    {
-      "code": 1,
-      "name": "Department\nAttendance",
-      "icon": Icons.person_pin_outlined, // Matches 'attendance' in your function
-    },
-    {
-      "code": 2,
-      "name": "Performance",
-      "icon": Icons.favorite, // Direct match in your function
-    },
-    {
-      "code": 4,
-      "name": "Leave Reports",
-      "icon": Icons.history, // From your function's last condition
-    },
-    {
-      "code": 5,
-      "name": "Job Card",
-      "icon": Icons.person_pin_outlined, // Same as department attendance
-    },
+  final List<Color> iconColors = [
+    Colors.blue[800]!,    // Dark Blue
+    Colors.green[700]!,   // Dark Green
+    Colors.orange[800]!,  // Dark Orange
+    Colors.purple[700]!,  // Dark Purple
+    Colors.pink[600]!,    // Dark Pink
+    Colors.cyan[700]!,    // Dark Cyan
+    Colors.indigo[700]!,  // Dark Indigo
   ];
+
+  List<Map<String,dynamic>> menuList=[];
+
+  @override
+  void initState() {
+    setMenuItems();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +69,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
           color: Colors.white, // Your primary color
         ),
         actionsIconTheme: IconThemeData(color: Colors.white),
-        title: Text('Dashboard', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
+        title: Text('HR & Payroll', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
         elevation: 10,
@@ -102,7 +95,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 5,
+          itemCount: 7,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -169,24 +162,118 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     );
   }
 
-
   void goToScreen(index) {
     debugPrint('This is called ${index}');
     if (index == 0) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => HrDepartmentListApp()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => AllDepartmentAttendance()));
     }
     if (index == 1) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceDashboard()));
-    }
-    if (index == 2) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
     }
+    if (index == 2) {
+
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
+    }
     if (index == 3) {
-      //Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeJobCardReportScreen()));
     }
     if (index == 4) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => AttendanceReportScreen()));
+      //EmployeeLeaveHistoryScreen
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveApplicationScreen()));
+    }
+    if (index == 5) {
+      // Navigator.push(context, CupertinoPageRoute(builder: (context) => ()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
+    }
+    if (index == 6) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeePaySlip()));
     }
   }
+
+  void setMenuItems() {
+   menuList = [
+
+      {
+        "code": 0,
+        "name": "Department\nAttendance",
+        "cardColor": cardColors[0],
+        "iconColor": iconColors[0],
+        "icon": Icons.person_pin_outlined, // Matches 'attendance' in your function
+      },
+      {
+        "code": 1,
+        "name": "Performance",
+        "cardColor": cardColors[1],
+        "iconColor": iconColors[1],
+        "icon": Icons.favorite, // Direct match in your function
+      },
+      {
+        "code": 2,
+        "name": "Leave Applications",
+        "cardColor": cardColors[2],
+        "iconColor": iconColors[2],
+        "icon": Icons.history, // From your function's last condition
+      },
+      {
+        "code": 3,
+        "name": "Job Card",
+        "cardColor": cardColors[3],
+        "iconColor": iconColors[3],
+        "icon": Icons.person_pin_outlined, // Same as department attendance
+      },
+      {
+        "code": 4,
+        "name": "Self Leave",
+        "cardColor": cardColors[4],
+        "iconColor": iconColors[4],
+        "icon": menuIcons[4],
+      },
+      {
+        "code": 5,
+        "name": "Leave\nHistory",
+        "cardColor": cardColors[5],
+        "iconColor": iconColors[5],
+        "icon": menuIcons[5],
+      },
+      {
+        "code": 6,
+        "name": "Pay Slip",
+        "cardColor": cardColors[6],
+        "iconColor": iconColors[6],
+        "icon": menuIcons[6],
+      },
+    ];
+  }
 }
+
+//     menuList = [
+//       {
+//         "code": 1,
+//         "name": "Self Leave",
+//         "cardColor": cardColors[0],
+//         "iconColor": iconColors[0],
+//         "icon": menuIcons[0],
+//       },
+//       {
+//         "code": 2,
+//         "name": "My\nPerformance",
+//         "cardColor": cardColors[1],
+//         "iconColor": iconColors[1],
+//         "icon": menuIcons[1],
+//       },
+//        {
+//          "code": 3,
+//          "name": "Leave\nHistory",
+//          "cardColor": cardColors[2],
+//          "iconColor": iconColors[2],
+//          "icon": menuIcons[2],
+//        },
+//        {
+//          "code": 4,
+//          "name": "Pay Slip",
+//          "cardColor": cardColors[3],
+//          "iconColor": iconColors[3],
+//          "icon": menuIcons[3],
+//        },
+//
+//     ];

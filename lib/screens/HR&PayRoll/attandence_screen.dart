@@ -7,15 +7,15 @@ import 'package:provider/provider.dart';
 import '../../models/attendence_model.dart';
 import '../../providers/hr_provider.dart';
 
-class AttendanceDashboard extends StatefulWidget {
+class AllDepartmentAttendance extends StatefulWidget {
 
   @override
-  State<AttendanceDashboard> createState() => _AttendanceDashboardState();
+  State<AllDepartmentAttendance> createState() => _AllDepartmentAttendanceState();
 }
 
 
 
-class _AttendanceDashboardState extends State<AttendanceDashboard> {
+class _AllDepartmentAttendanceState extends State<AllDepartmentAttendance> {
 
   @override
   void initState() {

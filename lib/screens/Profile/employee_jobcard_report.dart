@@ -9,14 +9,14 @@ import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_attendance_car
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
-class AttendanceReportScreen extends StatefulWidget {
-  const AttendanceReportScreen({super.key});
+class EmployeeJobCardReportScreen extends StatefulWidget {
+  const EmployeeJobCardReportScreen({super.key});
 
   @override
-  _AttendanceReportScreenState createState() => _AttendanceReportScreenState();
+  _EmployeeJobCardReportScreenState createState() => _EmployeeJobCardReportScreenState();
 }
 
-class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
+class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScreen> {
   DateTime? _fromDate;
   DateTime? _toDate;
   final TextEditingController _usernameController = TextEditingController();
