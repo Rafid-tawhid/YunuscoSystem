@@ -58,7 +58,7 @@ class _AttendanceDashboardState extends State<AttendanceDashboard> {
               dateFormat: 'dd-MM-yyyy', // Optional custom format
               padding: EdgeInsets.all(8), // Optional custom padding
             ),
-            Consumer<HrProvider>(builder: (context,pro,_)=>Expanded(
+            Consumer<HrProvider>(builder: (context,pro,_)=> Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: pro.allDeptAttendanceList.length,

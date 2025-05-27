@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 
 import '../../../models/employee_attendance_model.dart';
@@ -54,6 +55,7 @@ class _AttendanceSummaryCard extends StatelessWidget {
             _SummaryItem(Icons.cancel, 'Absent', Colors.red),
             _SummaryItem(Icons.access_time, 'Late', Colors.orange),
             _SummaryItem(Icons.beach_access, 'Leave', Colors.blue),
+            _SummaryItem(Icons.highlight_off, 'Holiday', Colors.grey),
           ],
         ),
       ),
@@ -98,7 +100,7 @@ class _AttendanceListItem extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          record.dayDate ?? 'Date not available',
+        DashboardHelpers.convertDateTime(DateTime.parse(record.dayDate.toString()).toString(),pattern: 'MMM d, yyyy'),
           style: const TextStyle(color: Colors.grey),
         ),
         children: [
@@ -153,7 +155,7 @@ class _AttendanceListItem extends StatelessWidget {
     if (record.absent == 1) return 'Absent';
     if (record.late == 1) return 'Late';
     if (record.leave == 1) return 'On Leave';
-    return 'Unknown';
+    return 'N/A';
   }
 
 
