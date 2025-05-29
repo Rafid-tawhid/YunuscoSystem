@@ -69,10 +69,17 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
           ),
           _buildDashboardCard(
             context,
-            title: "Approval\nList",
+            title: "Costing\nApproval",
             icon: Icons.list,
             color: const Color(0xFFD97FF1), // Light sea green
             destination: CostingApprovalListScreen(),
+          ),
+          _buildDashboardCard(
+            context,
+            title: "Purchase\nApproval",
+            icon: Icons.list,
+            color: const Color(0xFFEA978A), // Light sea green
+            destination: Text(''),
           ),
         ],
       ),

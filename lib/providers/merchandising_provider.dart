@@ -79,7 +79,8 @@ class MerchandisingProvider extends ChangeNotifier{
   Future<bool> getCostingApprovalList(String uId) async{
     try {
       setLoading(true);
-      var data = await apiService.getData2('${AppConstants.liveUrl}Merchandising/Merchandising/GetCostingApprovalListAPI?userId=615');
+      //615
+      var data = await apiService.getData2('http://192.168.15.6:8085/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=${uId}');
       if(data != null) {
         _costingApprovalList.clear();
         _costingApprovalFilterList.clear();
@@ -136,6 +137,10 @@ class MerchandisingProvider extends ChangeNotifier{
     }
 
     notifyListeners();
+  }
+
+  Future<void> rejectConstingApproval(Map<String, Object?> approvalItem) async{
+    apiService.postData2('http://192.168.15.6:8085/hr/approval/approvenew', approvalItem);
   }
 
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/approval_top_cards.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/costing_approval_list_model.dart';
 
@@ -239,11 +241,36 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
             children: [
               TextButton(
                 onPressed: () {
-                  // View details action
+                  DashboardHelpers.showConfirmDialog(
+                      context: context,
+                      title: 'Reject!',
+                      message: 'Do you sure want to reject?',
+                      confirmText: 'Reject',
+                      cancelText: 'No',
+                      onCancel: (){
+                      },
+                      onSubmit: (){
+                        rejectItem(approval);
+                      }
+                  );
                 },
                 child: const Text('Reject',style: TextStyle(color: Colors.red),),
               ),
               const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  debugPrint('Costing Code : ${approval.costingCode}');
+                  DashboardHelpers.openUrl('http://192.168.15.6:8085/Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                ),
+                child: Text(
+                  'Details',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(width: 8,),
               ElevatedButton(
                 onPressed: () {
                   // Take action
@@ -341,10 +368,33 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
     try {
       final mp = context.read<MerchandisingProvider>();
       // Use Future.micro task if you need to avoid direct execution in initState
-      await mp.getCostingApprovalList('1212'); // Consider using a real user ID
+      await mp.getCostingApprovalList(DashboardHelpers.currentUser!.userId.toString()); // Consider using a real user ID
     } catch (e) {
       debugPrint('Error loading data: $e');
       // Optionally show error to user
     }
+  }
+
+  void rejectItem(CostingApprovalListModel approval) {
+    try {
+      final approvalItem = {
+        'ApprovalId': approval.approvalId,
+        'CurrentApprover': approval.currentApprover,
+        'AprrovalPolicyId':approval.aprrovalPolicyId,
+        'ApprovalLevel': approval.approvalLevel,
+        'ApprovalTypeId': approval.approvalTypeId,
+        'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
+      };
+
+      var mp=context.read<MerchandisingProvider>();
+      mp.rejectConstingApproval(approvalItem);
+
+
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+
+    }
+
+
   }
 }
