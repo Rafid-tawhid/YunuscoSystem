@@ -18,7 +18,7 @@ class ApiService {
   Future<dynamic> getData(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$baseUrl$endpoint'));
+      final response = await client.get(Uri.parse('$baseUrl$endpoint')).timeout(Duration(seconds: 10));
       // Handle response based on status code
       if (response.statusCode == 200) {
         // Parse the response body
@@ -45,7 +45,7 @@ class ApiService {
   Future<dynamic> getData2(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$endpoint'));
+      final response = await client.get(Uri.parse('$endpoint')).timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200) {
@@ -83,7 +83,7 @@ class ApiService {
           'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
         },
         body: jsonEncode(body),
-      );
+      ).timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -121,7 +121,7 @@ class ApiService {
           'Authorization': 'Bearer ${AppConstants.token}', // Optional
         },
         body: jsonEncode(body),
-      );
+      ).timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {

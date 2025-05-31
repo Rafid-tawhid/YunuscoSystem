@@ -247,6 +247,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
                       message: 'Do you sure want to reject?',
                       confirmText: 'Reject',
                       cancelText: 'No',
+                      acceptButtonColor: Colors.red.shade400,
                       onCancel: (){
                       },
                       onSubmit: (){
@@ -260,7 +261,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
               ElevatedButton(
                 onPressed: () {
                   debugPrint('Costing Code : ${approval.costingCode}');
-                  DashboardHelpers.openUrl('http://192.168.15.6:8085/Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+                  DashboardHelpers.openUrl('${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,
@@ -273,7 +274,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
               SizedBox(width: 8,),
               ElevatedButton(
                 onPressed: () {
-                  // Take action
+                  acceptItem(approval);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: approval.finalStatus=='Pending'?Colors.green:Colors.orange,
@@ -377,24 +378,41 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
 
   void rejectItem(CostingApprovalListModel approval) {
     try {
-      final approvalItem = {
-        'ApprovalId': approval.approvalId,
-        'CurrentApprover': approval.currentApprover,
-        'AprrovalPolicyId':approval.aprrovalPolicyId,
-        'ApprovalLevel': approval.approvalLevel,
-        'ApprovalTypeId': approval.approvalTypeId,
-        'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
-      };
+      final approvalItem = [
+        {
+          'ApprovalId': approval.approvalId,
+          'CurrentApprover': approval.currentApprover,
+          'AprrovalPolicyId':approval.aprrovalPolicyId,
+          'ApprovalLevel': approval.approvalLevel,
+          'ApprovalTypeId': approval.approvalTypeId,
+          'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
+        }
+      ];
 
       var mp=context.read<MerchandisingProvider>();
-      mp.rejectConstingApproval(approvalItem);
-
-
+      mp.acceptRejectConstingApproval(approvalItem,url: 'HR/Approval/CommonReject');
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
-
     }
+  }
 
+  void acceptItem(CostingApprovalListModel approval) {
+    try {
+      final approvalItem = [
+        {
+          'ApprovalId': approval.approvalId,
+          'CurrentApprover': approval.currentApprover,
+          'AprrovalPolicyId':approval.aprrovalPolicyId,
+          'ApprovalLevel': approval.approvalLevel,
+          'ApprovalTypeId': approval.approvalTypeId,
+          'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
+        }
+      ];
 
+      var mp=context.read<MerchandisingProvider>();
+      mp.acceptRejectConstingApproval(approvalItem,url: 'HR/Approval/ApproveNew');
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+    }
   }
 }

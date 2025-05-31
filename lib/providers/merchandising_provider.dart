@@ -80,7 +80,7 @@ class MerchandisingProvider extends ChangeNotifier{
     try {
       setLoading(true);
       //615
-      var data = await apiService.getData2('http://192.168.15.6:8085/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=${uId}');
+      var data = await apiService.getData('Merchandising/Merchandising/GetCostingApprovalListAPI?userId=${uId}');
       if(data != null) {
         _costingApprovalList.clear();
         _costingApprovalFilterList.clear();
@@ -139,8 +139,10 @@ class MerchandisingProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> rejectConstingApproval(Map<String, Object?> approvalItem) async{
-    apiService.postData2('http://192.168.15.6:8085/hr/approval/approvenew', approvalItem);
+  Future<void> acceptRejectConstingApproval(dynamic approvalItem, {required String url}) async{
+    ///HR/Approval/CommonReject
+    ///HR/Approval/ApproveNew
+    apiService.postData(url, approvalItem);
   }
 
 

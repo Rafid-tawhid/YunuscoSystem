@@ -441,7 +441,8 @@ class DashboardHelpers {
     String cancelText = 'CANCEL',
     double? height,
     Function? onCancel,
-    Function? onSubmit
+    Function? onSubmit,
+    Color? acceptButtonColor,
   }) {
     return showGeneralDialog<bool>(
       context: context,
@@ -503,8 +504,8 @@ class DashboardHelpers {
                           if (onSubmit != null) onSubmit();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade100,
-                          foregroundColor: Colors.green,
+                          backgroundColor: acceptButtonColor ?? Colors.green.shade100,
+                          foregroundColor: acceptButtonColor!=null?Colors.white:Colors.green,
                           minimumSize: const Size(120, 45),
                           elevation: 0,
                         ),
