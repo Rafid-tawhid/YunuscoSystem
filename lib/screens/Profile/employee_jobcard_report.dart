@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/common_widgets/custom_dropdown.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/JobCardDropdownModel.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_attendance_card.dart';
@@ -19,6 +21,8 @@ class EmployeeJobCardReportScreen extends StatefulWidget {
 class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScreen> {
   DateTime? _fromDate;
   DateTime? _toDate;
+  Departments? selectedDept;
+  Sections? selectedSection;
   final TextEditingController _usernameController = TextEditingController();
 
   Future<void> _selectFromDate(BuildContext context) async {
@@ -77,7 +81,7 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
   void initState() {
     //set your id
     //clearList
-    setYourIdToTextFielld();
+    setInitialInfo();
     super.initState();
   }
 
@@ -153,7 +157,36 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
                 ),
               ),
               const SizedBox(height: 20),
-          
+
+
+              Consumer<HrProvider>(
+                builder: (context,pro,_)=>pro.allDropdownInfoForJobcard!=null?CustomDropdown<Departments>(
+                  items: pro.allDropdownInfoForJobcard!.departments!,
+                  value: selectedDept,
+                  displayText: (item) => item.name??'',
+                  onChanged: (selected) {
+                    setState(() {
+                      selectedDept = selected;
+                    });
+                  },
+                  hintText: 'Select Leave Type',
+                ):SizedBox.shrink(),
+              ),
+              SizedBox(height: 8,),
+              Consumer<HrProvider>(
+                builder: (context,pro,_)=>pro.allDropdownInfoForJobcard!=null?CustomDropdown<Sections>(
+                  items: pro.allDropdownInfoForJobcard!.sections!,
+                  value: selectedSection,
+                  displayText: (item) => item.name??'',
+                  onChanged: (selected) {
+                    setState(() {
+                      selectedSection = selected;
+                    });
+                  },
+                  hintText: 'Select Section',
+                ):SizedBox.shrink(),
+              ),
+              SizedBox(height: 20,),
               // Search Button
               SizedBox(
                 width: double.infinity,
@@ -172,6 +205,7 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
                   ),
                 ),
               ),
+
               const SizedBox(height: 10),
               Consumer<HrProvider>(builder: (context,pro,_)=>EmployeeCards(attendanceList: pro.employeeAttendanceList))
             ],
@@ -181,9 +215,10 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
     );
   }
 
-  void setYourIdToTextFielld() {
+  void setInitialInfo() {
     var hp=context.read<HrProvider>();
     hp.employeeAttendanceList.clear();
+    hp.getAllDropdownInfoForJobcard();
     setState(() {
       _usernameController.text=DashboardHelpers.currentUser!.loginName??'';
     });

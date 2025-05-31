@@ -7,6 +7,7 @@ import 'package:yunusco_group/models/single_emp_leave_history_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../models/JobCardDropdownModel.dart';
 import '../models/leave_data_model.dart';
 import '../models/leave_model.dart';
 import '../models/self_leave_info.dart';
@@ -222,5 +223,15 @@ class HrProvider extends ChangeNotifier{
     });
     setLoading(false);
     return response==null?null:response['Data'].isEmpty?null: PayslipModel.fromJson(response['Data'][0]);
+  }
+
+  JobCardDropdownModel? allDropdownInfoForJobcard;
+
+  Future<void> getAllDropdownInfoForJobcard() async{
+    var data=await apiService.getData('api/HR/SalaryReportDropDown');
+    if(data!=null){
+      allDropdownInfoForJobcard = JobCardDropdownModel.fromJson(data['Result']);
+    }
+    notifyListeners();
   }
 }
