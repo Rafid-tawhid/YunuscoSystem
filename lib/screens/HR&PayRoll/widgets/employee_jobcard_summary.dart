@@ -59,7 +59,7 @@ class AttendanceSummary extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSummaryItem('Total Days', totalWorkingDays.toString()),
+              _buildSummaryItem('Working Days', totalWorkingDays.toString()),
               _buildSummaryItem('Present', presentDays.toString(), Colors.green),
             ],
           ),

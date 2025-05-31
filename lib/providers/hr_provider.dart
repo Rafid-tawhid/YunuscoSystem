@@ -13,25 +13,6 @@ import '../models/self_leave_info.dart';
 
 class HrProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
-  List<Map<String,dynamic>> _hrMenuList=[];
-  List<Map<String,dynamic>> get hrMenuList =>_hrMenuList;
-
-  Future<bool> getHRMenuList() async{
-    var data=await apiService.getData2('${AppConstants.liveUrl}api/HrApi/AllDepartment');
-    if(data!=null){
-      _hrMenuList.clear();
-      for(var i in data['returnvalue']){
-        _hrMenuList.add(i);
-      }
-      notifyListeners();
-      debugPrint('_hrMenuList ${_hrMenuList.length}');
-      return true;
-    }
-    else {
-      return false;
-    }
-
-  }
 
 
   List<AttendenceModel> _allDeptAttendanceList=[];

@@ -76,6 +76,7 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
   @override
   void initState() {
     //set your id
+    //clearList
     setYourIdToTextFielld();
     super.initState();
   }
@@ -181,6 +182,8 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
   }
 
   void setYourIdToTextFielld() {
+    var hp=context.read<HrProvider>();
+    hp.employeeAttendanceList.clear();
     setState(() {
       _usernameController.text=DashboardHelpers.currentUser!.loginName??'';
     });
