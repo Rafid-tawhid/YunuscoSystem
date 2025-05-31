@@ -214,6 +214,7 @@ class DashboardHelpers {
   }
 
   static Future<void> openUrl(String urlString) async {
+    debugPrint('Open Url: ${urlString}');
     if (!await launchUrl(Uri.parse(urlString))) {
       throw Exception('Could not launch $urlString');
     }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_jobcard_summary.dart';
 
 import '../../../models/employee_attendance_model.dart';
 
@@ -16,6 +17,9 @@ class EmployeeCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Consumer<HrProvider>(
+          builder: (context, pro, _) => pro.employeeAttendanceList.isNotEmpty ? AttendanceSummary(attendanceData: pro.employeeAttendanceList) : SizedBox.shrink(),
+        ),
         Consumer<HrProvider>(
           builder: (context, pro, _) => pro.employeeAttendanceList.isNotEmpty ? _AttendanceSummaryCard() : SizedBox.shrink(),
         ),
@@ -100,7 +104,7 @@ class _AttendanceListItem extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-        DashboardHelpers.convertDateTime(DateTime.parse(record.dayDate.toString()).toString(),pattern: 'MMM d, yyyy'),
+          DashboardHelpers.convertDateTime(DateTime.parse(record.dayDate.toString()).toString(), pattern: 'MMM d, yyyy'),
           style: const TextStyle(color: Colors.grey),
         ),
         children: [
@@ -122,7 +126,7 @@ class _AttendanceListItem extends StatelessWidget {
   }
 
   Widget _buildStatusIndicator() {
-     if (record.absent == 1) {
+    if (record.absent == 1) {
       return const CircleAvatar(
         backgroundColor: Colors.red,
         child: Icon(Icons.close, color: Colors.white),
@@ -138,13 +142,13 @@ class _AttendanceListItem extends StatelessWidget {
         child: Icon(Icons.beach_access, color: Colors.white),
       );
     }
-     if (record.present == 1) {
-       return const CircleAvatar(
-         backgroundColor: Colors.green,
-         child: Icon(Icons.check, color: Colors.white),
-       );
-     }
-     return const CircleAvatar(
+    if (record.present == 1) {
+      return const CircleAvatar(
+        backgroundColor: Colors.green,
+        child: Icon(Icons.check, color: Colors.white),
+      );
+    }
+    return const CircleAvatar(
       backgroundColor: Colors.grey,
       child: Icon(Icons.highlight_off, color: Colors.white),
     );
@@ -157,7 +161,6 @@ class _AttendanceListItem extends StatelessWidget {
     if (record.leave == 1) return 'On Leave';
     return 'N/A';
   }
-
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
