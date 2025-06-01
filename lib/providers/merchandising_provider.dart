@@ -27,15 +27,15 @@ class MerchandisingProvider extends ChangeNotifier{
   }
 
 
-  List<Map<String,dynamic>> _allBuyerOrderList=[];
-  List<Map<String,dynamic>> get allBuyerOrderList=>_allBuyerOrderList;
+  List<BuyerOrderDetailsModel> _allBuyerOrderList=[];
+  List<BuyerOrderDetailsModel> get allBuyerOrderList=>_allBuyerOrderList;
 
   Future<bool> getAllBuyerOrders() async{
-    var data=await apiService.getData2('${AppConstants.liveUrl}api/Merchandising/GetBuyerOrder');
+    var data=await apiService.getData('api/Merchandising/Buyerorder');
     if(data!=null){
       _allBuyerOrderList.clear();
-      for(var i in data['returnvalue']){
-        _allBuyerOrderList.add(i);
+      for(var i in data['result']['returnvalue']){
+        _allBuyerOrderList.add(BuyerOrderDetailsModel.fromJson(i));
       }
       notifyListeners();
       debugPrint('_allBuyerOrderList ${_allBuyerOrderList.length}');
@@ -47,25 +47,6 @@ class MerchandisingProvider extends ChangeNotifier{
 
   }
 
-
-  List<BuyerOrderDetails> _buyerOrderDetailsList=[];
-  List<BuyerOrderDetails> get buyerOrderDetailsList=>_buyerOrderDetailsList;
-  Future<bool> getBuyerOrdersDetails(String boId) async{
-    var data=await apiService.getData('api/Merchandising/Precosting?PO=$boId');
-    if(data!=null){
-      _buyerOrderDetailsList.clear();
-      for(var i in data['returnvalue']){
-        _buyerOrderDetailsList.add(BuyerOrderDetails.fromJson(i));
-      }
-      notifyListeners();
-      debugPrint('_buyerOrderDetailsList ${_buyerOrderDetailsList.length}');
-      return true;
-    }
-    else {
-      return false;
-    }
-
-  }
 
 
   bool _isLoading=false;
