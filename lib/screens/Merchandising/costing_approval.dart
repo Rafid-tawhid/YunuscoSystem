@@ -260,7 +260,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
               ElevatedButton(
                 onPressed: () {
                   debugPrint('Costing Code : ${approval.costingCode}');
-                  DashboardHelpers.openUrl('${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+                  DashboardHelpers.openUrl('${AppConstants.liveUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,

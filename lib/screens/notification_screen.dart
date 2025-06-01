@@ -255,17 +255,18 @@ class NotificationDetailsSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          _DetailRow(label: 'Applied By', value: notification.appliedByName),
+          _DetailRow(label: 'Applied On', value: _formatDate(notification.leaveCreationDate)),
           _DetailRow(label: 'Leave Type', value: notification.leaveType),
-          _DetailRow(label: 'Duration', value: '${notification.dayCount} days'),
           _DetailRow(
             label: 'Period',
             value: '${_formatDate(notification.leaveFromDate)} - ${_formatDate(notification.leaveToDate)}',
           ),
+          _DetailRow(label: 'Duration', value: '${notification.dayCount} days'),
+          _DetailRow(label: 'Balance', value: 'SL: ${notification.sl}, EL: ${notification.el}, CL :${notification.cl},', ),
+
           if (notification.reasons?.isNotEmpty ?? false)
             _DetailRow(label: 'Reason', value: notification.reasons!),
-          _DetailRow(label: 'Applied By', value: notification.appliedByName),
-          _DetailRow(label: 'Applied On', value: _formatDate(notification.leaveCreationDate)),
-
 
           if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),

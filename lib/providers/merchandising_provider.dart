@@ -80,11 +80,11 @@ class MerchandisingProvider extends ChangeNotifier{
     try {
       setLoading(true);
       //615
-      var data = await apiService.getData2('http://202.74.243.118:1726/Merchandising/Merchandising/GetCostingApprovalListAPI?userId=${uId}');
+      var data = await apiService.getData('api/Merchandising/CostingApprovalList?userId=${uId}');
       if(data != null) {
         _costingApprovalList.clear();
         _costingApprovalFilterList.clear();
-        for(var i in data){
+        for(var i in data['result']){
           _costingApprovalList.add(CostingApprovalListModel.fromJson(i));
         }
         _costingApprovalFilterList.addAll(_costingApprovalList);
