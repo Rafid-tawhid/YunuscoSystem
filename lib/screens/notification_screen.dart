@@ -270,7 +270,7 @@ class NotificationDetailsSheet extends StatelessWidget {
 
           if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),
-            DashboardHelpers.currentUser!.isDepartmentHead! ? Column(
+            (DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.loginName=='00004') ? Column(
               children: [
                 const SizedBox(height: 12),
                 Padding(

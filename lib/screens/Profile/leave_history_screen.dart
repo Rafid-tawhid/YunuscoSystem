@@ -117,7 +117,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
 
             // Department info
             Text(
-              '${leave.departmentName ?? 'No Department'}',
+              leave.departmentName ?? 'No Department',
               style: TextStyle(color: Colors.grey[600]),
             ),
             const Divider(height: 20, thickness: 1),
@@ -205,9 +205,15 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          if (sl != null) _buildBalanceChip('SL: $sl', Colors.blue),
-          if (el != null) _buildBalanceChip('EL: $el', Colors.green),
-          if (cl != null) _buildBalanceChip('CL: $cl', Colors.orange),
+          Expanded(
+            child: Row(
+              children: [
+                if (sl != null) _buildBalanceChip('SL: $sl', Colors.blue),
+                if (el != null) _buildBalanceChip('EL: $el', Colors.green),
+                if (cl != null) _buildBalanceChip('CL: $cl', Colors.orange),
+              ],
+            ),
+          )
         ],
       ),
     );
