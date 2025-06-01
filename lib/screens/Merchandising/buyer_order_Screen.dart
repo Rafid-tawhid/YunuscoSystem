@@ -18,31 +18,30 @@ class BuyerOrderScreen extends StatefulWidget {
 }
 
 class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((v){
+    WidgetsBinding.instance.addPostFrameCallback((v) {
       getData();
     });
     super.initState();
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Buyer Orders'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: () => _showFilterDialog(context),
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: Column(
         children: [
-
           Expanded(
             child: Consumer<MerchandisingProvider>(
               builder: (context, provider, child) {
@@ -64,10 +63,49 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
           ),
         ],
       ),
-
     );
   }
 
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: _isSearching
+          ? TextField(
+        controller: _searchController,
+        autofocus: true,
+        decoration: const InputDecoration(
+          hintText: 'Search orders...',
+          border: InputBorder.none,
+          hintStyle: TextStyle(color: Colors.black),
+        ),
+        style: const TextStyle(color: Colors.black),
+        onChanged: (value) {
+          context.read<MerchandisingProvider>().searchOrders(value);
+        },
+      )
+          : const Text('Buyer Orders'),
+      actions: [
+        _isSearching
+            ? IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            setState(() {
+              _isSearching = false;
+              _searchController.clear();
+              context.read<MerchandisingProvider>().searchOrders('');
+            });
+          },
+        )
+            : IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            setState(() {
+              _isSearching = true;
+            });
+          },
+        ),
+      ],
+    );
+  }
 
   Widget _buildOrderCard(BuildContext context, BuyerOrderDetailsModel order) {
     final statusColor = _getStatusColor(order.approvalStatus);
@@ -84,7 +122,12 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
       ),
       child: InkWell(
         onTap: () {
-          // Navigate to order details screen
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => BuyerOrderDetailsScreen(order: order),
+          //   ),
+          // );
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -101,6 +144,13 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // Chip(
+                  //   label: Text(
+                  //     order.approvalStatus ?? 'N/A',
+                  //     style: const TextStyle(color: Colors.white),
+                  //   ),
+                  //   backgroundColor: statusColor,
+                  // ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -151,70 +201,8 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
     }
   }
 
-  void _showFilterDialog(BuildContext context) {
-    // final provider = context.read<BuyerOrderProvider>();
-    // String? selectedStatus;
-    //
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return StatefulBuilder(
-    //       builder: (context, setState) {
-    //         return AlertDialog(
-    //           title: const Text('Filter Orders'),
-    //           content: Column(
-    //             mainAxisSize: MainAxisSize.min,
-    //             children: [
-    //               DropdownButtonFormField<String>(
-    //                 value: selectedStatus,
-    //                 items: [
-    //                   'All',
-    //                   'Approved',
-    //                   'Pending',
-    //                   'Rejected',
-    //                 ].map((status) {
-    //                   return DropdownMenuItem(
-    //                     value: status,
-    //                     child: Text(status),
-    //                   );
-    //                 }).toList(),
-    //                 onChanged: (value) {
-    //                   setState(() {
-    //                     selectedStatus = value;
-    //                   });
-    //                 },
-    //                 decoration: const InputDecoration(
-    //                   labelText: 'Approval Status',
-    //                 ),
-    //               ),
-    //               const SizedBox(height: 16),
-    //               // Add more filters as needed
-    //             ],
-    //           ),
-    //           actions: [
-    //             TextButton(
-    //               onPressed: () {
-    //                 Navigator.pop(context);
-    //               },
-    //               child: const Text('Cancel'),
-    //             ),
-    //             TextButton(
-    //               onPressed: () {
-    //                 provider.filterOrders(selectedStatus);
-    //                 Navigator.pop(context);
-    //               },
-    //               child: const Text('Apply'),
-    //             ),
-    //           ],
-    //         );
-    //       },
-    //     );
-    //   },
-    // );
-  }
-
-  void getData() async{
-    var mp=context.read<MerchandisingProvider>();
+  void getData() async {
+    var mp = context.read<MerchandisingProvider>();
     mp.setLoading(true);
     await mp.getAllBuyerOrders();
     mp.setLoading(false);

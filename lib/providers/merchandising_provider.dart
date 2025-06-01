@@ -28,7 +28,8 @@ class MerchandisingProvider extends ChangeNotifier{
 
 
   List<BuyerOrderDetailsModel> _allBuyerOrderList=[];
-  List<BuyerOrderDetailsModel> get allBuyerOrderList=>_allBuyerOrderList;
+  List<BuyerOrderDetailsModel> _filteredBuyerOrderList = [];
+  List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
 
   Future<bool> getAllBuyerOrders() async{
     var data=await apiService.getData('api/Merchandising/Buyerorder');
@@ -37,6 +38,7 @@ class MerchandisingProvider extends ChangeNotifier{
       for(var i in data['result']['returnvalue']){
         _allBuyerOrderList.add(BuyerOrderDetailsModel.fromJson(i));
       }
+      _filteredBuyerOrderList = _allBuyerOrderList;
       notifyListeners();
       debugPrint('_allBuyerOrderList ${_allBuyerOrderList.length}');
       return true;
@@ -45,6 +47,21 @@ class MerchandisingProvider extends ChangeNotifier{
       return false;
     }
 
+  }
+
+  //search
+  void searchOrders(String query) {
+    if (query.isEmpty) {
+      _filteredBuyerOrderList = _allBuyerOrderList;
+    } else {
+      _filteredBuyerOrderList = _allBuyerOrderList.where((order) {
+        return (order.masterOrderCode?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+            (order.buyer?.toString().contains(query) ?? false) ||
+            (order.orderNumber?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+            (order.approvalStatus?.toLowerCase().contains(query.toLowerCase()) ?? false);
+      }).toList();
+    }
+    notifyListeners();
   }
 
 
