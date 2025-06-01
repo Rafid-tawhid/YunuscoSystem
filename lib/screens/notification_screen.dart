@@ -70,10 +70,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final detailsSheet = NotificationDetailsSheet(
       notification: notification,
       controller: remarksController,
-      onAccept: notification.leaveStatus?.toLowerCase() == 'pending'
+      onAccept: (notification.leaveStatus?.toLowerCase() == 'pending'||notification.leaveStatus=='Dpt. Head')
           ? () => _handleLeaveAction(context, notification, true, remarksController.text)
           : null,
-      onReject: notification.leaveStatus?.toLowerCase() == 'pending'
+      onReject: (notification.leaveStatus?.toLowerCase() == 'pending'||notification.leaveStatus=='Dpt. Head')
           ? () => _handleLeaveAction(context, notification, false, remarksController.text)
           : null,
     );
@@ -194,6 +194,8 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    debugPrint('CHIP STATUS ${status}');
     final color = _getStatusColor(status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -215,6 +217,8 @@ class _StatusChip extends StatelessWidget {
       case 'rejected':
         return Colors.red;
       case 'pending':
+        return Colors.orange;
+      case 'dpt. head':
         return Colors.orange;
       default:
         return Colors.grey;
@@ -270,7 +274,8 @@ class NotificationDetailsSheet extends StatelessWidget {
 
           if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),
-            (DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.loginName=='00004') ? Column(
+            Text('${DashboardHelpers.currentUser!.loginName}'),
+            (DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.loginName=='tahamina') ? Column(
               children: [
                 const SizedBox(height: 12),
                 Padding(

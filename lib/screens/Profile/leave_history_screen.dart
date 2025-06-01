@@ -205,14 +205,12 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(
-            child: Row(
-              children: [
-                if (sl != null) _buildBalanceChip('SL: $sl', Colors.blue),
-                if (el != null) _buildBalanceChip('EL: $el', Colors.green),
-                if (cl != null) _buildBalanceChip('CL: $cl', Colors.orange),
-              ],
-            ),
+          Row(
+            children: [
+              if (sl != null) _buildBalanceChip('SL: $sl', Colors.blue),
+              if (el != null) _buildBalanceChip('EL: $el', Colors.green),
+              if (cl != null) _buildBalanceChip('CL: $cl', Colors.orange),
+            ],
           )
         ],
       ),
@@ -223,7 +221,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 4),
       child: Chip(
-        label: Text(text, style: const TextStyle(fontSize: 12)),
+        label: Text(text, style: const TextStyle(fontSize: 10)),
         backgroundColor: color.withOpacity(0.2),
         labelPadding: const EdgeInsets.symmetric(horizontal: 4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
