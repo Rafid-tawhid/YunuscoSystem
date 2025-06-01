@@ -5,10 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/screens/Merchandising/merchandisingSummaryScreen.dart';
+import 'package:yunusco_group/screens/Merchandising/report_screen.dart';
+import 'package:yunusco_group/screens/Merchandising/widgets/booking_Screen.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_quantity.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart.dart';
+import 'package:yunusco_group/screens/Merchandising/widgets/work_order_screen.dart';
 
 import '../../models/buyer_wise_value_model.dart';
 import '../../utils/colors.dart';
@@ -79,8 +82,33 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
             title: "Purchase\nApproval",
             icon: Icons.list,
             color: const Color(0xFFEA978A), // Light sea green
-            destination: Text(''),
+            destination: CostingApprovalListScreen(),
           ),
+          _buildDashboardCard(
+            context,
+            title: "Booking",
+            icon: Icons.calendar_today,
+            color: Colors.green[300]!,
+            destination: BookingScreen(), // Replace with your actual screen
+          ),
+
+          _buildDashboardCard(
+            context,
+            title: "WO",
+            icon: Icons.work,
+            color: Colors.purple[300]!,
+            destination: WOScreen(), // Replace with your actual screen
+          ),
+
+          _buildDashboardCard(
+            context,
+            title: "Report",
+            icon: Icons.analytics,
+            color: Colors.indigo[300]!,
+            destination: ReportScreen(), // Replace with your actual screen
+          ),
+
+
         ],
       ),
     );

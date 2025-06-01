@@ -158,34 +158,34 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
               ),
               const SizedBox(height: 20),
 
-
-              Consumer<HrProvider>(
-                builder: (context,pro,_)=>pro.allDropdownInfoForJobcard!=null?CustomDropdown<Departments>(
-                  items: pro.allDropdownInfoForJobcard!.departments!,
-                  value: selectedDept,
-                  displayText: (item) => item.name??'',
-                  onChanged: (selected) {
-                    setState(() {
-                      selectedDept = selected;
-                    });
-                  },
-                  hintText: 'Select Leave Type',
-                ):SizedBox.shrink(),
-              ),
-              SizedBox(height: 8,),
-              Consumer<HrProvider>(
-                builder: (context,pro,_)=>pro.allDropdownInfoForJobcard!=null?CustomDropdown<Sections>(
-                  items: pro.allDropdownInfoForJobcard!.sections!,
-                  value: selectedSection,
-                  displayText: (item) => item.name??'',
-                  onChanged: (selected) {
-                    setState(() {
-                      selectedSection = selected;
-                    });
-                  },
-                  hintText: 'Select Section',
-                ):SizedBox.shrink(),
-              ),
+              //31401
+              // Consumer<HrProvider>(
+              //   builder: (context,pro,_)=>pro.allDropdownInfoForJobcard!=null?CustomDropdown<Departments>(
+              //     items: pro.allDropdownInfoForJobcard!.departments!,
+              //     value: selectedDept,
+              //     displayText: (item) => item.name??'',
+              //     onChanged: (selected) {
+              //       setState(() {
+              //         selectedDept = selected;
+              //       });
+              //     },
+              //     hintText: 'Select Leave Type',
+              //   ):SizedBox.shrink(),
+              // ),
+              // SizedBox(height: 8,),
+              // Consumer<HrProvider>(
+              //   builder: (context,pro,_)=>pro.allDropdownInfoForJobcard!=null?CustomDropdown<Sections>(
+              //     items: pro.allDropdownInfoForJobcard!.sections!,
+              //     value: selectedSection,
+              //     displayText: (item) => item.name??'',
+              //     onChanged: (selected) {
+              //       setState(() {
+              //         selectedSection = selected;
+              //       });
+              //     },
+              //     hintText: 'Select Section',
+              //   ):SizedBox.shrink(),
+              // ),
               SizedBox(height: 20,),
               // Search Button
               SizedBox(
