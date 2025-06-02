@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yunusco_group/models/buyer_wise_material_model.dart';
+import 'package:yunusco_group/models/production_dashboard_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -104,5 +105,24 @@ class ProductProvider extends ChangeNotifier{
     else {
       return false;
     }
+  }
+
+
+
+  ProductionDashboardModel? _productionDashboardModel;
+  ProductionDashboardModel? get productionDashboardModel => _productionDashboardModel;
+  //dashboard
+  Future<bool> getAllProductionDashboard() async{
+    var data=await apiService.getData('api/dashboard/ProductionDashBoard');
+    if(data!=null){
+      _productionDashboardModel=ProductionDashboardModel.fromJson(data['returnvalue']);
+      notifyListeners();
+      debugPrint('_allCategoryList ${_productionDashboardModel!.unitWiseSewing!.length}');
+      return true;
+      }
+    else {
+      return false;
+    }
+
   }
 }

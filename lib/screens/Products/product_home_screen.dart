@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/screens/Products/production_dashboard.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -13,7 +14,7 @@ import 'widgets/buyers_screen.dart';
 class ProductHomeScreen extends StatelessWidget {
   ProductHomeScreen({super.key});
 
-  final List<String> _list=['Production','Buyers'];
+  final List<String> _list=['Production','Production\nMonthly/Yearly','Buyers',];
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +40,28 @@ class ProductHomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () {
+              onTap: () async {
                 HapticFeedback.lightImpact();
+
                 if (index == 0) {
+
+                  var pp=context.read<ProductProvider>();
+                  await pp.getAllProductionDashboard();
+                  if(pp.productionDashboardModel!=null){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>  ProductionDashboard()),
+                    );
+                  }
+
+                }
+
+                if (index == 1) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ProductionSummaryScreen()),
                   );
-                } else if (index == 1) {
+                } else if (index == 2) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) =>  BuyersScreen()),
