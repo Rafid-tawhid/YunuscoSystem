@@ -37,7 +37,7 @@ class LeaveSummaryWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
               // In your parent widget:
               if(pro.selfLeaveInfo!=null) CompactLeaveInfo(leaveInfo: pro.selfLeaveInfo!),
               // ...leaveData.map((leave) => _buildLeaveRow(
