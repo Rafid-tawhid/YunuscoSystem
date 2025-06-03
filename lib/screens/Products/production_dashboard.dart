@@ -281,7 +281,7 @@ class ProductionDashboard extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            chartData[index].name ?? '',
+                            chartData[index].name!.substring(5),
                             style: const TextStyle(fontSize: 10),
                           ),
                         );
