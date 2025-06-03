@@ -18,6 +18,7 @@ class ProductionDashboard extends StatelessWidget {
     final data = provider.productionDashboardModel;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Production Dashboard'),
         centerTitle: true,
@@ -32,16 +33,17 @@ class ProductionDashboard extends StatelessWidget {
             _buildSummaryCards(data?.productionData?.first),
             const SizedBox(height: 24),
 
-            // Unit Wise Sewing Charts
-            _buildUnitWiseCharts(data),
-            const SizedBox(height: 24),
-
             // Production Progress Charts
             _buildProductionCharts(data),
             const SizedBox(height: 24),
 
             // Detailed Tables
             _buildProductionTables(data),
+            const SizedBox(height: 24),
+            // Unit Wise Sewing Charts
+            _buildUnitWiseCharts(data),
+            const SizedBox(height: 80),
+
           ],
         ),
       ),
@@ -68,6 +70,7 @@ class ProductionDashboard extends StatelessWidget {
   Widget _buildSummaryCard(String title, num value, Color color) {
     return Card(
       elevation: 4,
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -105,103 +108,53 @@ class ProductionDashboard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // const Text(
-        //   'Unit Wise Production',
-        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        // ),
-        // const SizedBox(height: 8),
-        // SizedBox(
-        //   height: 300,
-        //   child: BarChart(
-        //     BarChartData(
-        //       alignment: BarChartAlignment.spaceAround,
-        //       maxY: _calculateMaxY(sewingData, sewingYData) * 1.2,
-        //       barTouchData: BarTouchData(
-        //         enabled: true,
-        //         touchTooltipData: BarTouchTooltipData(
-        //           // tooltipBgColor: Colors.grey[800],
-        //           getTooltipItem: (group, groupIndex, rod, rodIndex) {
-        //             final name = group.x.toInt() == 0
-        //                 ? sewingData[groupIndex].unitName ?? ''
-        //                 : sewingYData[groupIndex].unitName ?? '';
-        //             final value = rod.toY.toInt();
-        //             return BarTooltipItem(
-        //               '$name\n$value',
-        //               const TextStyle(color: Colors.white),
-        //             );
-        //           },
-        //         ),
-        //       ),
-        //       titlesData: FlTitlesData(
-        //         show: true,
-        //         bottomTitles: AxisTitles(
-        //           sideTitles: SideTitles(
-        //             showTitles: true,
-        //             getTitlesWidget: (value, meta) {
-        //               final index = value.toInt();
-        //               if (index >= 0 && index < sewingData.length) {
-        //                 return Padding(
-        //                   padding: const EdgeInsets.only(top: 8.0),
-        //                   child: Text(
-        //                     sewingData[index].unitName ?? '',
-        //                     style: const TextStyle(fontSize: 10),
-        //                   ),
-        //                 );
-        //               }
-        //               return const Text('');
-        //             },
-        //             reservedSize: 40,
-        //           ),
-        //         ),
-        //         leftTitles: AxisTitles(
-        //           sideTitles: SideTitles(
-        //             showTitles: true,
-        //             reservedSize: 40,
-        //           ),
-        //         ),
-        //         topTitles: const AxisTitles(
-        //           sideTitles: SideTitles(showTitles: false),
-        //         ),
-        //         rightTitles: const AxisTitles(
-        //           sideTitles: SideTitles(showTitles: false),
-        //         ),
-        //       ),
-        //       borderData: FlBorderData(show: true),
-        //       barGroups: [
-        //         ...sewingData.asMap().entries.map((entry) {
-        //           final index = entry.key;
-        //           final item = entry.value;
-        //           return BarChartGroupData(
-        //             x: index,
-        //             barRods: [
-        //               BarChartRodData(
-        //                 toY: item.quantity?.toDouble() ?? 0,
-        //                 color: Colors.blue,
-        //                 width: 16,
-        //               ),
-        //             ],
-        //             showingTooltipIndicators: [0],
-        //           );
-        //         }),
-        //         ...sewingYData.asMap().entries.map((entry) {
-        //           final index = entry.key;
-        //           final item = entry.value;
-        //           return BarChartGroupData(
-        //             x: index,
-        //             barRods: [
-        //               BarChartRodData(
-        //                 toY: item.quantity?.toDouble() ?? 0,
-        //                 color: Colors.green,
-        //                 width: 16,
-        //               ),
-        //             ],
-        //             showingTooltipIndicators: [0],
-        //           );
-        //         }),
-        //       ],
-        //     ),
-        //   ),
-        // ),
+        const Text(
+          'Unit Wise Production',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 300,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: List.generate(sewingData.length, (index) {
+                return ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: 60), // Minimum width per bar
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 20,
+                        height: (sewingData[index].quantity?.toDouble() ?? 0) * 2,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        width: 20,
+                        height: (sewingYData[index].quantity?.toDouble() ?? 0) * 2,
+                        color: Colors.green,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: SizedBox(
+                          width: 60,
+                          child: Text(
+                            sewingData[index].unitName ?? '',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 10),
+                            maxLines: 2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -401,6 +354,7 @@ class ProductionDashboard extends StatelessWidget {
   Widget _buildDataTable(String title, List<String> headers, List<List<String>> rows) {
     return Card(
       elevation: 2,
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
