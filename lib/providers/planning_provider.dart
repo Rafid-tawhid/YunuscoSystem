@@ -10,10 +10,10 @@ class PlanningProvider extends ChangeNotifier{
   List<Map<String,dynamic>> get allPlanningList=>_allPlanningList;
 
   Future<bool> getAllPlanningList() async{
-    var data=await apiService.getData2('${AppConstants.liveUrl}api/PlanningApi/GetAllPO');
+    var data=await apiService.getData('api/Merchandising/AllPO');
     if(data!=null){
       _allPlanningList.clear();
-      for(var i in data){
+      for(var i in data['result']['returnvalue']){
         _allPlanningList.add(i);
       }
       notifyListeners();
