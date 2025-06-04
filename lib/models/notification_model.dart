@@ -19,7 +19,8 @@ class NotificationModel {
       String? appliedByName, 
       String? passedByName, 
       String? leaveStatus, 
-      num? currentApprover,}){
+      num? currentApprover, 
+      num? finalStatus,}){
     _leaveId = leaveId;
     _employeeIdCardNo = employeeIdCardNo;
     _applaiedForEmployee = applaiedForEmployee;
@@ -40,6 +41,7 @@ class NotificationModel {
     _passedByName = passedByName;
     _leaveStatus = leaveStatus;
     _currentApprover = currentApprover;
+    _finalStatus = finalStatus;
 }
 
   NotificationModel.fromJson(dynamic json) {
@@ -63,6 +65,7 @@ class NotificationModel {
     _passedByName = json['PassedByName'];
     _leaveStatus = json['LeaveStatus'];
     _currentApprover = json['CurrentApprover'];
+    _finalStatus = json['FinalStatus'];
   }
   num? _leaveId;
   String? _employeeIdCardNo;
@@ -84,6 +87,7 @@ class NotificationModel {
   String? _passedByName;
   String? _leaveStatus;
   num? _currentApprover;
+  num? _finalStatus;
 NotificationModel copyWith({  num? leaveId,
   String? employeeIdCardNo,
   String? applaiedForEmployee,
@@ -104,6 +108,7 @@ NotificationModel copyWith({  num? leaveId,
   String? passedByName,
   String? leaveStatus,
   num? currentApprover,
+  num? finalStatus,
 }) => NotificationModel(  leaveId: leaveId ?? _leaveId,
   employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
   applaiedForEmployee: applaiedForEmployee ?? _applaiedForEmployee,
@@ -124,6 +129,7 @@ NotificationModel copyWith({  num? leaveId,
   passedByName: passedByName ?? _passedByName,
   leaveStatus: leaveStatus ?? _leaveStatus,
   currentApprover: currentApprover ?? _currentApprover,
+  finalStatus: finalStatus ?? _finalStatus,
 );
   num? get leaveId => _leaveId;
   String? get employeeIdCardNo => _employeeIdCardNo;
@@ -145,6 +151,7 @@ NotificationModel copyWith({  num? leaveId,
   String? get passedByName => _passedByName;
   String? get leaveStatus => _leaveStatus;
   num? get currentApprover => _currentApprover;
+  num? get finalStatus => _finalStatus;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -168,6 +175,7 @@ NotificationModel copyWith({  num? leaveId,
     map['PassedByName'] = _passedByName;
     map['LeaveStatus'] = _leaveStatus;
     map['CurrentApprover'] = _currentApprover;
+    map['FinalStatus'] = _finalStatus;
     return map;
   }
 

@@ -68,21 +68,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void _showNotificationDetails(BuildContext context, NotificationModel notification) {
     final remarksController = TextEditingController();
     final detailsSheet = NotificationDetailsSheet(
-      notification: notification,
-      controller: remarksController,
-      onAccept: (notification.leaveStatus?.toLowerCase() == 'pending'||notification.leaveStatus=='Dpt. Head')
-          ? () => _handleLeaveAction(context, notification, true, remarksController.text)
-          : null,
-      onReject: (notification.leaveStatus?.toLowerCase() == 'pending'||notification.leaveStatus=='Dpt. Head')
-          ? () => _handleLeaveAction(context, notification, false, remarksController.text)
-          : null,
+        notification: notification,
+        controller: remarksController,
+        onAccept: (){
+          _handleLeaveAction(context, notification, true, remarksController.text);
+        },
+        onReject: (){
+          _handleLeaveAction(context, notification, false, remarksController.text);
+        }
     );
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      isScrollControlled: true,
-      builder: (context) => detailsSheet,
+      isScrollControlled: true, // This is important
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom, // Adjust for keyboard
+        ),
+        child: SingleChildScrollView(
+          child: detailsSheet,
+        ),
+      ),
     );
   }
 
@@ -95,15 +102,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final provider = context.read<NotificationProvider>();
 
     try {
+      debugPrint('MAM ID 381');
       var data = [
         {
           "leaveId": notification.leaveId,
-          "approvalLevel": DashboardHelpers.currentUser!.userId == 11 ? 2 : 1,
+          "approvalLevel": DashboardHelpers.currentUser!.userId == 381 ? 2 : 1,
           "note": isApproved ? "N/A" : remarks.isNotEmpty ? remarks : "N/A",
           "isApprove": isApproved
         }
       ];
-
+      debugPrint('APPROVED STATUS :${DashboardHelpers.currentUser!.userId}');
       provider.acceptLeaveApproval(data);
 
       if (mounted) {
@@ -241,8 +249,13 @@ class NotificationDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        bottom: 16, // Add keyboard height + some padding
+        left: 16,
+        right: 16,
+        top: 16,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,11 +284,9 @@ class NotificationDetailsSheet extends StatelessWidget {
 
           if (notification.reasons?.isNotEmpty ?? false)
             _DetailRow(label: 'Reason', value: notification.reasons!),
-
-          if (onAccept != null || onReject != null) ...[
             const SizedBox(height: 24),
-            Text('${DashboardHelpers.currentUser!.loginName}'),
-            (DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.loginName=='tahamina') ? Column(
+
+          isShowAcceptRejectButton(notification)? Column(
               children: [
                 const SizedBox(height: 12),
                 Padding(
@@ -298,14 +309,13 @@ class NotificationDetailsSheet extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    if (onReject != null)
+
                       Expanded(
                         child: OutlinedButton(
                           onPressed: onReject,
                           child: const Text('Reject'),
                         ),
                       ),
-                    if (onAccept != null) ...[
                       const SizedBox(width: 16),
                       Expanded(
                         child: ElevatedButton(
@@ -316,12 +326,12 @@ class NotificationDetailsSheet extends StatelessWidget {
                           child: const Text('Approve', style: TextStyle(color: Colors.white)),
                         ),
                       ),
-                    ],
+
                   ],
                 ),
               ],
-            ) : SizedBox.shrink(),
-          ],
+            ):SizedBox.shrink(),
+
           const SizedBox(height: 40),
         ],
       ),
@@ -336,6 +346,20 @@ class NotificationDetailsSheet extends StatelessWidget {
     } catch (e) {
       return dateString;
     }
+  }
+
+  bool isShowAcceptRejectButton(NotificationModel notification) {
+    if(notification.employeeIdCardNo==DashboardHelpers.currentUser!.iDnum){
+      return false;
+    }
+
+    else if(notification.finalStatus==1||notification.finalStatus==2||notification.finalStatus==4){
+        return true;
+      }
+    else {
+      return false;
+    }
+
   }
 }
 
