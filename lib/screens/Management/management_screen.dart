@@ -11,14 +11,14 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/management_dashboard_model.dart';
 
-class ManagementScreen extends StatefulWidget {
-  const ManagementScreen({super.key});
+class ManagementProductionScreen extends StatefulWidget {
+  const ManagementProductionScreen({super.key});
 
   @override
-  State<ManagementScreen> createState() => _ManagementScreenState();
+  State<ManagementProductionScreen> createState() => _ManagementProductionScreenState();
 }
 
-class _ManagementScreenState extends State<ManagementScreen> {
+class _ManagementProductionScreenState extends State<ManagementProductionScreen> {
   @override
   void initState() {
     super.initState();

@@ -141,7 +141,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item['name'] ?? 'No Name',
+                      item['PO'] ?? 'No Name',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -206,8 +206,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
       context: context,
       delegate: _CodeNameSearchDelegate(pp.allPlanningList.map((item) {
         return {
-          'name': item['name']?.toString() ?? '',
-          'code': item['code']?.toString() ?? '',
+          'Selected': item['Selected']?.toString() ?? '',
+          'PO': item['PO']?.toString() ?? '',
         };
       }).toList()),
     );
@@ -261,8 +261,7 @@ class _CodeNameSearchDelegate extends SearchDelegate {
     final results = query.isEmpty
         ? items
         : items.where((item) =>
-    (item['name']?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
-        (item['code']?.toLowerCase().contains(query.toLowerCase()) ?? false))
+    (item['PO']?.toLowerCase().contains(query.toLowerCase()) ?? false))
         .toList();
 
     if (results.isEmpty) {
@@ -280,7 +279,7 @@ class _CodeNameSearchDelegate extends SearchDelegate {
             backgroundColor: Colors.blue.withOpacity(0.2),
             child: Text(item['code']?.substring(0, 1) ?? '?'),
           ),
-          title: Text(item['name'] ?? 'No Name'),
+          title: Text(item['PO'] ?? 'No Name'),
           subtitle: Text('Code: ${item['code'] ?? 'N/A'}'),
           onTap: () {
             close(context, item);
