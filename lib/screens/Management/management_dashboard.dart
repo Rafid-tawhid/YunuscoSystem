@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'management_screen.dart';
+
 class ManagementDashboardScreen extends StatelessWidget {
   final List<DashboardItem> items = [
     DashboardItem("Production\nSummary", Icons.business, Colors.blue),
@@ -64,7 +66,7 @@ class DashboardCard extends StatelessWidget {
         onTap: () {
           // Add navigation or action here
           print('${item.title} tapped');
-          //navigateToScreent(context,item);
+          navigateToScreent(context,item);
         },
         child: Container(
           decoration: BoxDecoration(
@@ -100,5 +102,11 @@ class DashboardCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void navigateToScreent(BuildContext context, DashboardItem item) {
+    if(item.title=='Production\nSummary'){
+      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ManagementProductionScreen()));
+    }
   }
 }
