@@ -91,11 +91,11 @@ class ProductProvider extends ChangeNotifier{
   Future<bool> getProductionSummary(String month,String year,String section) async {
 
     setLoading(true);
-    var data=await apiService.getData('api/Production/ProductionSummary?section=$section&month=$month&year=$year');
+    var data=await apiService.getData('api/Merchandising/ProductionSummary?section=$section&month=$month&year=$year');
     setLoading(false);
     if(data!=null){
       _productionSummaryList.clear();
-      for(var i in data['returnvalue']){
+      for(var i in data['result']['returnvalue']){
         _productionSummaryList.add(i);
       }
       notifyListeners();

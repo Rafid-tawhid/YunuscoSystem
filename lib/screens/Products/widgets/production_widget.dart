@@ -11,8 +11,8 @@ class WeeklyProductionScreen extends StatelessWidget {
     return Consumer<ProductProvider>(
       builder: (context, provider, _) {
         final weeklyData = provider.productionSummaryList;
-        final totalQty = weeklyData.fold(0.0, (sum, item) => sum + (double.parse(item['sumQty'].toString())));
-        final totalTarget = weeklyData.fold(0.0, (sum, item) => sum + (double.parse(item['sumTarget'].toString())));
+        final totalQty = weeklyData.fold(0.0, (sum, item) => sum + (double.parse(item['SumQty'].toString())));
+        final totalTarget = weeklyData.fold(0.0, (sum, item) => sum + (double.parse(item['SumTarget'].toString())));
         final overallPercentage = totalTarget > 0.0 ? (totalQty / totalTarget) * 100 : 0;
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -80,8 +80,8 @@ class WeeklyProductionScreen extends StatelessWidget {
   }
 
   Widget _buildWeekCard(Map<String, dynamic> weekData) {
-    final sumQty = (weekData['sumQty'] as num).toDouble();
-    final sumTarget = (weekData['sumTarget'] as num).toDouble();
+    final sumQty = (weekData['SumQty'] as num).toDouble();
+    final sumTarget = (weekData['SumTarget'] as num).toDouble();
     final percentage = sumTarget > 0 ? (sumQty / sumTarget) * 100 : 0.0;
 
     return Card(
@@ -97,7 +97,7 @@ class WeeklyProductionScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              weekData['dataLabel'],
+              weekData['DataLabel'],
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -107,8 +107,8 @@ class WeeklyProductionScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildWeekStat('Production', weekData['sumQty']),
-                _buildWeekStat('Target', weekData['sumTarget']),
+                _buildWeekStat('Production', weekData['SumQty']),
+                _buildWeekStat('Target', weekData['SumTarget']),
                 _buildWeekStat('Achievement', percentage, isPercent: true),
               ],
             ),
