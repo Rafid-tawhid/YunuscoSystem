@@ -17,7 +17,7 @@ class ProductionSummaryScreen extends StatefulWidget {
 class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
   DateTime _selectedDate = DateTime.now();
   String? _selectedDepartment;
-
+  //
   final List<String> _departments = ['Printing', 'Molding', 'Sewing', 'Finishing'];
 
   @override
