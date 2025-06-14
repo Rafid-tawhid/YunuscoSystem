@@ -28,12 +28,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
   DateTime? _toDate;
   int _dayCount = 0;
   final TextEditingController _reasonController = TextEditingController();
-  final bool _isFullDay = true;
   File? _selectedFile;
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  bool _isUploading = false;
-  //
   Future<void> _pickFile() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -207,6 +202,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                                         _leaveType = value;
                                         _fromDate = null;
                                         _toDate = null;
+                                        _dayCount=0;
                                       });
                                     },
                                   ),
@@ -295,7 +291,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                   if(_dayCount>2) Container(
+                   if(_dayCount>2&&_leaveType!.type=='Sick Leave') Container(
                       decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(8)),
                       child: Row(
                         children: [

@@ -91,7 +91,7 @@ class ProductProvider extends ChangeNotifier{
   Future<bool> getProductionSummary(String month,String year,String section) async {
 
     setLoading(true);
-    var data=await apiService.getData2('${AppConstants.liveUrl}api/Production/ProductionSummary?section=$section&month=$month&year=$year');
+    var data=await apiService.getData('api/Production/ProductionSummary?section=$section&month=$month&year=$year');
     setLoading(false);
     if(data!=null){
       _productionSummaryList.clear();
