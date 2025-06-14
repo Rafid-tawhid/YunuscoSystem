@@ -1,13 +1,19 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/leave_history.dart';
 import 'package:yunusco_group/screens/home_page.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/leave_model.dart';
 
@@ -22,7 +28,30 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
   DateTime? _toDate;
   int _dayCount = 0;
   final TextEditingController _reasonController = TextEditingController();
-  bool _isFullDay = true;
+  final bool _isFullDay = true;
+  File? _selectedFile;
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  bool _isUploading = false;
+  //
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any, // This allows all file types
+        allowMultiple: false, // Set to true if you want multiple files
+      );
+
+      if (result != null) {
+        setState(() {
+          _selectedFile = File(result.files.single.path!);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking file: $e')),
+      );
+    }
+  }
 
   Future<void> _selectDate(BuildContext context, bool isFromDate, bool isPrevious) async {
     final DateTime now = DateTime.now();
@@ -31,11 +60,11 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: isPrevious ? DateTime(2000) : DateTime(2000), // Allow any past date when isPrevious=false
-      lastDate: isPrevious ? now : DateTime(2100), // Allow any future date when isPrevious=false
-      selectableDayPredicate: isPrevious
-          ? (DateTime date) => date.isBefore(now) || date.isAtSameMomentAs(now)
-          : null, // No restrictions when isPrevious=false
+      firstDate: isPrevious ? DateTime(2000) : DateTime(2000),
+      // Allow any past date when isPrevious=false
+      lastDate: isPrevious ? now : DateTime(2100),
+      // Allow any future date when isPrevious=false
+      selectableDayPredicate: isPrevious ? (DateTime date) => date.isBefore(now) || date.isAtSameMomentAs(now) : null, // No restrictions when isPrevious=false
     );
 
     if (picked != null) {
@@ -61,7 +90,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((v){
+    WidgetsBinding.instance.addPostFrameCallback((v) {
       getLeaveApplicationData();
     });
     super.initState();
@@ -74,21 +103,25 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
       appBar: AppBar(
         title: const Text('Leave Application'),
         actions: [
-          IconButton(onPressed: (){
-            var hp=context.read<HrProvider>();
-            hp.showAndHideLeaveHistory();
-          }, icon: Icon(Icons.menu))
+          IconButton(
+              onPressed: () {
+                var hp = context.read<HrProvider>();
+                hp.showAndHideLeaveHistory();
+              },
+              icon: Icon(Icons.menu))
         ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Consumer<HrProvider>(
-            builder: (context,pro,_)=>Column(
+            builder: (context, pro, _) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if(pro.showLeavHistory) LeaveSummaryWidget(),
-                SizedBox(height: 12,),
+                if (pro.showLeavHistory) LeaveSummaryWidget(),
+                SizedBox(
+                  height: 12,
+                ),
                 Column(
                   children: [
                     // Full Day Toggle
@@ -132,50 +165,54 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
 
                     // Leave Type Dropdown
                     Consumer<HrProvider>(
-                      builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator(),):Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Leave Type *',
-                            style: TextStyle(fontSize: 14, color: Colors.black87),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: DropdownButtonFormField<LeaveBalance>(
-                              value: _leaveType,
-                              isExpanded: true,
-                              hint: Text('Select Type'),
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                              ),
-                              items: pro.leaveTypeList
-                                  .map((type) => DropdownMenuItem(
-                                value: type,
-                                child: Text(
-                                  type.policyType,
-                                  style: const TextStyle(fontSize: 16),
+                      builder: (context, pro, _) => pro.isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Leave Type *',
+                                  style: TextStyle(fontSize: 14, color: Colors.black87),
                                 ),
-                              ))
-                                  .toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  _leaveType = value;
-                                  _fromDate=null;
-                                  _toDate=null;
-                                });
-                              },
+                                const SizedBox(height: 8),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  child: DropdownButtonFormField<LeaveBalance>(
+                                    value: _leaveType,
+                                    isExpanded: true,
+                                    hint: Text('Select Type'),
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                    ),
+                                    items: pro.leaveTypeList
+                                        .map((type) => DropdownMenuItem(
+                                              value: type,
+                                              child: Text(
+                                                type.policyType,
+                                                style: const TextStyle(fontSize: 16),
+                                              ),
+                                            ))
+                                        .toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _leaveType = value;
+                                        _fromDate = null;
+                                        _toDate = null;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
                     ),
                     const SizedBox(height: 24),
 
@@ -193,28 +230,22 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                               ),
                               const SizedBox(height: 8),
                               InkWell(
-                                onTap: () => _leaveType==null?_showAlert(): _selectDate(context, true,_leaveType!.policyId==1),
+                                onTap: () => _leaveType == null ? _showAlert() : _selectDate(context, true, _leaveType!.policyId == 1),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 14),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.calendar_today,
-                                          size: 20, color: Colors.grey.shade700),
+                                      Icon(Icons.calendar_today, size: 20, color: Colors.grey.shade700),
                                       const SizedBox(width: 12),
                                       Text(
-                                        _fromDate != null
-                                            ? DateFormat('MMM dd, yyyy').format(_fromDate!)
-                                            : 'Select date',
+                                        _fromDate != null ? DateFormat('MMM dd, yyyy').format(_fromDate!) : 'Select date',
                                         style: TextStyle(
                                           fontSize: 16,
-                                          color: _fromDate != null
-                                              ? Colors.black
-                                              : Colors.grey.shade500,
+                                          color: _fromDate != null ? Colors.black : Colors.grey.shade500,
                                         ),
                                       ),
                                     ],
@@ -235,28 +266,22 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                               ),
                               const SizedBox(height: 8),
                               InkWell(
-                                onTap: () =>_leaveType==null?_showAlert(): _selectDate(context, false,_leaveType!.policyId==1),
+                                onTap: () => _leaveType == null ? _showAlert() : _selectDate(context, false, _leaveType!.policyId == 1),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 14),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.grey.shade300),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.calendar_today,
-                                          size: 20, color: Colors.grey.shade700),
+                                      Icon(Icons.calendar_today, size: 20, color: Colors.grey.shade700),
                                       const SizedBox(width: 12),
                                       Text(
-                                        _toDate != null
-                                            ? DateFormat('MMM dd, yyyy').format(_toDate!)
-                                            : 'Select date',
+                                        _toDate != null ? DateFormat('MMM dd, yyyy').format(_toDate!) : 'Select date',
                                         style: TextStyle(
                                           fontSize: 16,
-                                          color: _toDate != null
-                                              ? Colors.black
-                                              : Colors.grey.shade500,
+                                          color: _toDate != null ? Colors.black : Colors.grey.shade500,
                                         ),
                                       ),
                                     ],
@@ -270,6 +295,36 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                     ),
                     const SizedBox(height: 24),
 
+                   if(_dayCount>2) Container(
+                      decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _selectedFile != null ? Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Text(_selectedFile!.path.split('/').last),
+                            ) : Text(''),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 6),
+                            child: ElevatedButton(
+                              onPressed: _pickFile,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey.shade300,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8), // Adjust the value as needed
+                                )
+                              ),
+                              child: Text(
+                                'Upload Doc',
+                                style: customTextStyle(12, Colors.black, FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     // Reason Field
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,44 +367,39 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                           elevation: 0,
                         ),
                         onPressed: () async {
-                          if (_fromDate == null ||
-                              _toDate == null ||
-                              _reasonController.text.isEmpty ||
-                              _leaveType == null) {
+                          if (_fromDate == null || _toDate == null || _reasonController.text.isEmpty || _leaveType == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Please fill all required fields'),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
-                          }
-                          else if(_fromDate!.isAfter(_toDate!)){
+                          } else if (_fromDate!.isAfter(_toDate!)) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Form date ca\'nt be after to date'),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
-                          }
-                          else {
+                          } else {
                             final shouldProceed = await DashboardHelpers.showConfirmDialog(
                               context: context,
                               title: 'Double Check Everything',
                               message: 'Please verify all details before proceeding.\nThis action cannot be undone.',
                               confirmText: 'APPLY',
                               cancelText: 'GO BACK',
-                              onSubmit: (){
+                              onSubmit: () {
                                 debugPrint('on apply');
                               },
-                              onCancel: (){
+                              onCancel: () {
                                 debugPrint('on cancel');
                                 // Navigator.pop(context);
                               },
                             );
                             if (shouldProceed == true) {
                               var hp = context.read<HrProvider>();
-                             var response= await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!,_dayCount);
-                              if(response){
+                              var response = await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!, _dayCount);
+                              if (response) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('Leave application submitted for $_dayCount days'),
@@ -360,8 +410,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                                 Navigator.pop(context);
                               }
 
-
-                             // Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                              // Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
                             }
                           }
                         },
@@ -375,7 +424,6 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                         ),
                       ),
                     ),
-
                   ],
                 )
               ],
@@ -386,24 +434,18 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
     );
   }
 
-
   @override
   void dispose() {
     _reasonController.dispose();
     super.dispose();
   }
 
-  Future<void> getLeaveApplicationData() async{
-    var hp=context.read<HrProvider>();
+  Future<void> getLeaveApplicationData() async {
+    var hp = context.read<HrProvider>();
     await hp.getLeaveApplicationInfo();
   }
 
   _showAlert() {
     DashboardHelpers.showAlert(msg: 'Select Leave type');
   }
-
-
-
-
-
 }

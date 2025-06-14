@@ -13,6 +13,8 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Need gallery access to upload files</string>
 	<string>yunusco_group</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>

@@ -100,7 +100,7 @@ class CompactLeaveInfo extends StatelessWidget {
             child: Text(title, overflow: TextOverflow.ellipsis),
           ),
           Expanded(
-            child: Text('$used/$total (Rem: $remaining)'),
+            child: Text('$remaining/$total (Rem: $used)'),
           ),
         ],
       ),
