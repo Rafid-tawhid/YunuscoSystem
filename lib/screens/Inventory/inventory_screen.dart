@@ -15,7 +15,7 @@ class InventoryStockScreen extends StatefulWidget {
 class _InventoryStockScreenState extends State<InventoryStockScreen> {
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = false;
-  String? _selectedStoreType;
+  String _selectedStoreType='4';
 
   @override
   void initState() {
