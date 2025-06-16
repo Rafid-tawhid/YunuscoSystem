@@ -15,12 +15,12 @@ class InventoryStockModel {
 }
 
   InventoryStockModel.fromJson(dynamic json) {
-    _storeType = json['storeType'];
+    _storeType = json['StoreType'];
     _currency = json['currency'];
-    _goodsINQty = json['goodsINQty'];
-    _goodsOutQty = json['goodsOutQty'];
-    _balanceQty = json['balanceQty'];
-    _balanceValue = json['balanceValue'];
+    _goodsINQty = json['GoodsINQty'];
+    _goodsOutQty = json['GoodsOutQty'];
+    _balanceQty = json['BalanceQty'];
+    _balanceValue = json['BalanceValue'];
   }
   String? _storeType;
   String? _currency;
@@ -50,12 +50,12 @@ InventoryStockModel copyWith({  String? storeType,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['storeType'] = _storeType;
+    map['StoreType'] = _storeType;
     map['currency'] = _currency;
-    map['goodsINQty'] = _goodsINQty;
-    map['goodsOutQty'] = _goodsOutQty;
-    map['balanceQty'] = _balanceQty;
-    map['balanceValue'] = _balanceValue;
+    map['GoodsINQty'] = _goodsINQty;
+    map['GoodsOutQty'] = _goodsOutQty;
+    map['BalanceQty'] = _balanceQty;
+    map['BalanceValue'] = _balanceValue;
     return map;
   }
 

@@ -2,29 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:yunusco_group/utils/colors.dart';
-
 import '../../models/inventory_stock_model.dart';
 
 class InventoryStockScreen extends StatefulWidget {
-
-
-  const InventoryStockScreen({
-    Key? key,}) : super(key: key);
+  const InventoryStockScreen({Key? key}) : super(key: key);
 
   @override
   State<InventoryStockScreen> createState() => _InventoryStockScreenState();
 }
 
 class _InventoryStockScreenState extends State<InventoryStockScreen> {
+  DateTime _selectedDate = DateTime.now();
+  bool _isLoading = false;
+  String? _selectedStoreType;
 
   @override
   void initState() {
-    var ip=context.read<InventoryPorvider>();
-    ip.getInventoryStockSummery();
+    _loadData(_selectedDate,_selectedStoreType??'4');
     super.initState();
   }
+
+  Future<void> _loadData(DateTime date,String storeType) async {
+    setState(() => _isLoading = true);
+    try {
+      await context.read<InventoryPorvider>().getInventoryStockSummery(date,storeType);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error loading data: ${e.toString()}")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +44,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text('Inventory', style: TextStyle(color: Colors.white)),
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
         flexibleSpace: Container(
@@ -42,33 +52,77 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.indigo[800]!,myColors.primaryColor],
+              colors: [Colors.indigo[800]!, myColors.primaryColor],
             ),
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.filter_alt, color: Colors.white),
-            onPressed: () => _showFilterDialog(context),
+          PopupMenuButton<String>(
+            color: Colors.white,
+            onSelected: (String value) {
+              // Call your function with the selected store type
+              handleStoreTypeSelection(value);
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: '1', // StoreType value
+                  child: Text('General Store'),
+                ),
+                PopupMenuItem<String>(
+                  value: '2',
+                  child: Text('Accessories Store'),
+                ),
+                PopupMenuItem<String>(
+                  value: '3',
+                  child: Text('Garments Store'),
+                ),
+                PopupMenuItem<String>(
+                  value: '4',
+                  child: Text('All'),
+                ),
+              ];
+            },
+            icon: Icon(Icons.store, color: Colors.white), // Using store icon
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: EdgeInsets.all(16),
-        child: Consumer<InventoryPorvider>(builder: (context,provider,_)=>Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildStockMovementChart(provider),
-            SizedBox(height: 24),
-            _buildInventoryTable(provider),
-          ],
-        )),
+        child: Consumer<InventoryPorvider>(
+          builder: (context, provider, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Selected date display
+              Center(
+                  child: InkWell(
+                    onTap: (){
+                      _selectDate(context);
+                    },
+                  child: Text(
+                    DashboardHelpers.convertDateTime(
+                        _selectedDate.toString(),
+                        pattern: 'dd-MMM-yyyy'
+                    ),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.indigo[800],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              _buildStockMovementChart(provider),
+              SizedBox(height: 24),
+              _buildInventoryTable(provider),
+            ],
+          ),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.download, color: Colors.white),
-        onPressed: () => _exportData(context),
-      ),
+
     );
   }
 
@@ -144,9 +198,9 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                 value,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -170,7 +224,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
               color: Colors.grey[800],
             ),
           ),
-          SizedBox(height: 12,),
+          SizedBox(height: 12),
           _buildSummaryCards(pro),
         ],
       ),
@@ -200,7 +254,10 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                     color: Colors.grey[800],
                   ),
                 ),
-                Text(DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'dd-MMM-yyyy'))
+                Text(DashboardHelpers.convertDateTime(
+                    _selectedDate.toString(),
+                    pattern: 'dd-MMM-yyyy'
+                ))
               ],
             ),
             SizedBox(height: 12),
@@ -267,7 +324,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                               ),
                             )),
                             DataCell(Text(
-                              '${(item.balanceValue ?? 0).toStringAsFixed(2)}',
+                              (item.balanceValue ?? 0).toStringAsFixed(2),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue[700],
@@ -287,37 +344,8 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
     );
   }
 
-  void _showFilterDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Filter Inventory"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Add your filter options here
-            Text("Filter options coming soon!"),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("CANCEL"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Apply filters
-              Navigator.pop(context);
-            },
-            child: Text("APPLY"),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _exportData(BuildContext context) {
-    // Implement export functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Exporting inventory data...")),
     );
@@ -331,5 +359,56 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
         overflow: TextOverflow.ellipsis,
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.indigo[800]!,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.indigo[800],
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() => _selectedDate = picked);
+      _loadData(picked,_selectedStoreType??'');
+    }
+  }
+
+  // Function to handle selection
+  void handleStoreTypeSelection(String storeType) {
+    // Here you can call your API or perform any action
+    print('Selected store type: $storeType');
+    setState(() {
+      _selectedStoreType=storeType;
+    });
+    _loadData(_selectedDate,storeType);
+  }
+
+// Helper function to get store name
+  String getStoreName(String type) {
+    switch (type) {
+      case '1': return 'General Store';
+      case '2': return 'Accessories Store';
+      case '3': return 'Garments Store';
+      default: return '4';
+    }
   }
 }

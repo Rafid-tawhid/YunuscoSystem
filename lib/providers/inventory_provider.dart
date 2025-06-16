@@ -12,11 +12,14 @@ class InventoryPorvider extends ChangeNotifier{
   List<InventoryStockModel> get inventoryStockList=>_inventoryStockList;
 
   //
-  Future<bool> getInventoryStockSummery() async{
-    var data=await apiService.getData('api/InventoryApi/StockSummary?storeType=4&toDate=');
+  Future<bool> getInventoryStockSummery(DateTime date,String type) async{
+
+    debugPrint('This is type ${type}');
+    final formattedDate=formatDateSlash(date);
+    var data=await apiService.getData('api/Inventory/StockSummary?storeType=$type&toDate=$formattedDate');
     if(data!=null){
       _inventoryStockList.clear();
-      for(var i in data){
+      for(var i in data['returnvalue']){
         _inventoryStockList.add(InventoryStockModel.fromJson(i));
       }
       notifyListeners();
@@ -26,6 +29,11 @@ class InventoryPorvider extends ChangeNotifier{
     else {
       return false;
     }
+  }
 
+  String formatDateSlash(DateTime date) {
+    String month = date.month.toString().padLeft(2, '0');
+    String day = date.day.toString().padLeft(2, '0');
+    return '$month -$day - ${date.year}';
   }
 }
