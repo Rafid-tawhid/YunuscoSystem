@@ -53,9 +53,7 @@ class ProductHomeScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) =>  ProductionDashboard()),
                     );
                   }
-
                 }
-
                 if (index == 1) {
                   Navigator.push(
                     context,

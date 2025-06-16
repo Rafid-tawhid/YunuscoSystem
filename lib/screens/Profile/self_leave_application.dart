@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
@@ -394,7 +395,9 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                             );
                             if (shouldProceed == true) {
                               var hp = context.read<HrProvider>();
+                              EasyLoading.show();
                               var response = await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!, _dayCount);
+                              EasyLoading.dismiss();
                               if (response) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

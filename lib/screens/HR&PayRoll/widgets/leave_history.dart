@@ -88,6 +88,7 @@ class CompactLeaveInfo extends StatelessWidget {
     );
   }
 
+  //
   Widget _buildRow(String title, num? used, num? total) {
     final remaining = (total ?? 0) - (used ?? 0);
 
@@ -100,7 +101,7 @@ class CompactLeaveInfo extends StatelessWidget {
             child: Text(title, overflow: TextOverflow.ellipsis),
           ),
           Expanded(
-            child: Text('$remaining/$total (Rem: $used)'),
+            child: Text('${remaining.toStringAsFixed(2)}/$total (Rem: $used)'),
           ),
         ],
       ),
