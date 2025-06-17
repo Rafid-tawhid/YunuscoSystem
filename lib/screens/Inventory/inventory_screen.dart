@@ -85,6 +85,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
             icon: Icon(Icons.filter_alt_outlined, color: Colors.white), // Using store icon
           ),
         ],
+        //
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
