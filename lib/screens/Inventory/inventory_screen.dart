@@ -3,10 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
-import '../../models/inventory_stock_model.dart';
 
 class InventoryStockScreen extends StatefulWidget {
-  const InventoryStockScreen({Key? key}) : super(key: key);
+  const InventoryStockScreen({super.key});
 
   @override
   State<InventoryStockScreen> createState() => _InventoryStockScreenState();
@@ -83,7 +82,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                 ),
               ];
             },
-            icon: Icon(Icons.store, color: Colors.white), // Using store icon
+            icon: Icon(Icons.filter_alt_outlined, color: Colors.white), // Using store icon
           ),
         ],
       ),
