@@ -14,6 +14,7 @@ import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
 import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
+import 'board_room_booking_screen.dart';
 import 'depertments_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
 
@@ -41,6 +42,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Icons.airplane_ticket,     // Self Leave (personal time off)
     Icons.history_toggle_off,  // Leave History (past records)
     Icons.receipt,             // Pay Slip (financial document)
+    Icons.room,             // Pay Slip (financial document)
   ];
   final List<Color> iconColors = [
     Colors.blue[800]!,    // Dark Blue
@@ -95,7 +97,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
             mainAxisSpacing: 16,
             childAspectRatio: 1,
           ),
-          itemCount: 7,
+          itemCount: menuList.length,
           itemBuilder: (context, index) {
             final menu = menuList[index];
             final colorIndex = index % cardColors.length;
@@ -188,6 +190,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     if (index == 6) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeePaySlip()));
     }
+    if (index == 7) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => BoardRoomBookingScreen()));
+    }
   }
 
   void setMenuItems() {
@@ -226,7 +231,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         "name": "Self Leave",
         "cardColor": cardColors[4],
         "iconColor": iconColors[4],
-        "icon": menuIcons[4],
+        "icon": menuIcons[7],
       },
       {
         "code": 5,
@@ -241,6 +246,13 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         "cardColor": cardColors[6],
         "iconColor": iconColors[6],
         "icon": menuIcons[6],
+      },
+      {
+        "code": 7,
+        "name": "Board Room \nBooking",
+        "cardColor": cardColors[3],
+        "iconColor": iconColors[3],
+        "icon": menuIcons[3],
       },
     ];
   }
