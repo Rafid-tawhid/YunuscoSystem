@@ -25,7 +25,9 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((v){
+      _loadData();
+    });
   }
 
   @override

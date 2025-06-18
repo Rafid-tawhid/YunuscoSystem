@@ -95,7 +95,7 @@ class ProductProvider extends ChangeNotifier{
     setLoading(false);
     if(data!=null){
       _productionSummaryList.clear();
-      for(var i in data['result']['returnvalue']){
+      for(var i in data['returnvalue']){
         _productionSummaryList.add(i);
       }
       notifyListeners();
