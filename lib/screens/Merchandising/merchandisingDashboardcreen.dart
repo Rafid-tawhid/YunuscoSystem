@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/screens/Merchandising/merchandisingSummaryScreen.dart';
+import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/report_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/booking_Screen.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_quantity.dart';
@@ -82,7 +83,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
             title: "Purchase\nApproval",
             icon: Icons.list,
             color: const Color(0xFFEA978A), // Light sea green
-            destination: CostingApprovalListScreen(),
+            destination: PurchaseApprovalScreen(),
           ),
           _buildDashboardCard(
             context,

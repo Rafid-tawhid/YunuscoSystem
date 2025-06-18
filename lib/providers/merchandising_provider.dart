@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/buyer_wise_value_model.dart';
+import 'package:yunusco_group/models/purchase_approval_model.dart';
 import 'package:yunusco_group/screens/Merchandising/buyer_order_details.dart';
+import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -48,6 +50,7 @@ class MerchandisingProvider extends ChangeNotifier{
     }
 
   }
+
 
   //search
   void searchOrders(String query) {
@@ -143,6 +146,45 @@ class MerchandisingProvider extends ChangeNotifier{
     apiService.postData(url, approvalItem);
   }
 
+
+  List<PurchaseApprovalModel> _purchaseApprovalList=[];
+  List<PurchaseApprovalModel> get purchaseApprovalList =>_purchaseApprovalList;
+
+  Future<bool> getAllPurchaseData() async {
+    try {
+      setLoading(true);
+      debugPrint('Fetching purchase data...');
+
+      final response = await apiService.getData('api/Merchandising/PurchaseOrderApprovalList');
+
+      if (response == null || response['returnvalue'] == null) {
+        debugPrint('No data received or invalid response structure');
+        return false;
+      }
+
+      final result = response['returnvalue']['Result'] as List?;
+      if (result == null || result.isEmpty) {
+        debugPrint('Empty purchase data received');
+        _purchaseApprovalList.clear();
+        notifyListeners();
+        return true;
+      }
+
+      _purchaseApprovalList = result
+          .map<PurchaseApprovalModel>((json) => PurchaseApprovalModel.fromJson(json))
+          .toList();
+
+      debugPrint('Successfully loaded ${_purchaseApprovalList.length} purchase items');
+      notifyListeners();
+      return true;
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching purchase data: $e');
+      debugPrint('Stack trace: $stackTrace');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
 
 
 }
