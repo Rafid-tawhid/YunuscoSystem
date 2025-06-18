@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/screens/Merchandising/widgets/approval_top_cards.dart';
 
 import '../../models/purchase_approval_model.dart';
 import '../../providers/merchandising_provider.dart';
+import '../../utils/constants.dart';
 
 class PurchaseApprovalScreen extends StatefulWidget {
   const PurchaseApprovalScreen({Key? key}) : super(key: key);
@@ -13,8 +16,9 @@ class PurchaseApprovalScreen extends StatefulWidget {
 }
 
 class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
-  String _searchQuery = '';
   bool _isLoading = false;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
   final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
   final dateFormat = DateFormat('MMM dd, yyyy');
 
@@ -22,6 +26,12 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -38,13 +48,17 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
   }
 
   List<PurchaseApprovalModel> _getFilteredList(List<PurchaseApprovalModel> list) {
+    if (_searchController.text.isEmpty) return list;
+
     return list.where((item) {
-      return item.purchaseOrderCode!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.buyerName!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.supplierName!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.finalStatus!.toLowerCase().contains(_searchQuery.toLowerCase());
+      return item.purchaseOrderCode!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+          item.buyerName!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+          item.supplierName!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+          item.finalStatus!.toLowerCase().contains(_searchController.text.toLowerCase());
     }).toList();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,49 +66,52 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
     final filteredList = _getFilteredList(purchaseList);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Purchase Approvals'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
-          ),
-        ],
-      ),
+      backgroundColor: Colors.white,
+      appBar: _buildAppBar(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Search',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+          : filteredList.isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 48,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _searchController.text.isEmpty
+                  ? 'No purchase approvals found'
+                  : 'No results for "${_searchController.text}"',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            if (_searchController.text.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _searchController.clear();
+                    _isSearching = false;
+                  });
+                },
+                child: const Text('Clear search'),
               ),
-              onChanged: (value) => setState(() => _searchQuery = value),
-            ),
-          ),
-          Expanded(
-            child: filteredList.isEmpty
-                ? const Center(child: Text('No purchase approvals found'))
-                : ListView.builder(
-              itemCount: filteredList.length,
-              itemBuilder: (context, index) {
-                return _buildPurchaseItem(filteredList[index]);
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
+      )
+          : ListView.builder(
+        itemCount: filteredList.length,
+        itemBuilder: (context, index) {
+          return _buildPurchaseItem(filteredList[index]);
+        },
       ),
     );
   }
 
   Widget _buildPurchaseItem(PurchaseApprovalModel purchase) {
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ExpansionTile(
         leading: Container(
@@ -189,6 +206,8 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                   onPressed: () {
                     // Add your details action here
                     debugPrint('View details for ${purchase.purchaseOrderCode}');
+                  //  DashboardHelpers.openUrl('http://202.74.243.118:1726/Merchandising/MerchandisingReport/PurchaseOrderReport?POCode=${purchase.purchaseOrderCode}&version=0');
+                    DashboardHelpers.openUrl('${AppConstants.liveUrl}Merchandising/MerchandisingReport/PurchaseOrderReport?POCode=${purchase.purchaseOrderCode}&version=0');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
@@ -305,5 +324,41 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
   Future<void> _rejectPurchase(PurchaseApprovalModel purchase) async {
     // Implement your reject logic here
     debugPrint('Rejecting PO: ${purchase.purchaseOrderCode}');
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: _isSearching
+          ? TextField(
+        controller: _searchController,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: 'Search purchases...',
+          border: InputBorder.none,
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              setState(() {
+                _searchController.clear();
+                _isSearching = false;
+              });
+            },
+          ),
+        ),
+        onChanged: (_) => setState(() {}),
+      )
+          : const Text('Purchase Approvals'),
+      actions: [
+        if (!_isSearching)
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => setState(() => _isSearching = true),
+          ),
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: _loadData,
+        ),
+      ],
+    );
   }
 }
