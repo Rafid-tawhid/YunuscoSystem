@@ -1,15 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/approval_top_cards.dart';
-
+import 'package:yunusco_group/screens/Merchandising/widgets/purchase_details.dart';
 import '../../models/purchase_approval_model.dart';
 import '../../providers/merchandising_provider.dart';
-import '../../utils/constants.dart';
 
 class PurchaseApprovalScreen extends StatefulWidget {
-  const PurchaseApprovalScreen({Key? key}) : super(key: key);
+  const PurchaseApprovalScreen({super.key});
 
   @override
   _PurchaseApprovalScreenState createState() => _PurchaseApprovalScreenState();
@@ -212,11 +211,25 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                   const SizedBox(width: 8),
                 ],
                 ElevatedButton(
-                  onPressed: () {
-                    // Add your details action here
-                    debugPrint('View details for ${purchase.purchaseOrderCode}');
-                  //  DashboardHelpers.openUrl('http://202.74.243.118:1726/Merchandising/MerchandisingReport/PurchaseOrderReport?POCode=${purchase.purchaseOrderCode}&version=0');
-                    DashboardHelpers.openUrl('${AppConstants.liveUrl}Merchandising/MerchandisingReport/PurchaseOrderReport?POCode=${purchase.purchaseOrderCode}&version=0');
+                  onPressed: () async {
+
+                    // Get credentials securely
+
+                    var mp=context.read<MerchandisingProvider>();
+                    var data=await mp.purchaseDetailsByPO(purchase);
+
+                    debugPrint('Data $data');
+                    if(data['returnvalue']!=null){
+                      // To use this screen:
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => PurchaseOrderReportScreen(
+                            orderData: data['returnvalue'],
+                          ),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
@@ -370,4 +383,5 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
       ],
     );
   }
+
 }

@@ -44,7 +44,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   intl:
   google_fonts: ^6.2.1
-  url_launcher: ^6.3.0
+  url_launcher: ^6.3.1
   fl_chart: ^0.70.2
   pie_chart: ^5.4.0
   flutter_launcher_icons: ^0.13.1
@@ -62,6 +62,7 @@ dependencies:
   http_parser: ^4.0.2
   file_picker: ^10.2.0
   cloud_firestore: ^5.6.9
+
 
 #  googleapis_auth: ^2.0.0
 

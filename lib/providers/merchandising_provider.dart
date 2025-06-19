@@ -186,5 +186,12 @@ class MerchandisingProvider extends ChangeNotifier{
     }
   }
 
+  Future<dynamic> purchaseDetailsByPO(PurchaseApprovalModel purchase) async{
+   return apiService.postData('api/Merchandising/DetailPurOrderMasterInfo', {
+      "PO": purchase.purchaseOrderCode,
+      "Version" : purchase.version
+    });
+  }
+
 
 }
