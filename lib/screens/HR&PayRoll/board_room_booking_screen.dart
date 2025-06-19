@@ -137,36 +137,122 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Booking Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Title: ${booking['title']}'),
-            SizedBox(height: 8),
-            Text('Booked by: ${booking['userName']}'),
-            SizedBox(height: 8),
-            Text('Time: ${DateFormat('h:mm a').format((booking['startTime'] as Timestamp).toDate())} - '
-                '${DateFormat('h:mm a').format((booking['endTime'] as Timestamp).toDate())}'),
-            SizedBox(height: 8),
-            if (booking['description'] != null && booking['description'].isNotEmpty) Text('Description: ${booking['description']}'),
-          ],
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        title: Container(
+          padding: EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey[300]!,
+                width: 1.0,
+              ),
+            ),
+          ),
+          child: Text(
+            'Booking Details',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.green[700],
+            ),
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDetailRow(Icons.title, 'Title', booking['title']),
+              SizedBox(height: 12),
+              _buildDetailRow(Icons.person, 'Booked by', booking['userName']),
+              SizedBox(height: 12),
+              _buildDetailRow(
+                  Icons.access_time,
+                  'Time',
+                  '${DateFormat('h:mm a').format((booking['startTime'] as Timestamp).toDate())} - '
+                      '${DateFormat('h:mm a').format((booking['endTime'] as Timestamp).toDate())}'
+              ),
+              if (booking['description'] != null && booking['description'].isNotEmpty)
+                Column(
+                  children: [
+                    SizedBox(height: 12),
+                    _buildDetailRow(Icons.description, 'Description', booking['description']),
+                  ],
+                ),
+            ],
+          ),
         ),
         actions: [
           if (booking['userId'] == DashboardHelpers.currentUser!.userId)
             TextButton(
               onPressed: () => _cancelBooking(booking['id']),
-              child: Text('Cancel Booking', style: TextStyle(color: Colors.red)),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red[600],
+                padding: EdgeInsets.symmetric(horizontal: 16),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.cancel, size: 18),
+                  SizedBox(width: 4),
+                  Text('Cancel Booking'),
+                ],
+              ),
             ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.green[700],
+              padding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check, size: 18),
+                SizedBox(width: 4),
+                Text('Close'),
+              ],
+            ),
           ),
         ],
-      ),
+      )
     );
   }
 
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 20, color: Colors.grey[600]),
+        SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
   Future<void> _cancelBooking(String bookingId) async {
     try {
       // First get the booking to verify ownership
@@ -359,7 +445,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.green, width: 2),
+                    borderSide: BorderSide(color: Colors.blueAccent, width: 1.4),
                   ),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   filled: true,
@@ -389,7 +475,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.green, width: 2),
+                    borderSide: BorderSide(color: Colors.blueAccent, width: 1.4),
                   ),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   filled: true,
