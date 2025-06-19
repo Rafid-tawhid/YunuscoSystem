@@ -5,15 +5,18 @@ import 'package:provider/provider.dart';
 import '../../../providers/merchandising_provider.dart';
 
 class ApprovalTopCards extends StatelessWidget {
-  const ApprovalTopCards({super.key});
+  final bool? isPurchase;
+
+
+  const ApprovalTopCards({super.key, this.isPurchase});
 
   @override
   Widget build(BuildContext context) {
     var mp=Provider.of<MerchandisingProvider>(context,listen: true);
-    final totalItems = mp.costingApprovalFilterList.length;
-    final pendingCount = mp.costingApprovalFilterList.where((a) => a.finalStatus == 'Pending').length;
-    final approvedCount = mp.costingApprovalFilterList.where((a) => a.finalStatus == 'Approved').length;
-    final rejectedCount = mp.costingApprovalFilterList.where((a) => a.finalStatus == 'Rejected').length;
+    final totalItems =isPurchase==true?mp.purchaseApprovalList.length : mp.costingApprovalFilterList.length;
+    final pendingCount =isPurchase==true?mp.purchaseApprovalList.where((a) => a.finalStatus == 'Pending').length: mp.costingApprovalFilterList.where((a) => a.finalStatus == 'Pending').length;
+    final approvedCount =isPurchase==true?mp.purchaseApprovalList.where((a) => a.finalStatus == 'Approved').length: mp.costingApprovalFilterList.where((a) => a.finalStatus == 'Approved').length;
+    final rejectedCount =isPurchase==true?mp.purchaseApprovalList.where((a) => a.finalStatus == 'Rejected').length: mp.costingApprovalFilterList.where((a) => a.finalStatus == 'Rejected').length;
 
     return Padding(
       padding: const EdgeInsets.all(12.0),

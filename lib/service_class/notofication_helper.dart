@@ -152,7 +152,6 @@ class NotificationServices {
     final context = NavigationService.navigatorKey.currentContext;
     var np=context!.read<NotificationProvider>();
     np.addCount();
-
     _showNotification(message); // Your existing notification display logic
   }
 

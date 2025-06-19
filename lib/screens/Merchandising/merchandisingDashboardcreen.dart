@@ -18,7 +18,7 @@ import '../../models/buyer_wise_value_model.dart';
 import '../../utils/colors.dart';
 import '../../utils/constants.dart';
 import 'buyer_order_Screen.dart';
-import 'costing_approval.dart';
+import 'costing_approval_screen.dart';
 
 class MerchandisingScreen extends StatefulWidget {
   const MerchandisingScreen({super.key});

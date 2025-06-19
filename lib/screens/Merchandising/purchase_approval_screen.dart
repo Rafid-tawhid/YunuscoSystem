@@ -102,12 +102,19 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
           ],
         ),
       )
-          : ListView.builder(
-        itemCount: filteredList.length,
-        itemBuilder: (context, index) {
-          return _buildPurchaseItem(filteredList[index]);
-        },
-      ),
+          : Column(
+            children: [
+              ApprovalTopCards(isPurchase: true,),
+              Expanded(
+                child: ListView.builder(
+                        itemCount: filteredList.length,
+                        itemBuilder: (context, index) {
+                return _buildPurchaseItem(filteredList[index]);
+                        },
+                      ),
+              ),
+            ],
+          ),
     );
   }
 

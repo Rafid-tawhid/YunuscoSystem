@@ -121,9 +121,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
         _selectedSlots.remove(slot);
       } else {
         // Only allow selecting consecutive slots
-        if (_selectedSlots.isEmpty ||
-            slot.start == _selectedSlots.last.end ||
-            slot.end == _selectedSlots.first.start) {
+        if (_selectedSlots.isEmpty || slot.start == _selectedSlots.last.end || slot.end == _selectedSlots.first.start) {
           _selectedSlots.add(slot);
           _selectedSlots.sort((a, b) => a.start.compareTo(b.start));
         } else {
@@ -151,8 +149,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
             Text('Time: ${DateFormat('h:mm a').format((booking['startTime'] as Timestamp).toDate())} - '
                 '${DateFormat('h:mm a').format((booking['endTime'] as Timestamp).toDate())}'),
             SizedBox(height: 8),
-            if (booking['description'] != null && booking['description'].isNotEmpty)
-              Text('Description: ${booking['description']}'),
+            if (booking['description'] != null && booking['description'].isNotEmpty) Text('Description: ${booking['description']}'),
           ],
         ),
         actions: [
@@ -174,10 +171,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     try {
       // First get the booking to verify ownership
       EasyLoading.show(maskType: EasyLoadingMaskType.black);
-      final bookingDoc = await FirebaseFirestore.instance
-          .collection('bookings')
-          .doc(bookingId)
-          .get();
+      final bookingDoc = await FirebaseFirestore.instance.collection('bookings').doc(bookingId).get();
       EasyLoading.dismiss();
       if (!bookingDoc.exists) {
         throw Exception('Booking not found');
@@ -191,10 +185,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       }
 
       // Delete the booking
-      await FirebaseFirestore.instance
-          .collection('bookings')
-          .doc(bookingId)
-          .delete();
+      await FirebaseFirestore.instance.collection('bookings').doc(bookingId).delete();
 
       // Refresh the slots
       _initializeTimeSlots();
@@ -210,6 +201,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       );
     }
   }
+
   Future<void> _saveBooking() async {
     if (_selectedSlots.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -250,15 +242,9 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     }
   }
 
-
   Future<Map<String, dynamic>?> _getBookingDetails(TimeSlot slot) async {
     try {
-      final query = await FirebaseFirestore.instance
-          .collection('bookings')
-          .where('startTime', isLessThanOrEqualTo: slot.end)
-          .where('endTime', isGreaterThanOrEqualTo: slot.start)
-          .limit(1)
-          .get();
+      final query = await FirebaseFirestore.instance.collection('bookings').where('startTime', isLessThanOrEqualTo: slot.end).where('endTime', isGreaterThanOrEqualTo: slot.start).limit(1).get();
 
       if (query.docs.isNotEmpty) {
         return query.docs.first.data();
@@ -325,15 +311,15 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                           color: slot.isBooked
                               ? Colors.grey[400]
                               : isSelected
-                              ? Colors.blue
-                              : Colors.blue[100],
+                                  ? Colors.blue
+                                  : Colors.blue[100],
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: slot.isBooked
                                 ? Colors.grey
                                 : isSelected
-                                ? Colors.blue[800]!
-                                : Colors.blue[300]!,
+                                    ? Colors.blue[800]!
+                                    : Colors.blue[300]!,
                           ),
                         ),
                         child: Text(
@@ -363,8 +349,23 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                 controller: _titleController,
                 decoration: InputDecoration(
                   labelText: 'Meeting Title',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.grey[600]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey[400]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.green, width: 2),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  filled: true,
+                  fillColor: Colors.grey[50],
                 ),
+                style: TextStyle(fontSize: 16),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a meeting title';
@@ -372,29 +373,63 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(
                   labelText: 'Description (Optional)',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.grey[600]),
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey[400]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.green, width: 2),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  filled: true,
+                  fillColor: Colors.grey[50],
                 ),
+                style: TextStyle(fontSize: 16),
                 maxLines: 3,
               ),
               SizedBox(height: 24),
-              Align(alignment: Alignment.bottomRight, child: Text('Booked by ${DashboardHelpers.currentUser!.userName}')),
-              SizedBox(height: 12),
-              // Submit Button
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Text(
+                  'Booked by ${DashboardHelpers.currentUser!.userName}',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: _saveBooking,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    backgroundColor: Colors.green[700],
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 3,
+                    shadowColor: Colors.green.withOpacity(0.3),
                   ),
                   child: Text(
                     'Confirm Booking',
-                    style: TextStyle(fontSize: 18,color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
