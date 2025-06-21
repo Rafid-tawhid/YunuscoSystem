@@ -234,7 +234,6 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
                 const Text("📈 Monthly Order vs Shipment (Line Chart)", style: TextStyle(fontWeight: FontWeight.bold)),
                 OrderVsShipmentChart(morrisLine: provider.buyerWiseValueModel!.morrisLine??[]),
                 const SizedBox(height: 24),
-
                 const Text("🥧 Buyer wise order value",
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 SizedBox(height: 350, child: BarChartExample(items: provider.buyerWiseValueModel!.buyerWiseQty??[])),

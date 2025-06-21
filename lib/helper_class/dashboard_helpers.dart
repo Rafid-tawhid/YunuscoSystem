@@ -845,25 +845,11 @@ class DashboardHelpers {
   static navigationUser(BuildContext context) {
     var ap = context.read<AuthProvider>();
     if (ap.isAuthenticated && ap.user != null) {
-      currentUser = ap.user;
-      if (currentUser?.roleId != null) {
-        // ✅ Added null check
-        switch (currentUser!.roleId) {
-          case 2:
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
-          default:
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-            );
-        }
-      } else {
-        debugPrint("User roleId is null!");
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+
     } else {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
     }
