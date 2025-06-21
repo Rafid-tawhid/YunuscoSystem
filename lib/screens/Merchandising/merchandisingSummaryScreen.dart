@@ -81,7 +81,7 @@ class _MerchandisingSummaryScreenState extends State<MerchandisingSummaryScreen>
         builder: (context, provider, _) {
           final model = provider.buyerWiseValueModel;
           if (model == null) {
-            return const Center(child: Text('Nothing to show..'));
+            return const Center(child: Text('Loading..'));
           }
 
           return SingleChildScrollView(
