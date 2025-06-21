@@ -341,11 +341,45 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
   Future<void> _acceptPurchase(PurchaseApprovalModel purchase) async {
     // Implement your accept logic here
     debugPrint('Accepting PO: ${purchase.purchaseOrderCode}');
+
+    try {
+      final purchaseItem = [
+        {
+          'ApprovalId': purchase.approvalId,
+          'CurrentApprover': purchase.currentApprover,
+          'AprrovalPolicyId': purchase.aprrovalPolicyId,
+          'ApprovalLevel': purchase.approvalLevel,
+          'ApprovalTypeId': purchase.approvalTypeId,
+          'AprrovalTypePrimaryKey': purchase.aprrovalTypePrimaryKey,
+        }
+      ];
+
+      var mp = context.read<MerchandisingProvider>();
+      mp.acceptRejectConstingApproval(purchaseItem, url: 'HR/Approval/ApproveNew');
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+    }
   }
 
   Future<void> _rejectPurchase(PurchaseApprovalModel purchase) async {
     // Implement your reject logic here
-    debugPrint('Rejecting PO: ${purchase.purchaseOrderCode}');
+    try {
+      final approvalItem = [
+        {
+          'ApprovalId': purchase.approvalId,
+          'CurrentApprover': purchase.currentApprover,
+          'AprrovalPolicyId': purchase.aprrovalPolicyId,
+          'ApprovalLevel': purchase.approvalLevel,
+          'ApprovalTypeId': purchase.approvalTypeId,
+          'AprrovalTypePrimaryKey': purchase.aprrovalTypePrimaryKey,
+        }
+      ];
+
+      var mp = context.read<MerchandisingProvider>();
+      mp.acceptRejectConstingApproval(approvalItem, url: 'HR/Approval/CommonReject');
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+    }
   }
 
   AppBar _buildAppBar() {
