@@ -2,9 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 
-class PersonSelectionScreen extends StatelessWidget {
+class PersonSelectionScreen extends StatefulWidget {
   const PersonSelectionScreen({super.key});
 
+  @override
+  State<PersonSelectionScreen> createState() => _PersonSelectionScreenState();
+}
+
+class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
+
+  @override
+  void initState() {
+    getAllStuffMemberList();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,12 +43,12 @@ class PersonSelectionScreen extends StatelessWidget {
                 color: Colors.white,
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: CheckboxListTile(
-                  title: Text(person.name),
+                  title: Text(person.fullName??''),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Dept: ${person.department}'),
-                      Text('Designation: ${person.designation}'),
+                      Text('Dept: ${person.departmentName}'),
+                      Text('Designation: ${person.designationName}'),
                     ],
                   ),
                   value: person.isSelected,
@@ -45,7 +56,7 @@ class PersonSelectionScreen extends StatelessWidget {
                     provider.toggleSelection(index);
                   },
                   secondary: CircleAvatar(
-                    child: Text(person.name.substring(0, 1)),
+                    child: Text(person.fullName.toString().substring(0, 1)),
                   ),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
@@ -68,5 +79,15 @@ class PersonSelectionScreen extends StatelessWidget {
         child: const Icon(Icons.save, color: Colors.white),
       ),
     );
+  }
+
+    Future<void> getAllStuffMemberList() async{
+    var hp=context.read<HrProvider>();
+    if(hp.member_list.isEmpty){
+      hp.getAllStuffList();
+    }
+
+
+
   }
 }

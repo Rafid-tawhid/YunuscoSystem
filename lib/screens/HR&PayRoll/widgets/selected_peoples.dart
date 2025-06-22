@@ -27,15 +27,15 @@ class SelectedPeopleWidget extends StatelessWidget {
               return Chip(
                 backgroundColor: Colors.white,
 
-                label: Text(member.name,style: TextStyle(fontSize: 10),),
+                label: Text(member.fullName??'',style: TextStyle(fontSize: 10),),
                 avatar: CircleAvatar(
                   backgroundColor: Colors.blue.shade300,
-                  child: Text(member.name.substring(0, 1),style: TextStyle(fontSize: 10,color: Colors.white),),
+                  child: Text(member.fullName??''.substring(0, 1),style: TextStyle(fontSize: 10,color: Colors.white),),
                 ),
                 deleteIcon: const Icon(Icons.close, size: 16),
                 onDeleted: () {
                   provider.toggleSelection(
-                      provider.member_list.indexWhere((m) => m.id == member.id)
+                      provider.member_list.indexWhere((m) => m.idCardNo == member.idCardNo)
                   );
                 },
               );

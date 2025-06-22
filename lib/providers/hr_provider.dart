@@ -240,43 +240,7 @@ class HrProvider extends ChangeNotifier{
 
 
 
-  final List<MembersModel> _member_list = [
-    MembersModel(
-      id: '1',
-      name: 'John Doe',
-      department: 'Engineering',
-      designation: 'Software Developer',
-      isSelected: false,
-    ),
-    MembersModel(
-      id: '2',
-      name: 'Jane Smith',
-      department: 'Marketing',
-      designation: 'Marketing Manager',
-      isSelected: false,
-    ),
-    MembersModel(
-      id: '3',
-      name: 'Robert Johnson',
-      department: 'HR',
-      designation: 'HR Manager',
-      isSelected: false,
-    ),
-    MembersModel(
-      id: '4',
-      name: 'Emily Davis',
-      department: 'Finance',
-      designation: 'Financial Analyst',
-      isSelected: false,
-    ),
-    MembersModel(
-      id: '5',
-      name: 'Michael Wilson',
-      department: 'Engineering',
-      designation: 'Team Lead',
-      isSelected: false,
-    ),
-  ];
+  final List<MembersModel> _member_list = [];
 
   List<MembersModel> get member_list => _member_list;
 
@@ -287,6 +251,18 @@ class HrProvider extends ChangeNotifier{
 
   void toggleSelection(int index) {
     _member_list[index].isSelected = !_member_list[index].isSelected;
+    notifyListeners();
+  }
+
+  Future<void> getAllStuffList() async{
+    var data=await apiService.getData('api/Test/StaffEmpData');
+    if(data!=null){
+      _member_list.clear();
+      for(var i in data){
+        _member_list.add(MembersModel.fromJson(i));
+      }
+    }
+    debugPrint('_member_list ${_member_list.length}');
     notifyListeners();
   }
 }
