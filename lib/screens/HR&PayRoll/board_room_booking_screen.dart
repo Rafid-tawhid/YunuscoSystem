@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
+
+import 'members_screen.dart';
 
 class BoardRoomBookingScreen extends StatefulWidget {
   @override
@@ -347,7 +351,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Book Conference Room'),
+        title: Text('Book Conference'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -372,14 +376,21 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                     icon: Icon(Icons.calendar_today),
                     onPressed: () => _selectDate(context),
                   ),
+                  Spacer(),
+                  IconButton(onPressed: (){
+                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>PersonSelectionScreen())).then((persons){
+                      if(persons!=null){
+                        debugPrint('person $persons');
+                      }
+                    });
+                  }, icon: Icon(Icons.person_add_alt_rounded))
                 ],
               ),
-              SizedBox(height: 20),
-
+              SelectedPeopleWidget(),
               // Time Slots Grid
               Text(
                 'Available Time Slots (8am - 6pm):',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Wrap(

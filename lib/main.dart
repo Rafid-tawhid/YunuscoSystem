@@ -19,6 +19,14 @@ import 'package:yunusco_group/service_class/notofication_helper.dart';
 import 'package:yunusco_group/utils/server_key.dart';
 
 import 'launcher_screen.dart';
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +34,8 @@ void main() async {
     await Firebase.initializeApp();
     await setupNotificationChannel();
   }
-
+//
+  HttpOverrides.global = MyHttpOverrides();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AuthProvider()),
     ChangeNotifierProvider(create: (_) => MerchandisingProvider()),

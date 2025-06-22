@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
+import 'package:yunusco_group/models/members_model.dart';
 import 'package:yunusco_group/models/payslip_model.dart';
 import 'package:yunusco_group/models/single_emp_leave_history_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
@@ -232,6 +233,60 @@ class HrProvider extends ChangeNotifier{
     if(data!=null){
       allDropdownInfoForJobcard = JobCardDropdownModel.fromJson(data['Result']);
     }
+    notifyListeners();
+  }
+
+
+
+
+
+  final List<MembersModel> _member_list = [
+    MembersModel(
+      id: '1',
+      name: 'John Doe',
+      department: 'Engineering',
+      designation: 'Software Developer',
+      isSelected: false,
+    ),
+    MembersModel(
+      id: '2',
+      name: 'Jane Smith',
+      department: 'Marketing',
+      designation: 'Marketing Manager',
+      isSelected: false,
+    ),
+    MembersModel(
+      id: '3',
+      name: 'Robert Johnson',
+      department: 'HR',
+      designation: 'HR Manager',
+      isSelected: false,
+    ),
+    MembersModel(
+      id: '4',
+      name: 'Emily Davis',
+      department: 'Finance',
+      designation: 'Financial Analyst',
+      isSelected: false,
+    ),
+    MembersModel(
+      id: '5',
+      name: 'Michael Wilson',
+      department: 'Engineering',
+      designation: 'Team Lead',
+      isSelected: false,
+    ),
+  ];
+
+  List<MembersModel> get member_list => _member_list;
+
+  Future<void> selectDeselect(MembersModel member) async {
+    member.isSelected = !member.isSelected;
+    notifyListeners();
+  }
+
+  void toggleSelection(int index) {
+    _member_list[index].isSelected = !_member_list[index].isSelected;
     notifyListeners();
   }
 }
