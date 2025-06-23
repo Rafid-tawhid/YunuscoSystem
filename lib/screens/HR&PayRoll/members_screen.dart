@@ -10,56 +10,101 @@ class PersonSelectionScreen extends StatefulWidget {
 }
 
 class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  List<dynamic> _filteredList = [];
 
   @override
   void initState() {
     getAllStuffMemberList();
     super.initState();
+    _searchController.addListener(_filterMembers);
   }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterMembers() {
+    final query = _searchController.text.toLowerCase();
+    final provider = context.read<HrProvider>();
+
+    setState(() {
+      _filteredList = provider.member_list.where((person) {
+        final name = person.fullName?.toLowerCase() ?? '';
+        final department = person.departmentName?.toLowerCase() ?? '';
+        final designation = person.designationName?.toLowerCase() ?? '';
+        final idCard = person.idCardNo?.toLowerCase() ?? '';
+
+        return name.contains(query) || department.contains(query) || designation.contains(query)||idCard.contains(query);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Select Persons'),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.black),
+              )
+            : const Text('Select Persons'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.done),
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
-              // Just close the screen when done is pressed
-              Navigator.pop(context);
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                }
+              });
             },
-            tooltip: 'Done',
           ),
         ],
       ),
       body: Consumer<HrProvider>(
         builder: (context, provider, child) {
+          final displayList = _isSearching ? _filteredList : provider.member_list;
+
           return ListView.builder(
-            itemCount: provider.member_list.length,
+            itemCount: displayList.length,
             itemBuilder: (context, index) {
-              final person = provider.member_list[index];
+              final person = displayList[index];
               return Card(
                 color: Colors.white,
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: CheckboxListTile(
-                  title: Text(person.fullName??''),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Dept: ${person.departmentName}'),
-                      Text('Designation: ${person.designationName}'),
-                    ],
-                  ),
-                  value: person.isSelected,
-                  onChanged: (bool? value) {
-                    provider.toggleSelection(index);
-                  },
-                  secondary: CircleAvatar(
-                    child: Text(person.fullName.toString().substring(0, 1)),
-                  ),
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
+                    title: Text(person.fullName ?? ''),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Dept: ${person.departmentName}'),
+                        Text('Designation: ${person.designationName}'),
+                      ],
+                    ),
+                    value: person.isSelected,
+                    onChanged: (bool? value) {
+                      // Find the original index in member_list if we're searching
+                      final originalIndex = provider.member_list.indexWhere((p) => p == person);
+                      if (originalIndex != -1) {
+                        provider.toggleSelection(originalIndex);
+                      }
+                    },
+                    secondary: CircleAvatar(
+                      child: Text(person.fullName.toString().substring(0, 1)),
+                    )),
               );
             },
           );
@@ -72,7 +117,6 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
           borderSide: BorderSide(color: Colors.green.shade300),
         ),
         onPressed: () {
-          // Just close the screen when save is pressed
           Navigator.pop(context);
         },
         tooltip: 'Save',
@@ -81,13 +125,10 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
     );
   }
 
-    Future<void> getAllStuffMemberList() async{
-    var hp=context.read<HrProvider>();
-    if(hp.member_list.isEmpty){
+  Future<void> getAllStuffMemberList() async {
+    var hp = context.read<HrProvider>();
+    if (hp.member_list.isEmpty) {
       hp.getAllStuffList();
     }
-
-
-
   }
 }

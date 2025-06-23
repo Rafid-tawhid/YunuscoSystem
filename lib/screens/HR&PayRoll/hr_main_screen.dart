@@ -249,7 +249,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
       },
       {
         "code": 7,
-        "name": "Board Room \nBooking",
+        "name": "Call a \nMeeting",
         "cardColor": cardColors[3],
         "iconColor": iconColors[3],
         "icon": menuIcons[3],
