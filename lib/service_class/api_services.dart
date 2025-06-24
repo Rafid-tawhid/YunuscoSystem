@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http/intercepted_client.dart';
 
 import '../utils/constants.dart';
@@ -292,6 +294,63 @@ class ApiService {
       // Handle network or other errors
       print('An error occurred: $e');
       Fluttertoast.showToast(msg: 'Network Error: $e');
+      return null;
+    }
+  }
+
+  Future<dynamic> uploadImageWithData({
+    required File imageFile,
+    required Map<String, dynamic> formData,
+  }) async {
+    try {
+      EasyLoading.show(status: 'Uploading nominee...');
+      debugPrint('Starting nominee image upload');
+
+      // Create multipart request
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${AppConstants.baseUrl}api/NomineeUpload'),
+      );
+
+      // Add headers
+      request.headers.addAll({
+        'Authorization': 'Bearer ${AppConstants.token}',
+      });
+
+      // Add image file
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'nominee_image', // Field name expected by backend
+          imageFile.path,
+        ),
+      );
+
+      // Add form data
+      request.fields.addAll(
+        formData.map((key, value) => MapEntry(key, value.toString())),
+      );
+
+      debugPrint('Uploading nominee with data: ${formData.toString()}');
+
+      // Send request
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      debugPrint('Upload response: $responseBody');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = jsonDecode(responseBody);
+        debugPrint('Nominee uploaded successfully: $jsonData');
+        EasyLoading.dismiss();
+        return jsonData;
+      } else {
+        _handleError(response.statusCode, responseBody);
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error uploading nominee: $e');
+      EasyLoading.dismiss();
+      Fluttertoast.showToast(msg: 'Failed to upload nominee: ${e.toString()}');
       return null;
     }
   }

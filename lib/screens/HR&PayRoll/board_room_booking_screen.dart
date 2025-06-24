@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 
 import 'members_screen.dart';
@@ -306,6 +308,9 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       // final user = FirebaseAuth.instance.currentUser;
       // if (user == null) throw Exception('User not logged in');
 
+      var hp=context.read<HrProvider>();
+      final selectedMembers = hp.member_list.where((m) => m.isSelected).toList();
+
       final bookingRef = FirebaseFirestore.instance.collection('bookings').doc();
 
       await bookingRef.set({
@@ -319,13 +324,14 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
         'createdAt': DateTime.now(),
       });
 
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Booking successful!')),
       );
 
       Navigator.pop(context);
     } catch (e) {
-      debugPrint('ERROR :${e}');
+      debugPrint('ERROR :$e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving booking: $e')),
       );

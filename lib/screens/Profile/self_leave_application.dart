@@ -49,6 +49,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
     }
   }
 
+
   Future<void> _selectDate(BuildContext context, bool isFromDate, bool isPrevious) async {
     final DateTime now = DateTime.now();
     final DateTime initialDate = isPrevious ? now.subtract(const Duration(days: 1)) : now;
