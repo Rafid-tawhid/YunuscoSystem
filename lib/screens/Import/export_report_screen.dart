@@ -21,6 +21,7 @@ class ExportRegisterScreen extends StatelessWidget {
           children: [
             // Report Category Section (unchanged)
             Card(
+              color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -54,6 +55,7 @@ class ExportRegisterScreen extends StatelessWidget {
 
             // Improved search options
             Card(
+              color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
