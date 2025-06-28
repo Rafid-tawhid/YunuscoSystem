@@ -112,6 +112,7 @@ class _BiometricFormScreenState extends State<BiometricFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Biometric Verification'),
         centerTitle: true,
