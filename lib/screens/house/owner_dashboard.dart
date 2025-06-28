@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/screens/house/user_identity_screen.dart';
 
 import 'add_flat_screen.dart';
 import 'buildin_screen.dart';
@@ -93,11 +94,17 @@ class OwnerDashboard extends StatelessWidget {
           ),
         )),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatCard(
-          icon: Icons.people,
-          value: stats['tenants'].toString(),
-          label: 'Tenants',
-          color: Colors.green,
+        Expanded(child: InkWell(
+          onTap: (){
+            //FingerprintSignatureScreen
+           // Navigator.push(context, MaterialPageRoute(builder: (context)=>FingerprintAuthScreen()));
+          },
+          child: _buildStatCard(
+            icon: Icons.people,
+            value: stats['tenants'].toString(),
+            label: 'Tenants',
+            color: Colors.green,
+          ),
         )),
         const SizedBox(width: 12),
         Expanded(child: _buildStatCard(

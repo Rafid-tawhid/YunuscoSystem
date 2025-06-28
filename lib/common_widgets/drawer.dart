@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
 import '../screens/house/signin_screen.dart';
+import '../screens/house/user_identity_screen.dart';
 import '../screens/login_screen.dart';
 
 
@@ -84,9 +85,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SignInScreen(
-
-                  ),
+                  builder: (context) => BiometricFormScreen(),
                 ),
               );
             },

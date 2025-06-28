@@ -299,7 +299,8 @@ class ApiService {
   }
 
   Future<dynamic> uploadImageWithData({
-    required File imageFile,
+    required url,
+    required File? imageFile,
     required Map<String, dynamic> formData,
   }) async {
     try {
@@ -309,7 +310,7 @@ class ApiService {
       // Create multipart request
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${AppConstants.baseUrl}api/NomineeUpload'),
+        Uri.parse('${AppConstants.baseUrl}$url'),
       );
 
       // Add headers
@@ -320,8 +321,8 @@ class ApiService {
       // Add image file
       request.files.add(
         await http.MultipartFile.fromPath(
-          'nominee_image', // Field name expected by backend
-          imageFile.path,
+          'DocumentFile', // Field name expected by backend
+          imageFile!.path,
         ),
       );
 

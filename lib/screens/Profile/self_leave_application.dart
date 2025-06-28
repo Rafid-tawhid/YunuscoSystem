@@ -397,7 +397,7 @@ class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
                             if (shouldProceed == true) {
                               var hp = context.read<HrProvider>();
                               EasyLoading.show();
-                              var response = await hp.submitApplicationForLeave(_fromDate, _toDate, _reasonController.text.trim(), _leaveType!, _dayCount);
+                              var response = await hp.submitApplicationForLeave(_fromDate, _toDate,_selectedFile, _reasonController.text.trim(), _leaveType!, _dayCount);
                               EasyLoading.dismiss();
                               if (response) {
                                 ScaffoldMessenger.of(context).showSnackBar(
