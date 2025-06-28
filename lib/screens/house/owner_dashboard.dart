@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/screens/house/tenants_screen.dart';
 import 'package:yunusco_group/screens/house/user_identity_screen.dart';
 
 import 'add_flat_screen.dart';
@@ -97,7 +98,7 @@ class OwnerDashboard extends StatelessWidget {
         Expanded(child: InkWell(
           onTap: (){
             //FingerprintSignatureScreen
-           // Navigator.push(context, MaterialPageRoute(builder: (context)=>FingerprintAuthScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>TenantManagementScreen()));
           },
           child: _buildStatCard(
             icon: Icons.people,
