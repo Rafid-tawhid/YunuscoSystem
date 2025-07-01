@@ -73,6 +73,11 @@ class _TenantManagementScreenState extends State<TenantManagementScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Tenant Management')),
@@ -190,6 +195,8 @@ class _TenantManagementScreenState extends State<TenantManagementScreen> {
       ),
     );
   }
+
+
 }
 
 

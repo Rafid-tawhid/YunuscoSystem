@@ -141,6 +141,7 @@ class HrProvider extends ChangeNotifier{
         "LeaveType": leaveType.policyId,
         "LeaveBalance": dayCount,
         "Reasons": reason,
+        "DocumentFile":attachment,
         "remainingLeaveDay": leaveType.remaining,
         "policyId": leaveType.policyId,
         "IsFirst": false

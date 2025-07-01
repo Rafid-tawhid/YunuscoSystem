@@ -216,6 +216,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
           child: Column(
             children: [
+
               _buildDetailRow('Category', approval.catagoryName),
               _buildDetailRow('Style Ref', approval.styleRef),
               _buildDetailRow('Created By', approval.createdBy),
@@ -237,6 +238,10 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              IconButton(onPressed: (){
+                DashboardHelpers.openUrl('${AppConstants.liveUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+              }, icon: Icon(Icons.info_outline,color: Colors.orangeAccent,)),
+              Spacer(),
               TextButton(
                 onPressed: () {
                   DashboardHelpers.showConfirmDialog(
@@ -257,22 +262,6 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint('Costing Code : ${approval.costingCode}');
-                  DashboardHelpers.openUrl('${AppConstants.liveUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                ),
-                child: Text(
-                  'Details',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
               ElevatedButton(
                 onPressed: () {
                   acceptItem(approval);
@@ -370,14 +359,14 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
     try {
       final mp = context.read<MerchandisingProvider>();
       // Use Future.micro task if you need to avoid direct execution in initState
-      await mp.getCostingApprovalList(DashboardHelpers.currentUser!.userId.toString()); // Consider using a real user ID
+      await mp.getCostingApprovalList(DashboardHelpers.currentUser!.userId.toString());
     } catch (e) {
       debugPrint('Error loading data: $e');
       // Optionally show error to user
     }
   }
 
-  void rejectItem(CostingApprovalListModel approval) {
+  void rejectItem(CostingApprovalListModel approval)  {
     try {
       final approvalItem = [
         {
@@ -397,7 +386,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
     }
   }
 
-  void acceptItem(CostingApprovalListModel approval) {
+  Future<void> acceptItem(CostingApprovalListModel approval) async {
     try {
       final approvalItem = [
         {
@@ -406,12 +395,17 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           'AprrovalPolicyId': approval.aprrovalPolicyId,
           'ApprovalLevel': approval.approvalLevel,
           'ApprovalTypeId': approval.approvalTypeId,
-          'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
+          'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey
         }
       ];
       
       var mp = context.read<MerchandisingProvider>();
-      mp.acceptRejectConstingApproval(approvalItem, url: 'HR/Approval/ApproveNew');
+      var data=await mp.acceptRejectConstingApproval(approvalItem, url: 'api/Merchandising/ApproveMerchandising');
+      if(data!=null){
+        DashboardHelpers.showAlert(msg: 'Approved Successfully');
+        //refresh the list
+        getAllData(context);
+      }
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
     }

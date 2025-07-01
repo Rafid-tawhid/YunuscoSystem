@@ -200,6 +200,27 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                IconButton(onPressed: () async {
+                  // Get credentials securely
+
+                  var mp=context.read<MerchandisingProvider>();
+                  var data=await mp.purchaseDetailsByPO(purchase);
+
+                  debugPrint('Data $data');
+                  if(data['returnvalue']!=null){
+                    // To use this screen:
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => PurchaseOrderReportScreen(
+                          orderData: data['returnvalue'],
+                        ),
+                      ),
+                    );
+                  }
+                }, icon: Icon(Icons.info_outline,color: Colors.orange,)),
+
+                Spacer(),
                 if (purchase.finalStatus == 'Pending') ...[
                   TextButton(
                     onPressed: () => _showRejectDialog(purchase),
@@ -210,36 +231,7 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                   ),
                   const SizedBox(width: 8),
                 ],
-                ElevatedButton(
-                  onPressed: () async {
 
-                    // Get credentials securely
-
-                    var mp=context.read<MerchandisingProvider>();
-                    var data=await mp.purchaseDetailsByPO(purchase);
-
-                    debugPrint('Data $data');
-                    if(data['returnvalue']!=null){
-                      // To use this screen:
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => PurchaseOrderReportScreen(
-                            orderData: data['returnvalue'],
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                  ),
-                  child: const Text(
-                    'Details',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
                     if (purchase.finalStatus == 'Pending') {

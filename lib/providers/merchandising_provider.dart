@@ -81,11 +81,11 @@ class MerchandisingProvider extends ChangeNotifier{
     try {
       setLoading(true);
       //615
-      var data = await apiService.getData('api/Merchandising/CostingApprovalList?userId=${uId}');
+      var data = await apiService.getData('api/Merchandising/CostingApprovalList');
       if(data != null) {
         _costingApprovalList.clear();
         _costingApprovalFilterList.clear();
-        for(var i in data['result']){
+        for(var i in data['result']['Result']){
           _costingApprovalList.add(CostingApprovalListModel.fromJson(i));
         }
         _costingApprovalFilterList.addAll(_costingApprovalList);
@@ -140,10 +140,10 @@ class MerchandisingProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> acceptRejectConstingApproval(dynamic approvalItem, {required String url}) async{
+  Future<dynamic> acceptRejectConstingApproval(dynamic approvalItem, {required String url}) async{
     ///HR/Approval/CommonReject
     ///HR/Approval/ApproveNew
-    apiService.postData(url, approvalItem);
+    return apiService.postData(url, approvalItem);
   }
 
 

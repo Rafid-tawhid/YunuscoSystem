@@ -299,49 +299,52 @@ class ApiService {
   }
 
   Future<dynamic> uploadImageWithData({
-    required url,
+    required String url,
     required File? imageFile,
     required Map<String, dynamic> formData,
   }) async {
     try {
-      EasyLoading.show(status: 'Uploading nominee...');
-      debugPrint('Starting nominee image upload');
+      EasyLoading.show(status: 'Loading..', maskType: EasyLoadingMaskType.black);
+      debugPrint('Starting leave data upload with image: ${imageFile?.path}');
 
-      // Create multipart request
       final request = http.MultipartRequest(
         'POST',
         Uri.parse('${AppConstants.baseUrl}$url'),
       );
 
-      // Add headers
       request.headers.addAll({
         'Authorization': 'Bearer ${AppConstants.token}',
       });
 
-      // Add image file
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'DocumentFile', // Field name expected by backend
-          imageFile!.path,
-        ),
-      );
+      // Handle DocumentFile:
+      // If imageFile exists, it overrides formData's DocumentFile.
+      // If imageFile is null, formData's DocumentFile (even if null) is used.
+      if (imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'DocumentFile', // Overrides any existing DocumentFile in formData
+            imageFile.path,
+          ),
+        );
+        debugPrint('Added image file as DocumentFile');
+      }
 
-      // Add form data
+      // Add all formData (including DocumentFile if imageFile is null)
       request.fields.addAll(
         formData.map((key, value) => MapEntry(key, value.toString())),
       );
 
-      debugPrint('Uploading nominee with data: ${formData.toString()}');
 
-      // Send request
+      debugPrint('Request fields: ${request.fields}');
+      debugPrint('Request files: ${request.files.map((f) => f.field)}');
+
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
 
-      debugPrint('Upload response: $responseBody');
+      debugPrint('Server response: $responseBody');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = jsonDecode(responseBody);
-        debugPrint('Nominee uploaded successfully: $jsonData');
         EasyLoading.dismiss();
         return jsonData;
       } else {
@@ -349,10 +352,13 @@ class ApiService {
         return null;
       }
     } catch (e) {
-      debugPrint('Error uploading nominee: $e');
+      debugPrint('Upload error: $e');
       EasyLoading.dismiss();
-      Fluttertoast.showToast(msg: 'Failed to upload nominee: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Upload failed: ${e.toString()}');
       return null;
+    }
+    finally {
+      EasyLoading.dismiss();
     }
   }
 }
