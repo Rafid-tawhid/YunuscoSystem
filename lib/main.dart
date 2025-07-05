@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Yunusco System',
         navigatorKey: NavigationService.navigatorKey,
         builder: EasyLoading.init(),
         debugShowCheckedModeBanner: false,
