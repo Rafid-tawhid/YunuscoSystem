@@ -167,7 +167,10 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                  child: Text('Order: ${pro.workOrderList.length}',style: customTextStyle(10, Colors.black, FontWeight.w500),)),
               // Results
               Expanded(
                 child: pro.workOrderList.isEmpty
