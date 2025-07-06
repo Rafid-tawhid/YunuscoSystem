@@ -98,7 +98,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
             title: "WO",
             icon: Icons.work,
             color: Colors.purple[300]!,
-            destination: WOScreen(), // Replace with your actual screen
+            destination: WorkOrderScreen(), // Replace with your actual screen
           ),
 
           _buildDashboardCard(

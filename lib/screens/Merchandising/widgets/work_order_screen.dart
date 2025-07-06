@@ -1,318 +1,259 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/merchandising_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
-class WOScreen extends StatefulWidget {
-  const WOScreen({super.key});
+class WorkOrderScreen extends StatefulWidget {
+  const WorkOrderScreen({super.key});
 
   @override
-  State<WOScreen> createState() => _WOScreenState();
+  State<WorkOrderScreen> createState() => _WorkOrderScreenState();
 }
 
-class _WOScreenState extends State<WOScreen> {
-  // Sample work order data - replace with your actual data source
-  final List<WorkOrder> workOrders = [
-    WorkOrder(
-      id: 'WO-1001',
-      title: 'Machine Maintenance',
-      priority: 'High',
-      status: 'In Progress',
-      assignedTo: 'John Doe',
-      dueDate: DateTime.now().add(const Duration(days: 2)),
-    ),
-    WorkOrder(
-      id: 'WO-1002',
-      title: 'Equipment Calibration',
-      priority: 'Medium',
-      status: 'Pending',
-      assignedTo: 'Jane Smith',
-      dueDate: DateTime.now().add(const Duration(days: 5)),
-    ),
-    WorkOrder(
-      id: 'WO-1003',
-      title: 'Safety Inspection',
-      priority: 'Low',
-      status: 'Completed',
-      assignedTo: 'Mike Johnson',
-      dueDate: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-  ];
+class _WorkOrderScreenState extends State<WorkOrderScreen> {
+  DateTime _fromDate = DateTime.now();
+  DateTime _toDate = DateTime.now();
+  bool _isLoading = false; // Add this loading state variable
 
-  String _currentFilter = 'All';
-  final TextEditingController _searchController = TextEditingController();
+  Future<void> _selectDate(BuildContext context, bool isFromDate) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: isFromDate ? _fromDate : _toDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isFromDate) {
+          _fromDate = picked;
+        } else {
+          _toDate = picked;
+        }
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getWorkOrder();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filteredOrders = workOrders.where((order) {
-      final matchesFilter = _currentFilter == 'All' ||
-          order.status == _currentFilter;
-      final matchesSearch = order.title.toLowerCase().contains(
-          _searchController.text.toLowerCase()) ||
-          order.id.toLowerCase().contains(
-              _searchController.text.toLowerCase());
-      return matchesFilter && matchesSearch;
-    }).toList();
-
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Work Orders'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: _showFilterDialog,
-          ),
-        ],
+        centerTitle: true,
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search work orders...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+      body: Consumer<MerchandisingProvider>(
+        builder: (context, pro, _) => Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Date Range Selector
+              Card(
+                color: Colors.white,
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {});
-                  },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'From Date',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            InkWell(
+                              onTap: () => _selectDate(context, true),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(DateFormat('dd MMM yyyy').format(_fromDate)),
+                                    const Icon(Icons.calendar_today, size: 20),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'To Date',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            InkWell(
+                              onTap: () => _selectDate(context, false),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(DateFormat('dd MMM yyyy').format(_toDate)),
+                                    const Icon(Icons.calendar_today, size: 20),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              onChanged: (value) => setState(() {}),
-            ),
-          ),
-
-          // Status filter chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: ['All', 'Pending', 'In Progress', 'Completed']
-                  .map((filter) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: FilterChip(
-                  label: Text(filter),
-                  selected: _currentFilter == filter,
-                  onSelected: (selected) {
-                    setState(() {
-                      _currentFilter = selected ? filter : 'All';
-                    });
+              const SizedBox(height: 20),
+              // Fetch Button with loading indicator
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                    setState(() => _isLoading = true);
+                    await pro.getAllWorkOrder(from: _fromDate, to: _toDate);
+                    setState(() => _isLoading = false);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: myColors.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
+                  )
+                      :  Text(
+                    'Get Work Orders',
+                    style: customTextStyle(14, Colors.white, FontWeight.w600),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Results
+              Expanded(
+                child: pro.workOrderList.isEmpty
+                    ? Center(
+                  child: Text(
+                    pro.workOrderList.isEmpty
+                        ? 'No work orders found for selected date range'
+                        : 'Select dates and tap the button',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: pro.workOrderList.length,
+                  itemBuilder: (context, index) {
+                    final order = pro.workOrderList[index];
+                    return Card(
+                      color: Colors.white,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      elevation: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  order.code ?? 'N/A',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Chip(
+                                  label: Text(
+                                    order.isLock ?? false
+                                        ? 'Locked'
+                                        : 'Active',
+                                    style: const TextStyle(
+                                        color: Colors.white),
+                                  ),
+                                  backgroundColor: order.isLock ?? false
+                                      ? Colors.red
+                                      : Colors.green,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text('PO: ${order.po ?? 'N/A'}'),
+                            Text('Buyer: ${order.buyerName ?? 'N/A'}'),
+                            Text('Style: ${order.styleCodes ?? 'N/A'}'),
+                            Text('Color: ${order.color ?? 'N/A'}'),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Text(
+                                  'Created: ${order.createdDate ?? 'N/A'}',
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                Spacer(),
+                                TextButton(onPressed: (){
+                                  DashboardHelpers.openUrl('http://202.74.243.118:1726/Merchandising/Merchandising/WorkOrderReport?Code=${order.code}&Buyer=${order.buyerId}&BuyerOrder=${order.blockOrder}');
+                                }, child: Text('Report'))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                 ),
-              ))
-                  .toList(),
-            ),
-          ),
-
-          // Work order list
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredOrders.length,
-              itemBuilder: (context, index) {
-                final order = filteredOrders[index];
-                return _buildWorkOrderCard(order);
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToCreateWO,
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _buildWorkOrderCard(WorkOrder order) {
-    Color statusColor = Colors.grey;
-    if (order.status == 'In Progress') statusColor = Colors.orange;
-    if (order.status == 'Completed') statusColor = Colors.green;
-    if (order.status == 'Pending' && order.priority == 'High') {
-      statusColor = Colors.red;
-    }
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: ListTile(
-        leading: const Icon(Icons.work, size: 36),
-        title: Text(order.title),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('WO#: ${order.id}'),
-            Text('Assigned to: ${order.assignedTo}'),
-            Text('Due: ${_formatDate(order.dueDate)}'),
-          ],
-        ),
-        trailing: Chip(
-          label: Text(
-            order.status,
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: statusColor,
-        ),
-        onTap: () => _navigateToWODetail(order),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  void _navigateToWODetail(WorkOrder order) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => WODetailScreen(workOrder: order),
-      ),
-    );
-  }
-
-  void _navigateToCreateWO() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const CreateWOScreen(),
-      ),
-    );
-  }
-
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Advanced Filters'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Add more filter options here
-              const Text('Priority:'),
-              Wrap(
-                children: ['All', 'High', 'Medium', 'Low']
-                    .map((priority) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: FilterChip(
-                    label: Text(priority),
-                    selected: false, // Implement actual selection
-                    onSelected: (selected) {
-                      // Implement priority filtering
-                    },
-                  ),
-                ))
-                    .toList(),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-// Work Order Model
-class WorkOrder {
-  final String id;
-  final String title;
-  final String priority;
-  final String status;
-  final String assignedTo;
-  final DateTime dueDate;
-
-  WorkOrder({
-    required this.id,
-    required this.title,
-    required this.priority,
-    required this.status,
-    required this.assignedTo,
-    required this.dueDate,
-  });
-}
-
-// Work Order Detail Screen
-class WODetailScreen extends StatelessWidget {
-  final WorkOrder workOrder;
-
-  const WODetailScreen({super.key, required this.workOrder});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('WO# ${workOrder.id}'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(workOrder.title, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 20),
-            _buildDetailRow('Status', workOrder.status),
-            _buildDetailRow('Priority', workOrder.priority),
-            _buildDetailRow('Assigned To', workOrder.assignedTo),
-            _buildDetailRow('Due Date',
-                '${workOrder.dueDate.day}/${workOrder.dueDate.month}/${workOrder.dueDate.year}'),
-            const SizedBox(height: 30),
-            const Text('Description:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const Text('Full details of the work order would appear here...'),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Implement action (complete, reassign, etc.)
-                },
-                child: const Text('Mark as Complete'),
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Text(value),
-        ],
-      ),
-    );
-  }
-}
-
-// Create Work Order Screen
-class CreateWOScreen extends StatelessWidget {
-  const CreateWOScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create New Work Order'),
-      ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text('Work order creation form would go here...'),
-      ),
-    );
+  void getWorkOrder() async {
+    var mp = context.read<MerchandisingProvider>();
+    setState(() => _isLoading = true);
+    await mp.getAllWorkOrder(from:_fromDate, to: _toDate);
+    setState(() => _isLoading = false);
   }
 }

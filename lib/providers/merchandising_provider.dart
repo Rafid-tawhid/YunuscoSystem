@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/buyer_wise_value_model.dart';
 import 'package:yunusco_group/models/purchase_approval_model.dart';
@@ -9,6 +10,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/buyer_order_details_model.dart';
 import '../models/costing_approval_list_model.dart';
+import '../models/work_order_model.dart';
 
 class MerchandisingProvider extends ChangeNotifier{
 
@@ -191,6 +193,40 @@ class MerchandisingProvider extends ChangeNotifier{
       "PO": purchase.purchaseOrderCode,
       "Version" : purchase.version
     });
+  }
+
+
+  List<WorkOrderModel> _workOrderList=[];
+  List<WorkOrderModel> get workOrderList=>_workOrderList;
+
+  Future<void> getAllWorkOrder({required DateTime from, required DateTime to}) async {
+    try {
+      // Format dates to 'yyyy-MM-dd' format for the API
+      final fromDateStr = DateFormat('yyyy-MM-dd').format(from);
+      final toDateStr = DateFormat('yyyy-MM-dd').format(to);
+
+      // Use the formatted dates in the API URL
+      var response = await apiService.getData(
+          'api/Merchandising/WorkOrderList?fromDate=$fromDateStr&toDate=$toDateStr'
+      );
+
+      if (response != null && response['result'] != null) {
+        _workOrderList.clear();
+        for (var i in response['result']) {
+          _workOrderList.add(WorkOrderModel.fromJson(i));
+        }
+        notifyListeners();
+        debugPrint('Fetched ${_workOrderList.length} work orders from $fromDateStr to $toDateStr');
+      } else {
+        debugPrint('No data received from API');
+        _workOrderList.clear();
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error fetching work orders: $e');
+      // Consider adding error handling here, like showing a snackbar
+      rethrow; // Or handle the error as needed
+    }
   }
 
 

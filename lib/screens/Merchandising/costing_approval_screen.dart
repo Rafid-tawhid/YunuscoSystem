@@ -239,7 +239,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(onPressed: (){
-                DashboardHelpers.openUrl('${AppConstants.liveUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+                DashboardHelpers.openUrl('${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
               }, icon: Icon(Icons.info_outline,color: Colors.orangeAccent,)),
               Spacer(),
               TextButton(
