@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +10,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 
+import '../../models/booking_model.dart';
 import 'members_screen.dart';
 
 class BoardRoomBookingScreen extends StatefulWidget {
@@ -111,13 +114,14 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     }
   }
 
-  void _toggleSlotSelection(TimeSlot slot) async {
+  void _toggleSlotSelection(TimeSlot slot,HrProvider provider) async {
     if (slot.isBooked) {
       EasyLoading.show(maskType: EasyLoadingMaskType.black);
       final bookingDetails = await _getBookingDetails(slot);
       EasyLoading.dismiss();
       if (bookingDetails != null) {
-        _showBookingDetailsDialog(context, bookingDetails);
+
+        _showBookingDetailsDialog(context, bookingDetails,provider);
       }
       return;
     }
@@ -139,7 +143,8 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     });
   }
 
-  void _showBookingDetailsDialog(BuildContext context, Map<String, dynamic> booking) {
+  void _showBookingDetailsDialog(BuildContext context, Map<String, dynamic> booking,HrProvider pro) {
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -157,13 +162,27 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
               ),
             ),
           ),
-          child: Text(
-            'Booking Details',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.green[700],
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Booking Details',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[700],
+                  ),
+                ),
+              ),
+             // TextButton(onPressed: (){}, child: Icon(Icons.message_outlined)),
+              IconButton(onPressed: (){
+
+               var selectedMembers= pro.member_list.where((m) => m.isSelected).toList();
+                var data=jsonEncode(BookingRef.fromMap(booking).toString());
+                debugPrint('Meeting Details : ${data.toString()}');
+                debugPrint('Selected Member : $selectedMembers');
+              }, icon: Icon(Icons.message_outlined)),
+            ],
           ),
         ),
         content: SingleChildScrollView(
@@ -312,6 +331,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       final selectedMembers = hp.member_list.where((m) => m.isSelected).toList();
 
       final bookingRef = FirebaseFirestore.instance.collection('bookings').doc();
+      final membersRef = FirebaseFirestore.instance.collection('members').doc();
 
       await bookingRef.set({
         'id': bookingRef.id,
@@ -323,6 +343,7 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
         'endTime': _selectedSlots.last.end,
         'createdAt': DateTime.now(),
       });
+
 
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -405,7 +426,10 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                 children: _timeSlots.map((slot) {
                   final isSelected = _selectedSlots.contains(slot);
                   return GestureDetector(
-                    onTap: () => _toggleSlotSelection(slot),
+                    onTap: () {
+                      var pro=Provider.of<HrProvider>(context,listen: false);
+                      _toggleSlotSelection(slot,pro);
+                    },
                     child: Tooltip(
                       message: slot.isBooked ? 'View booking details' : 'Select time slot',
                       child: Container(

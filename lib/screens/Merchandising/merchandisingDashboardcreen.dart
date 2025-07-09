@@ -12,7 +12,7 @@ import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_qua
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart.dart';
-import 'package:yunusco_group/screens/Merchandising/widgets/work_order_screen.dart';
+import 'package:yunusco_group/screens/Merchandising/work_order_screen.dart';
 
 import '../../models/buyer_wise_value_model.dart';
 import '../../utils/colors.dart';

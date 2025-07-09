@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
+import 'package:yunusco_group/screens/Merchandising/work_order_details_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -234,8 +237,11 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                                       color: Colors.grey, fontSize: 12),
                                 ),
                                 Spacer(),
-                                TextButton(onPressed: (){
-                                  DashboardHelpers.openUrl('http://202.74.243.118:1726/Merchandising/Merchandising/WorkOrderReport?Code=${order.code}&Buyer=${order.buyerId}&BuyerOrder=${order.blockOrder}');
+                                TextButton(onPressed: () async {
+                                await pro.getWorderOrderDetails(order.code);
+                                var data=parseNestedJson(pro.workOrderDetails.toString());
+                                debugPrint('JANTUS ${data}');
+                               // Navigator.push(context, CupertinoPageRoute(builder: (context)=>OrderSummaryScreen(orderData: ,)));
                                 }, child: Text('Report'))
                               ],
                             ),
@@ -251,6 +257,19 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
         ),
       ),
     );
+  }
+//
+  Map<String, dynamic> parseNestedJson(String rawData) {
+    // Decode the outer JSON
+    final Map<String, dynamic> outerMap = jsonDecode(rawData);
+
+    // Decode each inner stringified list into actual List<Map>
+    return {
+      'Actual': jsonDecode(outerMap['Actual']),
+      'Extra': jsonDecode(outerMap['Extra']),
+      'Sample': jsonDecode(outerMap['Sample']),
+      'Total': jsonDecode(outerMap['Total']),
+    };
   }
 
   void getWorkOrder() async {
