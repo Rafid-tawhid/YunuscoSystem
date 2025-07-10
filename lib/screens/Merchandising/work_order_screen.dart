@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
@@ -232,16 +233,17 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                             Row(
                               children: [
                                 Text(
-                                  'Created: ${order.createdDate ?? 'N/A'}',
+                                  'Created: ${DashboardHelpers.convertDateTime(order.createdDate.toString(),pattern: 'dd-MMM-yyyy, HH:mm:aa') ?? 'N/A'}',
                                   style: const TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
                                 Spacer(),
                                 TextButton(onPressed: () async {
-                                await pro.getWorderOrderDetails(order.code);
-                                var data=parseNestedJson(pro.workOrderDetails.toString());
-                                debugPrint('JANTUS ${data}');
-                               // Navigator.push(context, CupertinoPageRoute(builder: (context)=>OrderSummaryScreen(orderData: ,)));
+
+                                  EasyLoading.show(maskType: EasyLoadingMaskType.black);
+                                  await pro.getWorderOrderDetails(order.code);
+                                  EasyLoading.dismiss();
+                                   Navigator.push(context, CupertinoPageRoute(builder: (context)=>EnhancedProductDisplayScreen(jsonData: pro.workOrderDetails,)));
                                 }, child: Text('Report'))
                               ],
                             ),

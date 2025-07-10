@@ -1,167 +1,461 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class OrderData {
-  final List<dynamic> actual;
-  final List<dynamic> extra;
-  final List<dynamic> sample;
-  final List<dynamic> total;
+import 'package:flutter/material.dart';
+import 'dart:convert';
 
-  OrderData({
-    required this.actual,
-    required this.extra,
-    required this.sample,
+class Product {
+  final String styleName;
+  final String styleNumber;
+  final String buyerPO;
+  final String tod;
+  final String country;
+  final String color;
+  final int s21_L;
+  final int s20_M;
+  final int s19_S;
+  final int s23_XL;
+  final int s22_XS;
+  final int s71_XXL;
+  final int total;
+
+  Product({
+    required this.styleName,
+    required this.styleNumber,
+    required this.buyerPO,
+    required this.tod,
+    required this.country,
+    required this.color,
+    required this.s21_L,
+    required this.s20_M,
+    required this.s19_S,
+    required this.s23_XL,
+    required this.s22_XS,
+    required this.s71_XXL,
     required this.total,
   });
 
-  factory OrderData.fromJson(Map<String, dynamic> json) {
-    return OrderData(
-      actual: json['Actual'],
-      extra: json['Extra'],
-      sample: json['Sample'],
-      total: json['Total'],
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      styleName: json['StyleName'] ?? '',
+      styleNumber: json['StyleNumber'] ?? '',
+      buyerPO: json['BuyerPO'] ?? '',
+      tod: json['Tod'] ?? '',
+      country: json['Country'] ?? '',
+      color: json['Color'] ?? '',
+      s21_L: json['S21_L'] ?? 0,
+      s20_M: json['S20_M'] ?? 0,
+      s19_S: json['S19_S'] ?? 0,
+      s23_XL: json['S23_XL'] ?? 0,
+      s22_XS: json['S22_XS'] ?? 0,
+      s71_XXL: json['S71_XXL'] ?? 0,
+      total: json['Total'] ?? 0,
     );
   }
+}
 
-  num get totalActualQuantity {
-    return actual.fold(0, (sum, item) => sum + (item['Total'] ?? item['TotalQuantity'] ?? 0));
+class Extra {
+  final String styleName;
+  final String styleRef;
+  final String buyerPO;
+  final String tod;
+  final String country;
+  final String color;
+  final int s21_L;
+  final int s20_M;
+  final int s19_S;
+  final int s23_XL;
+  final int s22_XS;
+  final int s71_XXL;
+  final int total;
+
+  Extra({
+    required this.styleName,
+    required this.styleRef,
+    required this.buyerPO,
+    required this.tod,
+    required this.country,
+    required this.color,
+    required this.s21_L,
+    required this.s20_M,
+    required this.s19_S,
+    required this.s23_XL,
+    required this.s22_XS,
+    required this.s71_XXL,
+    required this.total,
+  });
+
+  factory Extra.fromJson(Map<String, dynamic> json) {
+    return Extra(
+      styleName: json['StyleName'] ?? '',
+      styleRef: json['StyleRef'] ?? '',
+      buyerPO: json['BuyerPO'] ?? '',
+      tod: json['Tod'] ?? '',
+      country: json['Country'] ?? '',
+      color: json['Color'] ?? '',
+      s21_L: json['S21_L'] ?? 0,
+      s20_M: json['S20_M'] ?? 0,
+      s19_S: json['S19_S'] ?? 0,
+      s23_XL: json['S23_XL'] ?? 0,
+      s22_XS: json['S22_XS'] ?? 0,
+      s71_XXL: json['S71_XXL'] ?? 0,
+      total: json['Total'] ?? 0,
+    );
   }
+}
 
-  num get totalExtraQuantity {
-    return extra.fold(0, (sum, item) => sum + (item['Total'] ?? item['TotalQuantity'] ?? 0));
-  }
+class Total {
+  final String styleName;
+  final String styleRef;
+  final String buyerPO;
+  final String tod;
+  final String country;
+  final String color;
+  final String? remarks;
+  final int s21_L;
+  final int s20_M;
+  final int s19_S;
+  final int s23_XL;
+  final int s22_XS;
+  final int s71_XXL;
+  final int total;
 
-  num get totalSampleQuantity {
-    return sample.fold(0, (sum, item) => sum + (item['TotalQuantity'] ?? 0));
+  Total({
+    required this.styleName,
+    required this.styleRef,
+    required this.buyerPO,
+    required this.tod,
+    required this.country,
+    required this.color,
+    this.remarks,
+    required this.s21_L,
+    required this.s20_M,
+    required this.s19_S,
+    required this.s23_XL,
+    required this.s22_XS,
+    required this.s71_XXL,
+    required this.total,
+  });
+
+  factory Total.fromJson(Map<String, dynamic> json) {
+    return Total(
+      styleName: json['StyleName'] ?? '',
+      styleRef: json['StyleRef'] ?? '',
+      buyerPO: json['BuyerPO'] ?? '',
+      tod: json['Tod'] ?? '',
+      country: json['Country'] ?? '',
+      color: json['Color'] ?? '',
+      remarks: json['Remarks'],
+      s21_L: json['S21_L'] ?? 0,
+      s20_M: json['S20_M'] ?? 0,
+      s19_S: json['S19_S'] ?? 0,
+      s23_XL: json['S23_XL'] ?? 0,
+      s22_XS: json['S22_XS'] ?? 0,
+      s71_XXL: json['S71_XXL'] ?? 0,
+      total: json['Total'] ?? json['TotalQuantity'] ?? 0,
+    );
   }
 }
 
 
+class EnhancedProductDisplayScreen extends StatefulWidget {
+  final dynamic jsonData;
 
+  const EnhancedProductDisplayScreen({Key? key, required this.jsonData}) : super(key: key);
 
+  @override
+  _EnhancedProductDisplayScreenState createState() => _EnhancedProductDisplayScreenState();
+}
 
-class OrderSummaryScreen extends StatelessWidget {
-  final Map<String, dynamic> orderData;
+class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScreen> {
+  List<Product> products = [];
+  List<Extra> extras = [];
+  List<Total> totalItems = [];
+  bool isLoading = true;
 
-  const OrderSummaryScreen({super.key, required this.orderData});
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    try {
+      final actualJsonString = widget.jsonData['Actual'];
+      final extrasJsonString = widget.jsonData['Extra'];
+      final totalJsonString = widget.jsonData['Total'];
+
+      setState(() {
+        products = (json.decode(actualJsonString) as List)
+            .map((item) => Product.fromJson(item))
+            .toList();
+        extras = (json.decode(extrasJsonString) as List)
+            .map((item) => Extra.fromJson(item))
+            .toList();
+        totalItems = (json.decode(totalJsonString) as List)
+            .map((item) => Total.fromJson(item))
+            .toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading data: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    final data = OrderData.fromJson(orderData);
-
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Order Summary'),
+        title: const Text('Work Order Details'),
         centerTitle: true,
+        elevation: 1,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: loadData,
+            tooltip: 'Refresh Data',
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildSummaryCards(data),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Actual Production'),
-            _buildProductionTable(data.actual),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Samples'),
-            _buildSamplesTable(data.sample),
-            const SizedBox(height: 24),
-            _buildOrderDetails(data.actual.isNotEmpty ? data.actual[0] : null),
-          ],
-        ),
-      ),
-    );
-  }
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Main Products'),
+              _buildProductTable(products),
 
-  Widget _buildSummaryCards(OrderData data) {
-    return Row(
-      children: [
-        Expanded(
-          child: _SummaryCard(
-            value: data.totalActualQuantity.toInt(),
-            label: 'Total Units (Actual)',
-            color: Colors.blue,
+              const SizedBox(height: 24),
+              _buildSectionTitle('Extra Items'),
+              _buildExtraTable(extras),
+
+              const SizedBox(height: 24),
+              _buildSectionTitle('Total Summary'),
+              _buildTotalTable(totalItems),
+            ],
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _SummaryCard(
-            value: data.totalExtraQuantity.toInt(),
-            label: 'Extra Units',
-            color: Colors.orange,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _SummaryCard(
-            value: data.totalSampleQuantity.toInt(),
-            label: 'Samples',
-            color: Colors.green,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _buildSectionTitle(String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(4),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          fontSize: 18,
           fontWeight: FontWeight.bold,
+          color: Colors.blue[800],
         ),
       ),
     );
   }
 
-  Widget _buildProductionTable(List<dynamic> items) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: const [
-          DataColumn(label: Text('Style')),
-          DataColumn(label: Text('Color')),
-          DataColumn(label: Text('XS'), numeric: true),
-          DataColumn(label: Text('S'), numeric: true),
-          DataColumn(label: Text('M'), numeric: true),
-          DataColumn(label: Text('L'), numeric: true),
-          DataColumn(label: Text('XL'), numeric: true),
-          DataColumn(label: Text('XXL'), numeric: true),
-          DataColumn(label: Text('Total'), numeric: true),
+  Widget _buildProductTable(List<Product> items) {
+    return Card(
+      color: Colors.white,
+      elevation: 2,
+      margin: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              'Main Products',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Divider(height: 1),
+          ...items.map((item) => _buildProductRow(item)).toList(),
         ],
-        rows: items.map((item) => _buildProductionRow(item)).toList(),
       ),
     );
   }
 
-  DataRow _buildProductionRow(dynamic item) {
-    final total = item['Total'] ?? 0;
-    return DataRow(
-      color: MaterialStateProperty.resolveWith<Color?>(
-            (states) => total == 0 ? Colors.grey[100] : null,
+  Widget _buildProductRow(Product item) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(item.styleName, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(item.styleNumber),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('PO: ${item.buyerPO}'),
+              Text('Date: ${item.tod}'),
+            ],
+          ),
+          SizedBox(height: 4),
+          Text('Color: ${item.color}', overflow: TextOverflow.ellipsis),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildSizeBadge('L', item.s21_L),
+              _buildSizeBadge('M', item.s20_M),
+              _buildSizeBadge('S', item.s19_S),
+              _buildTotalBadge(item.total),
+            ],
+          ),
+          Divider(height: 24),
+        ],
       ),
-      cells: [
-        DataCell(Text(item['StyleNumber'] ?? item['StyleRef'] ?? '')),
-        DataCell(Text(item['Color'] ?? '')),
-        DataCell(Text((item['S22_XS'] ?? 0).toString())),
-        DataCell(Text((item['S19_S'] ?? 0).toString())),
-        DataCell(Text((item['S20_M'] ?? 0).toString())),
-        DataCell(Text((item['S21_L'] ?? 0).toString())),
-        DataCell(Text((item['S23_XL'] ?? 0).toString())),
-        DataCell(Text((item['S71_XXL'] ?? 0).toString())),
-        DataCell(
-          Text(
-            total.toString(),
+    );
+  }
+
+  Widget _buildExtraTable(List<Extra> items) {
+    return Card(
+      color: Colors.white,
+      elevation: 2,
+      margin: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              'Extra Items',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Divider(height: 1),
+          ...items.map((item) => _buildExtraRow(item)).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExtraRow(Extra item) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(item.styleName, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(item.styleRef),
+            ],
+          ),
+          SizedBox(height: 4),
+          Text('Country: ${item.country}'),
+          SizedBox(height: 4),
+          Text('Color: ${item.color}', overflow: TextOverflow.ellipsis),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildSizeBadge('XL', item.s23_XL),
+              _buildSizeBadge('XS', item.s22_XS),
+              _buildSizeBadge('XXL', item.s71_XXL),
+              _buildTotalBadge(item.total),
+            ],
+          ),
+          Divider(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalTable(List<Total> items) {
+    return Card(
+      color: Colors.white,
+      elevation: 2,
+      margin: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              'Total Summary',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Divider(height: 1),
+          ...items.map((item) => _buildTotalRow(item)).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalRow(Total item) {
+    final isSummary = item.styleName.isEmpty;
+    return Container(
+      color: isSummary ? Colors.blue[50] : null,
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isSummary ? 'Summary' : item.styleName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(item.styleRef),
+            ],
+          ),
+          if (item.remarks != null && item.remarks!.isNotEmpty) ...[
+            SizedBox(height: 4),
+            Text('Remarks: ${item.remarks}'),
+          ],
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildSizeBadge('L', item.s21_L, isSummary),
+              _buildSizeBadge('M', item.s20_M, isSummary),
+              _buildTotalBadge(item.total, isSummary),
+            ],
+          ),
+          Divider(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSizeBadge(String size, int quantity, [bool isHighlighted = false]) {
+    return Column(
+      children: [
+        Text(size, style: TextStyle(fontSize: 12)),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: quantity > 0
+                ? (isHighlighted ? Colors.blue[100] : Colors.green[100])
+                : Colors.grey[200],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            quantity.toString(),
             style: TextStyle(
-              color: total > 0 ? Colors.blue : Colors.grey,
-              fontWeight: total > 0 ? FontWeight.bold : null,
+              color: quantity > 0
+                  ? (isHighlighted ? Colors.blue[800] : Colors.green[800])
+                  : Colors.grey[600],
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -169,77 +463,26 @@ class OrderSummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSamplesTable(List<dynamic> samples) {
-    return DataTable(
-      columns: const [
-        DataColumn(label: Text('Color')),
-        DataColumn(label: Text('Size M'), numeric: true),
-        DataColumn(label: Text('Total'), numeric: true),
-      ],
-      rows: samples.map((sample) => DataRow(
-        cells: [
-          DataCell(Text(sample['Color'] ?? '')),
-          DataCell(Text((sample['S20_M'] ?? 0).toString())),
-          DataCell(Text((sample['TotalQuantity'] ?? 0).toString())),
-        ],
-      )).toList(),
-    );
-  }
-
-  Widget _buildOrderDetails(dynamic item) {
-    if (item == null) return const SizedBox();
-
+  Widget _buildTotalBadge(int total, [bool isHighlighted = false]) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Order Details',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        Text('Total', style: TextStyle(fontSize: 12)),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: isHighlighted ? Colors.blue[100] : Colors.blue[50],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            total.toString(),
+            style: TextStyle(
+              color: isHighlighted ? Colors.blue[900] : Colors.blue[800],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        const SizedBox(height: 8),
-        Text('Buyer PO: ${item['BuyerPO'] ?? ''}'),
-        Text('Country: ${item['Country'] ?? ''}'),
-        if (item['Tod'] != null)
-          Text('Target Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(item['Tod']))}'),
       ],
     );
   }
-}
 
-class _SummaryCard extends StatelessWidget {
-  final int value;
-  final String label;
-  final Color color;
-
-  const _SummaryCard({
-    required this.value,
-    required this.label,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Text(
-              value.toString(),
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
