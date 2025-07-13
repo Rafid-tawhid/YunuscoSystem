@@ -233,12 +233,17 @@ class MerchandisingProvider extends ChangeNotifier{
   dynamic _workOrderDetails;
   dynamic get workOrderDetails=>_workOrderDetails;
 
-  Future<void> getWorderOrderDetails(String? code) async{
+  Future<bool> getWorderOrderDetails(String? code) async{
      var data=await apiService.getData('api/Merchandising/GetWorkOrderData?workOrderCode=${code}');
      if(data!=null){
        _workOrderDetails=data['result'];
+       notifyListeners();
+       return true;
      }
-     notifyListeners();
+     else {
+       return false;
+     }
+
   }
 
 

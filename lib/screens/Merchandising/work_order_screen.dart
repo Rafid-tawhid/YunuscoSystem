@@ -239,11 +239,13 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                                 ),
                                 Spacer(),
                                 TextButton(onPressed: () async {
-
                                   EasyLoading.show(maskType: EasyLoadingMaskType.black);
-                                  await pro.getWorderOrderDetails(order.code);
+                                  var success= await pro.getWorderOrderDetails(order.code);
                                   EasyLoading.dismiss();
-                                   Navigator.push(context, CupertinoPageRoute(builder: (context)=>EnhancedProductDisplayScreen(jsonData: pro.workOrderDetails,)));
+                                  if(success){
+                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>EnhancedProductDisplayScreen(jsonData: pro.workOrderDetails,)));
+                                  }
+
                                 }, child: Text('Report'))
                               ],
                             ),
