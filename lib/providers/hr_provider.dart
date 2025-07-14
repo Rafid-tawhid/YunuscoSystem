@@ -103,7 +103,6 @@ class HrProvider extends ChangeNotifier{
       }
       notifyListeners();
       debugPrint('_leaveDataList ${_leaveDataList.length}');
-
     }
   }
 
