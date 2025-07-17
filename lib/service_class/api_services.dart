@@ -244,7 +244,7 @@ class ApiService {
       case 404:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
-        debugPrint('responseBody ${response}');
+        debugPrint('responseBody $response');
         Fluttertoast.showToast(
             msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
       case 409:
