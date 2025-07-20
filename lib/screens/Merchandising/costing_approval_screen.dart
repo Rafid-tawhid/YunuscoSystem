@@ -19,12 +19,14 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
   final NumberFormat percentFormat = NumberFormat.decimalPercentPattern(decimalDigits: 2);
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _note = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void dispose() {
     _searchController.dispose();
     _searchFocusNode.dispose();
+    _note.dispose();
     super.dispose();
   }
 
@@ -216,7 +218,6 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
           child: Column(
             children: [
-
               _buildDetailRow('Category', approval.catagoryName),
               _buildDetailRow('Style Ref', approval.styleRef),
               _buildDetailRow('Created By', approval.createdBy),
@@ -230,6 +231,27 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
               _buildDetailRow('SMV', approval.smv?.toString()),
               _buildDetailRow('Profit %', percentFormat.format((approval.profitCostInPercent ?? 0) / 100)),
               _buildDetailRow('Total Qty', approval.totalOrderQty?.toString()),
+              SizedBox(height: 8,),
+              //notes
+              TextField(
+                controller: _note,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Controls height
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4), // Slightly rounded corners
+                    borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                  ), // Grey border
+                  enabledBorder: OutlineInputBorder(
+                      // Border when not focused
+                      borderSide: BorderSide(color: Colors.grey, width: 1.0)),
+                  focusedBorder: OutlineInputBorder(
+                      // Border when focused
+                      borderSide: BorderSide(color: Colors.blue, width: 1.0)),
+                  hintText: 'Note...', // Placeholder
+                  isDense: true, // Reduces vertical padding
+                ),
+                style: TextStyle(fontSize: 14), // Text size
+              )
             ],
           ),
         ),
@@ -238,9 +260,14 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              IconButton(onPressed: (){
-                DashboardHelpers.openUrl('${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
-              }, icon: Icon(Icons.info_outline,color: Colors.orangeAccent,)),
+              IconButton(
+                  onPressed: () {
+                    DashboardHelpers.openUrl('${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+                  },
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Colors.orangeAccent,
+                  )),
               Spacer(),
               TextButton(
                 onPressed: () {
@@ -366,7 +393,7 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
     }
   }
 
-  void rejectItem(CostingApprovalListModel approval)  {
+  void rejectItem(CostingApprovalListModel approval) {
     try {
       final approvalItem = [
         {
@@ -376,11 +403,13 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           'ApprovalLevel': approval.approvalLevel,
           'ApprovalTypeId': approval.approvalTypeId,
           'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
+          'Note': _note.text,
         }
       ];
 
       var mp = context.read<MerchandisingProvider>();
       mp.acceptRejectConstingApproval(approvalItem, url: 'HR/Approval/CommonReject');
+      _note.clear();
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
     }
@@ -396,13 +425,15 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
           'AprrovalPolicyId': approval.aprrovalPolicyId,
           'ApprovalLevel': approval.approvalLevel,
           'ApprovalTypeId': approval.approvalTypeId,
-          'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey
+          'AprrovalTypePrimaryKey': approval.aprrovalTypePrimaryKey,
+          "Note": _note.text
         }
       ];
-      
+
       var mp = context.read<MerchandisingProvider>();
-      var data=await mp.acceptRejectConstingApproval(approvalItem, url: 'api/Merchandising/ApproveMerchandising');
-      if(data!=null){
+      var data = await mp.acceptRejectConstingApproval(approvalItem, url: 'api/Merchandising/ApproveMerchandising');
+      _note.clear();
+      if (data != null) {
         DashboardHelpers.showAlert(msg: 'Approved Successfully');
         //refresh the list
         getAllData(context);
