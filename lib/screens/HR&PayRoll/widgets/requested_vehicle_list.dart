@@ -78,6 +78,7 @@ class RequisitionCard extends StatelessWidget {
     final submittedAt = (data['submittedAt'] as Timestamp).toDate();
 
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.all(8),
       child: Padding(
         padding: const EdgeInsets.all(16),

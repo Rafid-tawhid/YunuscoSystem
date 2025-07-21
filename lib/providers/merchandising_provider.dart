@@ -36,7 +36,9 @@ class MerchandisingProvider extends ChangeNotifier{
   List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
 
   Future<bool> getAllBuyerOrders() async{
-    var data=await apiService.getData('api/Merchandising/BuyerOrderApprovalList');
+
+    var data=await apiService.getData('api/Merchandising/BuyerOrderAppListDateRange?fromDate=2025-01-01&toDate=2025-07-21');
+    //var data=await apiService.getData('api/Merchandising/BuyerOrderAppList');
     if(data!=null){
       _allBuyerOrderList.clear();
       for(var i in data['result']['Result']){
