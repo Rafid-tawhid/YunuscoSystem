@@ -120,7 +120,7 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
           Navigator.pop(context);
         },
         tooltip: 'Save',
-        child: const Icon(Icons.save, color: Colors.white),
+        child: const Icon(Icons.check_circle, color: Colors.white),
       ),
     );
   }

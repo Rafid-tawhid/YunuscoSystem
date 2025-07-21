@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/performence_screen.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/vehicle_requisition_screen.dart';
 import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -42,7 +43,8 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Icons.airplane_ticket,     // Self Leave (personal time off)
     Icons.history_toggle_off,  // Leave History (past records)
     Icons.receipt,             // Pay Slip (financial document)
-    Icons.room,             // Pay Slip (financial document)
+    Icons.room,
+    Icons.car_repair_rounded// Pay Slip (financial document)
   ];
   final List<Color> iconColors = [
     Colors.blue[800]!,    // Dark Blue
@@ -193,6 +195,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     if (index == 7) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => BoardRoomBookingScreen()));
     }
+    if (index == 8) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
+    }
   }
 
   void setMenuItems() {
@@ -254,6 +259,13 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         "iconColor": iconColors[3],
         "icon": menuIcons[3],
       },
+     {
+       "code": 8,
+       "name": "Vehicle\n Requisition",
+       "cardColor": cardColors[5],
+       "iconColor": iconColors[6],
+       "icon": menuIcons[8],
+     },
     ];
   }
 }
