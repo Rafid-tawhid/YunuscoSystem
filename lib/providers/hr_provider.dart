@@ -273,5 +273,10 @@ class HrProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  Future<bool> saveVehicleRequisation(dynamic formData) async{
+    var result=await apiService.postData('api/Inventory/SaveVehicleRequisition', formData);
+    return result==null?false:true;
+  }
+
 
 }

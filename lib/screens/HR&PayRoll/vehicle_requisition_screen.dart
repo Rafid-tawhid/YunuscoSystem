@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:yunusco_group/screens/HR&PayRoll/widgets/requested_vehicle_list.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
-import '../../providers/hr_provider.dart';
 import 'members_screen.dart';
 
 class VehicleRequisitionForm extends StatefulWidget {
@@ -20,19 +19,33 @@ class VehicleRequisitionForm extends StatefulWidget {
 
 class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _designationController = TextEditingController();
-  final _sectionController = TextEditingController();
-  final _destinationController = TextEditingController();
   final _distanceController = TextEditingController();
+  final _carryGoodsController = TextEditingController();
   final _purposeController = TextEditingController();
-  bool isLoading=false;
-  final String _startLocation = 'Yunusco Bd.Ltd(AEPZ)';
+  final _durationController = TextEditingController();
+  final _travelStartFromController = TextEditingController();
+  final _destinationController = TextEditingController();
 
-  String? _selectedVehicleType;
-  final List<String> _vehicleTypes = ['Private', 'Hiace'];
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  int? _selectedVehicleType; // Will store 1 or 2
+
+  // Vehicle type options
+  final List<Map<String, dynamic>> _vehicleTypes = [
+    {'name': 'Private', 'value': 1},
+    {'name': 'Hiace', 'value': 2},
+  ];
+
+  @override
+  void dispose() {
+    _distanceController.dispose();
+    _carryGoodsController.dispose();
+    _purposeController.dispose();
+    _durationController.dispose();
+    _travelStartFromController.dispose();
+    _destinationController.dispose();
+    super.dispose();
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -60,15 +73,54 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     }
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _designationController.dispose();
-    _sectionController.dispose();
-    _destinationController.dispose();
-    _distanceController.dispose();
-    _purposeController.dispose();
-    super.dispose();
+  Map<String, dynamic> _prepareFormData() {
+    var hp = context.read<HrProvider>();
+
+    final selectedMembers = hp.member_list.where((m) => m.isSelected).toList();
+    List<String> members = [];
+    for (var e in selectedMembers) {
+      members.add(e.idCardNo ?? '');
+    }
+    return {
+      "IdCardNo": DashboardHelpers.currentUser!.iDnum,
+      "Distance": _distanceController.text,
+      "CarryGoods": _carryGoodsController.text,
+      "Purpose": _purposeController.text,
+      "DestinationTo": _destinationController.text,
+      "DestinationFrom": _travelStartFromController.text,
+      // "RequiredDate": getTimeAndDate(_selectedDate,_selectedTime),
+      "RequiredDate": DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd'),
+      "Duration": _durationController.text,
+      "EmployeeId": members.toString(),
+      "VehicletypeId": _selectedVehicleType ?? 1,
+      "Status": 1,
+      "CreatedBy": 2,
+      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd')
+    };
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate() && _selectedVehicleType != null) {
+      final formData = _prepareFormData();
+      print('Form Data to Submit: $formData');
+      var hp = context.read<HrProvider>();
+      hp.saveVehicleRequisation(formData);
+      // Here you would typically send the data to your API
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Requisition submitted!\nVehicle Type ID: $_selectedVehicleType'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all required fields, including vehicle type'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -76,121 +128,93 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Yunusco (BD) Limited'),
+        title: const Text('Car Requisition Form'),
         centerTitle: true,
         elevation: 0,
-        actions: [
-          IconButton(onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const RequisitionListScreen(),
-              ),
-            );
-
-          }, icon: Icon(Icons.list_alt))
-        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header
-              const Text(
-                'Plot # 224-233, AEPZ, Shiddirganj, Narayanganj - 1431',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+              SizedBox(
+                height: 12,
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Vehicle Requisition Form',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Align(alignment: Alignment.centerRight, child: Text('Requested by: ${DashboardHelpers.currentUser!.userName}')),
+              SizedBox(
+                height: 12,
               ),
-              const SizedBox(height: 16),
-
-              // Personal Information Section
-              const Text(
-                'Personal Information',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-
-              TextFormField(
-                controller: _nameController,
+              // Vehicle Type Dropdown
+              DropdownButtonFormField<int>(
+                value: _selectedVehicleType,
                 decoration: const InputDecoration(
-                  labelText: 'Name',
-                  prefixIcon: Icon(Icons.person),
+                  labelText: 'Vehicle Type*',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.directions_car),
                 ),
+                items: _vehicleTypes.map((vehicle) {
+                  return DropdownMenuItem<int>(
+                    value: vehicle['value'],
+                    child: Text(vehicle['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedVehicleType = value;
+                  });
+                },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
+                  if (value == null) {
+                    return 'Please select a vehicle type';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
+              // Travel Start From Field
               TextFormField(
-                controller: _designationController,
+                controller: _travelStartFromController,
                 decoration: const InputDecoration(
-                  labelText: 'Designation',
-                  prefixIcon: Icon(Icons.work),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your designation';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _sectionController,
-                decoration: const InputDecoration(
-                  labelText: 'Section',
-                  prefixIcon: Icon(Icons.business),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your section';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Travel Information Section
-              const Text(
-                'Travel Information',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-
-              TextFormField(
-                controller: _destinationController,
-                decoration: const InputDecoration(
-                  labelText: 'Destination',
+                  labelText: 'Travel Start From*',
+                  border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.location_on),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter destination';
+                    return 'Please enter starting location';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
+              // Destination Field
+              TextFormField(
+                controller: _destinationController,
+                decoration: const InputDecoration(
+                  labelText: 'Destination*',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.flag),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter final destination';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // Distance Field
               TextFormField(
                 controller: _distanceController,
                 decoration: const InputDecoration(
-                  labelText: 'Probable Distance (km)',
-                  prefixIcon: Icon(Icons.directions_car),
+                  labelText: 'Distance*',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.linear_scale),
                 ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -200,53 +224,25 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _selectDate(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Travel Date',
-                          prefixIcon: Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        child: Text(
-                          _selectedDate == null ? 'Select date' : DateFormat('dd-MM-yyyy').format(_selectedDate!),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => _selectTime(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Time',
-                          prefixIcon: Icon(Icons.access_time),
-                          border: OutlineInputBorder(),
-                          filled: true,
-                          fillColor: Colors.white,
-                        ),
-                        child: Text(
-                          _selectedTime == null ? 'Select time' : _selectedTime!.format(context),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              // Carry Goods Field
+              TextFormField(
+                controller: _carryGoodsController,
+                decoration: const InputDecoration(
+                  labelText: 'Goods to Carry',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.local_shipping),
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
+              // Purpose Field
               TextFormField(
                 controller: _purposeController,
                 decoration: const InputDecoration(
-                  labelText: 'Purpose',
+                  labelText: 'Purpose*',
+                  border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.description),
                 ),
                 validator: (value) {
@@ -256,58 +252,62 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-              // Additional Information Section
-              const Text(
-                'Additional Information',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              // Date and Time Row
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => _selectDate(context),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Required Date*',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.calendar_today),
+                        ),
+                        child: Text(
+                          _selectedDate == null ? 'Select date' : DateFormat('dd-MM-yyyy').format(_selectedDate!),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => _selectTime(context),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Start Time*',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.access_time),
+                        ),
+                        child: Text(
+                          _selectedTime == null ? 'Select time' : _selectedTime!.format(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 20),
 
+              // Duration Field
               TextFormField(
+                controller: _durationController,
                 decoration: const InputDecoration(
-                  labelText: 'Travel starts from',
-                  prefixIcon: Icon(Icons.place),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter start location';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              DropdownButtonFormField<String>(
-                value: _selectedVehicleType,
-                decoration: const InputDecoration(
-                  labelText: 'Vehicle Type',
-                  prefixIcon: Icon(Icons.directions_car),
+                  labelText: 'Duration*',
                   border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
+                  prefixIcon: Icon(Icons.timer),
                 ),
-                items: _vehicleTypes.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedVehicleType = newValue;
-                  });
-                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select vehicle type';
+                    return 'Please enter duration';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-
+              const SizedBox(height: 10),
               InkWell(
                 onTap: () {
                   Navigator.push(context, CupertinoPageRoute(builder: (context) => PersonSelectionScreen())).then((persons) {
@@ -316,62 +316,37 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                     }
                   });
                 },
-                child: Container(
-                  decoration: const BoxDecoration(),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.people),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Text('Traveler (Fellow traveler) if any'),
-                      ],
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_add_alt_rounded),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text('Traveler (Fellow traveler) if any:')
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 10,),
               SelectedPeopleWidget(),
-              const SizedBox(height: 24),
-
+              const SizedBox(height: 30),
               // Submit Button
               ElevatedButton(
-                onPressed: isLoading?null: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Form is valid, proceed with submission
-
-                    _submitForm();
-                    // hp.saveVehicleRequisitation();
-                    // showDialog(
-                    //   context: context,
-                    //   builder: (context) => AlertDialog(
-                    //     title: const Text('Form Submitted'),
-                    //     content: const Text('Your vehicle requisition has been submitted successfully.'),
-                    //     actions: [
-                    //       TextButton(
-                    //         onPressed: () => Navigator.pop(context),
-                    //         child: const Text('OK'),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // );
-                  }
-                },
+                onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: myColors.primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: isLoading?CircularProgressIndicator(color: Colors.white,): Text(
+                child: const Text(
                   'Submit Requisition',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -379,75 +354,23 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     );
   }
 
-
-  Future<void> _submitForm() async {
-    List<String> selectedPersonsId=[];
-    var hp = context.read<HrProvider>();
-    final selectedMembers = hp.member_list.where((m) => m.isSelected).toList();
-    if(selectedMembers.isNotEmpty){
-      selectedMembers.forEach((e){
-        selectedPersonsId.add(e.idCardNo??'');
-      });
-    }
-    if (!_formKey.currentState!.validate()) return;
-    if (_selectedDate == null || _selectedTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select date and time')));
-      return;
+  String getTimeAndDate(DateTime? selectedDate, TimeOfDay? selectedTime) {
+    if (selectedDate == null || selectedTime == null) {
+      return ''; // or return a default value like 'Not selected'
     }
 
-    try {
-      setState(() {
-        isLoading=true;
-      });
-      // Combine date and time
-      final travelDateTime = DateTime(
-        _selectedDate!.year,
-        _selectedDate!.month,
-        _selectedDate!.day,
-        _selectedTime!.hour,
-        _selectedTime!.minute,
-      );
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final timeFormat = DateFormat('h:mm a'); // AM/PM format
 
-      // Prepare data for Firestore
-      final formData = {
-        'name': _nameController.text,
-        'designation': _designationController.text,
-        'section': _sectionController.text,
-        'destination': _destinationController.text,
-        'distance': _distanceController.text,
-        'purpose': _purposeController.text,
-        'startLocation': _startLocation,
-        'travelersId': selectedPersonsId,
-        'vehicleType': _selectedVehicleType,
-        'travelDateTime': travelDateTime,
-        'submittedAt': FieldValue.serverTimestamp(),
-        'status': 'pending', // You can add status tracking
-      };
+    // Combine the date from selectedDate with time from selectedTime
+    final combinedDateTime = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
 
-      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-      // Save to Firestore
-      await _firestore.collection('vehicle_requisitions').add(formData);
-
-      // Show success message
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Requisition submitted successfully!')));
-
-      // Clear the form after submission
-      _formKey.currentState!.reset();
-      setState(() {
-        _selectedDate = null;
-        _selectedTime = null;
-        _selectedVehicleType = null;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      debugPrint('ERROR ${e.toString()}');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error submitting form: ${e.toString()}')));
-    } finally {
-      if (!mounted) return;
-      setState(() {
-        isLoading=false;
-      });
-    }
+    return '${dateFormat.format(combinedDateTime)}, ${timeFormat.format(combinedDateTime)}';
   }
 }
