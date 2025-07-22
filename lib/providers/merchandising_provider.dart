@@ -166,7 +166,7 @@ class MerchandisingProvider extends ChangeNotifier{
         return false;
       }
 
-      final result = response['returnvalue']['Result'] as List?;
+      final result = response['returnvalue'] as List?;
       if (result == null || result.isEmpty) {
         debugPrint('Empty purchase data received');
         _purchaseApprovalList.clear();

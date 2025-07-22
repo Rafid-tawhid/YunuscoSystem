@@ -41,6 +41,7 @@ class RequisitionListScreen extends StatelessWidget {
 
               return RequisitionCard(
                 docId: doc.id,
+                index:index,
                 data: data,
               );
             },
@@ -53,11 +54,13 @@ class RequisitionListScreen extends StatelessWidget {
 
 class RequisitionCard extends StatelessWidget {
   final String docId;
+  final int index;
   final Map<String, dynamic> data;
 
   const RequisitionCard({
     super.key,
     required this.docId,
+    required this.index,
     required this.data,
   });
 
@@ -89,7 +92,7 @@ class RequisitionCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  data['name'],
+                  '${index+1}. ${data['name']}',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -109,9 +112,10 @@ class RequisitionCard extends StatelessWidget {
             Text('Section: ${data['section']}'),
             const SizedBox(height: 8),
             Text('Destination: ${data['destination']}'),
-            Text('Distance: ${data['distance']}'),
+            Text('Distance: ${data['distance']}km'),
             Text('Purpose: ${data['purpose']}'),
             const SizedBox(height: 8),
+            Text('Vehicle: ${data['vehicleType']}'),
             Text('Travel Date: ${dateFormat.format(travelDate)}'),
             Text('Submitted: ${dateFormat.format(submittedAt)}'),
             const SizedBox(height: 16),

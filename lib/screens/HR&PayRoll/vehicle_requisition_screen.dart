@@ -26,6 +26,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
   final _destinationController = TextEditingController();
   final _distanceController = TextEditingController();
   final _purposeController = TextEditingController();
+  bool isLoading=false;
   final String _startLocation = 'Yunusco Bd.Ltd(AEPZ)';
 
   String? _selectedVehicleType;
@@ -337,7 +338,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
 
               // Submit Button
               ElevatedButton(
-                onPressed: () {
+                onPressed: isLoading?null: () {
                   if (_formKey.currentState!.validate()) {
                     // Form is valid, proceed with submission
 
@@ -365,7 +366,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
+                child: isLoading?CircularProgressIndicator(color: Colors.white,): Text(
                   'Submit Requisition',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
@@ -377,6 +378,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       ),
     );
   }
+
 
   Future<void> _submitForm() async {
     List<String> selectedPersonsId=[];
@@ -394,6 +396,9 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     }
 
     try {
+      setState(() {
+        isLoading=true;
+      });
       // Combine date and time
       final travelDateTime = DateTime(
         _selectedDate!.year,
@@ -440,6 +445,9 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error submitting form: ${e.toString()}')));
     } finally {
       if (!mounted) return;
+      setState(() {
+        isLoading=false;
+      });
     }
   }
 }
