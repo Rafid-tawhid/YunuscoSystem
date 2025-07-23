@@ -71,6 +71,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
         _selectedTime = picked;
       });
     }
+    debugPrint('_selectedTime $_selectedTime');
   }
 
   Map<String, dynamic> _prepareFormData() {
@@ -88,13 +89,13 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       "Purpose": _purposeController.text,
       "DestinationTo": _destinationController.text,
       "DestinationFrom": _travelStartFromController.text,
-      // "RequiredDate": getTimeAndDate(_selectedDate,_selectedTime),
       "RequiredDate": DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd'),
+      "RequiredTime": getTimeDate(_selectedTime),
+      //"RequiredDate": "2025-07-22",
       "Duration": _durationController.text,
-      "EmployeeId": members.toString(),
+      "EmployeeId": members.join(", "),
       "VehicletypeId": _selectedVehicleType ?? 1,
       "Status": 1,
-      "CreatedBy": 2,
       "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd')
     };
   }
@@ -112,7 +113,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
           duration: const Duration(seconds: 3),
         ),
       );
-      Navigator.pop(context);
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -354,23 +355,21 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     );
   }
 
-  String getTimeAndDate(DateTime? selectedDate, TimeOfDay? selectedTime) {
-    if (selectedDate == null || selectedTime == null) {
-      return ''; // or return a default value like 'Not selected'
-    }
+  String getTimeDate(TimeOfDay? selectedTime) {
+    if (selectedTime == null) return '';
 
-    final dateFormat = DateFormat('yyyy-MM-dd');
+    final now = DateTime.now(); // Get current date
     final timeFormat = DateFormat('h:mm a'); // AM/PM format
 
-    // Combine the date from selectedDate with time from selectedTime
+    // Create DateTime using today's date + selected time
     final combinedDateTime = DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
+      now.year,
+      now.month,
+      now.day,
       selectedTime.hour,
       selectedTime.minute,
     );
 
-    return '${dateFormat.format(combinedDateTime)}, ${timeFormat.format(combinedDateTime)}';
+    return timeFormat.format(combinedDateTime);
   }
 }
