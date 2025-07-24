@@ -38,7 +38,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Vehicle Approval'),
+        title: const Text('Requisition Details'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -113,7 +113,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 60),
 
               // Rejection Reason (only shown/required when rejecting)
 
@@ -165,6 +165,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
                   ),
                 ],
               ),
+              SizedBox(height: 120,)
             ],
           ),
         ),
