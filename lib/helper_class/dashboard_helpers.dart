@@ -346,16 +346,10 @@ class DashboardHelpers {
                 children: [
                   // Alert Title
                   Text(
-                    textAlign: TextAlign.center,
-                    'Your documents have some issues',
-                    style: AppConstants.customTextStyle(22, Colors.black, FontWeight.w700),
-                  ),
-                  SizedBox(height: 24),
-                  Text(
                     textAlign: TextAlign.left,
                     title ?? 'Instructions',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: myColors.green,
                     ),

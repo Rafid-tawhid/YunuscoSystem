@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
 import '../../models/vehicle_model.dart';
 
 
@@ -34,49 +35,56 @@ class VehicleRequestListScreen extends StatelessWidget {
   }
 
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 4,
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Request #${vehicle.vehicleReqId}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+    return InkWell(
+      onTap: (){
+        if(vehicle.status==1){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>VehicleApprovalScreen(vehicleModel: vehicle,)));
+        }
+      },
+      child: Card(
+        color: Colors.white,
+        elevation: 4,
+        margin: const EdgeInsets.only(bottom: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Request #${vehicle.vehicleReqId}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
                   ),
-                ),
-                _buildStatusChip(vehicle.status),
+                  _buildStatusChip(vehicle.status),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildDetailRow('From', vehicle.destinationFrom ?? 'N/A'),
+              _buildDetailRow('To', vehicle.destinationTo ?? 'N/A'),
+              _buildDetailRow('Date', vehicle.requiredDate ?? 'N/A'),
+              _buildDetailRow('Time', vehicle.requiredTime ?? 'N/A'),
+              _buildDetailRow('Distance',  '${vehicle.distance} km'),
+              _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
+              _buildDetailRow('Duration','${vehicle.duration} hr'),
+              if (vehicle.vehicleNo != null) ...[
+                const SizedBox(height: 8),
+                Divider(color: Colors.grey[300]),
+                const SizedBox(height: 8),
+                _buildDetailRow('Vehicle No', vehicle.vehicleNo!),
+                if (vehicle.driverName != null)
+                  _buildDetailRow('Driver', vehicle.driverName!),
               ],
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow('From', vehicle.destinationFrom ?? 'N/A'),
-            _buildDetailRow('To', vehicle.destinationTo ?? 'N/A'),
-            _buildDetailRow('Date', vehicle.requiredDate ?? 'N/A'),
-            _buildDetailRow('Time', vehicle.requiredTime ?? 'N/A'),
-            _buildDetailRow('Distance',  '${vehicle.distance} km'),
-            _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
-            _buildDetailRow('Duration','${vehicle.duration} hr'),
-            if (vehicle.vehicleNo != null) ...[
-              const SizedBox(height: 8),
-              Divider(color: Colors.grey[300]),
-              const SizedBox(height: 8),
-              _buildDetailRow('Vehicle No', vehicle.vehicleNo!),
-              if (vehicle.driverName != null)
-                _buildDetailRow('Driver', vehicle.driverName!),
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -117,19 +125,19 @@ class VehicleRequestListScreen extends StatelessWidget {
     String statusText;
 
     switch (status) {
-      case 0:
+      case 1:
         chipColor = Colors.orange;
         statusText = 'Pending';
         break;
-      case 1:
+      case 2:
         chipColor = Colors.green;
         statusText = 'Approved';
         break;
-      case 2:
+      case 3:
         chipColor = Colors.red;
         statusText = 'Rejected';
         break;
-      case 3:
+      case 4:
         chipColor = Colors.blue;
         statusText = 'Completed';
         break;

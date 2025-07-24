@@ -298,5 +298,14 @@ class HrProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  Future<bool> acceptVehicleRequisation(dynamic data) async {
+    var result=await apiService.postData('api/Inventory/RequisitionApproved', data);
+    return result==null?false:true;
+  }
+  Future<bool> rejectVehicleRequisation(dynamic data) async {
+    var result=await apiService.postData('api/Inventory/RequisitionReject', data);
+    return result==null?false:true;
+  }
+
 
 }
