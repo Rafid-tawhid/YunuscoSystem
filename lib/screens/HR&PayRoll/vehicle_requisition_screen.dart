@@ -97,7 +97,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       "Duration": _durationController.text,
       "EmployeeId": members.join(", "),
       "VehicletypeId": _selectedVehicleType ?? 1,
-      "Status": 1,
+      "Status": 1, //pending
       "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd')
     };
   }

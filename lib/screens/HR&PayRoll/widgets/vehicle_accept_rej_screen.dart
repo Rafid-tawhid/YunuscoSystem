@@ -197,7 +197,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
               var data =
                 {
                   "VehicleReqId":widget.vehicleModel.vehicleReqId,
-                  "Status": 3,
+                  "Status": 3, //rejected
                   "Note": reasonController.text.trim()
                 };
               var res = await hp.rejectVehicleRequisation(data);
@@ -227,7 +227,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
       var hp = context.read<HrProvider>();
       var data = {
         "VehicleReqId": widget.vehicleModel.vehicleReqId,
-        "Status": 2,
+        "Status": 2, //accepted
         "DriverName": _driverNameController.text.trim(),
         "VehicleNo": _vehicleNumberController.text.trim(),
         "DriverMobileNo": _driverPhoneController.text.trim()

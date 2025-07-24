@@ -294,7 +294,7 @@ class HrProvider extends ChangeNotifier{
         _vehicleList.add(VehicleModel.fromJson(i));
       }
     }
-    debugPrint('_member_list ${_member_list.length}');
+    debugPrint('_vehicleList ${_vehicleList.length}');
     notifyListeners();
   }
 
