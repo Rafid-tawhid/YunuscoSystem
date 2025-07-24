@@ -14,6 +14,7 @@ import '../models/JobCardDropdownModel.dart';
 import '../models/leave_data_model.dart';
 import '../models/leave_model.dart';
 import '../models/self_leave_info.dart';
+import '../models/vehicle_model.dart';
 
 class HrProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
@@ -276,6 +277,25 @@ class HrProvider extends ChangeNotifier{
   Future<bool> saveVehicleRequisation(dynamic formData) async{
     var result=await apiService.postData('api/Inventory/SaveVehicleRequisition', formData);
     return result==null?false:true;
+  }
+
+
+  List<VehicleModel> _vehicleList=[];
+
+
+  List<VehicleModel> get vehicleList => _vehicleList;
+
+  Future<void> getRequestedCarList() async{
+
+    var data=await apiService.getData('api/inventory/UserWiseVehicleRequisitionList');
+    if(data!=null){
+      _vehicleList.clear();
+      for(var i in data['returnvalue']){
+        _vehicleList.add(VehicleModel.fromJson(i));
+      }
+    }
+    debugPrint('_member_list ${_member_list.length}');
+    notifyListeners();
   }
 
 

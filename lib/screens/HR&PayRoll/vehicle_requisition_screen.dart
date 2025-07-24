@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/requested_car_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
@@ -87,11 +89,11 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       "Distance": _distanceController.text,
       "CarryGoods": _carryGoodsController.text,
       "Purpose": _purposeController.text,
+      "CreatedBy": DashboardHelpers.currentUser!.userId,
       "DestinationTo": _destinationController.text,
       "DestinationFrom": _travelStartFromController.text,
       "RequiredDate": DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd'),
       "RequiredTime": getTimeDate(_selectedTime),
-      //"RequiredDate": "2025-07-22",
       "Duration": _durationController.text,
       "EmployeeId": members.join(", "),
       "VehicletypeId": _selectedVehicleType ?? 1,
@@ -100,19 +102,21 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     };
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate() && _selectedVehicleType != null) {
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate() && _selectedVehicleType != null &&_selectedDate!=null&&_selectedTime!=null) {
       final formData = _prepareFormData();
       print('Form Data to Submit: $formData');
       var hp = context.read<HrProvider>();
-      hp.saveVehicleRequisation(formData);
+      await hp.saveVehicleRequisation(formData);
       // Here you would typically send the data to your API
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Requisition submitted!\nVehicle Type ID: $_selectedVehicleType'),
-          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.green,
+          content: Text('Requisition submitted!\nVehicle Type : ${_selectedVehicleType==1?'Private':'Hiace'}',style: TextStyle(color: Colors.white),),
+          duration: const Duration(seconds: 5),
         ),
       );
+      Navigator.pop(context);
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -132,6 +136,18 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
         title: const Text('Car Requisition Form'),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(onPressed: () async {
+            var hp=context.read<HrProvider>();
+            await hp.getRequestedCarList();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VehicleRequestListScreen(vehicles: hp.vehicleList),
+              ),
+            );
+          }, icon: Icon(Icons.list))
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -212,12 +228,14 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
               // Distance Field
               TextFormField(
                 controller: _distanceController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
-                  labelText: 'Distance*',
+                  labelText: 'Distance* (Km)',
+
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.linear_scale),
                 ),
-                keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter distance';
@@ -296,8 +314,10 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
               // Duration Field
               TextFormField(
                 controller: _durationController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
-                  labelText: 'Duration*',
+                  labelText: 'Duration* (Hour)',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.timer),
                 ),
