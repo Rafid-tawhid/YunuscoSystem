@@ -15,6 +15,10 @@ class VehicleModel {
       String? vehicleNo, 
       String? driverName, 
       dynamic userName, 
+      String? departmentName, 
+      String? sectionName, 
+      String? designationName, 
+      String? fullName, 
       num? status,}){
     _vehicleReqId = vehicleReqId;
     _idCardNo = idCardNo;
@@ -31,6 +35,10 @@ class VehicleModel {
     _vehicleNo = vehicleNo;
     _driverName = driverName;
     _userName = userName;
+    _departmentName = departmentName;
+    _sectionName = sectionName;
+    _designationName = designationName;
+    _fullName = fullName;
     _status = status;
 }
 
@@ -50,6 +58,10 @@ class VehicleModel {
     _vehicleNo = json['VehicleNo'];
     _driverName = json['DriverName'];
     _userName = json['UserName'];
+    _departmentName = json['DepartmentName'];
+    _sectionName = json['SectionName'];
+    _designationName = json['DesignationName'];
+    _fullName = json['FullName'];
     _status = json['Status'];
   }
   num? _vehicleReqId;
@@ -67,6 +79,10 @@ class VehicleModel {
   String? _vehicleNo;
   String? _driverName;
   dynamic _userName;
+  String? _departmentName;
+  String? _sectionName;
+  String? _designationName;
+  String? _fullName;
   num? _status;
 VehicleModel copyWith({  num? vehicleReqId,
   String? idCardNo,
@@ -83,6 +99,10 @@ VehicleModel copyWith({  num? vehicleReqId,
   String? vehicleNo,
   String? driverName,
   dynamic userName,
+  String? departmentName,
+  String? sectionName,
+  String? designationName,
+  String? fullName,
   num? status,
 }) => VehicleModel(  vehicleReqId: vehicleReqId ?? _vehicleReqId,
   idCardNo: idCardNo ?? _idCardNo,
@@ -99,6 +119,10 @@ VehicleModel copyWith({  num? vehicleReqId,
   vehicleNo: vehicleNo ?? _vehicleNo,
   driverName: driverName ?? _driverName,
   userName: userName ?? _userName,
+  departmentName: departmentName ?? _departmentName,
+  sectionName: sectionName ?? _sectionName,
+  designationName: designationName ?? _designationName,
+  fullName: fullName ?? _fullName,
   status: status ?? _status,
 );
   num? get vehicleReqId => _vehicleReqId;
@@ -116,6 +140,10 @@ VehicleModel copyWith({  num? vehicleReqId,
   String? get vehicleNo => _vehicleNo;
   String? get driverName => _driverName;
   dynamic get userName => _userName;
+  String? get departmentName => _departmentName;
+  String? get sectionName => _sectionName;
+  String? get designationName => _designationName;
+  String? get fullName => _fullName;
   num? get status => _status;
 
   Map<String, dynamic> toJson() {
@@ -135,6 +163,10 @@ VehicleModel copyWith({  num? vehicleReqId,
     map['VehicleNo'] = _vehicleNo;
     map['DriverName'] = _driverName;
     map['UserName'] = _userName;
+    map['DepartmentName'] = _departmentName;
+    map['SectionName'] = _sectionName;
+    map['DesignationName'] = _designationName;
+    map['FullName'] = _fullName;
     map['Status'] = _status;
     return map;
   }

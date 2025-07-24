@@ -48,7 +48,28 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Vehicle Number Field
+              // In your parent widget or page
+              VehicleDetailsWidget(
+                vehicle: VehicleModel(
+                  vehicleReqId: 123,
+                  fullName: "John Doe",
+                  idCardNo: "EMP12345",
+                  departmentName: "Operations",
+                  designationName: "Manager",
+                  destinationFrom: "New York",
+                  destinationTo: "Boston",
+                  distance: "200 km",
+                  purpose: "Client Meeting",
+                  requiredDate: "2023-06-15",
+                  requiredTime: "09:00 AM",
+                  duration: "4 hours",
+                  vehicletypeId: 1,
+                  vehicleNo: "NY-ABC-1234",
+                  driverName: "Mike Johnson",
+                  carryGoods: "Yes",
+                  status: 1,
+                ),
+              ),
               TextFormField(
                 controller: _vehicleNumberController,
                 decoration: const InputDecoration(
@@ -251,4 +272,67 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
       setState(() => _isSubmitting = false);
     });
   }
+}
+
+
+
+
+class VehicleDetailsWidget extends StatelessWidget {
+  final VehicleModel vehicle;
+
+  const VehicleDetailsWidget({Key? key, required this.vehicle}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDetailRow('Request ID', vehicle.vehicleReqId?.toString() ?? 'N/A'),
+        _buildDetailRow('Employee', vehicle.fullName ?? 'N/A'),
+        _buildDetailRow('ID Card No', vehicle.idCardNo ?? 'N/A'),
+        _buildDetailRow('Department', vehicle.departmentName ?? 'N/A'),
+        _buildDetailRow('Designation', vehicle.designationName ?? 'N/A'),
+
+        const SizedBox(height: 20),
+        const Divider(),
+        const Text('Trip Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        _buildDetailRow('From', vehicle.destinationFrom ?? 'N/A'),
+        _buildDetailRow('To', vehicle.destinationTo ?? 'N/A'),
+        _buildDetailRow('Distance', vehicle.distance ?? 'N/A'),
+        _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
+
+        const SizedBox(height: 20),
+        const Divider(),
+        const Text('Timing', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        _buildDetailRow('Date', vehicle.requiredDate ?? 'N/A'),
+        _buildDetailRow('Time', vehicle.requiredTime ?? 'N/A'),
+        _buildDetailRow('Duration', vehicle.duration ?? 'N/A'),
+
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
