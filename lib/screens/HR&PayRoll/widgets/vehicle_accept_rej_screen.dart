@@ -234,6 +234,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
                   reasonController.clear();
                 });
               }
+              Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
@@ -272,6 +273,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
     Future.delayed(const Duration(seconds: 1), () {
       setState(() => _isSubmitting = false);
     });
+    Navigator.pop(context);
   }
 }
 

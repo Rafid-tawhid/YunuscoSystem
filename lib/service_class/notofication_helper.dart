@@ -12,6 +12,8 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 
+import '../screens/HR&PayRoll/requested_car_list.dart';
+import '../screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
 import '../screens/login_screen.dart';
 import 'api_services.dart';
 
@@ -244,7 +246,15 @@ class NotificationServices {
     final context = NavigationService.navigatorKey.currentContext;
     if (context == null) return;
 
-    Navigator.push(context, CupertinoPageRoute(builder: (context) => NotificationsScreen()));
+    if(data['type']=="VehicleRequest"){
+      //
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()));
+    }
+    else {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => NotificationsScreen()));
+    }
+
+
   }
 }
 

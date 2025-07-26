@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
 import '../../models/vehicle_model.dart';
 
 
-class VehicleRequestListScreen extends StatelessWidget {
-  final List<VehicleModel> vehicles;
+class VehicleRequestListScreen extends StatefulWidget {
 
-  const VehicleRequestListScreen({Key? key, required this.vehicles}) : super(key: key);
+  const VehicleRequestListScreen({Key? key,}) : super(key: key);
+
+  @override
+  State<VehicleRequestListScreen> createState() => _VehicleRequestListScreenState();
+}
+
+class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
+
+
+  @override
+  void initState() {
+
+    getAllRequestedVehicles();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +38,15 @@ class VehicleRequestListScreen extends StatelessWidget {
         decoration: BoxDecoration(
 
         ),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: vehicles.length,
-          itemBuilder: (context, index) {
-            final vehicle = vehicles[index];
-            return _buildVehicleCard(vehicle, context);
-          },
+        child: Consumer<HrProvider>(
+          builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator()):ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: pro.vehicleList.length,
+            itemBuilder: (context, index) {
+              final vehicle = pro.vehicleList[index];
+              return _buildVehicleCard(vehicle, context);
+            },
+          ),
         ),
       ),
     );
@@ -37,6 +55,7 @@ class VehicleRequestListScreen extends StatelessWidget {
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
     return InkWell(
       onTap: (){
+        //&&DashboardHelpers.currentUser!.iDnum=='38832'
         if(vehicle.status==1){
           Navigator.push(context, MaterialPageRoute(builder: (context)=>VehicleApprovalScreen(vehicleModel: vehicle,)));
         }
@@ -156,5 +175,10 @@ class VehicleRequestListScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
     );
+  }
+
+  void getAllRequestedVehicles() async{
+    var hp=context.read<HrProvider>();
+    await hp.getRequestedCarList();
   }
 }

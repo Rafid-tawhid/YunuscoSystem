@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
@@ -139,11 +140,10 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
         actions: [
           IconButton(onPressed: () async {
             var hp=context.read<HrProvider>();
-            await hp.getRequestedCarList();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => VehicleRequestListScreen(vehicles: hp.vehicleList),
+                builder: (context) => VehicleRequestListScreen(),
               ),
             );
           }, icon: Icon(Icons.list))

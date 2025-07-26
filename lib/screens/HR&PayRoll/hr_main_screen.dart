@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/performence_screen.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/vehicle_requisition_screen.dart';
@@ -169,7 +170,13 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
   void goToScreen(index) {
     debugPrint('This is called ${index}');
     if (index == 0) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => AllDepartmentAttendance()));
+      if(DashboardHelpers.currentUser!.isDepartmentHead==true){
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => AllDepartmentAttendance()));
+      }
+      else {
+        DashboardHelpers.showAlert(msg: 'Not Available');
+      }
+
     }
     if (index == 1) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));

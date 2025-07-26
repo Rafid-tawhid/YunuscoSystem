@@ -286,8 +286,9 @@ class HrProvider extends ChangeNotifier{
   List<VehicleModel> get vehicleList => _vehicleList;
 
   Future<void> getRequestedCarList() async{
-
+    setLoading(true);
     var data=await apiService.getData('api/inventory/UserWiseVehicleRequisitionList');
+    setLoading(false);
     if(data!=null){
       _vehicleList.clear();
       for(var i in data['returnvalue']){
