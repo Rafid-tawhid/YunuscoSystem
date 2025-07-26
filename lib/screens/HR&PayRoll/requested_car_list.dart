@@ -55,8 +55,8 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
     return InkWell(
       onTap: (){
-        //&&DashboardHelpers.currentUser!.iDnum=='38832'
-        if(vehicle.status==1){
+        //
+        if(vehicle.status==1&&DashboardHelpers.currentUser!.iDnum=='38832'){
           Navigator.push(context, MaterialPageRoute(builder: (context)=>VehicleApprovalScreen(vehicleModel: vehicle,)));
         }
       },
