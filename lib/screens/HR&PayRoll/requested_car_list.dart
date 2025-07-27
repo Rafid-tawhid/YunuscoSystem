@@ -39,11 +39,16 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
 
         ),
         child: Consumer<HrProvider>(
-          builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator()):ListView.builder(
+          builder: (context, pro, _) => pro.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: pro.vehicleList.length,
             itemBuilder: (context, index) {
-              final vehicle = pro.vehicleList[index];
+              // Sort the list in descending order (e.g., by `id`)
+              final sortedList = List.from(pro.vehicleList)
+                ..sort((a, b) => b.vehicleReqId.compareTo(a.vehicleReqId)); // Descending
+              final vehicle = sortedList[index];
               return _buildVehicleCard(vehicle, context);
             },
           ),
@@ -55,7 +60,7 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
     return InkWell(
       onTap: (){
-        //
+
         if(vehicle.status==1&&DashboardHelpers.currentUser!.iDnum=='38832'){
           Navigator.push(context, MaterialPageRoute(builder: (context)=>VehicleApprovalScreen(vehicleModel: vehicle,)));
         }
@@ -99,8 +104,18 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
                 Divider(color: Colors.grey[300]),
                 const SizedBox(height: 8),
                 _buildDetailRow('Vehicle No', vehicle.vehicleNo!),
-                if (vehicle.driverName != null)
-                  _buildDetailRow('Driver', vehicle.driverName!),
+                _buildDetailRow('Driver', vehicle.driverName??''),
+                _buildDetailRow('Phone', vehicle.driverMobileNo??''),
+
+                // if (vehicle.driverMobileNo != null&&vehicle.status==2)
+                //   Row(
+                //     children: [
+                //       Expanded(child: _buildDetailRow('Driver', vehicle.driverName!)),
+                //       if(vehicle.driverMobileNo!=null||vehicle.driverMobileNo!=''&&vehicle.status==2)TextButton(onPressed: (){
+                //          DashboardHelpers.makePhoneCall(vehicle.driverMobileNo??'');
+                //       }, child: Text('Call Driver ${vehicle.driverMobileNo}'))
+                //     ],
+                //   ),
               ],
             ],
           ),

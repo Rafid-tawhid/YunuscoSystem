@@ -11,7 +11,6 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -22,7 +21,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
@@ -39,28 +37,49 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         title: const Text('Notifications'),
         centerTitle: true,
       ),
-      body: Consumer<NotificationProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          // Consumer<NotificationProvider>(
+          //   builder: (context, pro, _) => Align(alignment: Alignment.bottomRight, child: Padding(
+          //     padding: const EdgeInsets.only(right: 12.0),
+          //     child: Column(
+          //       mainAxisSize: MainAxisSize.min,
+          //       crossAxisAlignment: CrossAxisAlignment.end,
+          //       children: [
+          //         Text('Total: ${pro.allNotification.length.toString()}'),
+          //         SizedBox(
+          //             width: 140,
+          //             child: DepartmentDropdown())
+          //       ],
+          //     ),
+          //   )),
+          // ),
+          Expanded(
+            child: Consumer<NotificationProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (provider.allNotification.isEmpty) {
-            return const Center(child: Text('No notifications found'));
-          }
+                if (provider.allNotification.isEmpty) {
+                  return const Center(child: Text('No notifications found'));
+                }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(8),
-            itemCount: provider.allNotification.length,
-            itemBuilder: (context, index) {
-              final notification = provider.allNotification[index];
-              return _NotificationListItem(
-                notification: notification,
-                onTap: () => _showNotificationDetails(context, notification),
-              );
-            },
-          );
-        },
+                return ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: provider.allNotification.length,
+                  itemBuilder: (context, index) {
+                    final notification = provider.allNotification[index];
+                    return _NotificationListItem(
+                      notification: notification,
+                      onTap: () => _showNotificationDetails(context, notification),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -70,13 +89,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final detailsSheet = NotificationDetailsSheet(
         notification: notification,
         controller: remarksController,
-        onAccept: (){
+        onAccept: () {
           _handleLeaveAction(context, notification, true, remarksController.text);
         },
-        onReject: (){
+        onReject: () {
           _handleLeaveAction(context, notification, false, remarksController.text);
-        }
-    );
+        });
 
     showModalBottomSheet(
       context: context,
@@ -94,11 +112,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _handleLeaveAction(
-      BuildContext context,
-      NotificationModel notification,
-      bool isApproved,
-      String remarks,
-      ) async {
+    BuildContext context,
+    NotificationModel notification,
+    bool isApproved,
+    String remarks,
+  ) async {
     final provider = context.read<NotificationProvider>();
 
     try {
@@ -107,7 +125,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         {
           "leaveId": notification.leaveId,
           "approvalLevel": DashboardHelpers.currentUser!.userId == 381 ? 2 : 1,
-          "note": isApproved ? "N/A" : remarks.isNotEmpty ? remarks : "N/A",
+          "note": isApproved
+              ? "N/A"
+              : remarks.isNotEmpty
+                  ? remarks
+                  : "N/A",
           "isApprove": isApproved
         }
       ];
@@ -129,8 +151,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       }
     }
   }
-
-
 }
 
 class _NotificationListItem extends StatelessWidget {
@@ -202,7 +222,6 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     debugPrint('CHIP STATUS ${status}');
     final color = _getStatusColor(status);
     return Container(
@@ -240,12 +259,7 @@ class NotificationDetailsSheet extends StatelessWidget {
   final VoidCallback? onReject;
   final TextEditingController? controller;
 
-  NotificationDetailsSheet({
-    required this.notification,
-    this.onAccept,
-    this.onReject,
-    this.controller
-  });
+  NotificationDetailsSheet({required this.notification, this.onAccept, this.onReject, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -280,58 +294,50 @@ class NotificationDetailsSheet extends StatelessWidget {
             value: '${_formatDate(notification.leaveFromDate)} - ${_formatDate(notification.leaveToDate)}',
           ),
           _DetailRow(label: 'Duration', value: '${notification.dayCount} days'),
-          _DetailRow(label: 'Balance', value: 'SL: ${notification.sl}, EL: ${notification.el}, CL :${notification.cl},', ),
-
-          if (notification.reasons?.isNotEmpty ?? false)
-            _DetailRow(label: 'Reason', value: notification.reasons!),
-            const SizedBox(height: 24),
-
-          isShowAcceptRejectButton(notification)? Column(
-              children: [
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: TextField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      labelText: 'Remarks (Optional)',
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.grey.shade400,
-                              width: .5
-                          )
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                    ),
-                    maxLines: 2,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
+          _DetailRow(
+            label: 'Balance',
+            value: 'SL: ${notification.sl}, EL: ${notification.el}, CL :${notification.cl},',
+          ),
+          if (notification.reasons?.isNotEmpty ?? false) _DetailRow(label: 'Reason', value: notification.reasons!),
+          const SizedBox(height: 24),
+          isShowAcceptRejectButton(notification)
+              ? Column(
                   children: [
-
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: onReject,
-                          child: const Text('Reject'),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          labelText: 'Remarks (Optional)',
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400, width: .5)),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                         ),
+                        maxLines: 2,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: onReject,
+                            child: const Text('Reject'),
                           ),
-                          onPressed: onAccept,
-                          child: const Text('Approve', style: TextStyle(color: Colors.white)),
                         ),
-                      ),
-
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                            onPressed: onAccept,
+                            child: const Text('Approve', style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
-                ),
-              ],
-            ):SizedBox.shrink(),
-
+                )
+              : SizedBox.shrink(),
           const SizedBox(height: 40),
         ],
       ),
@@ -349,17 +355,13 @@ class NotificationDetailsSheet extends StatelessWidget {
   }
 
   bool isShowAcceptRejectButton(NotificationModel notification) {
-    if(notification.employeeIdCardNo==DashboardHelpers.currentUser!.iDnum){
+    if (notification.employeeIdCardNo == DashboardHelpers.currentUser!.iDnum) {
+      return false;
+    } else if (notification.finalStatus == 1 || notification.finalStatus == 2 || notification.finalStatus == 4) {
+      return true;
+    } else {
       return false;
     }
-
-    else if(notification.finalStatus==1||notification.finalStatus==2||notification.finalStatus==4){
-        return true;
-      }
-    else {
-      return false;
-    }
-
   }
 }
 
@@ -386,6 +388,114 @@ class _DetailRow extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(child: Text(value ?? 'N/A')),
         ],
+      ),
+    );
+  }
+}
+
+final List<Map<String, dynamic>> departments = [
+  {'id': 0, 'name': 'All'},
+  {'id': 1, 'name': 'Accessories'},
+  {'id': 2, 'name': 'Accounts & Finance'},
+  {'id': 3, 'name': 'Audit & Internal Control'},
+  {'id': 4, 'name': 'Business Assessment'},
+  {'id': 5, 'name': 'Commercial'},
+  {'id': 6, 'name': 'Production & Quality'},
+  {'id': 7, 'name': 'Customer Service'},
+  {'id': 8, 'name': 'Data Entry'},
+  {'id': 9, 'name': 'Design'},
+  {'id': 10, 'name': 'HR Admin & Compliance'},
+  {'id': 11, 'name': 'IE'},
+  {'id': 12, 'name': 'LAB'},
+  {'id': 13, 'name': 'Logistic'},
+  {'id': 14, 'name': 'Maintenance old'},
+  {'id': 15, 'name': 'Management'},
+  {'id': 16, 'name': 'Merchandising'},
+  {'id': 17, 'name': 'MIS'},
+  {'id': 18, 'name': 'Planning'},
+  {'id': 19, 'name': 'Product Development'},
+  {'id': 20, 'name': 'Production'},
+  {'id': 21, 'name': 'Quality Control'},
+  {'id': 22, 'name': 'Sales & Marketing'},
+  {'id': 23, 'name': 'Sample & CAD'},
+  {'id': 24, 'name': 'Store'},
+  {'id': 25, 'name': 'Supply Chain'},
+  {'id': 26, 'name': 'Technical'},
+  {'id': 27, 'name': 'Quality Assurance'},
+  {'id': 28, 'name': 'Operations'},
+  {'id': 29, 'name': 'Tag'},
+  {'id': 30, 'name': 'Design & Product Development'},
+  {'id': 31, 'name': 'Extra'},
+  {'id': 32, 'name': 'Flexo'},
+  {'id': 33, 'name': 'Heat Transfer'},
+  {'id': 34, 'name': 'Medical'},
+  {'id': 35, 'name': 'PFL'},
+  {'id': 36, 'name': 'Pre-Press'},
+  {'id': 37, 'name': 'Printing'},
+  {'id': 38, 'name': 'Purchase'},
+  {'id': 39, 'name': 'Sample & Technical'},
+  {'id': 40, 'name': 'Sourcing'},
+  {'id': 41, 'name': 'Thermal'},
+  {'id': 42, 'name': 'Maintenance'},
+  {'id': 43, 'name': 'Woven'},
+  {'id': 44, 'name': 'Knitting'},
+  {'id': 45, 'name': 'Technical & Planning'},
+  {'id': 46, 'name': 'HR & GA'},
+  {'id': 47, 'name': 'Facility Maintenance'},
+  {'id': 48, 'name': 'Digital Marketing'},
+  {'id': 49, 'name': 'Admin & Accounts'},
+  {'id': 50, 'name': 'Administration'},
+  {'id': 51, 'name': 'Administration'}, // Duplicate ID?
+  {'id': 52, 'name': 'Design Studio'},
+  {'id': 53, 'name': 'Business Development'},
+  {'id': 54, 'name': 'Creative Product Development'},
+];
+
+
+
+class DepartmentDropdown extends StatefulWidget {
+  const DepartmentDropdown({super.key});
+
+  @override
+  State<DepartmentDropdown> createState() => _DepartmentDropdownState();
+}
+
+class _DepartmentDropdownState extends State<DepartmentDropdown> {
+  Map<String, dynamic>? selectedDepartment;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonHideUnderline(  // Removes default underline
+      child: DropdownButton<Map<String, dynamic>>(
+        isDense: true,  // Reduces overall padding
+        value: selectedDepartment,
+        items: departments.map((department) {
+          return DropdownMenuItem<Map<String, dynamic>>(
+            value: department,
+            child: Padding(
+              padding: EdgeInsets.zero,  // Explicit zero padding
+              child: Text(
+                DashboardHelpers.truncateString(department['name'], 12),
+                style: Theme.of(context).textTheme.bodyMedium,  // Inherits text style
+              ),
+            ),
+          );
+        }).toList(),
+        onChanged: (Map<String, dynamic>? newValue) {
+          setState(() {
+            selectedDepartment = newValue;
+          });
+          if (newValue != null) {
+            print('Selected Department ID: ${newValue['id']}');
+            print('Selected Department Name: ${newValue['name']}');
+            var np=context.read<NotificationProvider>();
+            np.getFilterNotification(newValue['id']);
+          }
+        },
+        hint: const Padding(  // Hint with zero padding
+          padding: EdgeInsets.zero,
+          child: Text('Select'),
+        ),
       ),
     );
   }

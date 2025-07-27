@@ -51,23 +51,19 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
               // In your parent widget or page
               VehicleDetailsWidget(
                 vehicle: VehicleModel(
-                  vehicleReqId: 123,
-                  fullName: "John Doe",
-                  idCardNo: "EMP12345",
-                  departmentName: "Operations",
-                  designationName: "Manager",
-                  destinationFrom: "New York",
-                  destinationTo: "Boston",
-                  distance: "200 km",
-                  purpose: "Client Meeting",
-                  requiredDate: "2023-06-15",
-                  requiredTime: "09:00 AM",
-                  duration: "4 hours",
-                  vehicletypeId: 1,
-                  vehicleNo: "NY-ABC-1234",
-                  driverName: "Mike Johnson",
-                  carryGoods: "Yes",
-                  status: 1,
+                  fullName: widget.vehicleModel.fullName,
+                  idCardNo: widget.vehicleModel.idCardNo,
+                  departmentName: widget.vehicleModel.departmentName,
+                  designationName: widget.vehicleModel.designationName,
+                  destinationFrom: widget.vehicleModel.destinationFrom,
+                  destinationTo: widget.vehicleModel.destinationTo,
+                  distance: widget.vehicleModel.distance,
+                  purpose: widget.vehicleModel.purpose,
+                  requiredDate: widget.vehicleModel.requiredDate,
+                  requiredTime: widget.vehicleModel.requiredTime,
+                  duration: '${widget.vehicleModel.duration} hr',
+                  vehicletypeId: widget.vehicleModel.vehicletypeId==1?'Private':'Hiace',
+                  carryGoods: widget.vehicleModel.carryGoods,
                 ),
               ),
               TextFormField(
@@ -256,15 +252,17 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
         "DriverMobileNo": _driverPhoneController.text.trim()
       };
       var res = await hp.acceptVehicleRequisation(data);
+      debugPrint('RETURN RES ${res}');
       if (res) {
         await hp.getRequestedCarList();
-        DashboardHelpers.showAnimatedDialog(context, 'Vehicle requisition accepted successfully!!', 'Successful');
+        DashboardHelpers.showAlert(msg:'Vehicle requisition accepted successfully!!');
         setState(() {
           _vehicleNumberController.clear();
           _driverNameController.clear();
           _driverPhoneController.clear();
         });
       }
+      Navigator.pop(context);
     }
 
     setState(() => _isSubmitting = true);
@@ -273,7 +271,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
     Future.delayed(const Duration(seconds: 1), () {
       setState(() => _isSubmitting = false);
     });
-    Navigator.pop(context);
+
   }
 }
 
@@ -290,7 +288,6 @@ class VehicleDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDetailRow('Request ID', vehicle.vehicleReqId?.toString() ?? 'N/A'),
         _buildDetailRow('Employee', vehicle.fullName ?? 'N/A'),
         _buildDetailRow('ID Card No', vehicle.idCardNo ?? 'N/A'),
         _buildDetailRow('Department', vehicle.departmentName ?? 'N/A'),
@@ -301,7 +298,7 @@ class VehicleDetailsWidget extends StatelessWidget {
         const Text('Trip Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         _buildDetailRow('From', vehicle.destinationFrom ?? 'N/A'),
         _buildDetailRow('To', vehicle.destinationTo ?? 'N/A'),
-        _buildDetailRow('Distance', vehicle.distance ?? 'N/A'),
+        _buildDetailRow('Distance', '${vehicle.distance} km'),
         _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
 
         const SizedBox(height: 20),

@@ -68,12 +68,12 @@ class NotificationServices {
       }
 
       debugPrint("FCM Token: $token");
-      await _sendTokenToServer(token); // Send to your backend
+      await _sendTokenToServer(token,context); // Send to your backend
 
       // 4. Handle token refresh (e.g., on app restore or reinstall)
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
         debugPrint("FCM Token refreshed: $newToken");
-        _sendTokenToServer(newToken);
+        _sendTokenToServer(newToken,context);
       });
 
       // 5. Set up foreground/background message handlers
@@ -131,7 +131,7 @@ class NotificationServices {
     }
   }
 
-  static Future<void> _sendTokenToServer(String token) async {
+  static Future<void> _sendTokenToServer(String token,BuildContext ctx) async {
     // Implement your API call here
 
     ApiService apiService=ApiService();
@@ -142,6 +142,9 @@ class NotificationServices {
     });
    if(res!=null){
      debugPrint('Sending token to server successfully.....');
+   }
+   else {
+     Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
    }
   }
   //

@@ -82,12 +82,12 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               /// Navigate to this screen from another widget
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SignInScreen(),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => SignInScreen(),
+              //   ),
+              // );
             },
           ),
           const Divider(),
