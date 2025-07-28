@@ -136,19 +136,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       debugPrint('APPROVED STATUS :${DashboardHelpers.currentUser!.userId}');
       provider.acceptLeaveApproval(data);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
-        );
-        Navigator.pop(context);
-        _loadNotifications();
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
+      );
+
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to update status: ${e.toString()}')),
         );
       }
+    }
+    finally{
+       _loadNotifications();
+      Navigator.pop(context);
     }
   }
 }
@@ -451,8 +452,6 @@ final List<Map<String, dynamic>> departments = [
   {'id': 54, 'name': 'Creative Product Development'},
 ];
 
-
-
 class DepartmentDropdown extends StatefulWidget {
   const DepartmentDropdown({super.key});
 
@@ -465,18 +464,19 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(  // Removes default underline
+    return DropdownButtonHideUnderline(
+      // Removes default underline
       child: DropdownButton<Map<String, dynamic>>(
-        isDense: true,  // Reduces overall padding
+        isDense: true, // Reduces overall padding
         value: selectedDepartment,
         items: departments.map((department) {
           return DropdownMenuItem<Map<String, dynamic>>(
             value: department,
             child: Padding(
-              padding: EdgeInsets.zero,  // Explicit zero padding
+              padding: EdgeInsets.zero, // Explicit zero padding
               child: Text(
                 DashboardHelpers.truncateString(department['name'], 12),
-                style: Theme.of(context).textTheme.bodyMedium,  // Inherits text style
+                style: Theme.of(context).textTheme.bodyMedium, // Inherits text style
               ),
             ),
           );
@@ -488,11 +488,12 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
           if (newValue != null) {
             print('Selected Department ID: ${newValue['id']}');
             print('Selected Department Name: ${newValue['name']}');
-            var np=context.read<NotificationProvider>();
-            np.getFilterNotification(newValue['id']);
+            var np = context.read<NotificationProvider>();
+            // np.getFilterNotification(newValue['id']);
           }
         },
-        hint: const Padding(  // Hint with zero padding
+        hint: const Padding(
+          // Hint with zero padding
           padding: EdgeInsets.zero,
           child: Text('Select'),
         ),

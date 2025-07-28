@@ -21,37 +21,44 @@ class NotificationProvider extends ChangeNotifier {
 
   List<NotificationModel> _getAllNotification = [];
   List<NotificationModel> get allNotification => _getAllNotification;
-  List<NotificationModel> _filterAllNotification = [];
+  // List<NotificationModel> _filterAllNotification = [];
 
   Future<bool> getAllNotification(String userId) async {
     try {
       setLoading(true);
+      notifyListeners(); // Notify immediately when loading starts
 
-      // Clear existing notifications before fetching new ones
-      _getAllNotification.clear();
-      notifyListeners(); // Notify UI to reflect the cleared state immediately
+      // Create a new list instead of clearing to ensure reference changes
+      final List<NotificationModel> tempList = [];
 
-      // Fetch data from API
       final response = await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=$userId');
 
-      // Early return if no data
       if (response == null || response['Results'] == null) {
+        _getAllNotification = []; // Assign empty list
+        notifyListeners();
         return false;
       }
 
-      // Process and sort notifications in a single operation
-      _getAllNotification = (response['Results'] as List).map((json) => NotificationModel.fromJson(json)).toList()..sort((a, b) => (b.leaveId ?? 0).compareTo(a.leaveId ?? 0));
+      tempList.addAll((response['Results'] as List)
+          .map((json) => NotificationModel.fromJson(json)));
 
+      tempList.sort((a, b) => (b.leaveId ?? 0).compareTo(a.leaveId ?? 0));
+
+      // Assign the new list (reference changes will trigger rebuild)
+      _getAllNotification = tempList;
       debugPrint('Fetched ${_getAllNotification.length} notifications');
-      _filterAllNotification.addAll(_getAllNotification);
+
+      notifyListeners(); // Notify after data is ready
       return true;
     } catch (e, stackTrace) {
       debugPrint('Error fetching notifications: $e');
       debugPrint('Stack trace: $stackTrace');
+      _getAllNotification = []; // Clear on error
+      notifyListeners();
       return false;
     } finally {
       setLoading(false);
-      notifyListeners();
+      // Don't need notify here as we're already notifying at key points
     }
   }
 
@@ -60,9 +67,9 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   void getFilterNotification(int deptId) {
-    debugPrint('deptId ${deptId}');
-    _getAllNotification.clear();
-    _getAllNotification.addAll(deptId == 0 ? _filterAllNotification : _filterAllNotification.where((e) => e.departmentId == deptId).toList());
-    notifyListeners();
+    // debugPrint('deptId ${deptId}');
+    // _getAllNotification.clear();
+    // _getAllNotification.addAll(deptId == 0 ? _filterAllNotification : _filterAllNotification.where((e) => e.departmentId == deptId).toList());
+    // notifyListeners();
   }
 }
