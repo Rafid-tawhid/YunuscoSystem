@@ -1,9 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/management_provider.dart';
+import 'package:yunusco_group/screens/Management/widgets/show_departments.dart';
+import 'package:yunusco_group/screens/Management/widgets/show_lines.dart';
+import 'package:yunusco_group/screens/Management/widgets/show_sections.dart';
+import 'package:yunusco_group/screens/Management/widgets/unit_screen.dart';
 
+import '../../providers/hr_provider.dart';
 import 'management_screen.dart';
 
-class ManagementDashboardScreen extends StatelessWidget {
+class ManagementDashboardScreen extends StatefulWidget {
+  @override
+  State<ManagementDashboardScreen> createState() => _ManagementDashboardScreenState();
+}
+
+class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
   final List<DashboardItem> items = [
     DashboardItem("Production\nSummary", Icons.business, Colors.blue),
     DashboardItem("Departments", Icons.business, Colors.blue),
@@ -13,6 +26,18 @@ class ManagementDashboardScreen extends StatelessWidget {
     DashboardItem("Designations", Icons.work, Colors.red),
     DashboardItem("Divisions", Icons.category, Colors.teal),
   ];
+
+  @override
+  void initState() {
+    getAllManagementData();
+    super.initState();
+  }
+  void getAllManagementData() async{
+    var hp=context.read<ManagementProvider>();
+    Future.microtask((){
+      hp.getAllDropdownInfoForJobcard();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +130,29 @@ class DashboardCard extends StatelessWidget {
   }
 
   void navigateToScreent(BuildContext context, DashboardItem item) {
+    var mp=context.read<ManagementProvider>();
     if(item.title=='Production\nSummary'){
       Navigator.push(context, CupertinoPageRoute(builder: (context)=>ManagementProductionScreen()));
+    }
+    if(item.title=='Departments'){
+      if(mp.allDropdownInfoForJobcard!.departments!.isNotEmpty) {
+        Navigator.push(context, CupertinoPageRoute(builder: (context)=>DepartmentsScreen()));
+      }
+    }
+    if(item.title=='Sections'){
+      if(mp.allDropdownInfoForJobcard!.sections!.isNotEmpty) {
+        Navigator.push(context, CupertinoPageRoute(builder: (context)=>SectionScreen()));
+      }
+    }
+    if(item.title=='Lines'){
+      if(mp.allDropdownInfoForJobcard!.lines!.isNotEmpty) {
+        Navigator.push(context, CupertinoPageRoute(builder: (context)=>LineScreen()));
+      }
+    }
+    if(item.title=='Units'){
+      if(mp.allDropdownInfoForJobcard!.units!.isNotEmpty) {
+        Navigator.push(context, CupertinoPageRoute(builder: (context)=>UnitScreen()));
+      }
     }
   }
 }

@@ -60,10 +60,10 @@ class PayslipPDFGenerator {
                   style: pw.TextStyle(
                       fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.Divider(),
-              _buildInfoRow('Total Working Days', payslip.totalWorkingDays ?? ''),
-              _buildInfoRow('Present Days', payslip.presentDays ?? ''),
-              _buildInfoRow('Absent Days', payslip.absentDays ?? ''),
-              _buildInfoRow('Late Days', payslip.lateDays ?? ''),
+              _buildInfoRow('Total Working Days', payslip.totalWorkingDays.toString() ?? ''),
+              _buildInfoRow('Present Days', payslip.presentDays.toString()  ?? ''),
+              _buildInfoRow('Absent Days', payslip.absentDays.toString() ?? ''),
+              _buildInfoRow('Late Days', payslip.lateDays.toString()  ?? ''),
               pw.SizedBox(height: 20),
 
               // Salary Details
@@ -72,7 +72,7 @@ class PayslipPDFGenerator {
                       fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.Divider(),
               _buildInfoRow('Gross Salary', '${payslip.grossSalary?.toStringAsFixed(2) ?? '0.00'}'),
-              _buildInfoRow('Net Income', '${payslip.netIncome?.toStringAsFixed(2) ?? '0.00'}'),
+              _buildInfoRow('Net Income', '${payslip.netPeyable?.toStringAsFixed(2) ?? '0.00'}'),
               _buildInfoRow('Deductions', '${payslip.netDeduction?.toStringAsFixed(2) ?? '0.00'}'),
               pw.SizedBox(height: 10),
 
@@ -84,7 +84,7 @@ class PayslipPDFGenerator {
                   border: pw.Border.all(),
                   color: PdfColors.grey300,
                 ),
-                child: pw.Text('Net Payable: ${payslip.netPayable?.toStringAsFixed(2) ?? '0.00'}',
+                child: pw.Text('Net Payable: ${payslip.netPeyable?.toStringAsFixed(2) ?? '0.00'}',
                     style: pw.TextStyle(
                         fontSize: 18, fontWeight: pw.FontWeight.bold)),
               ),

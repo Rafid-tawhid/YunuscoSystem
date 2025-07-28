@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:yunusco_group/models/JobCardDropdownModel.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../models/management_dashboard_model.dart';
@@ -19,5 +20,28 @@ class ManagementProvider extends ChangeNotifier{
     debugPrint('_managementDashboardData ${_managementDashboardData!.toJson()}');
 
     notifyListeners();
+  }
+
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  JobCardDropdownModel? allDropdownInfoForJobcard;
+
+  Future<void> getAllDropdownInfoForJobcard() async{
+    try {
+      _isLoading = true;
+      notifyListeners();
+      var data=await apiService.getData('api/HR/SalaryReportDropDown');
+      if(data!=null){
+        allDropdownInfoForJobcard = JobCardDropdownModel.fromJson(data['Result']);
+      }
+    }
+    catch(e){
+      debugPrint('Error ${e}');
+    }
+    finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

@@ -96,13 +96,14 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
     if (_formKey.currentState!.validate()&&_selectedMonth!=null&&_selectedYear!=null) {
       var hp=context.read<HrProvider>();
 
-      var data= await hp.getPaySlipInfo(_selectedMonth!,_selectedYear.toString());
+     // var data= await hp.getPaySlipInfo(_selectedMonth!,_selectedYear.toString());
+      var data= await hp.getPaySlipInfoWithDetailsBreakdown(_selectedMonth!,_selectedYear.toString());
       if(data!=null){
         // Navigate to the payslip screen
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PayslipScreen(
+            builder: (context) => PayslipDetailScreen(
               payslip: data, // Your PayslipModel instance
             ),
           ),

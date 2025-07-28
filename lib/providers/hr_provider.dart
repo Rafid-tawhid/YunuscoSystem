@@ -234,6 +234,30 @@ class HrProvider extends ChangeNotifier{
     return response==null?null:response['Data'].isEmpty?null: PayslipModel.fromJson(response['Data'][0]);
   }
 
+  Future<PayslipModel?> getPaySlipInfoWithDetailsBreakdown(String month,String year) async{
+    setLoading(true);
+    var response=await apiService.postData('api/hr/SingleSalRptBreakDown', {
+      "Company": 1,
+      "DepartmenmtId": 0,
+      "SectionId": 0,
+      "UnitiD": 0,
+      "LineId": 0,
+      "DesignationId": 0,
+      "SalaryMonth": month,
+      "SalaryYear": year,
+      "ReportType": 5,
+      "CompanyText": "Yunusco (BD) Limited",
+      "IdList": DashboardHelpers.currentUser!.iDnum,
+      "Grade": 0,
+      "DivisionId": 0,
+      "IsM": false,
+      "UserType": "COM"
+    });
+
+    setLoading(false);
+    return response==null?null:response['Data'].isEmpty?null: PayslipModel.fromJson(response['Data'][0]);
+  }
+
   JobCardDropdownModel? allDropdownInfoForJobcard;
 
   Future<void> getAllDropdownInfoForJobcard() async{

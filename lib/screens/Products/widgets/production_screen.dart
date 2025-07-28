@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_widget.dart';
 
@@ -19,6 +20,11 @@ class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
   String? _selectedDepartment;
   //
   final List<String> _departments = ['Printing', 'Molding', 'Sewing', 'Finishing'];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,4 +156,6 @@ class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
       ),
     );
   }
+
+
 }
