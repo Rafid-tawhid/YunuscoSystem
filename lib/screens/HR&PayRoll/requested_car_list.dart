@@ -60,7 +60,6 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
     return InkWell(
       onTap: (){
-
         if(vehicle.status==1&&DashboardHelpers.currentUser!.iDnum=='38832'){
           Navigator.push(context, MaterialPageRoute(builder: (context)=>VehicleApprovalScreen(vehicleModel: vehicle,)));
         }
@@ -99,7 +98,7 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
               _buildDetailRow('Distance',  '${vehicle.distance} km'),
               _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
               _buildDetailRow('Duration','${vehicle.duration} hr'),
-              if (vehicle.vehicleNo != null) ...[
+              if (vehicle.driverMobileNo != null&&vehicle.status==2) ...[
                 const SizedBox(height: 8),
                 Divider(color: Colors.grey[300]),
                 const SizedBox(height: 8),
@@ -107,15 +106,14 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
                 _buildDetailRow('Driver', vehicle.driverName??''),
                 _buildDetailRow('Phone', vehicle.driverMobileNo??''),
 
-                // if (vehicle.driverMobileNo != null&&vehicle.status==2)
-                //   Row(
-                //     children: [
-                //       Expanded(child: _buildDetailRow('Driver', vehicle.driverName!)),
-                //       if(vehicle.driverMobileNo!=null||vehicle.driverMobileNo!=''&&vehicle.status==2)TextButton(onPressed: (){
-                //          DashboardHelpers.makePhoneCall(vehicle.driverMobileNo??'');
-                //       }, child: Text('Call Driver ${vehicle.driverMobileNo}'))
-                //     ],
-                //   ),
+                  Row(
+                    children: [
+                      Expanded(child: _buildDetailRow('Driver', vehicle.driverName!)),
+                      if(vehicle.driverMobileNo!=null||vehicle.driverMobileNo!=''&&vehicle.status==2)TextButton(onPressed: (){
+                         DashboardHelpers.makePhoneCall(vehicle.driverMobileNo??'');
+                      }, child: Text('Call Driver ${vehicle.driverMobileNo}'))
+                    ],
+                  ),
               ],
             ],
           ),
