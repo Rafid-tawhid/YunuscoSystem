@@ -7,6 +7,7 @@ import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/production_efficiency_model.dart';
+import '../models/stylewise_efficiency_model.dart';
 
 class ProductProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
@@ -70,11 +71,11 @@ class ProductProvider extends ChangeNotifier{
 
   Future<bool> getBuyerWiseMaterialList(String code) async {
     setLoading(true);
-    var data=await apiService.getData('api/PreSalesApi/BuyerWiseMaterialList?buyerId=$code');
+    var data=await apiService.getData('api/Merchandising/MaterialListBuyerWise?buyerId=$code');
     setLoading(false);
     if(data!=null){
       _buyerMaterialList.clear();
-      for(var i in data){
+      for(var i in data['returnvalue']['Result']){
         _buyerMaterialList.add(BuyerWiseMaterialModel.fromJson(i));
       }
       notifyListeners();
@@ -242,5 +243,28 @@ class ProductProvider extends ChangeNotifier{
       value: entry.key,
       child: Text(entry.value),
     )).toList();
+  }
+
+  final List<StylewiseEfficiencyModel> _styleWiseEfficiencyList=[];
+  List<StylewiseEfficiencyModel> get styleWiseEfficiencyList=>_styleWiseEfficiencyList;
+
+  Future<bool> getStyleWiseEfficiency() async{
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    setLoading(true);
+    var data=await apiService.getData('api/Merchandising/StyleWiseEffi?styleName=J LOULA 2 BRASSIERES');
+    setLoading(false);
+    EasyLoading.dismiss();
+    if(data!=null){
+      _styleWiseEfficiencyList.clear();
+      for(var i in data['returnvalue']['Result']){
+        _styleWiseEfficiencyList.add(StylewiseEfficiencyModel.fromJson(i));
+      }
+      notifyListeners();
+      debugPrint('_styleWiseEfficiencyList ${_styleWiseEfficiencyList.length}');
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }

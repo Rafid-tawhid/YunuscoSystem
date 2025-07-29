@@ -15,12 +15,12 @@ class BuyerWiseMaterialModel {
 }
 
   BuyerWiseMaterialModel.fromJson(dynamic json) {
-    _buyerId = json['buyerId'];
-    _buyerName = json['buyerName'];
-    _typeName = json['typeName'];
-    _productCategoryName = json['productCategoryName'];
-    _productName = json['productName'];
-    _uomName = json['uomName'];
+    _buyerId = json['BuyerId'];
+    _buyerName = json['BuyerName'];
+    _typeName = json['TypeName'];
+    _productCategoryName = json['ProductCategoryName'];
+    _productName = json['ProductName'];
+    _uomName = json['UomName'];
   }
   num? _buyerId;
   String? _buyerName;
@@ -50,12 +50,12 @@ BuyerWiseMaterialModel copyWith({  num? buyerId,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['buyerId'] = _buyerId;
-    map['buyerName'] = _buyerName;
-    map['typeName'] = _typeName;
-    map['productCategoryName'] = _productCategoryName;
-    map['productName'] = _productName;
-    map['uomName'] = _uomName;
+    map['BuyerId'] = _buyerId;
+    map['BuyerName'] = _buyerName;
+    map['TypeName'] = _typeName;
+    map['ProductCategoryName'] = _productCategoryName;
+    map['ProductName'] = _productName;
+    map['UomName'] = _uomName;
     return map;
   }
 

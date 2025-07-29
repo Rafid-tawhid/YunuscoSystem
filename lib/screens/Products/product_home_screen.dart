@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/production_dashboard.dart';
-import 'package:yunusco_group/screens/Products/production_efficiency.dart';
+import 'package:yunusco_group/screens/Products/production_efficiency_screen.dart';
+import 'package:yunusco_group/screens/Products/style_wise_efficiency_screen.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -17,7 +18,7 @@ import 'widgets/buyers_screen.dart';
 class ProductHomeScreen extends StatelessWidget {
   ProductHomeScreen({super.key});
 
-  final List<String> _list=['Production\nSummary','Production\nEfficiency','Production\nMonthly/Yearly','Buyers',];
+  final List<String> _list=['Production\nSummary','Production\nEfficiency','Production\nMonthly/Yearly','Buyers','Stylewise\nEfficiency'];
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +79,18 @@ class ProductHomeScreen extends StatelessWidget {
                     MaterialPageRoute(builder: (context) =>  BuyersScreen()),
                   );
                 }
+                else if (index == 4) {
+                  var pp=context.read<ProductProvider>();
+                  pp.getStyleWiseEfficiency();
+                  if(pp.styleWiseEfficiencyList.isNotEmpty){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>  StylewiseEfficiencyScreen(efficiencies: pp.styleWiseEfficiencyList,)),
+                    );
+                  }
+
+                }
+
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -157,6 +170,10 @@ class ProductHomeScreen extends StatelessWidget {
     if(index==3)
     {
       return Icons.people_alt_outlined;
+    }
+    if(index==4)
+    {
+      return Icons.style_sharp;
     }
   }
 

@@ -179,13 +179,13 @@ class BuyerWiseMaterialList extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          'ID: ${material.buyerId ?? 'N/A'}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
+                        // Text(
+                        //   'ID: ${material.buyerId ?? 'N/A'}',
+                        //   style: TextStyle(
+                        //     fontSize: 12,
+                        //     color: Colors.grey[600],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

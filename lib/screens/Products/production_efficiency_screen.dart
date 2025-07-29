@@ -1,12 +1,7 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
-
 import '../../models/production_efficiency_model.dart';
 import '../../providers/product_provider.dart';
 
@@ -24,16 +19,15 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
   int? selectedLineId;
   String? selectedStyleNo;
   String _searchQuery = '';
-  bool _isSearching=false;
-  final TextEditingController _searchController=TextEditingController();
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     selectedDate = DateTime.now();
-   // _loadInitialData();
+    // _loadInitialData();
   }
-
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -47,30 +41,22 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
         selectedDate = picked;
       });
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-      Future.microtask((){
+      Future.microtask(() {
         context.read<ProductProvider>().getProductionEfficiencyReport(formattedDate);
       });
     }
   }
 
-  List<ProductionEfficiencyModel> _filterByPO(
-      List<ProductionEfficiencyModel> list,
-      String query
-      ) {
+  List<ProductionEfficiencyModel> _filterByPO(List<ProductionEfficiencyModel> list, String query) {
     if (query.isEmpty) return list;
-    return list.where((item) =>
-    item.po?.toLowerCase().contains(query.toLowerCase()) ?? false
-    ).toList();
+    return list.where((item) => item.po?.toLowerCase().contains(query.toLowerCase()) ?? false).toList();
   }
-
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -87,26 +73,25 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
       filteredList = _filterByPO(filteredList, _searchController.text);
     }
 
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: _isSearching
             ? TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Search PO...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
-          ),
-          style: const TextStyle(color: Colors.black),
-          onChanged: (value) {
-            setState(() {
-              _searchQuery = value;
-            });
-          },
-        )
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search PO...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.black),
+                ),
+                style: const TextStyle(color: Colors.black),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              )
             : const Text('Efficiency Report'),
         actions: [
           IconButton(
@@ -125,14 +110,11 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
       ),
       body: Column(
         children: [
-
           // Date Picker
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: Text(
-              selectedDate == null
-                  ? 'Select Date'
-                  : DateFormat('dd MMM yyyy').format(selectedDate!),
+              selectedDate == null ? 'Select Date' : DateFormat('dd MMM yyyy').format(selectedDate!),
             ),
             trailing: const Icon(Icons.arrow_drop_down),
             onTap: () => _selectDate(context),
@@ -140,7 +122,11 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
           const Divider(),
           // Filter Section
           Consumer<ProductProvider>(
-            builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator(),):_buildFilterSection(context, provider),
+            builder: (context, pro, _) => pro.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : _buildFilterSection(context, provider),
           ),
           Align(
               alignment: Alignment.bottomRight,
@@ -153,13 +139,13 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
             child: filteredList.isEmpty
                 ? const Center(child: Text('No data available'))
                 : ListView.builder(
-              padding: const EdgeInsets.only(left: 8,right: 8,bottom: 8),
-              itemCount: filteredList.length,
-              itemBuilder: (context, index) {
-                final item = filteredList[index];
-                return _buildEfficiencyCard(item);
-              },
-            ),
+                    padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                    itemCount: filteredList.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredList[index];
+                      return _buildEfficiencyCard(item);
+                    },
+                  ),
           ),
         ],
       ),
@@ -175,7 +161,6 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-
             // In your _buildFilterSection widget, replace the dropdown items with:
             Row(
               children: [
@@ -236,7 +221,6 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
                 ),
               ],
             ),
-
           ],
         ),
       ),
@@ -292,7 +276,7 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DashboardHelpers.truncateString(item.styleNo??'', 30),
+                  DashboardHelpers.truncateString(item.styleNo ?? '', 30),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -372,4 +356,3 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
     return Colors.red;
   }
 }
-
