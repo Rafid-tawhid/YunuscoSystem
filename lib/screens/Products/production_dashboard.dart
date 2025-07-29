@@ -20,7 +20,7 @@ class ProductionDashboard extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Production Dashboard'),
+        title: const Text('Production Summary'),
         centerTitle: true,
         elevation: 0,
       ),

@@ -287,8 +287,8 @@ class _BuyersScreenState extends State<BuyersScreen> {
           final color = nameColors[colorIndex];
 
           return _buildBuyerItem(
-            name: item["name"] ?? "Unknown Buyer",
-            code: item["code"].toString(),
+            name: item["Name"] ?? "Unknown Buyer",
+            code: item["Code"].toString(),
             color: color,
           );
         },

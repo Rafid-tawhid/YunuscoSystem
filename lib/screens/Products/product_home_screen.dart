@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/production_dashboard.dart';
+import 'package:yunusco_group/screens/Products/production_efficiency.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -14,7 +17,7 @@ import 'widgets/buyers_screen.dart';
 class ProductHomeScreen extends StatelessWidget {
   ProductHomeScreen({super.key});
 
-  final List<String> _list=['Production','Production\nMonthly/Yearly','Buyers',];
+  final List<String> _list=['Production\nSummary','Production\nEfficiency','Production\nMonthly/Yearly','Buyers',];
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +47,6 @@ class ProductHomeScreen extends StatelessWidget {
                 HapticFeedback.lightImpact();
 
                 if (index == 0) {
-
                   var pp=context.read<ProductProvider>();
                   await pp.getAllProductionDashboard();
                   if(pp.productionDashboardModel!=null){
@@ -55,11 +57,22 @@ class ProductHomeScreen extends StatelessWidget {
                   }
                 }
                 if (index == 1) {
+
+                  var pp=context.read<ProductProvider>();
+                  var currentDate=convertDate(DateTime.now());
+                  await pp.getProductionEfficiencyReport(currentDate);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>  ProductionEfficiencyScreen()),
+                    );
+
+                }
+                if (index == 2) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ProductionSummaryScreen()),
                   );
-                } else if (index == 2) {
+                } else if (index == 3) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) =>  BuyersScreen()),
@@ -106,7 +119,7 @@ class ProductHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            index == 0 ? Icons.assessment : Icons.people,
+                            getIcon(index),
                             size: 44,
                             color: Colors.white,
                           ),
@@ -127,5 +140,34 @@ class ProductHomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData? getIcon(int index) {
+    if(index==0){
+      return Icons.assessment;
+    }
+    if(index==1)
+      {
+        return Icons.assured_workload;
+      }
+    if(index==2)
+    {
+      return Icons.calendar_month;
+    }
+    if(index==3)
+    {
+      return Icons.people_alt_outlined;
+    }
+  }
+
+  convertDate(DateTime date) {
+      // Get the individual components
+      String year = date.year.toString();
+      String month = date.month.toString().padLeft(2, '0'); // Ensures two digits
+      String day = date.day.toString().padLeft(2, '0'); // Ensures two digits
+
+      // Combine them in YYYY-MM-DD format
+      return '$year-$month-$day';
+
   }
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yunusco_group/models/buyer_wise_material_model.dart';
 import 'package:yunusco_group/models/production_dashboard_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
+
+import '../models/production_efficiency_model.dart';
 
 class ProductProvider extends ChangeNotifier{
   ApiService apiService=ApiService();
@@ -40,10 +43,10 @@ class ProductProvider extends ChangeNotifier{
   List<dynamic> get allBuyerList=>_allBuyerList;
 
   Future<bool> getAllBuyerInfo() async{
-    var data=await apiService.getData('api/PreSalesApi/AllBuyer');
+    var data=await apiService.getData('api/Merchandising/AllActiveOrderdBuyer');
     if(data!=null){
       _allBuyerList.clear();
-      for(var i in data['returnvalue']){
+      for(var i in data['returnvalue']['Result']){
         _allBuyerList.add(i);
       }
       notifyListeners();
@@ -113,7 +116,9 @@ class ProductProvider extends ChangeNotifier{
   ProductionDashboardModel? get productionDashboardModel => _productionDashboardModel;
   //dashboard
   Future<bool> getAllProductionDashboard() async{
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
     var data=await apiService.getData('api/dashboard/ProductionDashBoard');
+    EasyLoading.dismiss();
     if(data!=null){
       _productionDashboardModel=ProductionDashboardModel.fromJson(data['returnvalue']);
       notifyListeners();
@@ -124,5 +129,117 @@ class ProductProvider extends ChangeNotifier{
       return false;
     }
 
+  }
+
+  List<ProductionEfficiencyModel> _productionEfficiencyList=[];
+
+  List<ProductionEfficiencyModel> get productionEfficiencyList=>_productionEfficiencyList;
+
+  Future<bool> getProductionEfficiencyReport(String dateTime) async {
+
+    setLoading(true);
+    var data=await apiService.postData('api/Merchandising/ProductionEffiReport',{
+        "ProductionDate": dateTime,
+        "BuyerId": 0,
+        "Style": "",
+        "BuyerPO": "",
+        "SectionId" : 0,
+        "AchieveEfficiency": 0,
+        "LineId": 0
+
+    });
+    setLoading(false);
+    EasyLoading.dismiss();
+    if(data!=null){
+      _productionEfficiencyList.clear();
+      for(var i in data['Data']){
+        _productionEfficiencyList.add(ProductionEfficiencyModel.fromJson(i));
+      }
+      notifyListeners();
+      debugPrint('_productionEfficiencyList ${_productionEfficiencyList.length}');
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  List<ProductionEfficiencyModel> getFilteredList({
+    int? buyerId,
+    int? sectionId,
+    int? lineId,
+    String? styleNo,
+  }) {
+    return _productionEfficiencyList.where((item) {
+      final buyerMatch = buyerId == null || item.buyerId == buyerId;
+      final sectionMatch = sectionId == null || item.sectionId == sectionId;
+      final lineMatch = lineId == null || item.lineId == lineId;
+      final styleMatch = styleNo == null || item.styleNo == styleNo;
+      return buyerMatch && sectionMatch && lineMatch && styleMatch;
+    }).toList();
+  }
+
+  List<DropdownMenuItem<int>> get buyerDropdownItems {
+    // Create a map to ensure unique buyerId-buyerName pairs
+    final uniqueBuyers = <int, String>{};
+
+    for (final item in _productionEfficiencyList) {
+      if (item.buyerId != null && item.buyerName != null) {
+        uniqueBuyers[item.buyerId!.toInt()] = item.buyerName!;
+      }
+    }
+
+    return uniqueBuyers.entries.map((entry) => DropdownMenuItem<int>(
+      value: entry.key,
+      child: Text(entry.value),
+    )).toList();
+  }
+
+
+  List<DropdownMenuItem<int>> get sectionDropdownItems {
+    final uniqueEntries = <int, String>{};
+
+    for (final item in _productionEfficiencyList) {
+      if (item.sectionId != null && item.sectionName != null &&
+          !uniqueEntries.containsKey(item.sectionId)) {
+        uniqueEntries[item.sectionId!.toInt()] = item.sectionName!;
+      }
+    }
+
+    return uniqueEntries.entries.map((entry) => DropdownMenuItem<int>(
+      value: entry.key,
+      child: Text(entry.value),
+    )).toList();
+  }
+
+  List<DropdownMenuItem<int>> get lineDropdownItems {
+    final uniqueEntries = <int, String>{};
+
+    for (final item in _productionEfficiencyList) {
+      if (item.lineId != null && item.lineName != null &&
+          !uniqueEntries.containsKey(item.lineId)) {
+        uniqueEntries[item.lineId!.toInt()] = item.lineName!;
+      }
+    }
+
+    return uniqueEntries.entries.map((entry) => DropdownMenuItem<int>(
+      value: entry.key,
+      child: Text(entry.value),
+    )).toList();
+  }
+
+  List<DropdownMenuItem<String>> get styleDropdownItems {
+    final uniqueEntries = <String, String>{};
+
+    for (final item in _productionEfficiencyList) {
+      if (item.styleNo != null && !uniqueEntries.containsKey(item.styleNo)) {
+        uniqueEntries[item.styleNo!] = item.styleNo!;
+      }
+    }
+
+    return uniqueEntries.entries.map((entry) => DropdownMenuItem<String>(
+      value: entry.key,
+      child: Text(entry.value),
+    )).toList();
   }
 }

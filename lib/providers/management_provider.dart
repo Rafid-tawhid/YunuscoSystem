@@ -10,8 +10,8 @@ class ManagementProvider extends ChangeNotifier{
   ManagementDashboardModel? _managementDashboardData;
   ManagementDashboardModel? get managementDashboardData=>_managementDashboardData;
 
-  Future<void> getAllManagementInfo() async {
-    var data= await apiService.getData2('${AppConstants.baseUrl}Manufacturing/Cutting/ProductionDashBoard');
+  Future<void> getAllProductionStatInfo() async {
+    var data= await apiService.getData2('${AppConstants.baseUrl}api/Dashboard/ProductionDashBoard');
     if(data!=null){
       _managementDashboardData=ManagementDashboardModel.fromJson(data['returnvalue']);
        //debugPrint('_managementDashboardData ${_managementDashboardData!.toJson()}');

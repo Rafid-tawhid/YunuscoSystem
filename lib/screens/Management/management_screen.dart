@@ -23,7 +23,7 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
   void initState() {
     super.initState();
     var mp = context.read<ManagementProvider>();
-    mp.getAllManagementInfo();
+    mp.getAllProductionStatInfo();
   }
 
   @override
