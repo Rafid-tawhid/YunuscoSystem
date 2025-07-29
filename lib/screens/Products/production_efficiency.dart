@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 
 import '../../models/production_efficiency_model.dart';
 import '../../providers/product_provider.dart';
@@ -22,6 +23,9 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
   int? selectedSectionId;
   int? selectedLineId;
   String? selectedStyleNo;
+  String _searchQuery = '';
+  bool _isSearching=false;
+  final TextEditingController _searchController=TextEditingController();
 
   @override
   void initState() {
@@ -30,10 +34,6 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
    // _loadInitialData();
   }
 
-  // Future<void> _loadInitialData() async {
-  //   final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate!);
-  //   await context.read<ProductProvider>().getProductionEfficiencyReport(formattedDate);
-  // }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -53,22 +53,75 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
     }
   }
 
+  List<ProductionEfficiencyModel> _filterByPO(
+      List<ProductionEfficiencyModel> list,
+      String query
+      ) {
+    if (query.isEmpty) return list;
+    return list.where((item) =>
+    item.po?.toLowerCase().contains(query.toLowerCase()) ?? false
+    ).toList();
+  }
+
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProductProvider>();
-    final filteredList = provider.getFilteredList(
+    var filteredList = provider.getFilteredList(
       buyerId: selectedBuyerId,
       sectionId: selectedSectionId,
       lineId: selectedLineId,
       styleNo: selectedStyleNo,
     );
 
+    // Apply PO search filter if searching
+    if (_isSearching && _searchController.text.isNotEmpty) {
+      filteredList = _filterByPO(filteredList, _searchController.text);
+    }
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Production Efficiency Report'),
-        centerTitle: true,
-        elevation: 0,
+        title: _isSearching
+            ? TextField(
+          controller: _searchController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Search PO...',
+            border: InputBorder.none,
+            hintStyle: TextStyle(color: Colors.white70),
+          ),
+          style: const TextStyle(color: Colors.black),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
+          },
+        )
+            : const Text('Efficiency Report'),
+        actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  _searchQuery = '';
+                }
+              });
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -100,7 +153,7 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
             child: filteredList.isEmpty
                 ? const Center(child: Text('No data available'))
                 : ListView.builder(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.only(left: 8,right: 8,bottom: 8),
               itemCount: filteredList.length,
               itemBuilder: (context, index) {
                 final item = filteredList[index];
@@ -122,10 +175,6 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-
-            // Dropdown Filters
-            const SizedBox(height: 8),
-            // In your _buildFilterSection widget, replace the dropdown items with:
 
             // In your _buildFilterSection widget, replace the dropdown items with:
             Row(
@@ -243,7 +292,7 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  item.styleNo ?? 'N/A',
+                  DashboardHelpers.truncateString(item.styleNo??'', 30),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -262,6 +311,7 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
             Text('Buyer: ${item.buyerName ?? 'N/A'}'),
             Text('Section: ${item.sectionName ?? 'N/A'}'),
             Text('Line: ${item.lineName ?? 'N/A'}'),
+            Text('PO: ${item.po ?? 'N/A'}'),
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: (item.achievedEffiency ?? 0) / 100,

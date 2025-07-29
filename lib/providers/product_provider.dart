@@ -137,6 +137,7 @@ class ProductProvider extends ChangeNotifier{
 
   Future<bool> getProductionEfficiencyReport(String dateTime) async {
 
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
     setLoading(true);
     var data=await apiService.postData('api/Merchandising/ProductionEffiReport',{
         "ProductionDate": dateTime,
