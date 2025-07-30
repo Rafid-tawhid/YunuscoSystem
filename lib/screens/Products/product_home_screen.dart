@@ -13,6 +13,7 @@ import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../utils/colors.dart';
+import 'get_all_style_screen.dart';
 import 'widgets/buyers_screen.dart';
 
 class ProductHomeScreen extends StatelessWidget {
@@ -61,6 +62,7 @@ class ProductHomeScreen extends StatelessWidget {
 
                   var pp=context.read<ProductProvider>();
                   var currentDate=convertDate(DateTime.now());
+
                   await pp.getProductionEfficiencyReport(currentDate);
                     Navigator.push(
                       context,
@@ -81,13 +83,16 @@ class ProductHomeScreen extends StatelessWidget {
                 }
                 else if (index == 4) {
                   var pp=context.read<ProductProvider>();
-                  pp.getStyleWiseEfficiency();
-                  if(pp.styleWiseEfficiencyList.isNotEmpty){
+
+                  await pp.getAllStyleData();
+
+                  if(pp.buyerStyleList.isNotEmpty){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>  StylewiseEfficiencyScreen(efficiencies: pp.styleWiseEfficiencyList,)),
+                      MaterialPageRoute(builder: (context) =>  StyleSelectionScreen()),
                     );
                   }
+
 
                 }
 

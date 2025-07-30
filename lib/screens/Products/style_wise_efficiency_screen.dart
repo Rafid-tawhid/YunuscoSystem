@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/utils/colors.dart';
 import '../../models/stylewise_efficiency_model.dart';
 
 class StylewiseEfficiencyScreen extends StatelessWidget {
@@ -158,21 +159,44 @@ class StylewiseEfficiencyScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 4),
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: sortedDates.take(5).map((date) {
+        Column(
+          children: sortedDates.map((date) {
             final efficiency = item.dateEfficiencies[date];
             if (efficiency == null) return const SizedBox.shrink();
 
-            return Chip(
-              backgroundColor: Colors.grey[200],
-              label: Text(
-                '${DateFormat('MMM dd').format(date)}: ${efficiency.toStringAsFixed(1)}%',
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      DateFormat('MMM dd').format(date),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      '${efficiency.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: efficiency >= 90
+                            ? Colors.green
+                            : efficiency >= 75
+                            ? Colors.blue
+                            : Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }).toList(),
-        ),
+        )
       ],
     );
   }

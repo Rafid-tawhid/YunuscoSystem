@@ -248,10 +248,10 @@ class ProductProvider extends ChangeNotifier{
   final List<StylewiseEfficiencyModel> _styleWiseEfficiencyList=[];
   List<StylewiseEfficiencyModel> get styleWiseEfficiencyList=>_styleWiseEfficiencyList;
 
-  Future<bool> getStyleWiseEfficiency() async{
+  Future<bool> getStyleWiseEfficiency(String style) async{
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
     setLoading(true);
-    var data=await apiService.getData('api/Merchandising/StyleWiseEffi?styleName=J LOULA 2 BRASSIERES');
+    var data=await apiService.getData('api/Merchandising/StyleWiseEffi?styleName=$style');
     setLoading(false);
     EasyLoading.dismiss();
     if(data!=null){
@@ -264,6 +264,50 @@ class ProductProvider extends ChangeNotifier{
       return true;
     }
     else {
+      return false;
+    }
+  }
+
+
+  void searchInStyleList(String query) {
+    if (query.isEmpty) {
+      // If search query is empty, restore original list
+      _filteredBuyerStyleList = List.from(_buyerStyleList);
+    } else {
+      // Filter the list based on search query
+      _filteredBuyerStyleList =
+          _buyerStyleList.where((item) {
+            // Convert all comparisons to lowercase for case-insensitive search
+            final searchLower = query.toLowerCase();
+            // Search in all relevant fields
+            return (item.toString().toLowerCase().contains(searchLower) ?? false);
+          }).toList();
+    }
+
+    notifyListeners();
+  }
+
+  List<String> _buyerStyleList = [];
+
+  List<String> get buyerStyleList => _buyerStyleList;
+
+  List<String> _filteredBuyerStyleList = [];
+
+  List<String> get filteredStyleList => _filteredBuyerStyleList;
+
+  Future<bool> getAllStyleData() async {
+    var data = await apiService.getData('api/Merchandising/StyleForEffiRpt');
+    if (data != null) {
+      _buyerStyleList.clear();
+      _filteredBuyerStyleList.clear();
+      for (var i in data['returnvalue']) {
+        _buyerStyleList.add(i);
+      }
+      _filteredBuyerStyleList.addAll(_buyerStyleList);
+      debugPrint('_buyerStyleList ${_buyerStyleList.length}');
+      notifyListeners();
+      return true;
+    } else {
       return false;
     }
   }
