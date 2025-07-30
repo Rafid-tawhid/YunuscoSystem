@@ -1,236 +1,192 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class ExportRegisterScreen extends StatelessWidget {
+import 'lc_details_screen.dart';
+
+class ExportRegisterScreen extends StatefulWidget {
   const ExportRegisterScreen({super.key});
+
+  @override
+  State<ExportRegisterScreen> createState() => _ExportRegisterScreenState();
+}
+
+class _ExportRegisterScreenState extends State<ExportRegisterScreen> {
+  final List<LCExportItem> _allItems = [
+    // Sample data - replace with your actual data
+    LCExportItem(
+      id: 'LC-2023-001',
+      customer: 'ABC Trading',
+      amount: 125000,
+      currency: 'USD',
+      issueDate: DateTime(2023, 5, 15),
+    ),
+    LCExportItem(id: 'LC-2023-002', customer: 'XYZ Exports', amount: 87500, currency: 'EUR', issueDate: DateTime(2023, 6, 22)),
+    // Add more items...
+  ];
+
+  List<LCExportItem> _filteredItems = [];
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedFilter = 'All';
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredItems = _allItems;
+  }
+
+  void _searchItems(String query) {
+    setState(() {
+      _filteredItems = _allItems.where((item) {
+        final searchLower = query.toLowerCase();
+        return item.id.toLowerCase().contains(searchLower) || item.customer.toLowerCase().contains(searchLower) || item.currency.toLowerCase().contains(searchLower);
+      }).toList();
+    });
+  }
+
+  void _filterByStatus(String status) {
+    setState(() {
+      _selectedFilter = status;
+      if (status == 'All') {
+        _filteredItems = _allItems;
+      } else {
+        // Add your actual filtering logic here
+        // For example: _filteredItems = _allItems.where((item) => item.status == status).toList();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Export Register Report',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Report Category Section (unchanged)
-            Card(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Report Category',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        )),
-                    const SizedBox(height: 12),
-                    _buildCategoryItem('C Export Register'),
-                    _buildCategoryItem('C Export Register Details'),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Search Options Section - IMPROVED
-            const Text('Search Options',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                )),
-
-            const SizedBox(height: 16),
-
-            // Improved search options
-            Card(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Row 1
-                    _buildSearchRow([
-                      _buildSearchField('Buyer Name', hasDropdown: true),
-                      _buildSearchField('Item', hasDropdown: true),
-                    ]),
-
-                    const SizedBox(height: 16),
-
-                    // Row 2
-                    _buildSearchRow([
-                      _buildSearchField('Code'),
-                      _buildSearchField('GetPass'),
-                    ]),
-
-                    const SizedBox(height: 16),
-
-                    // Row 3
-                    _buildSearchRow([
-                      _buildSearchField('PO'),
-                      _buildSearchField('Driver Cell No'),
-                    ]),
-
-                    const SizedBox(height: 16),
-
-                    // Row 4
-                    _buildSearchRow([
-                      _buildSearchField('Chalan No'),
-                      const SizedBox(), // Empty space to maintain grid
-                    ]),
-
-                    const SizedBox(height: 16),
-
-                    // Date fields
-                    _buildDateFieldRow('Ex-Factory Date'),
-                    const SizedBox(height: 12),
-                    _buildDateFieldRow('In-Time Date'),
-                    const SizedBox(height: 12),
-                    _buildDateFieldRow('Out-Time Date'),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Action Buttons (unchanged)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.preview, size: 18),
-                  label: const Text('Preview Report'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {},
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.download, size: 18),
-                  label: const Text('Excel Export'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Helper methods...
-
-  Widget _buildCategoryItem(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          const Icon(Icons.circle, size: 8, color: Colors.blue),
-          const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 14)),
+        title: const Text('LC Export Items'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_alt),
+            onPressed: () => _showFilterDialog(),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSearchRow(List<Widget> children) {
-    return Row(
-      children: [
-        Expanded(child: children[0]),
-        const SizedBox(width: 16),
-        Expanded(child: children[1]),
-      ],
-    );
-  }
-
-  Widget _buildSearchField(String label, {bool hasDropdown = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Checkbox(
-              value: false,
-              onChanged: (v) {},
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search by LC#, Customer, Currency...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          _searchItems('');
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: _searchItems,
             ),
-            const SizedBox(width: 4),
-            Text(label, style: const TextStyle(fontSize: 14)),
+          ),
+          Expanded(
+            child: _filteredItems.isEmpty
+                ? const Center(child: Text('No items found'))
+                : ListView.builder(
+                    itemCount: _filteredItems.length,
+                    itemBuilder: (context, index) {
+                      final item = _filteredItems[index];
+                      return _buildItemCard(item);
+                    },
+                  ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () => _addNewItem(),
+      ),
+    );
+  }
+
+  Widget _buildItemCard(LCExportItem item) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: ListTile(
+        title: Text(item.id, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(item.customer),
+            const SizedBox(height: 4),
+            Text(NumberFormat.currency(symbol: item.currency).format(item.amount), style: const TextStyle(color: Colors.green)),
           ],
         ),
-        const SizedBox(height: 4),
-        if (hasDropdown)
-          DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 8),
-            ),
-            isExpanded: true,
-            items: const [
-              DropdownMenuItem(value: 'Select', child: Text('Select ▼')),
-            ],
-            onChanged: (value) {},
-          )
-        else
-          const TextField(
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 12),
-            ),
-          ),
-      ],
+        trailing: Text(DateFormat('dd-MMM-yyyy').format(item.issueDate)),
+        onTap: () => _viewItemDetails(item),
+      ),
     );
   }
 
-  Widget _buildDateFieldRow(String label) {
-    return Row(
-      children: [
-        Checkbox(
-            value: false,
-            onChanged: (v) {},
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        const SizedBox(width: 8),
-        Text(label, style: const TextStyle(fontSize: 14)),
-        const SizedBox(width: 8),
-        const Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              suffixIcon: Icon(Icons.calendar_today, size: 18),
-            ),
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Filter Items'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildFilterOption('All'),
+              _buildFilterOption('Pending'),
+              _buildFilterOption('Approved'),
+              _buildFilterOption('Rejected'),
+            ],
           ),
-        ),
-        const SizedBox(width: 8),
-        const Text('To', style: TextStyle(fontSize: 14)),
-        const SizedBox(width: 8),
-        const Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              suffixIcon: Icon(Icons.calendar_today, size: 18),
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
+
+  Widget _buildFilterOption(String status) {
+    return RadioListTile(
+      title: Text(status),
+      value: status,
+      groupValue: _selectedFilter,
+      onChanged: (value) {
+        Navigator.pop(context);
+        _filterByStatus(value.toString());
+      },
+    );
+  }
+
+  void _viewItemDetails(LCExportItem item) {
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>LCDetailScreen()));
+  }
+
+  void _addNewItem() {
+    // Navigate to add new item screen
+  }
+}
+
+class LCExportItem {
+  final String id;
+  final String customer;
+  final double amount;
+  final String currency;
+  final DateTime issueDate;
+
+  LCExportItem({
+    required this.id,
+    required this.customer,
+    required this.amount,
+    required this.currency,
+    required this.issueDate,
+  });
 }

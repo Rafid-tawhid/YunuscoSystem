@@ -296,7 +296,9 @@ class ProductProvider extends ChangeNotifier{
   List<String> get filteredStyleList => _filteredBuyerStyleList;
 
   Future<bool> getAllStyleData() async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
     var data = await apiService.getData('api/Merchandising/StyleForEffiRpt');
+    EasyLoading.dismiss();
     if (data != null) {
       _buyerStyleList.clear();
       _filteredBuyerStyleList.clear();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/buyer_wise_material_model.dart';
 
@@ -16,23 +17,15 @@ class BuyerWiseMaterialList extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title:  Text('$buyerName Materials',
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(color: Colors.black)),
         centerTitle: true,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.blue[800]!, Colors.purple[600]!],
-            ),
-          ),
-        ),
+
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () => _showSearch(context),
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.search, color: Colors.black),
+          //   onPressed: () => _showSearch(context),
+          // ),
         ],
       ),
       body: Column(
