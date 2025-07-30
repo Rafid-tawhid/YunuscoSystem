@@ -90,6 +90,7 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
                   setState(() {
                     _searchQuery = value;
                   });
+                  provider.showhideFilterSection(value);
                 },
               )
             : const Text('Efficiency Report'),
@@ -153,75 +154,80 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
   }
 
   Widget _buildFilterSection(BuildContext context, ProductProvider provider) {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.all(8),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            // In your _buildFilterSection widget, replace the dropdown items with:
-            Row(
+    return Consumer<ProductProvider>(
+      builder: (context,pro,_)=>Visibility(
+        visible: pro.showFilter,
+        child: Card(
+          color: Colors.white,
+          margin: const EdgeInsets.all(8),
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
               children: [
-                Expanded(
-                  child: _buildFilterDropdown<int>(
-                    value: selectedBuyerId,
-                    hint: 'All Buyers',
-                    items: provider.buyerDropdownItems,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedBuyerId = value;
-                      });
-                    },
-                  ),
+                // In your _buildFilterSection widget, replace the dropdown items with:
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildFilterDropdown<int>(
+                        value: selectedBuyerId,
+                        hint: 'All Buyers',
+                        items: provider.buyerDropdownItems,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedBuyerId = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildFilterDropdown<int>(
+                        value: selectedSectionId,
+                        hint: 'All Sections',
+                        items: provider.sectionDropdownItems,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedSectionId = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildFilterDropdown<int>(
-                    value: selectedSectionId,
-                    hint: 'All Sections',
-                    items: provider.sectionDropdownItems,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSectionId = value;
-                      });
-                    },
-                  ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildFilterDropdown<int>(
+                        value: selectedLineId,
+                        hint: 'All Lines',
+                        items: provider.lineDropdownItems,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedLineId = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildFilterDropdown<String>(
+                        value: selectedStyleNo,
+                        hint: 'All Styles',
+                        items: provider.styleDropdownItems,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedStyleNo = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildFilterDropdown<int>(
-                    value: selectedLineId,
-                    hint: 'All Lines',
-                    items: provider.lineDropdownItems,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedLineId = value;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildFilterDropdown<String>(
-                    value: selectedStyleNo,
-                    hint: 'All Styles',
-                    items: provider.styleDropdownItems,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedStyleNo = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

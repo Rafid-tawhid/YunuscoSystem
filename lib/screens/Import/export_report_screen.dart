@@ -1,192 +1,227 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/product_provider.dart';
 
-import 'lc_details_screen.dart';
+import '../../models/master_lc_model.dart';
 
-class ExportRegisterScreen extends StatefulWidget {
-  const ExportRegisterScreen({super.key});
+class MasterLCListScreen extends StatefulWidget {
+  const MasterLCListScreen({super.key});
 
   @override
-  State<ExportRegisterScreen> createState() => _ExportRegisterScreenState();
+  State<MasterLCListScreen> createState() => _MasterLCListScreenState();
 }
 
-class _ExportRegisterScreenState extends State<ExportRegisterScreen> {
-  final List<LCExportItem> _allItems = [
-    // Sample data - replace with your actual data
-    LCExportItem(
-      id: 'LC-2023-001',
-      customer: 'ABC Trading',
-      amount: 125000,
-      currency: 'USD',
-      issueDate: DateTime(2023, 5, 15),
-    ),
-    LCExportItem(id: 'LC-2023-002', customer: 'XYZ Exports', amount: 87500, currency: 'EUR', issueDate: DateTime(2023, 6, 22)),
-    // Add more items...
-  ];
-
-  List<LCExportItem> _filteredItems = [];
+class _MasterLCListScreenState extends State<MasterLCListScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String _selectedFilter = 'All';
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  final int _pageSize = 10;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = _allItems;
+    _loadInitialData();
+    _scrollController.addListener(_scrollListener);
   }
 
-  void _searchItems(String query) {
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadInitialData() async {
+    final provider = context.read<ProductProvider>();
+    await provider.getMasterLcData('', _currentPage, _pageSize);
+  }
+
+  Future<void> _loadMoreData() async {
+    debugPrint('This is calling.. ');
+    _currentPage++;
     setState(() {
-      _filteredItems = _allItems.where((item) {
-        final searchLower = query.toLowerCase();
-        return item.id.toLowerCase().contains(searchLower) || item.customer.toLowerCase().contains(searchLower) || item.currency.toLowerCase().contains(searchLower);
-      }).toList();
+      _isLoading = true;
+    });
+
+    final provider = context.read<ProductProvider>();
+    final success = await provider.getMasterLcData(
+        _searchController.text,
+        _currentPage,
+        _pageSize
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+  Future<void> _loadPrevious() async {
+
+    _currentPage--;
+    setState(() {
+      _isLoading = true;
+    });
+
+    final provider = context.read<ProductProvider>();
+    final success = await provider.getMasterLcData(
+        _searchController.text,
+        _currentPage,
+        _pageSize
+    );
+
+    setState(() {
+      _isLoading = false;
     });
   }
 
-  void _filterByStatus(String status) {
-    setState(() {
-      _selectedFilter = status;
-      if (status == 'All') {
-        _filteredItems = _allItems;
-      } else {
-        // Add your actual filtering logic here
-        // For example: _filteredItems = _allItems.where((item) => item.status == status).toList();
-      }
-    });
+  Future<void> _refreshData() async {
+    _currentPage = 1;
+    await _loadInitialData();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMoreData();
+    }
+  }
+
+  Future<void> _searchData() async {
+    _currentPage = 1;
+    final provider = context.read<ProductProvider>();
+    await provider.getMasterLcData(_searchController.text, _currentPage, _pageSize);
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ProductProvider>();
+    final items = provider.masterLcList;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('LC Export Items'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: () => _showFilterDialog(),
-          ),
-        ],
+        title: const Text('Master LC List'),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search by LC#, Customer, Currency...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          _searchItems('');
-                        },
-                      )
-                    : null,
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _refreshData,
+              child: items.isEmpty && !_isLoading
+                  ? const Center(child: Text('No LC items found'))
+                  : ListView.builder(
+                controller: _scrollController,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  if (index >= items.length) {
+                    return _buildLoader();
+                  }
+                  return _buildLcItem(items[index]);
+                },
               ),
-              onChanged: _searchItems,
             ),
           ),
-          Expanded(
-            child: _filteredItems.isEmpty
-                ? const Center(child: Text('No items found'))
-                : ListView.builder(
-                    itemCount: _filteredItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _filteredItems[index];
-                      return _buildItemCard(item);
-                    },
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0,horizontal: 8),
+            child: Row(
+              children: [
+                ElevatedButton(onPressed: _loadPrevious, child: Text('Previous')),
+                Expanded(child: Text('Page: ${_currentPage}',textAlign: TextAlign.center,)),
+                ElevatedButton(onPressed:  _loadMoreData, child: Text('Next')),
+              ],
+            ),
           ),
+          SizedBox(height: 12,)
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => _addNewItem(),
       ),
     );
   }
 
-  Widget _buildItemCard(LCExportItem item) {
+  Widget _buildLcItem(MasterLcModel item) {
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
-        title: Text(item.id, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(item.masterLCNo ?? 'No LC Number'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(item.customer),
+            Text(item.buyerName ?? 'No Buyer'),
             const SizedBox(height: 4),
-            Text(NumberFormat.currency(symbol: item.currency).format(item.amount), style: const TextStyle(color: Colors.green)),
+            Text('Amount: ${NumberFormat.currency(symbol: '\$').format(item.masterLCAmount)}'),
           ],
         ),
-        trailing: Text(DateFormat('dd-MMM-yyyy').format(item.issueDate)),
-        onTap: () => _viewItemDetails(item),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(item.eXIMStatus ?? 'No Status'),
+            const SizedBox(height: 4),
+            Text(DateFormat('MMM dd, yyyy').format(
+                DateTime.parse(item.issueDateStr ?? DateTime.now().toString()))),
+          ],
+        ),
+        onTap: () => _showLcDetails(item),
       ),
     );
   }
 
-  void _showFilterDialog() {
+  Widget _buildLoader() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: const CircularProgressIndicator()
+
+      ),
+    );
+  }
+
+  void _showLcDetails(MasterLcModel item) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Filter Items'),
-          content: Column(
+      builder: (context) => AlertDialog(
+        title: Text(item.masterLCNo ?? 'LC Details'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildFilterOption('All'),
-              _buildFilterOption('Pending'),
-              _buildFilterOption('Approved'),
-              _buildFilterOption('Rejected'),
+              _buildDetailRow('Buyer', item.buyerName),
+              _buildDetailRow('Amount', NumberFormat.currency(symbol: '\$').format(item.masterLCAmount)),
+              _buildDetailRow('Status', item.eXIMStatus),
+              _buildDetailRow('Issue Date', item.issueDateStr),
+              _buildDetailRow('Expiry Date', item.expiryDateStr),
+              if (item.remark != null) _buildDetailRow('Remarks', item.remark),
             ],
           ),
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildFilterOption(String status) {
-    return RadioListTile(
-      title: Text(status),
-      value: status,
-      groupValue: _selectedFilter,
-      onChanged: (value) {
-        Navigator.pop(context);
-        _filterByStatus(value.toString());
-      },
+  Widget _buildDetailRow(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(value ?? 'N/A')),
+        ],
+      ),
     );
   }
-
-  void _viewItemDetails(LCExportItem item) {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>LCDetailScreen()));
-  }
-
-  void _addNewItem() {
-    // Navigate to add new item screen
-  }
-}
-
-class LCExportItem {
-  final String id;
-  final String customer;
-  final double amount;
-  final String currency;
-  final DateTime issueDate;
-
-  LCExportItem({
-    required this.id,
-    required this.customer,
-    required this.amount,
-    required this.currency,
-    required this.issueDate,
-  });
 }

@@ -6,6 +6,7 @@ import 'package:yunusco_group/models/production_dashboard_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
 import '../models/stylewise_efficiency_model.dart';
 
@@ -307,6 +308,42 @@ class ProductProvider extends ChangeNotifier{
       }
       _filteredBuyerStyleList.addAll(_buyerStyleList);
       debugPrint('_buyerStyleList ${_buyerStyleList.length}');
+      notifyListeners();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  bool _showFilter=true;
+  bool get showFilter=>_showFilter;
+  void showhideFilterSection(String? value) {
+    if(value==null||value.isEmpty||value==''){
+      _showFilter=true;
+    }
+    else {
+      _showFilter=false;
+    }
+    notifyListeners();
+  }
+
+
+
+  final List<MasterLcModel> _masterLcList=[];
+  List<MasterLcModel> get masterLcList=>_masterLcList;
+
+  Future<bool> getMasterLcData(String query,int pgNum,int pgSize) async{
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    var data = await apiService.getData('api/Merchandising/MasterLcListPages?searchText=$query&pageNumber=$pgNum&pageSize=10');
+    EasyLoading.dismiss();
+    if (data != null) {
+      _masterLcList.clear();
+
+      for (var i in data['data']) {
+        _masterLcList.add(MasterLcModel.fromJson(i));
+      }
+      debugPrint('_masterLcList ${_masterLcList.length}');
       notifyListeners();
       return true;
     } else {
