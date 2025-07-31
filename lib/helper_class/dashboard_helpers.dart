@@ -849,13 +849,16 @@ class DashboardHelpers {
     }
   }
 
-  static void setToken(String? s) {
+  static void setToken(String s) {
+    debugPrint('This is calling.. ');
     //when login
     if (AppConstants.token == '') {
       setString('token', s ?? '');
       AppConstants.token = s ?? '';
       debugPrint('Token has set');
     }
+    // change 31 july
+    //AppConstants.token = s;
   }
 
 

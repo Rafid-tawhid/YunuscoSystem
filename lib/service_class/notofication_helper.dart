@@ -8,9 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../screens/HR&PayRoll/requested_car_list.dart';
 import '../screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
@@ -144,6 +146,11 @@ class NotificationServices {
      debugPrint('Sending token to server successfully.....');
    }
    else {
+     // change july 31
+     // remove all exists credential
+     SharedPreferences pref=await SharedPreferences.getInstance();
+     pref.remove('token');
+     AppConstants.token='';
      Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
    }
   }
