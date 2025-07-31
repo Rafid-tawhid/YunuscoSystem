@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 
 import '../../models/master_lc_model.dart';
+import 'lc_details_screen.dart';
 
 class MasterLCListScreen extends StatefulWidget {
   const MasterLCListScreen({super.key});
@@ -18,6 +22,8 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
   int _currentPage = 1;
   final int _pageSize = 10;
   bool _isLoading = false;
+  bool _isSearching = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -30,6 +36,7 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -39,24 +46,27 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
   }
 
   Future<void> _loadMoreData() async {
-    debugPrint('This is calling.. ');
+    if (_isLoading) return;
+
     _currentPage++;
     setState(() {
       _isLoading = true;
     });
 
     final provider = context.read<ProductProvider>();
-    final success = await provider.getMasterLcData(
-        _searchController.text,
-        _currentPage,
-        _pageSize
+    await provider.getMasterLcData(
+      _searchController.text,
+      _currentPage,
+      _pageSize,
     );
 
     setState(() {
       _isLoading = false;
     });
   }
+
   Future<void> _loadPrevious() async {
+    if (_currentPage <= 1 || _isLoading) return;
 
     _currentPage--;
     setState(() {
@@ -64,10 +74,10 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
     });
 
     final provider = context.read<ProductProvider>();
-    final success = await provider.getMasterLcData(
-        _searchController.text,
-        _currentPage,
-        _pageSize
+    await provider.getMasterLcData(
+      _searchController.text,
+      _currentPage,
+      _pageSize,
     );
 
     setState(() {
@@ -81,8 +91,7 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       _loadMoreData();
     }
   }
@@ -93,6 +102,13 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
     await provider.getMasterLcData(_searchController.text, _currentPage, _pageSize);
   }
 
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _searchData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProductProvider>();
@@ -101,7 +117,43 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Master LC List'),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search Master LC...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.black),
+                ),
+                style: const TextStyle(color: Colors.black),
+                onChanged: (value) => _onSearchChanged(),
+                onSubmitted: (value) {
+                  _searchData();
+                  setState(() => _isSearching = false);
+                },
+              )
+            : const Text('Master LC List'),
+        actions: [
+          if (!_isSearching)
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                setState(() => _isSearching = true);
+              },
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                setState(() {
+                  _isSearching = false;
+                  _searchController.clear();
+                  _searchData();
+                });
+              },
+            ),
+        ],
       ),
       body: Column(
         children: [
@@ -111,28 +163,39 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
               child: items.isEmpty && !_isLoading
                   ? const Center(child: Text('No LC items found'))
                   : ListView.builder(
-                controller: _scrollController,
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  if (index >= items.length) {
-                    return _buildLoader();
-                  }
-                  return _buildLcItem(items[index]);
-                },
-              ),
+                      controller: _scrollController,
+                      itemCount: items.length + (_isLoading ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index >= items.length) {
+                          return _buildLoader();
+                        }
+                        return _buildLcItem(items[index]);
+                      },
+                    ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0,horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8),
             child: Row(
               children: [
-                ElevatedButton(onPressed: _loadPrevious, child: Text('Previous')),
-                Expanded(child: Text('Page: ${_currentPage}',textAlign: TextAlign.center,)),
-                ElevatedButton(onPressed:  _loadMoreData, child: Text('Next')),
+                ElevatedButton(
+                  onPressed: _loadPrevious,
+                  child: const Text('Previous'),
+                ),
+                Expanded(
+                  child: Text(
+                    'Page: $_currentPage',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _loadMoreData,
+                  child: const Text('Next'),
+                ),
               ],
             ),
           ),
-          SizedBox(height: 12,)
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -157,50 +220,24 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
           children: [
             Text(item.eXIMStatus ?? 'No Status'),
             const SizedBox(height: 4),
-            Text(DateFormat('MMM dd, yyyy').format(
-                DateTime.parse(item.issueDateStr ?? DateTime.now().toString()))),
+            Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(item.issueDateStr ?? DateTime.now().toString()))),
           ],
         ),
-        onTap: () => _showLcDetails(item),
+        onTap: () async {
+          var pp = context.read<ProductProvider>();
+          if (await pp.getLcDetails(item.masterLCId)) {
+            Navigator.push(context, CupertinoPageRoute(builder: (context) => LCDetailScreen(lcData: pp.lcDetailsData)));
+          }
+        },
       ),
     );
   }
 
   Widget _buildLoader() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
       child: Center(
-        child: const CircularProgressIndicator()
-
-      ),
-    );
-  }
-
-  void _showLcDetails(MasterLcModel item) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(item.masterLCNo ?? 'LC Details'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDetailRow('Buyer', item.buyerName),
-              _buildDetailRow('Amount', NumberFormat.currency(symbol: '\$').format(item.masterLCAmount)),
-              _buildDetailRow('Status', item.eXIMStatus),
-              _buildDetailRow('Issue Date', item.issueDateStr),
-              _buildDetailRow('Expiry Date', item.expiryDateStr),
-              if (item.remark != null) _buildDetailRow('Remarks', item.remark),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
+        child: CircularProgressIndicator(),
       ),
     );
   }

@@ -350,4 +350,15 @@ class ProductProvider extends ChangeNotifier{
       return false;
     }
   }
+
+  Map<String,dynamic> _lcDetailsData={};
+  Map<String,dynamic>  get lcDetailsData =>_lcDetailsData;
+
+  Future<bool> getLcDetails(num? masterLCId) async{
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    var data=await apiService.getData('api/Merchandising/GetMasterLCDetails?id=${masterLCId}');
+    _lcDetailsData=data['returnvalue'];
+    EasyLoading.dismiss();
+    return data==null?false:true;
+  }
 }

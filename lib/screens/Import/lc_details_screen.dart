@@ -1,58 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-final Map<String,dynamic> lcData={
-  "MasterLCId": 277,
-  "Version": 1,
-  "MasterLCNo": "P02L25196I000010",
-  "IssueDate": null,
-  "ShipDate": null,
-  "ExpiryDate": null,
-  "IssueDateStr": "7/22/2025",
-  "ShipDateStr": "10/27/2025",
-  "ExpiryDateStr": "11/11/2025",
-  "TenorId": 0,
-  "TenorStr": null,
-  "ShipmentModeId": 5,
-  "ShipmentModeStr": "Air/Sea",
-  "SalesTerms": "FOB/FCA",
-  "BuyerId": 33,
-  "LienRefNo": "P02L25196I000010",
-  "BankNameId": 0,
-  "BankName": null,
-  "PoScLcNo": "P02L25196I000010",
-  "EXIMStatusId": 158,
-  "EXIMStatus": "LC No",
-  "SCAmount": 440964.67,
-  "MasterLCAmount": 440964.67,
-  "BtBPercent": 70.00,
-  "Roam": 308675.27,
-  "OrderQty": 128564,
-  "UnitPrice": 3.43,
-  "MasterLCCode": "YBL-MLC-277-2025",
-  "BuyerName": "WOLF LINGERIE LTD",
-  "AmendAmount": 0,
-  "AmendQty": 0,
-  "AmendAmountIncDec": 0,
-  "AmendQtyIncDec": 0,
-  "AmndDate": "0001-01-01T00:00:00",
-  "BLAmendNo": null,
-  "RepAmendNo": null,
-  "Remark": null,
-  "RemainingAmount": 308675.27,
-  "TotalAmountUsedFor_BTB_FTT_FDD": 0.00,
-  "UsedForBTB_Amount": 0.00,
-  "UsedForBTB_Percentage": 0.00,
-  "UsedForFDD_Amount": 0.00,
-  "UsedForFDD_Percentage": 0.00,
-  "UsedForFTT_Amount": 0.00,
-  "UsedForFTT_Percentage": 0.00,
-  "created_date_str": null
-};
 
 class LCDetailScreen extends StatelessWidget {
 
-  const LCDetailScreen({super.key});
+  final Map<String,dynamic> lcData;
+
+
+  LCDetailScreen({required this.lcData});
 
   @override
   Widget build(BuildContext context) {
