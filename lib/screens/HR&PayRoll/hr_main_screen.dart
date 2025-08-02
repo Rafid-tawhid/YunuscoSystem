@@ -45,7 +45,8 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Icons.history_toggle_off,  // Leave History (past records)
     Icons.receipt,             // Pay Slip (financial document)
     Icons.room,
-    Icons.car_repair_rounded// Pay Slip (financial document)
+    Icons.car_repair_rounded,// Pay Slip (financial document)
+    Icons.sick_rounded,
   ];
   final List<Color> iconColors = [
     Colors.blue[800]!,    // Dark Blue
@@ -205,6 +206,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     if (index == 8) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
     }
+
   }
 
   void setMenuItems() {
@@ -272,6 +274,13 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
        "cardColor": cardColors[5],
        "iconColor": iconColors[6],
        "icon": menuIcons[8],
+     },
+     {
+       "code": 9,
+       "name": "Half\n Leave",
+       "cardColor": cardColors[3],
+       "iconColor": iconColors[3],
+       "icon": menuIcons[9],
      },
     ];
   }

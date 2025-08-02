@@ -24,7 +24,7 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((v){
+    WidgetsBinding.instance.addPostFrameCallback((v) {
       _loadData();
     });
   }
@@ -59,8 +59,6 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
     }).toList();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final purchaseList = Provider.of<MerchandisingProvider>(context).purchaseApprovalList;
@@ -72,48 +70,48 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : filteredList.isEmpty
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off,
-              size: 48,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _searchController.text.isEmpty
-                  ? 'No purchase approvals found'
-                  : 'No results for "${_searchController.text}"',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            if (_searchController.text.isNotEmpty)
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _searchController.clear();
-                    _isSearching = false;
-                  });
-                },
-                child: const Text('Clear search'),
-              ),
-          ],
-        ),
-      )
-          : Column(
-            children: [
-              ApprovalTopCards(isPurchase: true,),
-              Expanded(
-                child: ListView.builder(
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.search_off,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _searchController.text.isEmpty ? 'No purchase approvals found' : 'No results for "${_searchController.text}"',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      if (_searchController.text.isNotEmpty)
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _isSearching = false;
+                            });
+                          },
+                          child: const Text('Clear search'),
+                        ),
+                    ],
+                  ),
+                )
+              : Column(
+                  children: [
+                    ApprovalTopCards(
+                      isPurchase: true,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {
-                return _buildPurchaseItem(filteredList[index]);
+                          return _buildPurchaseItem(filteredList[index]);
                         },
                       ),
-              ),
-            ],
-          ),
+                    ),
+                  ],
+                ),
     );
   }
 
@@ -181,10 +179,7 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
             child: Column(
               children: [
                 _buildDetailRow('Created By', purchase.createdBy),
-                _buildDetailRow('Created Date',
-                    purchase.createdDate != null
-                        ? dateFormat.format(DateTime.parse(purchase.createdDate!))
-                        : 'N/A'),
+                _buildDetailRow('Created Date', purchase.createdDate != null ? dateFormat.format(DateTime.parse(purchase.createdDate!)) : 'N/A'),
                 _buildDetailRow('Submit To', purchase.submitToPerson),
                 _buildDetailRow('Style Number', purchase.styleNumber?.toString()),
                 _buildDetailRow('Buyer PO', purchase.buyerPO?.toString()),
@@ -200,26 +195,30 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                IconButton(onPressed: () async {
-                  // Get credentials securely
+                IconButton(
+                    onPressed: () async {
+                      // Get credentials securely
 
-                  var mp=context.read<MerchandisingProvider>();
-                  var data=await mp.purchaseDetailsByPO(purchase);
+                      var mp = context.read<MerchandisingProvider>();
+                      var data = await mp.purchaseDetailsByPO(purchase);
 
-                  debugPrint('Data $data');
-                  if(data['returnvalue']!=null){
-                    // To use this screen:
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => PurchaseOrderReportScreen(
-                          orderData: data['returnvalue'],
-                        ),
-                      ),
-                    );
-                  }
-                }, icon: Icon(Icons.info_outline,color: Colors.orange,)),
-
+                      debugPrint('Data $data');
+                      if (data['returnvalue'] != null) {
+                        // To use this screen:
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => PurchaseOrderReportScreen(
+                              orderData: data['returnvalue'],
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: Colors.orange,
+                    )),
                 Spacer(),
                 if (purchase.finalStatus == 'Pending') ...[
                   TextButton(
@@ -231,7 +230,6 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                   ),
                   const SizedBox(width: 8),
                 ],
-
                 ElevatedButton(
                   onPressed: () {
                     if (purchase.finalStatus == 'Pending') {
@@ -241,9 +239,7 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: purchase.finalStatus == 'Pending'
-                        ? Colors.green
-                        : Colors.blue,
+                    backgroundColor: purchase.finalStatus == 'Pending' ? Colors.green : Colors.blue,
                   ),
                   child: Text(
                     purchase.finalStatus == 'Pending' ? 'Accept' : 'View',
@@ -378,23 +374,23 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
     return AppBar(
       title: _isSearching
           ? TextField(
-        controller: _searchController,
-        autofocus: true,
-        decoration: InputDecoration(
-          hintText: 'Search purchases...',
-          border: InputBorder.none,
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              setState(() {
-                _searchController.clear();
-                _isSearching = false;
-              });
-            },
-          ),
-        ),
-        onChanged: (_) => setState(() {}),
-      )
+              controller: _searchController,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: 'Search purchases...',
+                border: InputBorder.none,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    setState(() {
+                      _searchController.clear();
+                      _isSearching = false;
+                    });
+                  },
+                ),
+              ),
+              onChanged: (_) => setState(() {}),
+            )
           : const Text('Purchase Approvals'),
       actions: [
         if (!_isSearching)
@@ -409,5 +405,4 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
       ],
     );
   }
-
 }
