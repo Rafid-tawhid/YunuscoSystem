@@ -8,6 +8,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
+import '../models/requisation_products_model.dart';
 import '../models/stylewise_efficiency_model.dart';
 
 class ProductProvider extends ChangeNotifier{
@@ -360,5 +361,21 @@ class ProductProvider extends ChangeNotifier{
     _lcDetailsData=data['returnvalue'];
     EasyLoading.dismiss();
     return data==null?false:true;
+  }
+
+
+  final List<RequisationProductsModel> _requisationProductList=[];
+  List<RequisationProductsModel> get requisationProductList=>_requisationProductList;
+
+  Future<void> getAllRequisationProduct() async{
+    var data=await apiService.getData('api/Inventory/G&AReqProductList');
+    if(data!=null){
+      _requisationProductList.clear();
+      for(var i in data['returnvalue']){
+        _requisationProductList.add(RequisationProductsModel.fromJson(i));
+      }
+    }
+    notifyListeners();
+    debugPrint('_requisationProductList ${_requisationProductList.length}');
   }
 }

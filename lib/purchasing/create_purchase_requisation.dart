@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/purchasing/widgets/purchase_product_list.dart';
 
 class PurchaseRequisitionScreen extends StatefulWidget {
   @override
@@ -17,9 +18,8 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
   final List<String> _divisions = ['Garment', 'Knitting', 'Dyeing', 'Printing'];
 
   // Form controllers
-  TextEditingController _employeeController = TextEditingController(text: "A.F.M Sadegul Amin");
-  TextEditingController _productController = TextEditingController(text: "620");
-  TextEditingController _requiredDateController = TextEditingController(text: "02-Aug-2025");
+  final TextEditingController _employeeController = TextEditingController(text: "A.F.M Sadegul Amin");
+  final TextEditingController _requiredDateController = TextEditingController(text: "02-Aug-2025");
 
   // Item controllers
   TextEditingController _materialNameController = TextEditingController();
@@ -32,6 +32,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("General & Accessories Requisition"),
         centerTitle: true,
@@ -41,120 +42,119 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
         child: Form(
           key: _formKey,
           child: ListView(
-              controller: _scrollController,
-              children: [
-              Text('Requisition Details', style: Theme.of(context).textTheme.headlineMedium),
-          SizedBox(height: 16),
-
-          // Department Dropdown
-          _buildCompactDropdown(
-            value: _selectedDepartment,
-            items: _departments,
-            label: "Department",
-            onChanged: (value) => setState(() => _selectedDepartment = value),
-          ),
-          SizedBox(height: 12),
-
-          // Employee Name
-          TextFormField(
-            controller: _employeeController,
-            decoration: InputDecoration(
-              labelText: "Employee Name",
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            ),
-          ),
-          SizedBox(height: 12),
-
-          // Division Dropdown
-          _buildCompactDropdown(
-            value: _selectedDivision,
-            items: _divisions,
-            label: "Division",
-            onChanged: (value) => setState(() => _selectedDivision = value),
-          ),
-          SizedBox(height: 12),
-
-          // Product Name
-          TextFormField(
-            controller: _productController,
-            decoration: InputDecoration(
-              labelText: "Product Name",
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            ),
-          ),
-          SizedBox(height: 12),
-
-          // Required Date
-          TextFormField(
-            controller: _requiredDateController,
-            decoration: InputDecoration(
-              labelText: "Required Date",
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.calendar_today, size: 20),
-                onPressed: () => _selectDate(context),
-              ),
-            ),
-          ),
-          SizedBox(height: 24),
-
-          Divider(),
-          SizedBox(height: 8),
-
-          Text('Add Items', style: Theme.of(context).textTheme.headlineMedium),
-          SizedBox(height: 16),
-
-          // Material Name
-          TextFormField(
-            controller: _materialNameController,
-            decoration: InputDecoration(
-              labelText: "Material Name*",
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            ),
-          ),
-          SizedBox(height: 12),
-
-          // Description
-          TextFormField(
-            controller: _materialDescController,
-            decoration: InputDecoration(
-              labelText: "Description",
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            ),
-          ),
-          SizedBox(height: 12),
-
-          Row(
+            controller: _scrollController,
             children: [
-              // Unit
-              Expanded(
-                child: TextFormField(
-                  controller: _unitController,
-                  decoration: InputDecoration(
-                    labelText: "Unit",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  ),
-                ),),
-                SizedBox(width: 12),
+              Text('Requisition Details',),
+              SizedBox(height: 16),
+              // Division Dropdown
+              _buildCompactDropdown(
+                value: _selectedDivision,
+                items: _divisions,
+                label: "Division",
+                onChanged: (value) => setState(() => _selectedDivision = value),
+              ),
+              SizedBox(height: 12),
 
-                // Quantity
-                Expanded(
-                  child: TextFormField(
-                    controller: _qtyController,
-                    decoration: InputDecoration(
-                      labelText: "Quantity*",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                    ),
-                    keyboardType: TextInputType.number,
+              // Department Dropdown
+              _buildCompactDropdown(
+                value: _selectedDepartment,
+                items: _departments,
+                label: "Department",
+                onChanged: (value) => setState(() => _selectedDepartment = value),
+              ),
+              SizedBox(height: 12),
+
+              // Employee Name
+              TextFormField(
+                controller: _employeeController,
+                decoration: InputDecoration(
+                  labelText: "Employee Name",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                ),
+              ),
+              SizedBox(height: 12),
+
+              // Required Date
+              TextFormField(
+                controller: _requiredDateController,
+                decoration: InputDecoration(
+                  labelText: "Required Date",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.calendar_today, size: 20),
+                    onPressed: () => _selectDate(context),
                   ),
                 ),
+              ),
+              SizedBox(height: 24),
+
+              Divider(),
+              SizedBox(height: 8),
+
+              Text('Add Items',),
+              SizedBox(height: 16),
+
+              // Material Name
+              TextFormField(
+                controller: _materialNameController,
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductSelectionScreen())).then((value){
+
+                    debugPrint('RETURN BACK $value');
+                    setState(() {
+                      _materialNameController.text=value;
+                    });
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: "Product Name*",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                ),
+              ),
+              SizedBox(height: 12),
+
+              // Description
+              TextFormField(
+                controller: _materialDescController,
+                maxLines: 6,
+                decoration: InputDecoration(
+                  labelText: "Description",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                ),
+              ),
+              SizedBox(height: 12),
+
+              Row(
+                children: [
+                  // Unit
+                  Expanded(
+                    child: TextFormField(
+                      controller: _unitController,
+                      decoration: InputDecoration(
+                        labelText: "Unit",
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+
+                  // Quantity
+                  Expanded(
+                    child: TextFormField(
+                      controller: _qtyController,
+                      decoration: InputDecoration(
+                        labelText: "Quantity*",
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 12),
@@ -174,7 +174,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               TextFormField(
                 controller: _noteController,
                 decoration: InputDecoration(
-                  labelText: "Note",
+                  labelText: "Remarks",
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 ),
@@ -255,8 +255,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(item['materialName'],
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(item['materialName'], style: TextStyle(fontWeight: FontWeight.bold)),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red, size: 20),
                   onPressed: () => _removeItem(item),
@@ -273,8 +272,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               children: [
                 Text("Qty: ${item['qty']}"),
                 SizedBox(width: 16),
-                if (item['unit']?.isNotEmpty ?? false)
-                  Text("Unit: ${item['unit']}"),
+                if (item['unit']?.isNotEmpty ?? false) Text("Unit: ${item['unit']}"),
               ],
             ),
             if (item['brand']?.isNotEmpty ?? false)
@@ -348,7 +346,6 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
       'department': _selectedDepartment,
       'employeeName': _employeeController.text,
       'division': _selectedDivision,
-      'productName': _productController.text,
       'requiredDate': _requiredDateController.text,
       'items': items,
     };
@@ -367,7 +364,6 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
   void dispose() {
     _scrollController.dispose();
     _employeeController.dispose();
-    _productController.dispose();
     _requiredDateController.dispose();
     _materialNameController.dispose();
     _materialDescController.dispose();
