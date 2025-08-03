@@ -44,7 +44,11 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Purchase Requisition"),
+        title: Text("Purchase Requisition",style: TextStyle(color: Colors.white),),
+        backgroundColor: myColors.primaryColor,
+        leading: IconButton(onPressed: (){
+          Navigator.pop(context);
+        }, icon: Icon(Icons.arrow_back,color: Colors.white,)),
         centerTitle: true,
       ),
       body: Padding(
@@ -53,6 +57,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              SizedBox(height: 24),
               // Division Dropdown
               _buildDropdown(
                 value: _selectedDivision,
