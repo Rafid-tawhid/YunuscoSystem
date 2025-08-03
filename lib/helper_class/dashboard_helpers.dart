@@ -63,7 +63,7 @@ class DashboardHelpers {
 
   static String convertDateTime2(DateTime? date) {
     if (date == null) return '';
-    return DateFormat('dd-MM-yyyy').format(date);
+    return DateFormat('yyyy-MM-dd').format(date);
   }
 
   static Duration? calculateTimeDifference(String startTime, String endTime) {
