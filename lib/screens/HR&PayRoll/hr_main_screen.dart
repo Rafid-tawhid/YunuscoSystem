@@ -19,6 +19,7 @@ import 'attandence_screen.dart';
 import 'board_room_booking_screen.dart';
 import 'depertments_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
+import 'half_day_leave.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
   @override
@@ -206,6 +207,9 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     if (index == 8) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
     }
+    if (index == 9) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => HalfDayLeaveScreen()));
+    }
 
   }
 
@@ -286,34 +290,3 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
   }
 }
 
-//     menuList = [
-//       {
-//         "code": 1,
-//         "name": "Self Leave",
-//         "cardColor": cardColors[0],
-//         "iconColor": iconColors[0],
-//         "icon": menuIcons[0],
-//       },
-//       {
-//         "code": 2,
-//         "name": "My\nPerformance",
-//         "cardColor": cardColors[1],
-//         "iconColor": iconColors[1],
-//         "icon": menuIcons[1],
-//       },
-//        {
-//          "code": 3,
-//          "name": "Leave\nHistory",
-//          "cardColor": cardColors[2],
-//          "iconColor": iconColors[2],
-//          "icon": menuIcons[2],
-//        },
-//        {
-//          "code": 4,
-//          "name": "Pay Slip",
-//          "cardColor": cardColors[3],
-//          "iconColor": iconColors[3],
-//          "icon": menuIcons[3],
-//        },
-//
-//     ];
