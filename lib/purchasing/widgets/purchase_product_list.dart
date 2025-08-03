@@ -136,7 +136,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
 
   void _saveAndReturn(BuildContext context) {
     if (_selectedProduct != null) {
-      Navigator.pop(context, _selectedProduct!.productName);
+      Navigator.pop(context, _selectedProduct);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select a product')),

@@ -378,4 +378,15 @@ class ProductProvider extends ChangeNotifier{
     notifyListeners();
     debugPrint('_requisationProductList ${_requisationProductList.length}');
   }
+
+  Future<bool> submitGeneralRequisation(Map<String, Object> data) async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    setLoading(true);
+    var response=await apiService.postData('api/Inventory/SavePurchaseRequisition',data);
+    setLoading(false);
+    EasyLoading.dismiss();
+    debugPrint('Return Response : ${response.toString()}');
+
+    return true;
+    }
 }
