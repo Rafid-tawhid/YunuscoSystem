@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/purchasing/widgets/purchase_product_list.dart';
+import 'package:yunusco_group/utils/colors.dart';
+
+import '../utils/constants.dart';
 
 class PurchaseRequisitionScreen extends StatefulWidget {
   @override
@@ -12,22 +16,22 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
   final ScrollController _scrollController = ScrollController();
 
   // Dropdown values
-  String? _selectedDepartment = 'MIS';
-  String? _selectedDivision = 'Garment';
-  final List<String> _departments = ['MIS', 'HR', 'Finance', 'Production'];
-  final List<String> _divisions = ['Garment', 'Knitting', 'Dyeing', 'Printing'];
+  Map<String, dynamic>? _selectedDepartment;
+  Map<String, dynamic>? _selectedDivision;
+  final List<Map<String, dynamic>> _divisions = [
+    {"id": 1, "name": "Garments"},
+    {"id": 2, "name": "Accessories"}
+  ];
 
   // Form controllers
-  final TextEditingController _employeeController = TextEditingController(text: "A.F.M Sadegul Amin");
+  final TextEditingController _employeeController = TextEditingController(text: DashboardHelpers. currentUser!.userName);
   final TextEditingController _requiredDateController = TextEditingController(text: "02-Aug-2025");
-
-  // Item controllers
-  TextEditingController _materialNameController = TextEditingController();
-  TextEditingController _materialDescController = TextEditingController();
-  TextEditingController _unitController = TextEditingController();
-  TextEditingController _qtyController = TextEditingController();
-  TextEditingController _brandController = TextEditingController();
-  TextEditingController _noteController = TextEditingController();
+  final TextEditingController _materialNameController = TextEditingController();
+  final TextEditingController _materialDescController = TextEditingController();
+  final TextEditingController _unitController = TextEditingController();
+  final TextEditingController _qtyController = TextEditingController();
+  final TextEditingController _brandController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,23 +48,34 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
           child: ListView(
             controller: _scrollController,
             children: [
-              Text('Requisition Details',),
+              Text('Requisition Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 16),
+
               // Division Dropdown
               _buildCompactDropdown(
                 value: _selectedDivision,
                 items: _divisions,
-                label: "Division",
-                onChanged: (value) => setState(() => _selectedDivision = value),
+                hint: 'Select Division',
+                label: "Division*",
+                validator: (value) => value == null ? 'Please select division' : null,
+                onChanged: (Map<String, dynamic>? newValue) {
+                  setState(() {
+                    _selectedDivision = newValue;
+                  });
+                },
               ),
               SizedBox(height: 12),
-
-              // Department Dropdown
               _buildCompactDropdown(
                 value: _selectedDepartment,
-                items: _departments,
-                label: "Department",
-                onChanged: (value) => setState(() => _selectedDepartment = value),
+                items: allDepartmentList,
+                hint: 'Select Department',
+                label: "Department*",
+                validator: (value) => value == null ? 'Please select department' : null,
+                onChanged: (Map<String, dynamic>? newValue) {
+                  setState(() {
+                    _selectedDepartment = newValue;
+                  });
+                },
               ),
               SizedBox(height: 12),
 
@@ -68,10 +83,11 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               TextFormField(
                 controller: _employeeController,
                 decoration: InputDecoration(
-                  labelText: "Employee Name",
+                  labelText: "Employee Name*",
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 ),
+                validator: (value) => value?.isEmpty ?? true ? 'Employee name is required' : null,
               ),
               SizedBox(height: 12),
 
@@ -79,7 +95,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               TextFormField(
                 controller: _requiredDateController,
                 decoration: InputDecoration(
-                  labelText: "Required Date",
+                  labelText: "Required Date*",
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                   suffixIcon: IconButton(
@@ -87,31 +103,37 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
                     onPressed: () => _selectDate(context),
                   ),
                 ),
+                validator: (value) => value?.isEmpty ?? true ? 'Required date is needed' : null,
+                readOnly: true,
               ),
               SizedBox(height: 24),
 
               Divider(),
               SizedBox(height: 8),
 
-              Text('Add Items',),
+              Text('Add Items', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 16),
 
               // Material Name
-              TextFormField(
-                controller: _materialNameController,
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductSelectionScreen())).then((value){
-
-                    debugPrint('RETURN BACK $value');
-                    setState(() {
-                      _materialNameController.text=value;
-                    });
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductSelectionScreen())).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        _materialNameController.text = value;
+                      });
+                    }
                   });
                 },
-                decoration: InputDecoration(
-                  labelText: "Product Name*",
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                child: TextFormField(
+                  controller: _materialNameController,
+                  enabled: false,
+                  decoration: InputDecoration(
+                    labelText: "Product Name*",
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  ),
+                  validator: (value) => value?.isEmpty ?? true ? 'Please select a product' : null,
                 ),
               ),
               SizedBox(height: 12),
@@ -119,7 +141,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               // Description
               TextFormField(
                 controller: _materialDescController,
-                maxLines: 6,
+                maxLines: 3,
                 decoration: InputDecoration(
                   labelText: "Description",
                   border: OutlineInputBorder(),
@@ -128,34 +150,20 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               ),
               SizedBox(height: 12),
 
-              Row(
-                children: [
-                  // Unit
-                  Expanded(
-                    child: TextFormField(
-                      controller: _unitController,
-                      decoration: InputDecoration(
-                        labelText: "Unit",
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-
-                  // Quantity
-                  Expanded(
-                    child: TextFormField(
-                      controller: _qtyController,
-                      decoration: InputDecoration(
-                        labelText: "Quantity*",
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
+              // Quantity
+              TextFormField(
+                controller: _qtyController,
+                decoration: InputDecoration(
+                  labelText: "Quantity*",
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Quantity is required';
+                  if (double.tryParse(value!) == null) return 'Enter valid number';
+                  return null;
+                },
               ),
               SizedBox(height: 12),
 
@@ -184,28 +192,29 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
               ElevatedButton(
                 onPressed: _addItem,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: myColors.green,
                   minimumSize: Size(double.infinity, 48),
                 ),
-                child: Text("Add Item"),
+                child: Text("Add Item", style: TextStyle(color: Colors.white)),
               ),
               SizedBox(height: 24),
 
               if (items.isNotEmpty) ...[
                 Divider(),
                 SizedBox(height: 8),
-                Text('Added Items (${items.length})', style: Theme.of(context).textTheme.headlineMedium),
+                Text('Added Items (${items.length})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(height: 12),
-                ...items.map((item) => _buildItemCard(item)).toList(),
+                ...items.map((item) => _buildItemCard(item)),
                 SizedBox(height: 16),
               ],
 
               ElevatedButton(
                 onPressed: _saveRequisition,
-                child: Text("Submit Requisition"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: myColors.primaryColor,
                   minimumSize: Size(double.infinity, 48),
                 ),
+                child: Text("Submit Requisition", style: TextStyle(color: Colors.white)),
               ),
               SizedBox(height: 24),
             ],
@@ -216,31 +225,44 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
   }
 
   Widget _buildCompactDropdown({
-    required String? value,
-    required List<String> items,
+    required Map<String, dynamic>? value,
+    required List<Map<String, dynamic>> items,
     required String label,
-    required Function(String?) onChanged,
+    required String hint,
+    required String? Function(Map<String, dynamic>?) validator,
+    required Function(Map<String, dynamic>?) onChanged,
   }) {
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          isDense: true,
-          items: items.map((String value) {
-            return DropdownMenuItem<String>(
+    return FormField<Map<String, dynamic>>(
+      validator: validator,
+      builder: (formFieldState) {
+        return InputDecorator(
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            errorText: formFieldState.errorText,
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<Map<String, dynamic>>(
               value: value,
-              child: Text(value, style: TextStyle(fontSize: 14)),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ),
+              isExpanded: true,
+              isDense: true,
+              hint: Text(hint),
+              alignment: Alignment.bottomLeft,
+              items: items.map((item) {
+                return DropdownMenuItem<Map<String, dynamic>>(
+                  value: item,
+                  child: Text(item['name'].toString(), style: TextStyle(fontSize: 14)),
+                );
+              }).toList(),
+              onChanged: (value) {
+                onChanged(value);
+                formFieldState.didChange(value);
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -262,19 +284,12 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 6),
             if (item['materialDesc']?.isNotEmpty ?? false)
               Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Text(item['materialDesc']),
               ),
-            Row(
-              children: [
-                Text("Qty: ${item['qty']}"),
-                SizedBox(width: 16),
-                if (item['unit']?.isNotEmpty ?? false) Text("Unit: ${item['unit']}"),
-              ],
-            ),
+            Text("Qty: ${item['qty']}"),
             if (item['brand']?.isNotEmpty ?? false)
               Padding(
                 padding: EdgeInsets.only(top: 4),
@@ -290,42 +305,39 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) {
       setState(() {
-        _requiredDateController.text = "${picked.day}-${picked.month}-${picked.year}";
+        _requiredDateController.text = "${picked.day}-${_getMonthName(picked.month)}-${picked.year}";
       });
     }
   }
 
+  String _getMonthName(int month) {
+    return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month - 1];
+  }
+
   void _addItem() {
-    if (_materialNameController.text.isEmpty || _qtyController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please fill required fields (marked with *)")),
-      );
-      return;
-    }
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() {
+        items.add({
+          'materialName': _materialNameController.text,
+          'materialDesc': _materialDescController.text,
+          'qty': _qtyController.text,
+          'brand': _brandController.text,
+          'note': _noteController.text,
+        });
 
-    setState(() {
-      items.add({
-        'materialName': _materialNameController.text,
-        'materialDesc': _materialDescController.text,
-        'unit': _unitController.text,
-        'qty': _qtyController.text,
-        'brand': _brandController.text,
-        'note': _noteController.text,
+        // Clear fields after adding
+        _materialNameController.clear();
+        _materialDescController.clear();
+        _qtyController.clear();
+        _brandController.clear();
+        _noteController.clear();
       });
-
-      // Clear fields after adding
-      _materialNameController.clear();
-      _materialDescController.clear();
-      _unitController.clear();
-      _qtyController.clear();
-      _brandController.clear();
-      _noteController.clear();
-    });
+    }
   }
 
   void _removeItem(Map<String, dynamic> item) {
@@ -335,6 +347,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
   }
 
   void _saveRequisition() {
+
     if (items.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please add at least one item")),
@@ -343,14 +356,15 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
     }
 
     final requisitionData = {
+      'division': _selectedDivision,
       'department': _selectedDepartment,
       'employeeName': _employeeController.text,
-      'division': _selectedDivision,
       'requiredDate': _requiredDateController.text,
       'items': items,
     };
 
-    print(requisitionData); // For debugging
+    // Here you would typically send the data to your backend
+    debugPrint('Requisition Data: $requisitionData');
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -367,7 +381,6 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
     _requiredDateController.dispose();
     _materialNameController.dispose();
     _materialDescController.dispose();
-    _unitController.dispose();
     _qtyController.dispose();
     _brandController.dispose();
     _noteController.dispose();
