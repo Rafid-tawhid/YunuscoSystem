@@ -10,6 +10,7 @@ import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
 import '../models/purchase_requisation_list_model.dart';
 import '../models/requisation_products_model.dart';
+import '../models/requisition_details_model.dart';
 import '../models/stylewise_efficiency_model.dart';
 
 class ProductProvider extends ChangeNotifier{
@@ -411,5 +412,26 @@ class ProductProvider extends ChangeNotifier{
     notifyListeners();
     debugPrint('_requisitions ${_requisitions.length}');
     notifyListeners();
+  }
+
+  List<RequisitionDetailsModel> requisationProductDetails=[];
+
+  Future<bool> getRequisationProductDetails(String? purchaseRequisitionCode) async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    var data=await apiService.getData('api/Inventory/SingleGenPurReqMaster&Detail?Code=$purchaseRequisitionCode');
+    EasyLoading.dismiss();
+    if(data!=null){
+    requisationProductDetails.clear();
+    for(var i in data['returnvalue']){
+    requisationProductDetails.add(RequisitionDetailsModel.fromJson(i));
+    }
+      notifyListeners();
+
+      debugPrint('requisationProductDetails ${requisationProductDetails.length}');
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }

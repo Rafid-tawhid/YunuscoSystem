@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/purchasing/widgets/purchase_product_details.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
 import '../models/purchase_requisation_list_model.dart';
@@ -106,9 +107,13 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
       elevation: 4,
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () {
+        onTap: () async {
           // Navigate to detail screen
-          _showRequisitionDetails(requisition);
+          var pp=context.read<ProductProvider>();
+          var res=await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
+          if(res){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>RequisitionDetailsScreen(requisitions: pp.requisationProductDetails)));
+          }
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -166,57 +171,6 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
     );
   }
 
-  void _showRequisitionDetails(PurchaseRequisationListModel requisition) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              Text(
-                requisition.purchaseRequisitionCode ?? 'No Code',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildDetailItem('Created By', requisition.userName ?? 'Unknown'),
-              if(requisition.department!=null) _buildDetailItem('Department','${requisition.department}'),
-              _buildDetailItem('Product Type', requisition.productType ?? 'No Product Type'),
-              _buildDetailItem('Created Date', DashboardHelpers.convertDateTime(requisition.createdDate??'') ?? 'No Date'),
-              if(requisition.approvalFieldCode!=null) _buildDetailItem('Approval Code', requisition.approvalFieldCode?.toString() ?? 'No Approval Code'),
-              if (requisition.remarks?.isNotEmpty == true) _buildDetailItem('Remarks', requisition.remarks ?? 'No Remarks'),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   Widget _buildDetailItem(String label, String value) {
     return Padding(
