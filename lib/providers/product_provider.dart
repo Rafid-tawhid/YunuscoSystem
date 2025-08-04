@@ -8,6 +8,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
+import '../models/purchase_requisation_list_model.dart';
 import '../models/requisation_products_model.dart';
 import '../models/stylewise_efficiency_model.dart';
 
@@ -368,7 +369,9 @@ class ProductProvider extends ChangeNotifier{
   List<RequisationProductsModel> get requisationProductList=>_requisationProductList;
 
   Future<void> getAllRequisationProduct() async{
+    setLoading(true);
     var data=await apiService.getData('api/Inventory/G&AReqProductList');
+    setLoading(false);
     if(data!=null){
       _requisationProductList.clear();
       for(var i in data['returnvalue']){
@@ -389,4 +392,24 @@ class ProductProvider extends ChangeNotifier{
 
     return true;
     }
+
+  List<PurchaseRequisationListModel> _requisitions = [];
+
+  List<PurchaseRequisationListModel> get requisitions => _requisitions;
+
+  Future<void>  getAllRequisitions() async {
+    setLoading(true);
+    var data=await apiService.getData('api/Inventory/PurchaseRequisitionList');
+    setLoading(false);
+    if(data!=null){
+      _requisitions.clear();
+      for(var i in data['returnvalue']){
+        _requisitions.add(PurchaseRequisationListModel.fromJson(i));
+      }
+      _requisitions=_requisitions.reversed.toList();
+    }
+    notifyListeners();
+    debugPrint('_requisitions ${_requisitions.length}');
+    notifyListeners();
+  }
 }

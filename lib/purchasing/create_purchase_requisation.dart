@@ -6,12 +6,12 @@ import 'package:yunusco_group/purchasing/widgets/purchase_product_list.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../models/requisation_products_model.dart';
 
-class PurchaseRequisitionScreen extends StatefulWidget {
+class CreatePurchaseRequisitionScreen extends StatefulWidget {
   @override
-  _PurchaseRequisitionScreenState createState() => _PurchaseRequisitionScreenState();
+  _CreatePurchaseRequisitionScreenState createState() => _CreatePurchaseRequisitionScreenState();
 }
 
-class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
+class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisitionScreen> {
   final _formKey = GlobalKey<FormState>();
   List<RequisationProductsModel> items = [];
 
@@ -308,6 +308,7 @@ class _PurchaseRequisitionScreenState extends State<PurchaseRequisitionScreen> {
         }));
         _clearFields();
       });
+      DashboardHelpers.showAlert(msg: 'Item Added Successfully!!');
     }
   }
 

@@ -24,7 +24,9 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
 
   @override
   void initState() {
-    getAllProducts();
+    WidgetsBinding.instance.addPostFrameCallback((v){
+      getAllProducts();
+    });
     super.initState();
   }
 
@@ -73,7 +75,8 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
             ),
         ],
       ),
-      body: _buildProductList(products),
+      body: productProvider.isLoading?Center(child: CircularProgressIndicator(),):
+      _buildProductList(products),
     );
   }
 
@@ -91,14 +94,6 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('No products found'),
-            // if (searchTerm.isNotEmpty)
-            //   ElevatedButton(
-            //     style: ElevatedButton.styleFrom(backgroundColor: myColors.green),
-            //     child: Text('Use "${_searchController.text}"',style: TextStyle(color: Colors.white),),
-            //     onPressed: () {
-            //       _saveAndReturn(context);
-            //     },
-            //   ),
           ],
         ),
       );

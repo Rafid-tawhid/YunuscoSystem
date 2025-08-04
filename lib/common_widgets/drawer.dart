@@ -15,6 +15,7 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Colors.white,
       width: MediaQuery.of(context).size.width * 0.8,
       child: ListView(
         padding: EdgeInsets.zero,
