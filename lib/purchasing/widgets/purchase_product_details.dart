@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +12,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('Requisition Details'),
         centerTitle: true,
@@ -22,77 +23,260 @@ class RequisitionDetailsScreen extends StatelessWidget {
         itemCount: requisitions.length,
         itemBuilder: (context, index) {
           final req = requisitions[index];
-          return _buildRequisitionCard(req);
+          return _buildRequisitionCard(req, context);
         },
       ),
     );
   }
 
-  Widget _buildRequisitionCard(RequisitionDetailsModel req) {
+  Widget _buildRequisitionCard(RequisitionDetailsModel req, BuildContext context) {
     return Card(
+      elevation: 2,
       color: Colors.white,
-      elevation: 4,
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: ExpansionTile(
-        title: Text(
-          req.product ?? 'No Product Name',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Text(
-          'Req #${req.requisitionCode ?? 'N/A'} • ${_formatDate(req.requisitionDate)}',
-          style: const TextStyle(color: Colors.grey),
-        ),
-        leading: req.imagePathString != null
-            ? CircleAvatar(
-          backgroundImage: NetworkImage(req.imagePathString!),
-          radius: 24,
-        )
-            : const CircleAvatar(
-          child: Icon(Icons.inventory),
-          radius: 24,
-        ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow('Employee', req.employeeName),
-                _buildDetailRow('Department', req.department),
-                _buildDetailRow('Section', req.section),
-                _buildDetailRow('Product Description', req.productDescription?.toString()),
-                _buildDetailRow('Unit', '${req.unit} (${req.unitId})'),
-                const Divider(),
-                _buildQuantityRow('Requested', req.actualReqQty),
-                _buildQuantityRow('Approved', req.approvedQty),
-                _buildQuantityRow('In Stock', req.iNHandQty),
-                const Divider(),
-                _buildDetailRow('Required By', _formatDate(req.requiredDate)),
-                _buildDetailRow('Approved By', req.approvedBy),
-                _buildDetailRow('Approval Type', req.approvalType),
-                if (req.note?.isNotEmpty == true) ...[
-                  const Divider(),
-                  _buildDetailRow('Notes', req.note, isImportant: true),
-                ],
-                const SizedBox(height: 8),
-                _buildLastPurchaseInfo(req),
+                // Image with validation
+                _buildProductImage(req),
+
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        req.product ?? 'No Product Name',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Req #${req.requisitionCode ?? 'N/A'} • ${_formatDate(req.requisitionDate)}',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Status Chip
+                // if (req.status != null)
+                //   Container(
+                //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                //     decoration: BoxDecoration(
+                //       color: _getStatusColor(req.status),
+                //       borderRadius: BorderRadius.circular(12),
+                //     ),
+                //     child: Text(
+                //       req.status!,
+                //       style: const TextStyle(
+                //         color: Colors.white,
+                //         fontSize: 12,
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
+
+            const SizedBox(height: 16),
+
+            // Details Section
+            _buildDetailSection(req),
+
+            const SizedBox(height: 8),
+
+            // Quantity Summary
+            _buildQuantitySummary(req),
+
+            const SizedBox(height: 16),
+
+            // Last Purchase Info
+            _buildLastPurchaseInfo(req),
+
+            const SizedBox(height: 8),
+
+            // Notes if available
+            if (req.note?.isNotEmpty == true)
+              _buildNotesSection(req),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductImage(RequisitionDetailsModel req) {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[200],
+      ),
+      child: req.imagePathString != null
+          ? ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          imageUrl: req.imagePathString!,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
           ),
+          errorWidget: (context, url, error) => const Icon(Icons.inventory, size: 30),
+        ),
+      )
+          : const Center(
+        child: Icon(Icons.inventory, size: 30),
+      ),
+    );
+  }
+
+  Widget _buildDetailSection(RequisitionDetailsModel req) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDetailRow('Employee', req.employeeName),
+        _buildDetailRow('Department', req.department),
+        _buildDetailRow('Section', req.section),
+        _buildDetailRow('Product Description', req.productDescription?.toString()),
+        _buildDetailRow('Unit', '${req.unit} (${req.unitId})'),
+        _buildDetailRow('Required By', _formatDate(req.requiredDate)),
+        _buildDetailRow('Approved By', req.approvedBy),
+        _buildDetailRow('Approval Type', req.approvalType),
+      ],
+    );
+  }
+
+  Widget _buildQuantitySummary(RequisitionDetailsModel req) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildQuantityPill('Requested', req.actualReqQty, Colors.orange),
+          _buildQuantityPill('Approved', req.approvedQty, Colors.green),
+          _buildQuantityPill('In Stock', req.iNHandQty,
+              req.iNHandQty != null && req.iNHandQty! < 10 ? Colors.red : Colors.blue),
         ],
       ),
     );
   }
 
-  Widget _buildDetailRow(String label, String? value, {bool isImportant = false}) {
+  Widget _buildQuantityPill(String label, num? value, Color color) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            value?.toString() ?? '0',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLastPurchaseInfo(RequisitionDetailsModel req) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'LAST PURCHASE INFO',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            fontSize: 12,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              _buildPurchaseDetailRow('Date', _formatDate(req.lastPurchaseDate)),
+              _buildPurchaseDetailRow('Supplier', req.supplierName),
+              _buildPurchaseDetailRow('Rate', req.lastPurchaseRate?.toStringAsFixed(2)),
+              _buildPurchaseDetailRow('Total', '\$${req.totalPurchaseAmount?.toStringAsFixed(2)}'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotesSection(RequisitionDetailsModel req) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'NOTES',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            fontSize: 12,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.amber[50],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            req.note!,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String? value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -102,7 +286,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
               label,
               style: TextStyle(
                 color: Colors.grey[600],
-                fontWeight: isImportant ? FontWeight.bold : FontWeight.normal,
+                fontSize: 13,
               ),
             ),
           ),
@@ -110,8 +294,8 @@ class RequisitionDetailsScreen extends StatelessWidget {
           Expanded(
             child: Text(
               value ?? 'N/A',
-              style: TextStyle(
-                fontWeight: isImportant ? FontWeight.bold : FontWeight.normal,
+              style: const TextStyle(
+                fontSize: 13,
               ),
             ),
           ),
@@ -120,31 +304,27 @@ class RequisitionDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuantityRow(String label, num? value) {
+  Widget _buildPurchaseDetailRow(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           SizedBox(
-            width: 120,
+            width: 80,
             child: Text(
               label,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13,
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getQuantityColor(label, value),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              value?.toString() ?? '0',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            value ?? 'N/A',
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -152,45 +332,19 @@ class RequisitionDetailsScreen extends StatelessWidget {
     );
   }
 
-  Color _getQuantityColor(String label, num? value) {
-    if (value == null || value == 0) return Colors.grey;
-
-    switch (label) {
-      case 'Requested':
-        return Colors.orange;
-      case 'Approved':
+  Color _getStatusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'approved':
         return Colors.green;
-      case 'In Stock':
-        return value < 10 ? Colors.red : Colors.blue;
-      default:
+      case 'pending':
+        return Colors.orange;
+      case 'rejected':
+        return Colors.red;
+      case 'completed':
         return Colors.blue;
+      default:
+        return Colors.grey;
     }
-  }
-
-  Widget _buildLastPurchaseInfo(RequisitionDetailsModel req) {
-    return Card(
-      color: Colors.grey[100],
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Last Purchase Info',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildDetailRow('Date', _formatDate(req.lastPurchaseDate)),
-            _buildDetailRow('Supplier', req.supplierName),
-            _buildDetailRow('Rate', req.lastPurchaseRate?.toStringAsFixed(2)),
-            _buildDetailRow('Total', '\$${req.totalPurchaseAmount?.toStringAsFixed(2)}'),
-          ],
-        ),
-      ),
-    );
   }
 
   String _formatDate(String? dateString) {

@@ -35,8 +35,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   provider: ^6.0.5           # For state management
-  geolocator: ^11.0.0        # For location tracking
-  web_socket_channel: ^2.4.0 # For real-time updates
   http: ^1.1.0               # For API calls
   shared_preferences: ^2.2.0 # For local storage
   http_interceptor: ^2.0.0
@@ -52,7 +50,6 @@ dependencies:
   firebase_messaging: ^15.2.5
   app_settings: ^6.1.1
   flutter_local_notifications: ^17.2.2
-  shimmer: ^3.0.0
   simple_month_year_picker: ^1.1.0
   pdf: ^3.10.0
   printing: ^5.9.1
@@ -63,9 +60,8 @@ dependencies:
   file_picker: ^10.2.0
   cloud_firestore: ^5.6.9
   firebase_auth: ^5.6.0
-  google_sign_in: ^7.0.0
-  signature: ^5.4.0
-  flutter_fingerprint_reconization: ^0.0.1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
 
 
 #  googleapis_auth: ^2.0.0
