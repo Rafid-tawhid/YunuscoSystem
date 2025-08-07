@@ -13,13 +13,14 @@ import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../utils/colors.dart';
+import 'garments_requisation_screen.dart';
 import 'get_all_style_screen.dart';
 import 'widgets/buyers_screen.dart';
 
 class ProductHomeScreen extends StatelessWidget {
   ProductHomeScreen({super.key});
 
-  final List<String> _list=['Production\nSummary','Production\nEfficiency','Production\nMonthly/Yearly','Buyers','Stylewise\nEfficiency'];
+  final List<String> _list=['Production\nSummary','Production\nEfficiency','Production\nMonthly/Yearly','Buyers','Stylewise\nEfficiency','Garments\nRequisition'];
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,8 @@ class ProductHomeScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => const ProductionSummaryScreen()),
                   );
-                } else if (index == 3) {
+                }
+                else if (index == 3) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) =>  BuyersScreen()),
@@ -94,6 +96,13 @@ class ProductHomeScreen extends StatelessWidget {
                   }
 
 
+                }
+                else if (index == 5) {
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>  GarmentsRequisitionScreen()),
+                    );
                 }
 
               },
@@ -179,6 +188,10 @@ class ProductHomeScreen extends StatelessWidget {
     if(index==4)
     {
       return Icons.style_sharp;
+    }
+    if(index==5)
+    {
+      return Icons.security_update_good;
     }
   }
 

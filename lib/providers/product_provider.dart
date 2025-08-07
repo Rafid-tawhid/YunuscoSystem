@@ -8,6 +8,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
+import '../models/production_goods_model.dart';
 import '../models/purchase_requisation_list_model.dart';
 import '../models/requisation_products_model.dart';
 import '../models/requisition_details_model.dart';
@@ -433,5 +434,55 @@ class ProductProvider extends ChangeNotifier{
     else {
       return false;
     }
+  }
+
+  //NEW
+  List<ProductionGoodsModel> _requisitionList = [];
+  List<ProductionGoodsModel> _filteredRequisitionList = [];
+  String _searchQuery = '';
+
+  List<ProductionGoodsModel> get requisitionList => _requisitionList;
+  List<ProductionGoodsModel> get filteredRequisitionList => _filteredRequisitionList;
+
+  Future<void> fetchRequisitionList({String? fromDate, String? toDate}) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      // Replace with your actual API call
+      final data = await apiService.getData('api/Inventory/ProductionGoodsRequisition?FromDate=$fromDate&ToDate=$toDate');
+
+      if(data!=null){
+        for(var i in data['returnvalue']){
+          _requisitionList.add(ProductionGoodsModel.fromJson(i));
+        }
+      }
+
+      debugPrint('_requisitionList ${_requisitionList.length}');
+
+      _filteredRequisitionList = _applyFilters(_requisitionList);
+    } catch (e) {
+      // Handle error
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void searchRequisitions(String query) {
+    _searchQuery = query.toLowerCase();
+    _filteredRequisitionList = _applyFilters(_requisitionList);
+    notifyListeners();
+  }
+
+  List<ProductionGoodsModel> _applyFilters(List<ProductionGoodsModel> list) {
+    return list.where((req) {
+      return _searchQuery.isEmpty ||
+          (req.requisitionCode?.toLowerCase().contains(_searchQuery) == true) ||
+          (req.buyerOrderCode?.toLowerCase().contains(_searchQuery) == true) ||
+          (req.buyerPo?.toLowerCase().contains(_searchQuery) == true) ||
+          (req.styleCode?.toLowerCase().contains(_searchQuery) == true) ||
+          (req.bomcode?.toLowerCase().contains(_searchQuery) == true);
+    }).toList();
   }
 }
