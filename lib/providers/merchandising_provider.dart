@@ -8,6 +8,7 @@ import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dar
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../models/bom_model.dart';
 import '../models/buyer_order_details_model.dart';
 import '../models/costing_approval_list_model.dart';
 import '../models/work_order_model.dart';
@@ -248,5 +249,57 @@ class MerchandisingProvider extends ChangeNotifier{
 
   }
 
+  //CHANGE 7 AUG
+
+  List<BomModel> _bomList = [];
+  List<BomModel> _filteredBomList = [];
+  bool _showSubmittedOnly = false;
+  bool _showLockedOnly = false;
+  String _searchQuery = '';
+
+  List<BomModel> get bomList => _bomList;
+  List<BomModel> get filteredBomList => _filteredBomList;
+  bool get showSubmittedOnly => _showSubmittedOnly;
+  bool get showLockedOnly => _showLockedOnly;
+
+  Future<void> fetchBomList({required String fromDate, required String toDate}) async {
+
+    setLoading(true);
+    try {
+      // Replace with your actual API call
+      final response = await apiService.getData('api/Merchandising/BomListDateRange?FromDate=$fromDate&ToDate=$toDate');
+
+      _bomList.clear();
+      for (var i in response['returnvalue']) {
+        _bomList.add(BomModel.fromJson(i));
+      }
+      debugPrint('_bomList ${_bomList.length}');
+      _filteredBomList = _applyFilters(_bomList);
+    } catch (e) {
+      // Handle error
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  void searchBoms(String query) {
+    _searchQuery = query.toLowerCase();
+    _filteredBomList = _applyFilters(_bomList);
+    notifyListeners();
+  }
+
+  List<BomModel> _applyFilters(List<BomModel> list) {
+    return list.where((bom) {
+      final matchesSearch = _searchQuery.isEmpty ||
+          (bom.bOMCode?.toLowerCase().contains(_searchQuery) == true) ||
+          (bom.styleName?.toLowerCase().contains(_searchQuery) == true) ||
+          (bom.buyer?.toLowerCase().contains(_searchQuery) == true);
+
+      final matchesSubmitted = !_showSubmittedOnly || bom.isSubmit == true;
+      final matchesLocked = !_showLockedOnly || bom.isLock == true;
+
+      return matchesSearch && matchesSubmitted && matchesLocked;
+    }).toList();
+  }
 
 }

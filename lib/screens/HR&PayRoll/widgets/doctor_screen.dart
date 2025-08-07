@@ -29,7 +29,7 @@ class _DoctorApprovalScreenState extends State<DoctorApprovalScreen> {
 
   String _generateRandomPasscode() {
     final random = Random();
-    return '${random.nextInt(9)}${random.nextInt(9)}${random.nextInt(9)}${random.nextInt(9)}';
+    return 'YBDL-${random.nextInt(9)}${random.nextInt(9)}${random.nextInt(9)}${random.nextInt(9)}';
   }
 
   Future<void> _approveRequest(
@@ -66,8 +66,6 @@ class _DoctorApprovalScreenState extends State<DoctorApprovalScreen> {
 
       // Update the leave token document
       doc.set(data);
-
-
 
       // Show success
       ScaffoldMessenger.of(context).showSnackBar(

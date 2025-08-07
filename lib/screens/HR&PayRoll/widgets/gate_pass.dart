@@ -10,6 +10,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 
 class GatePassDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> gatePassData;
@@ -53,7 +54,7 @@ class GatePassDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     Text(
-                      gatePassData['passcode'] ?? 'N/A',
+                      gatePassData['gatePassCode'] ?? 'N/A',
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -80,7 +81,7 @@ class GatePassDetailsScreen extends StatelessWidget {
             _buildSectionCard(
               title: 'PASS VALIDITY',
               children: [
-                _buildDetailRow('Valid Until', gatePassData['validUntil'].toString()),
+                _buildDetailRow('Valid Until', DashboardHelpers.convertDateTime2(DateTime.now())),
                 _buildDetailRow('Status', gatePassData['status']),
                 _buildDetailRow('Used', gatePassData['used'] == true ? 'Yes' : 'No'),
               ],
@@ -181,14 +182,9 @@ class GatePassDetailsScreen extends StatelessWidget {
                     style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 10),
                 _buildPdfDetailRow('Employee ID:', data['employeeId']?.toString() ?? 'N/A'),
-                _buildPdfDetailRow('Employee Name:', data['employeeName']?.toString() ?? 'N/A'),
-                _buildPdfDetailRow('Passcode:', data['passcode']?.toString() ?? 'N/A'),
-                _buildPdfDetailRow('Valid Until:',
-                    data['validUntil'] is Timestamp
-                        ? DateFormat('MMM dd, yyyy').format((data['validUntil'] as Timestamp).toDate())
-                        : data['validUntil'] is DateTime
-                        ? DateFormat('MMM dd, yyyy').format(data['validUntil'] as DateTime)
-                        : 'N/A'),
+               // _buildPdfDetailRow('Employee Name:', data['employeeName']?.toString() ?? 'N/A'),
+                _buildPdfDetailRow('Passcode:', data['gatePassCode']?.toString() ?? 'N/A'),
+                _buildPdfDetailRow('Valid Until:', DashboardHelpers.convertDateTime2(DateTime.now()),),
                 pw.SizedBox(height: 20),
                 pw.Text('Issued by: ${data['approvedBy'] ?? 'System'}'),
                 pw.Text('Issued on: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}'),

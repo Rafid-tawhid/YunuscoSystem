@@ -7,7 +7,7 @@ import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/screens/Merchandising/merchandisingSummaryScreen.dart';
 import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/report_screen.dart';
-import 'package:yunusco_group/screens/Merchandising/widgets/booking_Screen.dart';
+import 'package:yunusco_group/screens/Merchandising/bom_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_quantity.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_value.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_value.dart';
@@ -87,10 +87,10 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
           ),
           _buildDashboardCard(
             context,
-            title: "Booking",
+            title: "BOM",
             icon: Icons.calendar_today,
             color: Colors.green[300]!,
-            destination: BookingScreen(), // Replace with your actual screen
+            destination: BomListScreen(), // Replace with your actual screen
           ),
 
           _buildDashboardCard(
