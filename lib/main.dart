@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/account_provider.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
@@ -45,6 +46,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => PlanningProvider()),
     ChangeNotifierProvider(create: (_) => HrProvider()),
     ChangeNotifierProvider(create: (_) => NotificationProvider()),
+    ChangeNotifierProvider(create: (_) => AccountProvider()),
   ], child: MyApp()));
 }
 
