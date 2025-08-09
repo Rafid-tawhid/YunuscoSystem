@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 
+import '../../models/members_model.dart';
+
 class PersonSelectionScreen extends StatefulWidget {
-  const PersonSelectionScreen({super.key});
+  bool? forSomeOnesVehicleReq;
+  PersonSelectionScreen({this.forSomeOnesVehicleReq});
 
   @override
   State<PersonSelectionScreen> createState() => _PersonSelectionScreenState();
@@ -13,6 +16,10 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
   List<dynamic> _filteredList = [];
+  MembersModel? _lastSelectMember;
+
+
+
 
   @override
   void initState() {
@@ -101,6 +108,10 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
                       if (originalIndex != -1) {
                         provider.toggleSelection(originalIndex);
                       }
+                      if(widget.forSomeOnesVehicleReq==true){
+                        _lastSelectMember=provider.member_list.lastWhere((e)=>e.isSelected=true);
+                      }
+
                     },
                     secondary: CircleAvatar(
                       child: Text(person.fullName.toString().substring(0, 1)),
@@ -117,7 +128,7 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
           borderSide: BorderSide(color: Colors.green.shade300),
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context,_lastSelectMember);
         },
         tooltip: 'Save',
         child: const Icon(Icons.check_circle, color: Colors.white),

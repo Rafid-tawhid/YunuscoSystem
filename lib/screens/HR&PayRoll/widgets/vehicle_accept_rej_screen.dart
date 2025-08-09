@@ -252,7 +252,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
         "DriverMobileNo": _driverPhoneController.text.trim()
       };
       var res = await hp.acceptVehicleRequisation(data);
-      debugPrint('RETURN RES ${res}');
+      debugPrint('RETURN RES $res');
       if (res) {
         await hp.getRequestedCarList();
         DashboardHelpers.showAlert(msg:'Vehicle requisition accepted successfully!!');

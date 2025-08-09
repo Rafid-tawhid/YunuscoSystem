@@ -28,6 +28,8 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
   final _durationController = TextEditingController();
   final _travelStartFromController = TextEditingController();
   final _destinationController = TextEditingController();
+  String? requestedFor=DashboardHelpers.currentUser!.userName;
+  String? requestedForId=DashboardHelpers.currentUser!.iDnum;
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -86,7 +88,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       members.add(e.idCardNo ?? '');
     }
     return {
-      "IdCardNo": DashboardHelpers.currentUser!.iDnum,
+      "IdCardNo": requestedForId,
       "Distance": _distanceController.text,
       "CarryGoods": _carryGoodsController.text,
       "Purpose": _purposeController.text,
@@ -97,9 +99,11 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       "RequiredTime": getTimeDate(_selectedTime),
       "Duration": _durationController.text,
       "EmployeeId": members.join(", "),
+      "requestedForId": "",
       "VehicletypeId": _selectedVehicleType ?? 1,
       "Status": 1, //pending
-      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd')
+      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd'),
+
     };
   }
 
@@ -150,19 +154,27 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                height: 12,
+
+              Row(
+                children: [
+                  Text('Requested by: $requestedForId'),
+                  Spacer(),
+                  IconButton(onPressed: (){
+                    Navigator.push(context, CupertinoPageRoute(builder: (context) => PersonSelectionScreen(forSomeOnesVehicleReq: true,))).then((persons) {
+                      if (persons != null) {
+
+                      }
+                    });
+                  }, icon: Icon(Icons.alternate_email))
+                ],
               ),
-              Align(alignment: Alignment.centerRight, child: Text('Requested by: ${DashboardHelpers.currentUser!.userName}')),
-              SizedBox(
-                height: 12,
-              ),
+
               // Vehicle Type Dropdown
               DropdownButtonFormField<int>(
                 value: _selectedVehicleType,

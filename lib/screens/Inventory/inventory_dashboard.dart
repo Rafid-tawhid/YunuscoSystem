@@ -1,36 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:provider/provider.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
-import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/screens/Products/production_dashboard.dart';
-import 'package:yunusco_group/screens/Products/production_efficiency_screen.dart';
-import 'package:yunusco_group/screens/Products/style_wise_efficiency_screen.dart';
-import 'package:yunusco_group/screens/Products/widgets/production_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
+import '../Products/garments_requisation_screen.dart';
+import 'inventory_screen.dart';
 
-import '../../utils/colors.dart';
-import 'garments_requisation_screen.dart';
-import 'get_all_style_screen.dart';
-import 'widgets/buyers_screen.dart';
 
-class ProductHomeScreen extends StatelessWidget {
-  ProductHomeScreen({super.key});
+class InventoryHomeScreen extends StatelessWidget {
+  InventoryHomeScreen({super.key});
 
-  final List<String> _list=['Production\nSummary','Production\nEfficiency','Production\nMonthly/Yearly','Buyers','Stylewise\nEfficiency'];
+  final List<String> _list=['Inventory\nSummary','Garments\nRequisition'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Production Menu',style: customTextStyle(18, Colors.white, FontWeight.w600),),
+        title:  Text('Inventory Menu',style: customTextStyle(18, Colors.white, FontWeight.w600),),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
         iconTheme: IconThemeData(
-          color: Colors.white
+            color: Colors.white
         ),
       ),
       body: Padding(
@@ -50,52 +40,18 @@ class ProductHomeScreen extends StatelessWidget {
                 HapticFeedback.lightImpact();
 
                 if (index == 0) {
-                  var pp=context.read<ProductProvider>();
-                  await pp.getAllProductionDashboard();
-                  if(pp.productionDashboardModel!=null){
+
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>  ProductionDashboard()),
+                      MaterialPageRoute(builder: (context) =>  InventoryStockScreen()),
                     );
-                  }
                 }
                 if (index == 1) {
 
-                  var pp=context.read<ProductProvider>();
-                  var currentDate=convertDate(DateTime.now());
-
-                  await pp.getProductionEfficiencyReport(currentDate);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>  ProductionEfficiencyScreen()),
+                      MaterialPageRoute(builder: (context) =>  GarmentsRequisitionScreen()),
                     );
-
-                }
-                if (index == 2) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProductionSummaryScreen()),
-                  );
-                }
-                else if (index == 3) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  BuyersScreen()),
-                  );
-                }
-                else if (index == 4) {
-                  var pp=context.read<ProductProvider>();
-
-                  await pp.getAllStyleData();
-
-                  if(pp.buyerStyleList.isNotEmpty){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>  StyleSelectionScreen()),
-                    );
-                  }
-
-
                 }
 
 
@@ -168,9 +124,9 @@ class ProductHomeScreen extends StatelessWidget {
       return Icons.assessment;
     }
     if(index==1)
-      {
-        return Icons.assured_workload;
-      }
+    {
+      return Icons.assured_workload;
+    }
     if(index==2)
     {
       return Icons.calendar_month;
@@ -190,13 +146,13 @@ class ProductHomeScreen extends StatelessWidget {
   }
 
   convertDate(DateTime date) {
-      // Get the individual components
-      String year = date.year.toString();
-      String month = date.month.toString().padLeft(2, '0'); // Ensures two digits
-      String day = date.day.toString().padLeft(2, '0'); // Ensures two digits
+    // Get the individual components
+    String year = date.year.toString();
+    String month = date.month.toString().padLeft(2, '0'); // Ensures two digits
+    String day = date.day.toString().padLeft(2, '0'); // Ensures two digits
 
-      // Combine them in YYYY-MM-DD format
-      return '$year-$month-$day';
+    // Combine them in YYYY-MM-DD format
+    return '$year-$month-$day';
 
   }
 }
