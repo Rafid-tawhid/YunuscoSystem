@@ -3,13 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:focusable_control_builder/focusable_control_builder.dart';
 import 'dart:async';
 
-void main() {
-  runApp(MaterialApp(
-    home: FactoryReportSlider(),
-    debugShowCheckedModeBanner: false,
-  ));
-}
-
 class FactoryReportSlider extends StatefulWidget {
   @override
   _FactoryReportSliderState createState() => _FactoryReportSliderState();
@@ -20,6 +13,7 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
   int _currentPage = 0;
   Timer? _timer;
   final FocusNode _mainFocusNode = FocusNode();
+  bool _isPaused = false;
 
   final List<Map<String, dynamic>> _reports = [
     {
@@ -78,8 +72,17 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
 
   void _startAutoScroll() {
     _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
-      _goToNextPage();
+      if (!_isPaused) {
+        _goToNextPage();
+      }
     });
+  }
+
+  void _togglePause() {
+    setState(() {
+      _isPaused = !_isPaused;
+    });
+    HapticFeedback.selectionClick();
   }
 
   void _handleKeyEvent(RawKeyEvent event) {
@@ -88,6 +91,9 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
         _goToNextPage();
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _goToPreviousPage();
+      } else if (event.logicalKey == LogicalKeyboardKey.select ||
+          event.logicalKey == LogicalKeyboardKey.enter) {
+        _togglePause();
       }
     }
   }
@@ -103,6 +109,7 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
       duration: Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
+    HapticFeedback.selectionClick();
   }
 
   void _goToPreviousPage() {
@@ -116,88 +123,91 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
       duration: Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
+    HapticFeedback.selectionClick();
   }
 
   Widget _buildReportCard(Map<String, dynamic> report) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
+    return Stack(
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: report['color']!.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(report['icon'], color: report['color'], size: 40),
-            ),
-            SizedBox(height: 20),
-            Text(
-              report['title'],
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
-            ),
-            SizedBox(height: 15),
-            Text(
-              report['value'],
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  report['change'].startsWith('+')
-                      ? Icons.arrow_upward
-                      : report['change'].startsWith('-')
-                      ? Icons.arrow_downward
-                      : Icons.remove,
-                  color: report['change'].startsWith('+')
-                      ? Colors.green
-                      : report['change'].startsWith('-')
-                      ? Colors.red
-                      : Colors.grey,
-                  size: 28,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: report['color']!.withOpacity(0.1),
+                  shape: BoxShape.circle,
                 ),
-                SizedBox(width: 8),
-                Text(
-                  report['change'],
-                  style: TextStyle(
-                    fontSize: 24,
+                child: Icon(report['icon'], color: report['color'], size: 40),
+              ),
+              SizedBox(height: 20),
+              Text(
+                report['title'],
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+              SizedBox(height: 15),
+              Text(
+                report['value'],
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    report['change'].startsWith('+')
+                        ? Icons.arrow_upward
+                        : report['change'].startsWith('-')
+                        ? Icons.arrow_downward
+                        : Icons.remove,
                     color: report['change'].startsWith('+')
                         ? Colors.green
                         : report['change'].startsWith('-')
                         ? Colors.red
                         : Colors.grey,
-                    fontWeight: FontWeight.w600,
+                    size: 28,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: 8),
+                  Text(
+                    report['change'],
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: report['change'].startsWith('+')
+                          ? Colors.green
+                          : report['change'].startsWith('-')
+                          ? Colors.red
+                          : Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
+
+      ],
     );
   }
 
@@ -213,8 +223,8 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.6,
+                Expanded(
+                //  height: MediaQuery.of(context).size.height * 0.6,
                   child: PageView.builder(
                     controller: _pageController,
                     itemCount: _reports.length,
@@ -226,10 +236,12 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
                     },
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(width: 10),
                     FocusableControlBuilder(
                       onPressed: _goToPreviousPage,
                       builder: (context, control) {
@@ -251,23 +263,91 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
                         );
                       },
                     ),
-                    SizedBox(width: 20),
-                    Row(
-                      children: List.generate(_reports.length, (index) {
-                        return Container(
-                          width: _currentPage == index ? 30 : 15,
-                          height: 15,
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: _currentPage == index
-                                ? Colors.blue[800]
-                                : Colors.grey[400],
-                            borderRadius: BorderRadius.circular(8),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(_reports.length, (index) {
+                              return Container(
+                                width: _currentPage == index ? 30 : 15,
+                                height: 15,
+                                margin: EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: _currentPage == index
+                                      ? Colors.blue[800]
+                                      : Colors.grey[400],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              );
+                            }),
                           ),
-                        );
-                      }),
+                          SizedBox(height: 60),
+                          FocusableControlBuilder(
+                            onPressed: _togglePause,
+                            builder: (context, control) {
+                              return AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
+                                width: 140,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: control.isFocused ? Colors.grey[200] : Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: .5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    AnimatedSwitcher(
+                                      duration: Duration(milliseconds: 150),
+                                      transitionBuilder: (child, animation) {
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: child,
+                                        );
+                                      },
+                                      child: Icon(
+                                        _isPaused ? Icons.play_arrow : Icons.pause,
+                                        key: ValueKey<bool>(_isPaused),
+                                        size: 24,
+                                        color:_isPaused?Colors.red: Colors.grey[800],
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    AnimatedSwitcher(
+                                      duration: Duration(milliseconds: 150),
+                                      child: Text(
+                                        _isPaused ? 'RESUME' : 'PAUSE',
+                                        key: ValueKey<bool>(_isPaused),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey[800],
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 10),
                     FocusableControlBuilder(
                       onPressed: _goToNextPage,
                       builder: (context, control) {
@@ -289,8 +369,10 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
                         );
                       },
                     ),
+                    SizedBox(width: 10),
                   ],
                 ),
+                SizedBox(height: 10),
               ],
             ),
           ),
