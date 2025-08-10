@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/members_model.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/requested_car_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
@@ -28,8 +31,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
   final _durationController = TextEditingController();
   final _travelStartFromController = TextEditingController();
   final _destinationController = TextEditingController();
-  String? requestedFor=DashboardHelpers.currentUser!.userName;
-  String? requestedForId=DashboardHelpers.currentUser!.iDnum;
+  MembersModel? _selectedThirdPerson;
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -88,24 +90,24 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       members.add(e.idCardNo ?? '');
     }
     return {
-      "IdCardNo": requestedForId,
+      "IdCardNo": _selectedThirdPerson==null?DashboardHelpers.currentUser!.iDnum:_selectedThirdPerson!.idCardNo,
       "Distance": _distanceController.text,
       "CarryGoods": _carryGoodsController.text,
       "Purpose": _purposeController.text,
-      "CreatedBy": DashboardHelpers.currentUser!.userId,
+      "CreatedBy": DashboardHelpers.currentUser!.iDnum,
       "DestinationTo": _destinationController.text,
       "DestinationFrom": _travelStartFromController.text,
       "RequiredDate": DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd'),
       "RequiredTime": getTimeDate(_selectedTime),
       "Duration": _durationController.text,
       "EmployeeId": members.join(", "),
-      "requestedForId": "",
+      "DepartmentName": _selectedThirdPerson==null?DashboardHelpers.currentUser!.department:_selectedThirdPerson!.departmentName,
       "VehicletypeId": _selectedVehicleType ?? 1,
       "Status": 1, //pending
       "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd'),
-
     };
   }
+  
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate() && _selectedVehicleType != null &&_selectedDate!=null&&_selectedTime!=null) {
@@ -143,7 +145,6 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
         elevation: 0,
         actions: [
           IconButton(onPressed: () async {
-            var hp=context.read<HrProvider>();
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -163,12 +164,16 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
 
               Row(
                 children: [
-                  Text('Requested by: $requestedForId'),
+                  _selectedThirdPerson!=null?Text('Requested for: ${_selectedThirdPerson!.fullName}'):
+                  Text('Requested by: ${DashboardHelpers.currentUser!.userName}'),
                   Spacer(),
                   IconButton(onPressed: (){
                     Navigator.push(context, CupertinoPageRoute(builder: (context) => PersonSelectionScreen(forSomeOnesVehicleReq: true,))).then((persons) {
                       if (persons != null) {
-
+                        debugPrint('SELECT THIRD PERSON FOR VEHICLE $persons');
+                         setState(() {
+                           _selectedThirdPerson=persons;
+                         });
                       }
                     });
                   }, icon: Icon(Icons.alternate_email))
@@ -366,20 +371,23 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
               SelectedPeopleWidget(),
               const SizedBox(height: 30),
               // Submit Button
-              ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: myColors.primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              Consumer<HrProvider>(
+                builder: (context,pro,_)=>ElevatedButton(
+                  onPressed: pro.isLoading?null: _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: myColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: pro.isLoading?CircularProgressIndicator():
+                  Text(
+                    'Submit Requisition',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
-                child: const Text(
-                  'Submit Requisition',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
+              )
             ],
           ),
         ),

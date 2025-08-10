@@ -24,7 +24,9 @@ class UserModel {
     dynamic modifier,
     dynamic modifiedDate,
     dynamic hasAuthority,
-    dynamic firebaseDeviceToken,}){
+    dynamic firebaseDeviceToken,
+    String? department, // New field added here
+  }) {
     _userRoleName = userRoleName;
     _tokenInfo = tokenInfo;
     _designation = designation;
@@ -50,6 +52,7 @@ class UserModel {
     _modifiedDate = modifiedDate;
     _hasAuthority = hasAuthority;
     _firebaseDeviceToken = firebaseDeviceToken;
+    _department = department; // Initialize new field
   }
 
   UserModel.fromJson(dynamic json) {
@@ -57,7 +60,7 @@ class UserModel {
     _tokenInfo = json['TokenInfo'];
     _designation = json['Designation'];
     _iDnum = json['IDnum'];
-    _isDepartmentHead = json['IsDepartmentHead']??false;
+    _isDepartmentHead = json['IsDepartmentHead'] ?? false;
     _userId = json['UserId'];
     _userName = json['UserName'];
     _loginName = json['LoginName'];
@@ -78,7 +81,9 @@ class UserModel {
     _modifiedDate = json['ModifiedDate'];
     _hasAuthority = json['HasAuthority'];
     _firebaseDeviceToken = json['FirebaseDeviceToken'];
+    _department = json['Department']; // Parse new field from JSON
   }
+
   String? _userRoleName;
   dynamic _tokenInfo;
   String? _designation;
@@ -104,7 +109,10 @@ class UserModel {
   dynamic _modifiedDate;
   dynamic _hasAuthority;
   dynamic _firebaseDeviceToken;
-  UserModel copyWith({  String? userRoleName,
+  String? _department; // New field declaration
+
+  UserModel copyWith({
+    String? userRoleName,
     dynamic tokenInfo,
     String? designation,
     String? iDnum,
@@ -129,32 +137,38 @@ class UserModel {
     dynamic modifiedDate,
     dynamic hasAuthority,
     dynamic firebaseDeviceToken,
-  }) => UserModel(  userRoleName: userRoleName ?? _userRoleName,
-    tokenInfo: tokenInfo ?? _tokenInfo,
-    designation: designation ?? _designation,
-    iDnum: iDnum ?? _iDnum,
-    isDepartmentHead: isDepartmentHead ?? _isDepartmentHead,
-    userId: userId ?? _userId,
-    userName: userName ?? _userName,
-    loginName: loginName ?? _loginName,
-    password: password ?? _password,
-    roleId: roleId ?? _roleId,
-    isActive: isActive ?? _isActive,
-    passwordChanged: passwordChanged ?? _passwordChanged,
-    customerCode: customerCode ?? _customerCode,
-    userEmail: userEmail ?? _userEmail,
-    lastLogin: lastLogin ?? _lastLogin,
-    rboid: rboid ?? _rboid,
-    businessUnitId: businessUnitId ?? _businessUnitId,
-    employeeId: employeeId ?? _employeeId,
-    teamId: teamId ?? _teamId,
-    creator: creator ?? _creator,
-    createDate: createDate ?? _createDate,
-    modifier: modifier ?? _modifier,
-    modifiedDate: modifiedDate ?? _modifiedDate,
-    hasAuthority: hasAuthority ?? _hasAuthority,
-    firebaseDeviceToken: firebaseDeviceToken ?? _firebaseDeviceToken,
-  );
+    String? department, // Added to copyWith
+  }) =>
+      UserModel(
+        userRoleName: userRoleName ?? _userRoleName,
+        tokenInfo: tokenInfo ?? _tokenInfo,
+        designation: designation ?? _designation,
+        iDnum: iDnum ?? _iDnum,
+        isDepartmentHead: isDepartmentHead ?? _isDepartmentHead,
+        userId: userId ?? _userId,
+        userName: userName ?? _userName,
+        loginName: loginName ?? _loginName,
+        password: password ?? _password,
+        roleId: roleId ?? _roleId,
+        isActive: isActive ?? _isActive,
+        passwordChanged: passwordChanged ?? _passwordChanged,
+        customerCode: customerCode ?? _customerCode,
+        userEmail: userEmail ?? _userEmail,
+        lastLogin: lastLogin ?? _lastLogin,
+        rboid: rboid ?? _rboid,
+        businessUnitId: businessUnitId ?? _businessUnitId,
+        employeeId: employeeId ?? _employeeId,
+        teamId: teamId ?? _teamId,
+        creator: creator ?? _creator,
+        createDate: createDate ?? _createDate,
+        modifier: modifier ?? _modifier,
+        modifiedDate: modifiedDate ?? _modifiedDate,
+        hasAuthority: hasAuthority ?? _hasAuthority,
+        firebaseDeviceToken: firebaseDeviceToken ?? _firebaseDeviceToken,
+        department: department ?? _department, // Include in copy
+      );
+
+  // Getters
   String? get userRoleName => _userRoleName;
   dynamic get tokenInfo => _tokenInfo;
   String? get designation => _designation;
@@ -180,6 +194,7 @@ class UserModel {
   dynamic get modifiedDate => _modifiedDate;
   dynamic get hasAuthority => _hasAuthority;
   dynamic get firebaseDeviceToken => _firebaseDeviceToken;
+  String? get department => _department; // New getter
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -208,9 +223,12 @@ class UserModel {
     map['ModifiedDate'] = _modifiedDate;
     map['HasAuthority'] = _hasAuthority;
     map['FirebaseDeviceToken'] = _firebaseDeviceToken;
+    map['Department'] = _department; // Include in JSON output
     return map;
   }
 
+  @override
+  String toString() {
+    return 'UserModel{... department: $_department}'; // Update toString()
+  }
 }
-
-//

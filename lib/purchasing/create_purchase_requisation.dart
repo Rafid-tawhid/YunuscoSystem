@@ -219,6 +219,7 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                     minimumSize: Size(double.infinity, 50),
                     backgroundColor:myColors.primaryColor
                   ),
+
                   child: Text("Submit Requisition",style: TextStyle(color: Colors.white),),
                 ),
             ],

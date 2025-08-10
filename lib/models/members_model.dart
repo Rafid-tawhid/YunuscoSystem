@@ -84,6 +84,6 @@ class MembersModel {
 
   @override
   String toString() {
-    return 'MembersModel{idCardNo: $_idCardNo, fullName: $_fullName, isSelected: $_isSelected}';
+    return 'MembersModel{_idCardNo: $_idCardNo, _fullName: $_fullName, _designationName: $_designationName, _departmentName: $_departmentName, _gradeId: $_gradeId, _ddlItemName: $_ddlItemName, _isSelected: $_isSelected}';
   }
 }

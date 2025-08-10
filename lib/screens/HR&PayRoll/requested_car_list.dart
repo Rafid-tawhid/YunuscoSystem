@@ -5,22 +5,21 @@ import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
 import '../../models/vehicle_model.dart';
 
-
 class VehicleRequestListScreen extends StatefulWidget {
-
-  const VehicleRequestListScreen({Key? key,}) : super(key: key);
+  const VehicleRequestListScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<VehicleRequestListScreen> createState() => _VehicleRequestListScreenState();
 }
 
 class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
-
-
   @override
   void initState() {
-
-    getAllRequestedVehicles();
+    WidgetsBinding.instance.addPostFrameCallback((e) {
+      getAllRequestedVehicles();
+    });
     super.initState();
   }
 
@@ -32,26 +31,22 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
         title: const Text('My Vehicle Requests'),
         centerTitle: true,
         elevation: 0,
-
       ),
       body: Container(
-        decoration: BoxDecoration(
-
-        ),
+        decoration: BoxDecoration(),
         child: Consumer<HrProvider>(
           builder: (context, pro, _) => pro.isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: pro.vehicleList.length,
-            itemBuilder: (context, index) {
-              // Sort the list in descending order (e.g., by `id`)
-              final sortedList = List.from(pro.vehicleList)
-                ..sort((a, b) => b.vehicleReqId.compareTo(a.vehicleReqId)); // Descending
-              final vehicle = sortedList[index];
-              return _buildVehicleCard(vehicle, context);
-            },
-          ),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: pro.vehicleList.length,
+                  itemBuilder: (context, index) {
+                    // Sort the list in descending order (e.g., by `id`)
+                    final sortedList = List.from(pro.vehicleList)..sort((a, b) => b.vehicleReqId.compareTo(a.vehicleReqId)); // Descending
+                    final vehicle = sortedList[index];
+                    return _buildVehicleCard(vehicle, context);
+                  },
+                ),
         ),
       ),
     );
@@ -59,9 +54,14 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
 
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
     return InkWell(
-      onTap: (){
-        if(vehicle.status==1&&DashboardHelpers.currentUser!.iDnum=='38832'){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>VehicleApprovalScreen(vehicleModel: vehicle,)));
+      onTap: () {
+        if (vehicle.status == 1 && DashboardHelpers.currentUser!.iDnum == '38832') {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => VehicleApprovalScreen(
+                        vehicleModel: vehicle,
+                      )));
         }
       },
       child: Card(
@@ -95,25 +95,27 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
               _buildDetailRow('To', vehicle.destinationTo ?? 'N/A'),
               _buildDetailRow('Date', vehicle.requiredDate ?? 'N/A'),
               _buildDetailRow('Time', vehicle.requiredTime ?? 'N/A'),
-              _buildDetailRow('Distance',  '${vehicle.distance} km'),
+              _buildDetailRow('Distance', '${vehicle.distance} km'),
               _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
-              _buildDetailRow('Duration','${vehicle.duration} hr'),
-              if (vehicle.driverMobileNo != null&&vehicle.status==2) ...[
+              _buildDetailRow('Duration', '${vehicle.duration} hr'),
+              if (vehicle.driverMobileNo != null && vehicle.status == 2) ...[
                 const SizedBox(height: 8),
                 Divider(color: Colors.grey[300]),
                 const SizedBox(height: 8),
                 _buildDetailRow('Vehicle No', vehicle.vehicleNo!),
-                _buildDetailRow('Driver', vehicle.driverName??''),
-                _buildDetailRow('Phone', vehicle.driverMobileNo??''),
-
-                  Row(
-                    children: [
-                      Expanded(child: _buildDetailRow('Driver', vehicle.driverName!)),
-                      if(vehicle.driverMobileNo!=null||vehicle.driverMobileNo!=''&&vehicle.status==2)TextButton(onPressed: (){
-                         DashboardHelpers.makePhoneCall(vehicle.driverMobileNo??'');
-                      }, child: Text('Call Driver ${vehicle.driverMobileNo}'))
-                    ],
-                  ),
+                _buildDetailRow('Driver', vehicle.driverName ?? ''),
+                _buildDetailRow('Phone', vehicle.driverMobileNo ?? ''),
+                Row(
+                  children: [
+                    Expanded(child: _buildDetailRow('Driver', vehicle.driverName!)),
+                    if (vehicle.driverMobileNo != null || vehicle.driverMobileNo != '' && vehicle.status == 2)
+                      TextButton(
+                          onPressed: () {
+                            DashboardHelpers.makePhoneCall(vehicle.driverMobileNo ?? '');
+                          },
+                          child: Text('Call Driver ${vehicle.driverMobileNo}'))
+                  ],
+                ),
               ],
             ],
           ),
@@ -190,8 +192,8 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
     );
   }
 
-  void getAllRequestedVehicles() async{
-    var hp=context.read<HrProvider>();
+  void getAllRequestedVehicles() async {
+    var hp = context.read<HrProvider>();
     await hp.getRequestedCarList();
   }
 }

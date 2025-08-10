@@ -109,7 +109,7 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
                         provider.toggleSelection(originalIndex);
                       }
                       if(widget.forSomeOnesVehicleReq==true){
-                        _lastSelectMember=provider.member_list.lastWhere((e)=>e.isSelected=true);
+                        _lastSelectMember=person;
                       }
 
                     },
