@@ -81,7 +81,7 @@ class UserModel {
     _modifiedDate = json['ModifiedDate'];
     _hasAuthority = json['HasAuthority'];
     _firebaseDeviceToken = json['FirebaseDeviceToken'];
-    _department = json['Department']; // Parse new field from JSON
+    _department = json['Department'].toString(); // Parse new field from JSON
   }
 
   String? _userRoleName;
