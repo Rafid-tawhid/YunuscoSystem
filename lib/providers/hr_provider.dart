@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
+import 'package:yunusco_group/models/doc_appoinment_list_model.dart';
 import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/models/members_model.dart';
 import 'package:yunusco_group/models/payslip_model.dart';
@@ -11,6 +12,7 @@ import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/JobCardDropdownModel.dart';
+import '../models/employee_appointment_info_model.dart';
 import '../models/leave_data_model.dart';
 import '../models/leave_model.dart';
 import '../models/self_leave_info.dart';
@@ -338,6 +340,35 @@ class HrProvider extends ChangeNotifier{
     setLoading(true);
     var result=await apiService.postData('api/HR/SaveAccessoriesGatePass', data);
     setLoading(false);
+    return result==null?false:true;
+  }
+
+  List<DocAppoinmentListModel> _docAppointmentList=[];
+  List<DocAppoinmentListModel> get docAppointmentList=>_docAppointmentList;
+  Future<bool> getAllDocAppointment() async{
+    setLoading(true);
+    var result=await apiService.getData('api/HR/GatePassList');
+    if(result!=null){
+      _docAppointmentList.clear();
+      for(var i in result['Results']){
+        _docAppointmentList.add(DocAppoinmentListModel.fromJson(i));
+      }
+    }
+    notifyListeners();
+    setLoading(false);
+    return result==null?false:true;
+  }
+
+  EmployeeAppointmentInfoModel? _employeeAppointmentInfoModel;
+  EmployeeAppointmentInfoModel? get employeeInfo=>_employeeAppointmentInfoModel;
+  Future<bool> getEmployeeInfo(DocAppoinmentListModel appointment) async {
+
+    var result=await apiService.getData('api/HR/GateEmployeeInfo/${appointment.idCardNo}');
+
+    for(var i in result['Results']){
+      _employeeAppointmentInfoModel=EmployeeAppointmentInfoModel.fromJson(i);
+    }
+    notifyListeners();
     return result==null?false:true;
   }
 

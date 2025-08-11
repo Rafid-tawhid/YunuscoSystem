@@ -905,4 +905,12 @@ class DashboardHelpers {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList(roles, loginModules);
   }
+
+  static void showSnakBar({required BuildContext context, required String message, Color? bgColor}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(content: Text(message,style: TextStyle(color: Colors.white),),
+         backgroundColor: bgColor??myColors.green,
+       ),
+    );
+  }
 }

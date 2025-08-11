@@ -19,7 +19,7 @@ import 'attandence_screen.dart';
 import 'board_room_booking_screen.dart';
 import 'depertments_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
-import 'doc_appointment.dart';
+import 'doc_appointment_requisation.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
   @override

@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
-import 'package:yunusco_group/screens/HR&PayRoll/widgets/doctor_screen.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/doctor_appointment_list_screen.dart';
+import '../../common_widgets/custom_button.dart';
 import '../../utils/colors.dart';
 
 class DocAppoinmentReq extends StatefulWidget {
@@ -59,8 +60,8 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         //clear field
         _idCardController.clear();
         _remarksController.clear();
-        DashboardHelpers.showAlert(msg: 'Doctor Appointment Success!');
-        Navigator.pop(context);
+        if(mounted)DashboardHelpers.showSnakBar(context: context, message: 'Doctor Appointment Success!',bgColor: myColors.green);
+        if(mounted)Navigator.pop(context);
       }
     }
   }
@@ -71,14 +72,19 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
 
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Doc-Appointment'),
         centerTitle: true,
         elevation: 0,
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>DoctorApprovalScreen()));
+          IconButton(onPressed: () async{
+
+            //get all appointment list
+              var hp=context.read<HrProvider>();
+              await hp.getAllDocAppointment();
+              Navigator.push(context,MaterialPageRoute(builder: (context)=>AppointmentListScreen(appointments: hp.docAppointmentList)));
+
           }, icon: Icon(Icons.accessibility_new))
         ],
       ),
@@ -139,25 +145,13 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
 
               // Submit Button
               Consumer<HrProvider>(
-                builder: (context,pro,_)=>SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: pro.isLoading?null: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      backgroundColor: myColors.primaryColor,
-                    ),
-                    child: pro.isLoading?CircularProgressIndicator():
-                    Text(
-                      'Submit Request',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                  ),
+                builder: (context,pro,_)=>CustomElevatedButton(
+                  isLoading: pro.isLoading,
+                  text: 'Submit Request',
+                  onPressed: _submitForm,
                 ),
               ),
+
             ],
           ),
         ),
