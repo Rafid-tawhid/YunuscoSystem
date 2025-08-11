@@ -833,6 +833,7 @@ class DashboardHelpers {
     prefs.remove("user");
     prefs.remove("token");
   }
+  //
 
   static UserModel? currentUser;
 

@@ -206,7 +206,6 @@ class _FactoryReportSliderState extends State<FactoryReportSlider> {
             ],
           ),
         ),
-
       ],
     );
   }

@@ -1,22 +1,12 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:yunusco_group/providers/management_provider.dart';
-import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/screens/Merchandising/merchandisingSummaryScreen.dart';
 import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dart';
-import 'package:yunusco_group/screens/Merchandising/report_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/bom_screen.dart';
-import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_quantity.dart';
-import 'package:yunusco_group/screens/Merchandising/widgets/buyer_wise_order_value.dart';
-import 'package:yunusco_group/screens/Merchandising/widgets/item_wise_sales_value.dart';
-import 'package:yunusco_group/screens/Merchandising/widgets/order_shipment_chart.dart';
 import 'package:yunusco_group/screens/Merchandising/work_order_screen.dart';
-
-import '../../models/buyer_wise_value_model.dart';
 import '../../utils/colors.dart';
 import '../../utils/constants.dart';
+import '../Report/report_screen.dart';
 import 'buyer_order_Screen.dart';
 import 'costing_approval_screen.dart';
 
@@ -106,7 +96,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
             title: "Report",
             icon: Icons.analytics,
             color: Colors.indigo[300]!,
-            destination: ReportScreen(), // Replace with your actual screen
+            destination: FactoryReportSlider(), // Replace with your actual screen
           ),
 
 
