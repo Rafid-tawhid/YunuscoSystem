@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 
 import '../../../models/doc_appoinment_list_model.dart';
-import 'doc_list_emp_details.dart';
+import 'doc_emp_prescription.dart';
 
 
 class AppointmentListScreen extends StatelessWidget {
@@ -121,7 +121,7 @@ class AppointmentListScreen extends StatelessWidget {
   Future<void> _showDetails(BuildContext context, DocAppoinmentListModel appointment) async {
     var hp=context.read<HrProvider>();
     if(await hp.getEmployeeInfo(appointment)){
-     if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>EmployeeProfileScreen(employee: hp.employeeInfo!,)));
+     if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>DoctorPrescriptionScreen(employee: hp.employeeInfo!,)));
     }
   }
 

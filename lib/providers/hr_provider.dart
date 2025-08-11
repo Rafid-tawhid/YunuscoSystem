@@ -15,6 +15,7 @@ import '../models/JobCardDropdownModel.dart';
 import '../models/employee_appointment_info_model.dart';
 import '../models/leave_data_model.dart';
 import '../models/leave_model.dart';
+import '../models/medicine_model.dart';
 import '../models/self_leave_info.dart';
 import '../models/vehicle_model.dart';
 
@@ -353,6 +354,7 @@ class HrProvider extends ChangeNotifier{
       for(var i in result['Results']){
         _docAppointmentList.add(DocAppoinmentListModel.fromJson(i));
       }
+      _docAppointmentList.reversed;
     }
     notifyListeners();
     setLoading(false);
@@ -370,6 +372,44 @@ class HrProvider extends ChangeNotifier{
     }
     notifyListeners();
     return result==null?false:true;
+  }
+
+
+
+
+
+  List<MedicineModel> _medicines = [];
+  List<MedicineModel> _filteredMedicines = [];
+
+  void getAllMedicine() async{
+    var data=await apiService.getData('api/HR/MedicineList');
+    if(data!=null){
+      _medicines.clear();
+      _filteredMedicines.clear();
+      for(var i in data['Results']){
+        _medicines.add(MedicineModel.fromJson(i));
+      }
+    }
+    debugPrint('_medicineList ${_medicines.length}');
+    _filteredMedicines.addAll(_medicines);
+    notifyListeners();
+  }
+
+
+  List<MedicineModel> get medicines => _medicines;
+  List<MedicineModel> get filteredMedicines => _filteredMedicines;
+
+  void filterMedicines(String query) {
+    if (query.isEmpty) {
+      _filteredMedicines = [];
+    } else {
+      _filteredMedicines = _medicines.where((medicine) {
+        return medicine.productName?.toLowerCase().contains(query.toLowerCase()) == true ||
+            medicine.productCode?.toLowerCase().contains(query.toLowerCase()) == true ||
+            medicine.baseName?.toLowerCase().contains(query.toLowerCase()) == true;
+      }).toList();
+    }
+    notifyListeners();
   }
 
 

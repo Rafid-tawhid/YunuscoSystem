@@ -85,7 +85,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
               await hp.getAllDocAppointment();
               Navigator.push(context,MaterialPageRoute(builder: (context)=>AppointmentListScreen(appointments: hp.docAppointmentList)));
 
-          }, icon: Icon(Icons.accessibility_new))
+          }, icon: Icon(Icons.list))
         ],
       ),
       
