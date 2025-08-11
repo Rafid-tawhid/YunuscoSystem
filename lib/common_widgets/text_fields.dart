@@ -4,7 +4,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode? focusNode;
   final String labelText;
-  final IconData prefixIcon;
+  final IconData? prefixIcon;
   final FormFieldValidator<String>? validator;
   final bool obscureText;
   final TextInputType keyboardType;
@@ -21,7 +21,7 @@ class CustomTextFormField extends StatelessWidget {
     Key? key,
     required this.controller,
     required this.labelText,
-    required this.prefixIcon,
+    this.prefixIcon,
     this.validator,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
@@ -52,7 +52,7 @@ class CustomTextFormField extends StatelessWidget {
             vertical: 16, // Larger padding for TV
             horizontal: 12,
           ),
-          prefixIcon: Icon(prefixIcon, color: iconColor, size: 24), // Larger icon
+          prefixIcon: prefixIcon==null?null:Icon(prefixIcon, color: iconColor, size: 24), // Larger icon
           labelText: labelText,
           labelStyle: TextStyle(
             color: isFocused ? focusedBorderColor : textColor,

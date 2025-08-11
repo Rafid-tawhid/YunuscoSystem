@@ -334,5 +334,12 @@ class HrProvider extends ChangeNotifier{
     return result==null?false:true;
   }
 
+  Future<bool> saveDocAppoinment(dynamic data) async{
+    setLoading(true);
+    var result=await apiService.postData('api/HR/SaveAccessoriesGatePass', data);
+    setLoading(false);
+    return result==null?false:true;
+  }
+
 
 }

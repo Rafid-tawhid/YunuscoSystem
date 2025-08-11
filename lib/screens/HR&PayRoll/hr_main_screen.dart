@@ -19,7 +19,7 @@ import 'attandence_screen.dart';
 import 'board_room_booking_screen.dart';
 import 'depertments_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
-import 'half_day_leave.dart';
+import 'doc_appointment.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
   @override
@@ -208,7 +208,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
     }
     if (index == 9) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => HalfDayLeaveScreen()));
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
     }
 
   }
@@ -281,7 +281,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
      },
      {
        "code": 9,
-       "name": "Half\n Leave",
+       "name": "Doctor\nAppointment",
        "cardColor": cardColors[3],
        "iconColor": iconColors[3],
        "icon": menuIcons[9],
