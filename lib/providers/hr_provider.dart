@@ -401,7 +401,7 @@ class HrProvider extends ChangeNotifier{
 
   void filterMedicines(String query) {
     if (query.isEmpty) {
-      _filteredMedicines = [];
+      _filteredMedicines = _medicines;
     } else {
       _filteredMedicines = _medicines.where((medicine) {
         return medicine.productName?.toLowerCase().contains(query.toLowerCase()) == true ||
