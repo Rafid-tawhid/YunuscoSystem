@@ -16,6 +16,7 @@ import '../models/employee_appointment_info_model.dart';
 import '../models/leave_data_model.dart';
 import '../models/leave_model.dart';
 import '../models/medicine_model.dart';
+import '../models/prescription_medicine.dart';
 import '../models/self_leave_info.dart';
 import '../models/vehicle_model.dart';
 
@@ -378,7 +379,7 @@ class HrProvider extends ChangeNotifier{
 
 
 
-  List<MedicineModel> _medicines = [];
+  final List<MedicineModel> _medicines = [];
   List<MedicineModel> _filteredMedicines = [];
 
   void getAllMedicine() async{
@@ -391,7 +392,7 @@ class HrProvider extends ChangeNotifier{
       }
     }
     debugPrint('_medicineList ${_medicines.length}');
-    _filteredMedicines.addAll(_medicines);
+    _filteredMedicines = List.from(_medicines);
     notifyListeners();
   }
 
@@ -410,6 +411,43 @@ class HrProvider extends ChangeNotifier{
       }).toList();
     }
     notifyListeners();
+  }
+
+
+  final List<PrescriptionMedicine>  _prepareMedicineList =[];
+  List<PrescriptionMedicine> get prepareMedicineList => _prepareMedicineList;
+
+  void addMedicineListForPrescription(PrescriptionMedicine result) {
+    bool found = false;
+    // First try to find and update existing medicine
+    for (int i = 0; i < _prepareMedicineList.length; i++) {
+      if (_prepareMedicineList[i].medicineId == result.medicineId) {
+        _prepareMedicineList[i] = result;
+        found = true;
+        break;
+      }
+    }
+    // If not found, add new medicine
+    if (!found) {
+      _prepareMedicineList.add(result);
+    }
+    debugPrint('Added $result');
+
+    notifyListeners(); // If using ChangeNotifier
+  }
+
+  void removeMedicine(PrescriptionMedicine e) {
+    _prepareMedicineList.remove(e);
+    notifyListeners();
+  }
+
+  Future<bool> saveGatePassInfo(dynamic data) async {
+    setLoading(true);
+    var result=await apiService.postData('api/HR/SavePrescription', data);
+    //clear medicine list
+    _prepareMedicineList.clear();
+    setLoading(false);
+    return result==null?false:true;
   }
 
 

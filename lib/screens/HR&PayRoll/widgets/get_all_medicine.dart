@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/common_widgets/custom_button.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import '../../../models/medicine_model.dart';
-
+import '../../../models/prescription_medicine.dart';
 
 class MedicineListScreen extends StatefulWidget {
   const MedicineListScreen({super.key});
@@ -13,12 +14,13 @@ class MedicineListScreen extends StatefulWidget {
 
 class _MedicineListScreenState extends State<MedicineListScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HrProvider>(context, listen: false).getAllMedicine();
+      getAllMedicine();
     });
     _searchController.addListener(_onSearchChanged);
   }
@@ -30,8 +32,38 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   }
 
   void _onSearchChanged() {
-    Provider.of<HrProvider>(context, listen: false)
-        .filterMedicines(_searchController.text);
+    Provider.of<HrProvider>(context, listen: false).filterMedicines(_searchController.text);
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+      } else {
+        // Focus on the search field when it appears
+        FocusScope.of(context).requestFocus(FocusNode());
+        Future.delayed(Duration.zero, () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          FocusScope.of(context).requestFocus(_searchFocusNode);
+        });
+      }
+    });
+  }
+
+  final FocusNode _searchFocusNode = FocusNode();
+
+  Widget _buildSearchField() {
+    return TextField(
+      controller: _searchController,
+      focusNode: _searchFocusNode,
+      autofocus: true,
+      decoration: const InputDecoration(
+        hintText: 'Search medicines...',
+        border: InputBorder.none,
+      ),
+      style: const TextStyle(fontSize: 18),
+    );
   }
 
   @override
@@ -39,52 +71,31 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     final medicinesProvider = Provider.of<HrProvider>(context);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Medicines'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search medicines...',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+        title: _isSearching ? _buildSearchField() : const Text('Medicines', style: TextStyle(fontSize: 18)),
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: _isSearching
+                ? IconButton(
+              key: const ValueKey('close'),
+              onPressed: _toggleSearch,
+              icon: const Icon(Icons.close),
+            )
+                : IconButton(
+              key: const ValueKey('search'),
+              onPressed: _toggleSearch,
+              icon: const Icon(Icons.search),
             ),
-          ),
-        ),
-      ),
-
-      body: Column(
-        children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: TextField(
-          //     controller: _searchController,
-          //     decoration: InputDecoration(
-          //       hintText: 'Search medicines...',
-          //       prefixIcon: const Icon(Icons.search),
-          //       border: OutlineInputBorder(
-          //         borderRadius: BorderRadius.circular(10),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Expanded(
-            child: medicinesProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _buildMedicineList(medicinesProvider.filteredMedicines),
           ),
         ],
       ),
+      body: medicinesProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _buildMedicineList(medicinesProvider.filteredMedicines),
     );
   }
 
@@ -101,6 +112,13 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       },
     );
   }
+
+  Future<void> getAllMedicine() async{
+    var hp=context.read<HrProvider>();
+    if(hp.medicines.isEmpty){
+      hp.getAllMedicine();
+    }
+  }
 }
 
 class _MedicineListItem extends StatelessWidget {
@@ -111,6 +129,7 @@ class _MedicineListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         leading: const Icon(Icons.medication, color: Colors.blue),
@@ -123,10 +142,126 @@ class _MedicineListItem extends StatelessWidget {
           ],
         ),
         trailing: Text('#${medicine.productId?.toString() ?? ''}'),
-        onTap: () {
-          // Handle medicine selection
+        onTap: () async {
+          final result = await showMedicineDetailsBottomSheet(context, medicine);
+          if (result != null) {
+            //{medicineId: 2950, madicineType: 18, quantity: 3, note: nothing, advice: take rest, madicineContinue: 3}
+            // Handle the result data here
+            var hp=context.read<HrProvider>();
+            PrescriptionMedicine medicine= PrescriptionMedicine.fromJson(result);
+            hp.addMedicineListForPrescription(medicine);
+            // If you want to pop the current screen after getting the result:
+            Navigator.pop(context, result);
+          }
         },
       ),
+    );
+  }
+
+
+  Future<Map<String, dynamic>?> showMedicineDetailsBottomSheet(
+      BuildContext context,
+      MedicineModel medicine,
+      ) async {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final TextEditingController _quantityController = TextEditingController();
+    final TextEditingController _noteController = TextEditingController();
+    final TextEditingController _adviceController = TextEditingController();
+    final TextEditingController _daysController = TextEditingController();
+
+    return await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 20,
+            right: 20,
+            top: 20,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                Text(
+                  medicine.productName ?? 'Medicine Details',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _quantityController,
+                  decoration: const InputDecoration(
+                    labelText: 'Quantity*',
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter quantity',
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter quantity';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _noteController,
+                  decoration: const InputDecoration(
+                    labelText: 'Note (e.g., After meal)',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _adviceController,
+                  decoration: const InputDecoration(
+                    labelText: 'Advice (e.g., Take Rest)',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _daysController,
+                  decoration: const InputDecoration(
+                    labelText: 'Continue for (e.g., 2 days)',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 20),
+                CustomElevatedButton(
+                  text: 'Add+',
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      final data = {
+                        "productName": medicine.productName,
+                        "medicineId": medicine.productId,
+                        "madicineType": medicine.productTypeId,
+                        "quantity": int.parse(_quantityController.text),
+                        "note": _noteController.text,
+                        "advice": _adviceController.text,
+                        "madicineContinue": _daysController.text.isNotEmpty ? "${_daysController.text} days" : null,
+                      };
+                      Navigator.pop(context, data);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

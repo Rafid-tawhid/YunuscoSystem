@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:yunusco_group/common_widgets/custom_button.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/prescription_medicine.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/employee_appointment_info_model.dart';
 import 'get_all_medicine.dart';
@@ -122,6 +126,22 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               ),
               const SizedBox(height: 16),
 
+              Consumer<HrProvider>(
+                builder: (context,pro,_)=>Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: pro.prepareMedicineList.map((e)=>Card(
+                    child: ListTile(
+                      title: Text(e.productName),
+                      subtitle: Text('Qty: ${e.quantity.toString()}'),
+                      trailing:   IconButton(onPressed: (){
+                        var hp=context.read<HrProvider>();
+                        hp.removeMedicine(e);
+                      }, icon: Icon(Icons.close)),
+                    ),
+                  )).toList(),
+                ),
+              ),
+              const SizedBox(height: 16),
               // Gate Pass Radio
               Card(
 
@@ -164,10 +184,13 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               const SizedBox(height: 24),
 
               // Submit Button
-              CustomElevatedButton(
-                onPressed: _submitPrescription,
-                text: 'Submit Prescription',
-              ),
+              Consumer<HrProvider>(
+                builder: (context,pro,_)=>CustomElevatedButton(
+                  onPressed: _submitPrescription,
+                  isLoading: pro.isLoading,
+                  text: 'Submit Prescription',
+                ),
+              )
             ],
           ),
         ),
@@ -235,24 +258,30 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
     );
   }
 
-  void _submitPrescription() {
+  Future<void> _submitPrescription() async {
     if (_formKey.currentState!.validate()) {
-      // Process the prescription data
+      var hp=context.read<HrProvider>();
+      List<Map<String,dynamic>> medicins=[];
+      hp.prepareMedicineList.forEach((e){
+        medicins.add(e.toJson());
+      });
+      // debugPrint('hp.prepareMedicineList ${medicins}');
+     // Process the prescription data
       final prescriptionData = {
-        'employeeId': widget.employee.idCardNo,
-        'disease': _diseaseController.text,
-        'instructions': _instructionController.text,
+        'idCardNo': widget.employee.idCardNo,
+        "diagnosis": _diseaseController.text,
+        "remarks": _instructionController.text,
+        "prescriptionDate": DashboardHelpers.convertDateTime2(DateTime.now()),
         'needsGatePass': _needsGatePass,
-        'timestamp': DateTime.now().toString(),
+        "PrescriptionDetails": medicins
       };
-
-      // Here you would typically send this data to your backend
-      print('Prescription Data: $prescriptionData');
+      if(await hp.saveGatePassInfo(prescriptionData)){
+       if(mounted) DashboardHelpers.showSnakBar(context: context, message: 'Prescription submitted successfully!');
+       if(mounted) Navigator.pop(context);
+      }
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Prescription submitted successfully!')),
-      );
+
 
       // Optionally navigate back
       // Navigator.pop(context);
