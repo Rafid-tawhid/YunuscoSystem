@@ -207,9 +207,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     if (index == 8) {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
     }
-    if (index == 9) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
-    }
+
 
   }
 
@@ -278,13 +276,6 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
        "cardColor": cardColors[5],
        "iconColor": iconColors[6],
        "icon": menuIcons[8],
-     },
-     {
-       "code": 9,
-       "name": "Doctor\nAppointment",
-       "cardColor": cardColors[3],
-       "iconColor": iconColors[3],
-       "icon": menuIcons[9],
      },
     ];
   }

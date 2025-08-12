@@ -37,7 +37,6 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     super.dispose();
   }
 
-
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       if (_urgencyType == null) {
@@ -55,108 +54,151 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         "status": 1,
       };
 
-      var hp=context.read<HrProvider>();
-      if(await hp.saveDocAppoinment(requestData)){
+      var hp = context.read<HrProvider>();
+      if (await hp.saveDocAppoinment(requestData)) {
         //clear field
         _idCardController.clear();
         _remarksController.clear();
-        if(mounted)DashboardHelpers.showSnakBar(context: context, message: 'Doctor Appointment Success!',bgColor: myColors.green);
-        if(mounted)Navigator.pop(context);
+        if (mounted) DashboardHelpers.showSnakBar(context: context, message: 'Doctor Appointment Success!', bgColor: myColors.green);
+        if (mounted) Navigator.pop(context);
       }
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Doc-Appointment'),
         centerTitle: true,
         elevation: 0,
-        actions: [
-          IconButton(onPressed: () async{
-
-            //get all appointment list
-              var hp=context.read<HrProvider>();
-              await hp.getAllDocAppointment();
-              Navigator.push(context,MaterialPageRoute(builder: (context)=>AppointmentListScreen(appointments: hp.docAppointmentList)));
-
-          }, icon: Icon(Icons.list))
-        ],
       ),
-      
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              // ID Card Number Field
-
-              TextFormField(
-                controller: _idCardController,
-                decoration: const InputDecoration(
-                  labelText: "ID Card No",
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                value == null || value.isEmpty ? 'ID is required' : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Remarks Field
-              TextFormField(
-                controller: _remarksController,
-                decoration: const InputDecoration(
-                  labelText: "Remarks",
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 2,
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Remarks required' : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Urgency Dropdown
-              DropdownButtonFormField<int>(
-                decoration: const InputDecoration(
-                  labelText: 'Urgency Type',
-                  border: OutlineInputBorder(),
-                ),
-                items: _urgencyOptions.entries
-                    .map(
-                      (entry) => DropdownMenuItem<int>(
-                    value: entry.value,
-                    child: Text(entry.key),
-                  ),
-                )
-                    .toList(),
-                value: _urgencyType,
-                onChanged: (value) => setState(() => _urgencyType = value),
-                validator: (_) =>
-                _urgencyType == null ? 'Urgency type is required' : null,
-              ),
-              const SizedBox(height: 24),
-
-              // Submit Button
               Consumer<HrProvider>(
-                builder: (context,pro,_)=>CustomElevatedButton(
-                  isLoading: pro.isLoading,
-                  text: 'Submit Request',
-                  onPressed: _submitForm,
-                ),
-              ),
+                  builder: (context, pro, _) => TextButton(
+                      onPressed: () {
+                        pro.showHideDocForm();
+                      },
+                      child: Align(alignment: Alignment.bottomRight, child: Text(pro.showForm ? 'Hide' : 'Create')))),
 
+              Consumer<HrProvider>(
+                builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
+              ),
+              // ID Card Number Field
+              Consumer<HrProvider>(
+                builder: (context, pro, _) {
+                  return pro.showForm?  SizedBox.shrink():ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: pro.docAppointmentList.length,
+                    itemBuilder: (context, index) {
+                      final appointment = pro.docAppointmentList[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: CircleAvatar(child: Icon(Icons.person)),
+                          title: Text('Serial: ${appointment.serialNo ?? 'N/A'}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('ID: ${appointment.idCardNo ?? 'N/A'}'),
+                              Text('Date: ${DashboardHelpers.convertDateTime(appointment.requestDate ?? '')}'),
+                              if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
+                            ],
+                          ),
+                          trailing: _buildUrgencyChip(appointment.urgencyType!.toInt()),
+                          onTap: () {},
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),
       ),
     );
   }
-}
 
+  Widget DocReqForm() {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _idCardController,
+          decoration: const InputDecoration(
+            labelText: "ID Card No",
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: TextInputType.number,
+          validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
+        ),
+        const SizedBox(height: 16),
+
+        // Remarks Field
+        TextFormField(
+          controller: _remarksController,
+          decoration: const InputDecoration(
+            labelText: "Remarks",
+            border: OutlineInputBorder(),
+          ),
+          maxLines: 2,
+          validator: (value) => value == null || value.isEmpty ? 'Remarks required' : null,
+        ),
+        const SizedBox(height: 16),
+
+        // Urgency Dropdown
+        DropdownButtonFormField<int>(
+          decoration: const InputDecoration(
+            labelText: 'Urgency Type',
+            border: OutlineInputBorder(),
+          ),
+          items: _urgencyOptions.entries
+              .map(
+                (entry) => DropdownMenuItem<int>(
+                  value: entry.value,
+                  child: Text(entry.key),
+                ),
+              )
+              .toList(),
+          value: _urgencyType,
+          onChanged: (value) => setState(() => _urgencyType = value),
+          validator: (_) => _urgencyType == null ? 'Urgency type is required' : null,
+        ),
+        const SizedBox(height: 24),
+
+        // Submit Button
+        Consumer<HrProvider>(
+          builder: (context, pro, _) => CustomElevatedButton(
+            isLoading: pro.isLoading,
+            text: 'Submit Request',
+            onPressed: _submitForm,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUrgencyChip(int? urgency) {
+    if (urgency == null) return const SizedBox();
+
+    return Chip(
+      label: Text('Urgency ${urgency == 1 ? 'High' : urgency == 2 ? 'Medium' : 'Low'}'),
+      backgroundColor: urgency == 1
+          ? Colors.green.shade200
+          : urgency == 2
+              ? Colors.yellow[100]
+              : urgency == 2
+                  ? Colors.orange[100]
+                  : Colors.red[100],
+    );
+  }
+}

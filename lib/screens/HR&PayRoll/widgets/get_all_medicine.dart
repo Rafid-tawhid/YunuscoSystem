@@ -165,9 +165,13 @@ class _MedicineListItem extends StatelessWidget {
       ) async {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final TextEditingController _quantityController = TextEditingController();
-    final TextEditingController _noteController = TextEditingController();
-    final TextEditingController _adviceController = TextEditingController();
     final TextEditingController _daysController = TextEditingController();
+
+    // Dropdown and checkbox state
+    String _selectedTime = '0+0+1';
+    bool _medicineStatus = false;
+
+    final List<String> medicineTimes = ['0+0+1', '0+1+0', '0+1+1', '1+0+0','1+0+1','1+1+0','1+1+1'];
 
     return await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
@@ -181,87 +185,129 @@ class _MedicineListItem extends StatelessWidget {
             right: 20,
             top: 20,
           ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                Text(
-                  medicine.productName ?? 'Medicine Details',
-                  style: const TextStyle(fontSize: 16),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    Text(
+                      medicine.productName ?? 'Medicine Details',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Quantity
+                    TextFormField(
+                      controller: _quantityController,
+                      decoration: const InputDecoration(
+                        labelText: 'Quantity*',
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter quantity',
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter quantity';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Medicine Time (Dropdown)
+                    DropdownButtonFormField<String>(
+                      value: _selectedTime,
+                      decoration: const InputDecoration(
+                        labelText: 'Medicine Time',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: medicineTimes.map((time) {
+                        return DropdownMenuItem(
+                          value: time,
+                          child: Text(time),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _selectedTime = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Medicine Status (Radio Buttons using bool)
+                    const Text(
+                      "Medicine Status",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    RadioListTile<bool>(
+                      title: const Text("Before"),
+                      value: true,
+                      groupValue: _medicineStatus,
+                      onChanged: (value) {
+                        setState(() {
+                          _medicineStatus = value!;
+                        });
+                      },
+                    ),
+                    RadioListTile<bool>(
+                      title: const Text("After"),
+                      value: false,
+                      groupValue: _medicineStatus,
+                      onChanged: (value) {
+                        setState(() {
+                          _medicineStatus = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Continue Days
+                    TextFormField(
+                      controller: _daysController,
+                      decoration: const InputDecoration(
+                        labelText: 'Continue for (e.g., 2 days)',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+
+                    const SizedBox(height: 20),
+                    CustomElevatedButton(
+                      text: 'Add+',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          final data = {
+                            "productName": medicine.productName,
+                            "medicineId": medicine.productId,
+                            "madicineType": medicine.productTypeId,
+                            "quantity": int.parse(_quantityController.text),
+                            "madicineContinue": _daysController.text,
+                            "medicineTime": _selectedTime,
+                            "medicineStatus": _medicineStatus,
+                          };
+                          Navigator.pop(context, data);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _quantityController,
-                  decoration: const InputDecoration(
-                    labelText: 'Quantity*',
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter quantity',
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter quantity';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'Please enter a valid number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _noteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Note (e.g., After meal)',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _adviceController,
-                  decoration: const InputDecoration(
-                    labelText: 'Advice (e.g., Take Rest)',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _daysController,
-                  decoration: const InputDecoration(
-                    labelText: 'Continue for (e.g., 2 days)',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 20),
-                CustomElevatedButton(
-                  text: 'Add+',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      final data = {
-                        "productName": medicine.productName,
-                        "medicineId": medicine.productId,
-                        "madicineType": medicine.productTypeId,
-                        "quantity": int.parse(_quantityController.text),
-                        "note": _noteController.text,
-                        "advice": _adviceController.text,
-                        "madicineContinue": _daysController.text.isNotEmpty ? "${_daysController.text} days" : null,
-                      };
-                      Navigator.pop(context, data);
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
     );
   }
+
 }

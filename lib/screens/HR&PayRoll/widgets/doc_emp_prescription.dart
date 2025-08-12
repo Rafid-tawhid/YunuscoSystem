@@ -21,12 +21,14 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
   final _formKey = GlobalKey<FormState>();
   final _diseaseController = TextEditingController();
   final _instructionController = TextEditingController();
+  final _gatePassNotes = TextEditingController();
   bool _needsGatePass = false;
 
   @override
   void dispose() {
     _diseaseController.dispose();
     _instructionController.dispose();
+    _gatePassNotes.dispose();
     super.dispose();
   }
 
@@ -50,17 +52,17 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               const SizedBox(height: 24),
 
               // Prescription Form Section
-               Align(
-                 alignment: Alignment.center,
-                 child: Text(
+              Align(
+                alignment: Alignment.center,
+                child: Text(
                   'Prescription Details',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: myColors.primaryColor,
                   ),
-                               ),
-               ),
+                ),
+              ),
               const SizedBox(height: 16),
 
               // Disease Field
@@ -80,13 +82,14 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               ),
               const SizedBox(height: 16),
               InkWell(
-                onTap: (){
-
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineListScreen()));
                 },
                 child: Container(
                   padding: const EdgeInsets.all(6.0), // Add padding inside the container
                   decoration: BoxDecoration(
-                    border: Border.all( // Add border
+                    border: Border.all(
+                      // Add border
                       color: Colors.grey, // Border color
                       width: 1.0, // Border width
                     ),
@@ -97,12 +100,9 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                       Icon(Icons.medication, color: Colors.green), // Medicine icon
                       const SizedBox(width: 8), // Add some spacing
                       const Expanded(child: Text('Medicine', style: TextStyle(fontSize: 16))),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>MedicineListScreen()));
-                        },
-                        icon: const Icon(Icons.add, color: Colors.green),
-                        padding: const EdgeInsets.all(8.0), // Add padding to the button
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Icon(Icons.add, color: Colors.green),
                       ),
                     ],
                   ),
@@ -111,6 +111,25 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
 
               // Medicine Field
 
+              Consumer<HrProvider>(
+                builder: (context, pro, _) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  pro.prepareMedicineList.isNotEmpty ? SizedBox(height: 16) : SizedBox.shrink(),
+                  ...pro.prepareMedicineList
+                      .map((e) => Card(
+                            child: ListTile(
+                              title: Text(e.productName),
+                              subtitle: Text('Qty: ${e.quantity.toString()}'),
+                              trailing: IconButton(
+                                  onPressed: () {
+                                    var hp = context.read<HrProvider>();
+                                    hp.removeMedicine(e);
+                                  },
+                                  icon: Icon(Icons.close)),
+                            ),
+                          ))
+                      .toList(),
+                ]),
+              ),
               const SizedBox(height: 16),
 
               // Instructions Field
@@ -118,33 +137,15 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                 controller: _instructionController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'Instructions',
+                  labelText: 'Doc Advice',
                   border: OutlineInputBorder(),
                   alignLabelWithHint: true,
                   prefixIcon: Icon(Icons.note),
                 ),
               ),
-              const SizedBox(height: 16),
-
-              Consumer<HrProvider>(
-                builder: (context,pro,_)=>Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: pro.prepareMedicineList.map((e)=>Card(
-                    child: ListTile(
-                      title: Text(e.productName),
-                      subtitle: Text('Qty: ${e.quantity.toString()}'),
-                      trailing:   IconButton(onPressed: (){
-                        var hp=context.read<HrProvider>();
-                        hp.removeMedicine(e);
-                      }, icon: Icon(Icons.close)),
-                    ),
-                  )).toList(),
-                ),
-              ),
-              const SizedBox(height: 16),
               // Gate Pass Radio
+               const SizedBox(height: 16),
               Card(
-
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
@@ -181,11 +182,23 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              //gate pass notes
+              if (_needsGatePass)
+                TextFormField(
+                  controller: _instructionController,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    labelText: 'Leave Notes',
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                    prefixIcon: Icon(Icons.note),
+                  ),
+                ),
               const SizedBox(height: 24),
-
               // Submit Button
               Consumer<HrProvider>(
-                builder: (context,pro,_)=>CustomElevatedButton(
+                builder: (context, pro, _) => CustomElevatedButton(
                   onPressed: _submitPrescription,
                   isLoading: pro.isLoading,
                   text: 'Submit Prescription',
@@ -207,7 +220,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
+            Text(
               'Patient Information',
               style: TextStyle(
                 fontSize: 18,
@@ -220,8 +233,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
             _buildInfoRow('ID', widget.employee.idCardNo),
             _buildInfoRow('Department', widget.employee.departmentName),
             _buildInfoRow('Designation', widget.employee.designationName),
-            _buildInfoRow('Age/Gender',
-                '${widget.employee.ageYears} yrs / ${widget.employee.gender}'),
+            _buildInfoRow('Age/Gender', '${widget.employee.ageYears} yrs / ${widget.employee.gender}'),
           ],
         ),
       ),
@@ -260,28 +272,28 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
 
   Future<void> _submitPrescription() async {
     if (_formKey.currentState!.validate()) {
-      var hp=context.read<HrProvider>();
-      List<Map<String,dynamic>> medicins=[];
-      hp.prepareMedicineList.forEach((e){
+      var hp = context.read<HrProvider>();
+      List<Map<String, dynamic>> medicins = [];
+      hp.prepareMedicineList.forEach((e) {
         medicins.add(e.toJson());
       });
       // debugPrint('hp.prepareMedicineList ${medicins}');
-     // Process the prescription data
+      // Process the prescription data
       final prescriptionData = {
         'idCardNo': widget.employee.idCardNo,
         "diagnosis": _diseaseController.text,
-        "remarks": _instructionController.text,
+        "advice": _instructionController.text,
+        "remarks": _gatePassNotes.text,
         "prescriptionDate": DashboardHelpers.convertDateTime2(DateTime.now()),
         'needsGatePass': _needsGatePass,
         "PrescriptionDetails": medicins
       };
-      if(await hp.saveGatePassInfo(prescriptionData)){
-       if(mounted) DashboardHelpers.showSnakBar(context: context, message: 'Prescription submitted successfully!');
-       if(mounted) Navigator.pop(context);
+      if (await hp.saveGatePassInfo(prescriptionData)) {
+        if (mounted) DashboardHelpers.showSnakBar(context: context, message: 'Prescription submitted successfully!');
+        if (mounted) Navigator.pop(context);
       }
 
       // Show success message
-
 
       // Optionally navigate back
       // Navigator.pop(context);

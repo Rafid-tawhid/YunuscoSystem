@@ -450,5 +450,12 @@ class HrProvider extends ChangeNotifier{
     return result==null?false:true;
   }
 
+  bool _showForm=false;
+  bool get showForm=>_showForm;
+  showHideDocForm(){
+    _showForm=!_showForm;
+    notifyListeners();
+  }
+
 
 }

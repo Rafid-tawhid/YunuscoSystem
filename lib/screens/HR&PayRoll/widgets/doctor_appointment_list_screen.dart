@@ -125,28 +125,4 @@ class AppointmentListScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildDetailRow(String label, dynamic value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(child: Text(value?.toString() ?? 'N/A')),
-        ],
-      ),
-    );
-  }
-
-  String _getStatusText(int? status) {
-    switch (status) {
-      case 1: return 'Pending';
-      case 2: return 'Working';
-      case 3: return 'Done';
-      default: return 'Unknown';
-    }
-  }
 }
