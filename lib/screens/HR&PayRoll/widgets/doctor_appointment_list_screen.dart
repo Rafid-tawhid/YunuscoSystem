@@ -121,7 +121,7 @@ class AppointmentListScreen extends StatelessWidget {
   Future<void> _showDetails(BuildContext context, DocAppoinmentListModel appointment) async {
     var hp=context.read<HrProvider>();
     if(await hp.getEmployeeInfo(appointment)){
-     if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>DoctorPrescriptionScreen(employee: hp.employeeInfo!,)));
+     if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>DoctorPrescriptionScreen(employee: hp.employeeInfo!,listInfo: appointment,)));
     }
   }
 

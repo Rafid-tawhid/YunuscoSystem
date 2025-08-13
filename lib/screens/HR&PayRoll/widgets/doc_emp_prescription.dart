@@ -5,13 +5,15 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/prescription_medicine.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import '../../../models/doc_appoinment_list_model.dart';
 import '../../../models/employee_appointment_info_model.dart';
 import 'get_all_medicine.dart';
 
 class DoctorPrescriptionScreen extends StatefulWidget {
   final EmployeeAppointmentInfoModel employee;
+  final DocAppoinmentListModel listInfo;
 
-  const DoctorPrescriptionScreen({super.key, required this.employee});
+  const DoctorPrescriptionScreen({super.key, required this.employee, required this.listInfo});
 
   @override
   State<DoctorPrescriptionScreen> createState() => _DoctorPrescriptionScreenState();
@@ -144,7 +146,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                 ),
               ),
               // Gate Pass Radio
-               const SizedBox(height: 16),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -220,6 +222,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Align(alignment: Alignment.bottomRight, child: Text('Serial No: ${widget.listInfo.serialNo}')),
             Text(
               'Patient Information',
               style: TextStyle(
