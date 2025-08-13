@@ -39,8 +39,8 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
 
   // Vehicle type options
   final List<Map<String, dynamic>> _vehicleTypes = [
-    {'name': 'Private', 'value': 1},
-    {'name': 'Hiace', 'value': 2},
+    {'name': 'Sedan Car', 'value': 1},
+      {'name': 'Hiace', 'value': 2},
   ];
 
   @override
