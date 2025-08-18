@@ -225,7 +225,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                 },
               ),
               //change
-              //
+
               // LocationSearchField(
               //   apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
               //   onSuggestionSelected: (suggestion) {
