@@ -14,6 +14,7 @@ import 'package:yunusco_group/screens/HR&PayRoll/requested_car_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import '../../common_widgets/search_field.dart';
 import 'members_screen.dart';
 
 class VehicleRequisitionForm extends StatefulWidget {
@@ -223,6 +224,19 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                   return null;
                 },
               ),
+              //change
+
+              // LocationSearchField(
+              //   apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
+              //   onSuggestionSelected: (suggestion) {
+              //     // Handle selected location
+              //     print('Selected: ${suggestion['description']}');
+              //     print('Place ID: ${suggestion['place_id']}');
+              //
+              //     // You can get more details using the place_id
+              //     // by calling the Place Details API
+              //   },
+              // ),
               const SizedBox(height: 20),
 
               // Destination Field

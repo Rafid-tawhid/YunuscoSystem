@@ -25,9 +25,8 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
 
   int? _urgencyType;
   final Map<String, int> _urgencyOptions = {
-    'High': 1,
-    'Medium': 2,
-    'Low': 3,
+    'Regular': 1,
+    'Emergency': 2,
   };
 
   @override
