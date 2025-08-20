@@ -77,51 +77,53 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              Consumer<HrProvider>(
-                  builder: (context, pro, _) => TextButton(
-                      onPressed: () {
-                        pro.showHideDocForm();
-                      },
-                      child: Align(alignment: Alignment.bottomRight, child: Text(pro.showForm ? 'Hide' : 'Create')))),
-
-              Consumer<HrProvider>(
-                builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
-              ),
-              // ID Card Number Field
-              Consumer<HrProvider>(
-                builder: (context, pro, _) {
-                  return pro.showForm?  SizedBox.shrink():ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: pro.docAppointmentList.length,
-                    itemBuilder: (context, index) {
-                      final appointment = pro.docAppointmentList[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        color: Colors.white,
-                        child: ListTile(
-                          leading: CircleAvatar(child: Icon(Icons.person)),
-                          title: Text('Serial: ${appointment.serialNo ?? 'N/A'}'),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('ID: ${appointment.idCardNo ?? 'N/A'}'),
-                              Text('Date: ${DashboardHelpers.convertDateTime(appointment.requestDate ?? '')}'),
-                              if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
-                            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Consumer<HrProvider>(
+                    builder: (context, pro, _) => TextButton(
+                        onPressed: () {
+                          pro.showHideDocForm();
+                        },
+                        child: Align(alignment: Alignment.bottomRight, child: Text(pro.showForm ? 'Hide' : 'Create')))),
+            
+                Consumer<HrProvider>(
+                  builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
+                ),
+                // ID Card Number Field
+                Consumer<HrProvider>(
+                  builder: (context, pro, _) {
+                    return pro.showForm?  SizedBox.shrink():ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: pro.docAppointmentList.length,
+                      itemBuilder: (context, index) {
+                        final appointment = pro.docAppointmentList[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          color: Colors.white,
+                          child: ListTile(
+                            leading: CircleAvatar(child: Icon(Icons.person)),
+                            title: Text('Serial: ${appointment.serialNo ?? 'N/A'}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('ID: ${appointment.idCardNo ?? 'N/A'}'),
+                                Text('Date: ${DashboardHelpers.convertDateTime(appointment.requestDate ?? '')}'),
+                                if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
+                              ],
+                            ),
+                            trailing: _buildUrgencyChip(appointment.urgencyType!.toInt()),
+                            onTap: () {},
                           ),
-                          trailing: _buildUrgencyChip(appointment.urgencyType!.toInt()),
-                          onTap: () {},
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

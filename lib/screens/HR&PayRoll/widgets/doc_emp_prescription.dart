@@ -43,12 +43,20 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Chip(
+                    label: Text(
+                  widget.listInfo.status == 1 ? 'Emergency' : 'Regular',
+                  textAlign: TextAlign.end,
+                )),
+              ),
               // Employee Information Section
               _buildEmployeeInfoCard(),
               const SizedBox(height: 24),
@@ -188,7 +196,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               //gate pass notes
               if (_needsGatePass)
                 TextFormField(
-                  controller: _instructionController,
+                  controller: _gatePassNotes,
                   maxLines: 1,
                   decoration: const InputDecoration(
                     labelText: 'Leave Notes',
@@ -205,7 +213,9 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                   isLoading: pro.isLoading,
                   text: 'Submit Prescription',
                 ),
-              )
+              ),
+
+              const SizedBox(height: 120),
             ],
           ),
         ),
