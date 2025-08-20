@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
@@ -12,7 +13,9 @@ import 'package:yunusco_group/models/members_model.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/requested_car_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/vehicle_req_dropdown.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../common_widgets/search_field.dart';
 import 'members_screen.dart';
@@ -27,8 +30,6 @@ class VehicleRequisitionForm extends StatefulWidget {
 class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
   final _formKey = GlobalKey<FormState>();
   final _distanceController = TextEditingController();
-  final _carryGoodsController = TextEditingController();
-  final _purposeController = TextEditingController();
   final _durationController = TextEditingController();
   final _travelStartFromController = TextEditingController();
   final _destinationController = TextEditingController();
@@ -43,12 +44,13 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     {'name': 'Sedan Car', 'value': 1},
       {'name': 'Hiace', 'value': 2},
   ];
+  String placeId1='';
+  String placeId2='';
+  String purpouse='';
 
   @override
   void dispose() {
     _distanceController.dispose();
-    _carryGoodsController.dispose();
-    _purposeController.dispose();
     _durationController.dispose();
     _travelStartFromController.dispose();
     _destinationController.dispose();
@@ -93,8 +95,8 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     return {
       "IdCardNo": _selectedThirdPerson==null?DashboardHelpers.currentUser!.iDnum:_selectedThirdPerson!.idCardNo,
       "Distance": _distanceController.text,
-      "CarryGoods": _carryGoodsController.text,
-      "Purpose": _purposeController.text,
+      "CarryGoods": '',
+      "Purpose": purpouse,
       "CreatedBy": DashboardHelpers.currentUser!.iDnum,
       "DestinationTo": _destinationController.text,
       "DestinationFrom": _travelStartFromController.text,
@@ -210,48 +212,42 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
               const SizedBox(height: 20),
 
               // Travel Start From Field
-              TextFormField(
-                controller: _travelStartFromController,
-                decoration: const InputDecoration(
-                  labelText: 'Travel Start From*',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.location_on),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter starting location';
-                  }
-                  return null;
-                },
-              ),
+
               //change
               //
-              // LocationSearchField(
-              //   apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
-              //   onSuggestionSelected: (suggestion) {
-              //     // Handle selected location
-              //     print('Selected: ${suggestion['description']}');
-              //     print('Place ID: ${suggestion['place_id']}');
-              //
-              //     // You can get more details using the place_id
-              //     // by calling the Place Details API
-              //   },
-              // ),
+              LocationSearchField(
+                apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
+                lable: 'Travel starts form*',
+                initialValue: _travelStartFromController.text,
+                onSuggestionSelected: (suggestion) async {
+                  // Handle selected location
+                  print('Selected: ${suggestion['description']}');
+                  print('Place ID: ${suggestion['place_id']}');
+
+                  setState(() {
+                    _travelStartFromController.text=suggestion['description'];
+                    placeId1=suggestion['place_id'];
+                  });
+
+                },
+              ),
               const SizedBox(height: 20),
 
               // Destination Field
-              TextFormField(
-                controller: _destinationController,
-                decoration: const InputDecoration(
-                  labelText: 'Destination*',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.flag),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter final destination';
-                  }
-                  return null;
+              LocationSearchField(
+                apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
+                lable: 'Destination*',
+                initialValue: _destinationController.text,
+                onSuggestionSelected: (suggestion) async {
+                  // Handle selected location
+                  print('Selected: ${suggestion['description']}');
+                  print('Place ID: ${suggestion['place_id']}');
+
+                  setState(() {
+                    _destinationController.text=suggestion['description'];
+                    placeId2=suggestion['place_id'];
+                  });
+
                 },
               ),
               const SizedBox(height: 20),
@@ -263,7 +259,6 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: 'Distance* (Km)',
-
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.linear_scale),
                 ),
@@ -275,31 +270,9 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                 },
               ),
               const SizedBox(height: 20),
-
-              // Carry Goods Field
-              TextFormField(
-                controller: _carryGoodsController,
-                decoration: const InputDecoration(
-                  labelText: 'Goods to Carry',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.local_shipping),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Purpose Field
-              TextFormField(
-                controller: _purposeController,
-                decoration: const InputDecoration(
-                  labelText: 'Purpose*',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.description),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter purpose';
-                  }
-                  return null;
+              VehiclePurposeDropdown(
+                onPurposeSelected: (String value) {
+                  purpouse=value;
                 },
               ),
               const SizedBox(height: 20),
@@ -425,5 +398,112 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     );
 
     return timeFormat.format(combinedDateTime);
+  }
+
+
+  Future<Map<String, dynamic>> getRoadDistanceRoutesAPI({
+    required String originPlaceId,
+    required String destinationPlaceId,
+    required String apiKey,
+  }) async {
+    try {
+      final url = Uri.parse(
+        'https://routes.googleapis.com/directions/v2:computeRoutes',
+      );
+
+      final headers = {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline',
+      };
+
+      final body = json.encode({
+        'origin': {
+          'placeId': originPlaceId,
+        },
+        'destination': {
+          'placeId': destinationPlaceId,
+        },
+        'travelMode': 'DRIVE',
+        'routingPreference': 'TRAFFIC_AWARE',
+        'computeAlternativeRoutes': false,
+        'routeModifiers': {
+          'avoidTolls': false,
+          'avoidHighways': false,
+          'avoidFerries': false,
+        },
+        'languageCode': 'en-US',
+        'units': 'METRIC',
+      });
+
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data.containsKey('routes') && data['routes'].isNotEmpty) {
+          final route = data['routes'][0];
+          final distanceMeters = route['distanceMeters'];
+          final duration = route['duration'];
+
+          // Convert duration from ISO 8601 format to seconds
+          final durationSeconds = _parseDurationToSeconds(duration);
+
+          return {
+            'success': true,
+            'distance_meters': distanceMeters,
+            'duration_seconds': durationSeconds,
+            'distance_text': _formatDistance(distanceMeters),
+            'duration_text': _formatDuration(durationSeconds),
+            'polyline': route['polyline']['encodedPolyline'],
+          };
+        } else {
+          return {
+            'success': false,
+            'error': 'No routes found',
+          };
+        }
+      } else {
+        return {
+          'success': false,
+          'error': 'HTTP error: ${response.statusCode} - ${response.body}',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'Exception: $e',
+      };
+    }
+  }
+
+  int _parseDurationToSeconds(String duration) {
+    // Parse ISO 8601 duration format (e.g., "3600s", "1h30m")
+    if (duration.endsWith('s')) {
+      return int.parse(duration.substring(0, duration.length - 1));
+    }
+
+    // Handle other formats if needed
+    return 0;
+  }
+
+  String _formatDistance(int meters) {
+    if (meters < 1000) {
+      return '$meters m';
+    } else {
+      return '${(meters / 1000).toStringAsFixed(1)} km';
+    }
+  }
+
+  String _formatDuration(int seconds) {
+    if (seconds < 60) {
+      return '$seconds seconds';
+    } else if (seconds < 3600) {
+      return '${(seconds / 60).round()} minutes';
+    } else {
+      final hours = seconds ~/ 3600;
+      final minutes = (seconds % 3600) ~/ 60;
+      return minutes > 0 ? '$hours h $minutes min' : '$hours hours';
+    }
   }
 }
