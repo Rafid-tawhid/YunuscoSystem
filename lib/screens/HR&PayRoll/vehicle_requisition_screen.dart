@@ -215,39 +215,71 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
 
               //change
               //
-              LocationSearchField(
-                apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
-                lable: 'Travel starts form*',
-                initialValue: _travelStartFromController.text,
-                onSuggestionSelected: (suggestion) async {
-                  // Handle selected location
-                  print('Selected: ${suggestion['description']}');
-                  print('Place ID: ${suggestion['place_id']}');
-
-                  setState(() {
-                    _travelStartFromController.text=suggestion['description'];
-                    placeId1=suggestion['place_id'];
-                  });
-
+              // LocationSearchField(
+              //   apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
+              //   lable: 'Travel starts form*',
+              //   initialValue: _travelStartFromController.text,
+              //   onSuggestionSelected: (suggestion) async {
+              //     // Handle selected location
+              //     print('Selected: ${suggestion['description']}');
+              //     print('Place ID: ${suggestion['place_id']}');
+              //
+              //     setState(() {
+              //       _travelStartFromController.text=suggestion['description'];
+              //       placeId1=suggestion['place_id'];
+              //     });
+              //
+              //   },
+              // ),
+              TextFormField(
+                controller: _travelStartFromController,
+                keyboardType: TextInputType.text,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  labelText: 'Travel starts form*',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.search),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter address';
+                  }
+                  return null;
                 },
               ),
               const SizedBox(height: 20),
 
               // Destination Field
-              LocationSearchField(
-                apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
-                lable: 'Destination*',
-                initialValue: _destinationController.text,
-                onSuggestionSelected: (suggestion) async {
-                  // Handle selected location
-                  print('Selected: ${suggestion['description']}');
-                  print('Place ID: ${suggestion['place_id']}');
-
-                  setState(() {
-                    _destinationController.text=suggestion['description'];
-                    placeId2=suggestion['place_id'];
-                  });
-
+              // LocationSearchField(
+              //   apiKey: 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY',
+              //   lable: 'Destination*',
+              //   initialValue: _destinationController.text,
+              //   onSuggestionSelected: (suggestion) async {
+              //     // Handle selected location
+              //     print('Selected: ${suggestion['description']}');
+              //     print('Place ID: ${suggestion['place_id']}');
+              //
+              //     setState(() {
+              //       _destinationController.text=suggestion['description'];
+              //       placeId2=suggestion['place_id'];
+              //     });
+              //
+              //   },
+              // ),
+              TextFormField(
+                controller: _destinationController,
+                keyboardType: TextInputType.text,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  labelText: 'Destination*',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.search),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter destination';
+                  }
+                  return null;
                 },
               ),
               const SizedBox(height: 20),

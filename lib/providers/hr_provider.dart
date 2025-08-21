@@ -347,19 +347,49 @@ class HrProvider extends ChangeNotifier{
 
   List<DocAppoinmentListModel> _docAppointmentList=[];
   List<DocAppoinmentListModel> get docAppointmentList=>_docAppointmentList;
-  Future<bool> getAllDocAppointment() async{
+
+
+  Future<bool> getAllDocAppointment() async {
     setLoading(true);
-    var result=await apiService.getData('api/HR/GatePassList');
-    if(result!=null){
-      _docAppointmentList.clear();
-      for(var i in result['Results']){
-        _docAppointmentList.add(DocAppoinmentListModel.fromJson(i));
+
+    try {
+      var result = await apiService.getData('api/HR/GatePassList');
+
+      if (result != null) {
+        _docAppointmentList.clear();
+
+        // It's good practice to check if 'Results' exists and is a List
+        if (result['Results'] is List) {
+          for (var i in result['Results']) {
+            _docAppointmentList.add(DocAppoinmentListModel.fromJson(i));
+          }
+          _docAppointmentList = _docAppointmentList.reversed.toList(); // Fixed this line
+        } else {
+          // Handle the case where 'Results' is not a list or doesn't exist
+          print('Error: "Results" is not a list or is null');
+          setLoading(false);
+          return false;
+        }
+      } else {
+        // Handle the case where the entire result is null
+        setLoading(false);
+        return false;
       }
-      _docAppointmentList.reversed;
+
+      notifyListeners();
+      setLoading(false);
+      return true;
+
+    } catch (e) {
+      // Handle any errors that occur during the process
+      setLoading(false);
+      print('Error in getAllDocAppointment: $e');
+
+      // You might want to show an error message to the user here
+      // For example: ScaffoldMessenger.of(context).showSnackBar(...);
+
+      return false;
     }
-    notifyListeners();
-    setLoading(false);
-    return result==null?false:true;
   }
 
   EmployeeAppointmentInfoModel? _employeeAppointmentInfoModel;

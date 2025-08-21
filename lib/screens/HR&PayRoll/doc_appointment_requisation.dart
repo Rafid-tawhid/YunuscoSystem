@@ -72,58 +72,86 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         title: const Text('Doc-Appointment'),
         centerTitle: true,
         elevation: 0,
+        actions: [
+
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Consumer<HrProvider>(
-                    builder: (context, pro, _) => TextButton(
-                        onPressed: () {
-                          pro.showHideDocForm();
-                        },
-                        child: Align(alignment: Alignment.bottomRight, child: Text(pro.showForm ? 'Hide' : 'Create')))),
-            
-                Consumer<HrProvider>(
-                  builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
-                ),
-                // ID Card Number Field
-                Consumer<HrProvider>(
-                  builder: (context, pro, _) {
-                    return pro.showForm?  SizedBox.shrink():ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: pro.docAppointmentList.length,
-                      itemBuilder: (context, index) {
-                        final appointment = pro.docAppointmentList[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          color: Colors.white,
-                          child: ListTile(
-                            leading: CircleAvatar(child: Icon(Icons.person)),
-                            title: Text('Serial: ${appointment.serialNo ?? 'N/A'}'),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('ID: ${appointment.idCardNo ?? 'N/A'}'),
-                                Text('Date: ${DashboardHelpers.convertDateTime(appointment.requestDate ?? '')}'),
-                                if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
-                              ],
-                            ),
-                            trailing: _buildUrgencyChip(appointment.urgencyType!.toInt()),
-                            onTap: () {},
-                          ),
-                        );
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 8,
+              ),
+              Consumer<HrProvider>(
+                  builder: (context, pro, _) => ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.zero, // Set minimum size to zero
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: Colors.green.shade800,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6), // ← Adjust this value
+                        ),
+                      ),
+                      onPressed: () {
+                        pro.showHideDocForm();
                       },
-                    );
-                  },
+                      child: Text(
+                        pro.showForm ? 'Applications' : 'Create +',
+                        style: TextStyle(color: Colors.white),
+                      ))),
+              SizedBox(
+                height: 8,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Consumer<HrProvider>(
+                        builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
+                      ),
+                      // ID Card Number Field
+                      Consumer<HrProvider>(
+                        builder: (context, pro, _) {
+                          return pro.showForm
+                              ? SizedBox.shrink()
+                              : ListView.builder(
+                                  padding: const EdgeInsets.all(8),
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: pro.docAppointmentList.length,
+                                  itemBuilder: (context, index) {
+                                    final appointment = pro.docAppointmentList[index];
+                                    return Card(
+                                      margin: const EdgeInsets.symmetric(vertical: 4),
+                                      color: Colors.white,
+                                      child: ListTile(
+                                        title: Text('Serial: ${appointment.serialNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                        subtitle: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('ID: ${appointment.idCardNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600)),
+                                            Text('Date: ${DashboardHelpers.convertDateTime(appointment.requestDate ?? '')}'),
+                                            if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
+                                          ],
+                                        ),
+                                        trailing: _buildUrgencyChip(appointment.urgencyType!.toInt()),
+                                        onTap: () {},
+                                      ),
+                                    );
+                                  },
+                                );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -192,14 +220,10 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     if (urgency == null) return const SizedBox();
 
     return Chip(
-      label: Text('Urgency ${urgency == 1 ? 'High' : urgency == 2 ? 'Medium' : 'Low'}'),
+      label: Text('Urgency ${urgency == 1 ? 'Regular' : 'Emergency'}',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
       backgroundColor: urgency == 1
-          ? Colors.green.shade200
-          : urgency == 2
-              ? Colors.yellow[100]
-              : urgency == 2
-                  ? Colors.orange[100]
-                  : Colors.red[100],
+          ? Colors.orange
+          : Colors.red
     );
   }
 }
