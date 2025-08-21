@@ -9,9 +9,9 @@ import 'doc_emp_prescription.dart';
 
 
 class AppointmentListScreen extends StatelessWidget {
-  final List<DocAppoinmentListModel> appointments;
-
-  const AppointmentListScreen({super.key, required this.appointments});
+  // final List<DocAppoinmentListModel> appointments;
+  //
+  // const AppointmentListScreen({super.key, required this.appointments});
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +28,27 @@ class AppointmentListScreen extends StatelessWidget {
               Tab(text: 'Completed', icon: Icon(Icons.check_circle)),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: [
-            _buildStatusList(appointments.where((a) => a.status == 1).toList()),
-            _buildStatusList(appointments.where((a) => a.status == 2).toList()),
+          actions: [
+            IconButton(onPressed: () async {
+              var hp=context.read<HrProvider>();
+              await hp.getAllDocAppointment();
+            }, icon: Icon(Icons.refresh))
           ],
+        ),
+        body: Consumer<HrProvider>(
+          builder: (context,pro,_)=>pro.docAppointmentList.isEmpty?Center(child: Text('No data Found'),):TabBarView(
+            children: [
+              _buildStatusList(pro.docAppointmentList.where((a) => a.status == 1).toList()),
+              _buildStatusList(pro.docAppointmentList.where((a) => a.status == 2).toList()),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildStatusList(List<DocAppoinmentListModel> appointments) {
+
     if (appointments.isEmpty) {
       return const Center(child: Text('No appointments found'));
     }
@@ -53,19 +62,19 @@ class AppointmentListScreen extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: 4),
           color: Colors.white,
           child: ListTile(
-            leading: CircleAvatar(
+            leading: appointment.status==1?CircleAvatar(
               backgroundColor: _getStatusColor(appointment.status!.toInt()).withOpacity(0.2),
               child: Icon(
                 _getStatusIcon(appointment.status!.toInt()),
                 color: _getStatusColor(appointment.status!.toInt()),
               ),
-            ),
-            title: Text('Serial: ${appointment.serialNo ?? 'N/A'}'),
+            ):null,
+            title: Text('Serial: ${appointment.serialNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600),),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('ID: ${appointment.idCardNo ?? 'N/A'}'),
-                Text('Date: ${_formatDate(appointment.requestDate)}'),
+                Text('ID: ${appointment.idCardNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500)),
+                Text('Date: ${_formatDate(appointment.createdDate)}'),
                 if (appointment.remarks?.isNotEmpty ?? false)
                   Text('Remarks: ${appointment.remarks}'),
               ],
@@ -101,10 +110,9 @@ class AppointmentListScreen extends StatelessWidget {
     if (urgency == null) return const SizedBox();
 
     return Chip(
-      label: Text('Urgency ${urgency==1?'High':urgency==2?'Medium':'Low'}'),
-      backgroundColor: urgency == 1 ?Colors.green.shade200:urgency == 2? Colors.yellow[100]
-          : urgency == 2 ? Colors.orange[100]
-          : Colors.red[100],
+      label: Text(urgency==1?'Regular':'Emergency',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
+      backgroundColor: urgency == 1 ?Colors.green
+          : Colors.red,
     );
   }
 
@@ -119,9 +127,12 @@ class AppointmentListScreen extends StatelessWidget {
   }
 
   Future<void> _showDetails(BuildContext context, DocAppoinmentListModel appointment) async {
-    var hp=context.read<HrProvider>();
-    if(await hp.getEmployeeInfo(appointment)){
-     if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>DoctorPrescriptionScreen(employee: hp.employeeInfo!,listInfo: appointment,)));
+    if(appointment.status==1)//pending
+      {
+      var hp=context.read<HrProvider>();
+      if(await hp.getEmployeeInfo(appointment)){
+        if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>DoctorPrescriptionScreen(employee: hp.employeeInfo!,listInfo: appointment,)));
+      }
     }
   }
 

@@ -52,9 +52,11 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               Align(
                 alignment: Alignment.topRight,
                 child: Chip(
+                  backgroundColor: widget.listInfo.status == 1?Colors.orange:Colors.red,
                     label: Text(
                   widget.listInfo.status == 1 ? 'Emergency' : 'Regular',
                   textAlign: TextAlign.end,
+                      style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),
                 )),
               ),
               // Employee Information Section
@@ -302,6 +304,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         "PrescriptionDetails": medicins
       };
       if (await hp.saveGatePassInfo(prescriptionData)) {
+        await hp.getAllDocAppointment();
         if (mounted) DashboardHelpers.showSnakBar(context: context, message: 'Prescription submitted successfully!');
         if (mounted) Navigator.pop(context);
       }

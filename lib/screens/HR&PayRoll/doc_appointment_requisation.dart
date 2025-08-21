@@ -220,7 +220,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     if (urgency == null) return const SizedBox();
 
     return Chip(
-      label: Text('Urgency ${urgency == 1 ? 'Regular' : 'Emergency'}',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+      label: Text(urgency == 1 ? 'Regular' : 'Emergency',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
       backgroundColor: urgency == 1
           ? Colors.orange
           : Colors.red

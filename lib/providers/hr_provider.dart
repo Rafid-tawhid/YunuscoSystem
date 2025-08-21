@@ -376,6 +376,8 @@ class HrProvider extends ChangeNotifier{
         return false;
       }
 
+      debugPrint('_docAppointmentList ${_docAppointmentList.length}');
+
       notifyListeners();
       setLoading(false);
       return true;
