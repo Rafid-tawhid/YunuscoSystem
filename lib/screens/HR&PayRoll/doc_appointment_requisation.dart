@@ -169,7 +169,6 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-
   void showAppointmentBottomSheet({
     required BuildContext context,
     required DocAppoinmentListModel appointment,
@@ -236,20 +235,12 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                     _buildInfoRow('ID Card No:', appointment.idCardNo ?? 'N/A'),
                     _buildInfoRow('Serial No:', appointment.serialNo ?? 'N/A'),
                     _buildInfoRow('Gate ID:', appointment.gateId?.toString() ?? 'N/A'),
-                    _buildInfoRow(
-                        'Request Date:',
-                        _formatDate(appointment.requestDate) ?? 'N/A'
-                    ),
-                    _buildInfoRow(
-                        'Urgency:',
-                        _getUrgencyText(appointment.urgencyType)
-                    ),
+                    _buildInfoRow('Request Date:', _formatDate(appointment.requestDate) ?? 'N/A'),
+                    _buildInfoRow('Urgency:', _getUrgencyText(appointment.urgencyType)),
                     _buildInfoRow(
                       'Gate Pass:',
                       appointment.gatePassStatus == true ? 'Approved' : 'Not Approved',
-                      valueColor: appointment.gatePassStatus == true
-                          ? Colors.green
-                          : Colors.orange,
+                      valueColor: appointment.gatePassStatus == true ? Colors.green : Colors.orange,
                     ),
                   ],
                 ),
@@ -261,12 +252,12 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                   _buildInfoSection(
                     title: 'Medical Information',
                     children: [
-                      if (medicineName != null)
-                        _buildInfoRow('Medicine:', medicineName),
-                      if (medicineTime != null)
-                        _buildInfoRow('Dosage Time:', medicineTime),
+                      if (medicineName != null) _buildInfoRow('Medicine:', medicineName),
+                      if (medicineTime != null) _buildInfoRow('Dosage Time:', medicineTime),
                       if (doctorAdvice != null)
-                        _buildInfoRow('Doctor Advice:', doctorAdvice,
+                        _buildInfoRow(
+                          'Doctor Advice:',
+                          doctorAdvice,
                           valueStyle: const TextStyle(fontStyle: FontStyle.italic),
                         ),
                     ],
@@ -278,11 +269,11 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                 _buildInfoSection(
                   title: 'Notes & Remarks',
                   children: [
-                    if (appointment.remarks != null && appointment.remarks!.isNotEmpty)
-                      _buildInfoRow('Remarks:', appointment.remarks!),
-
+                    if (appointment.remarks != null && appointment.remarks!.isNotEmpty) _buildInfoRow('Remarks:', appointment.remarks!),
                     if (leaveNotes != null && leaveNotes.isNotEmpty)
-                      _buildInfoRow('Leave Notes:', leaveNotes,
+                      _buildInfoRow(
+                        'Leave Notes:',
+                        leaveNotes,
                         valueStyle: const TextStyle(fontStyle: FontStyle.italic),
                       ),
                   ],
@@ -294,15 +285,8 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                 _buildInfoSection(
                   title: 'Metadata',
                   children: [
-                    _buildInfoRow(
-                        'Created:',
-                        _formatDate(appointment.createdDate) ?? 'N/A'
-                    ),
-                    if (appointment.updatedDate != null)
-                      _buildInfoRow(
-                          'Last Updated:',
-                          _formatDate(appointment.updatedDate) ?? 'N/A'
-                      ),
+                    _buildInfoRow('Created:', _formatDate(appointment.createdDate) ?? 'N/A'),
+                    if (appointment.updatedDate != null) _buildInfoRow('Last Updated:', _formatDate(appointment.updatedDate) ?? 'N/A'),
                   ],
                 ),
 
@@ -344,7 +328,9 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {
+  Widget _buildInfoRow(
+    String label,
+    String value, {
     TextStyle? valueStyle,
     Color? valueColor,
   }) {
@@ -368,10 +354,11 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
           Expanded(
             child: Text(
               value,
-              style: valueStyle ?? TextStyle(
-                fontSize: 14,
-                color: valueColor ?? Colors.black87,
-              ),
+              style: valueStyle ??
+                  TextStyle(
+                    fontSize: 14,
+                    color: valueColor ?? Colors.black87,
+                  ),
             ),
           ),
         ],
@@ -399,29 +386,27 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-
-
   String _getUrgencyText(num? urgencyType) {
-  switch (urgencyType) {
-  case 1:
-  return 'Normal';
-  case 2:
-  return 'Urgent';
-  case 3:
-  return 'Emergency';
-  default:
-  return 'Not Specified';
-  }
+    switch (urgencyType) {
+      case 1:
+        return 'Normal';
+      case 2:
+        return 'Urgent';
+      case 3:
+        return 'Emergency';
+      default:
+        return 'Not Specified';
+    }
   }
 
   String? _formatDate(String? dateString) {
-  if (dateString == null) return null;
-  try {
-  final date = DateTime.parse(dateString);
-  return DateFormat('d MMM yyyy, hh:mm a').format(date);
-  } catch (e) {
-  return dateString;
-  }
+    if (dateString == null) return null;
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('d MMM yyyy, hh:mm a').format(date);
+    } catch (e) {
+      return dateString;
+    }
   }
 
   Widget DocReqForm() {
@@ -499,7 +484,6 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                 : Colors.red);
   }
 }
-
 
 class StatusInfo {
   final String text;
