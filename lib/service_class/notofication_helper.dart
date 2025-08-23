@@ -14,6 +14,7 @@ import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../screens/HR&PayRoll/doc_appointment_requisation.dart';
 import '../screens/HR&PayRoll/requested_car_list.dart';
 import '../screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
 import '../screens/login_screen.dart';
@@ -259,6 +260,10 @@ class NotificationServices {
     if(data['type']=="VehicleRequest"){
       //
       Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()));
+    }
+    if(data['type']=="MedicalLeave"){
+      //
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
     }
     else {
       Navigator.push(context, CupertinoPageRoute(builder: (context) => NotificationsScreen()));
