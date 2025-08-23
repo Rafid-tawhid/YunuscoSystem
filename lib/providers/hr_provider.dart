@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/attendence_model.dart';
 import 'package:yunusco_group/models/doc_appoinment_list_model.dart';
@@ -487,6 +488,18 @@ class HrProvider extends ChangeNotifier{
   showHideDocForm(){
     _showForm=!_showForm;
     notifyListeners();
+  }
+
+  Future<dynamic> gatePassDetailsInfo(DocAppoinmentListModel appointment) async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    var data=await apiService.getData('api/HR/GatePassDetails/${appointment.gateId}');
+    EasyLoading.dismiss();
+    if(data!=null){
+      return data['Results'][0];
+    }
+    else {
+      return null;
+    }
   }
 
 

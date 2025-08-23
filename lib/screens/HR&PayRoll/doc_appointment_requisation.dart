@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
@@ -85,7 +86,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
               SizedBox(
                 height: 8,
               ),
-              Consumer<HrProvider>(
+             if(DashboardHelpers.currentUser!.iDnum!='37068') Consumer<HrProvider>(
                   builder: (context, pro, _) => ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size.zero, // Set minimum size to zero
@@ -142,15 +143,22 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                                           ],
                                         ),
                                         trailing: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
-                                        onTap: () {
-                                          showAppointmentBottomSheet(
-                                            context: context,
-                                            appointment: appointment, // Your DocAppoinmentListModel instance
-                                            medicineName: "Napa Extra",
-                                            doctorAdvice: "Take rest for 3 days and avoid strenuous activities",
-                                            medicineTime: "1+0+1 (After meals)",
-                                            leaveNotes: "Medical leave approved for 3 days",
-                                          );
+                                        onTap: () async{
+
+                                         if(appointment.status==2){
+                                           var hp=context.read<HrProvider>();
+                                           var data=await hp.gatePassDetailsInfo(appointment);
+                                           if(data!=null){
+                                             showAppointmentBottomSheet(
+                                               context: context,
+                                               appointment: appointment, // Your DocAppoinmentListModel instance
+                                               medicineName: data['FullName']??"No Name",
+                                               doctorAdvice: data['Advice']??"None",
+                                               medicineTime: data["PrescriptionDate"],
+                                               leaveNotes: data['Remarks']??"None",
+                                             );
+                                           }
+                                         }
                                         },
                                       ),
                                     );
@@ -234,7 +242,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                   children: [
                     _buildInfoRow('ID Card No:', appointment.idCardNo ?? 'N/A'),
                     _buildInfoRow('Serial No:', appointment.serialNo ?? 'N/A'),
-                    _buildInfoRow('Gate ID:', appointment.gateId?.toString() ?? 'N/A'),
+                    _buildInfoRow('Name:', medicineName??''),
                     _buildInfoRow('Request Date:', _formatDate(appointment.requestDate) ?? 'N/A'),
                     _buildInfoRow('Urgency:', _getUrgencyText(appointment.urgencyType)),
                     _buildInfoRow(
@@ -245,23 +253,23 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                   ],
                 ),
 
-                const SizedBox(height: 20),
-
-                // Medical Information
-                if (medicineName != null || doctorAdvice != null || medicineTime != null)
-                  _buildInfoSection(
-                    title: 'Medical Information',
-                    children: [
-                      if (medicineName != null) _buildInfoRow('Medicine:', medicineName),
-                      if (medicineTime != null) _buildInfoRow('Dosage Time:', medicineTime),
-                      if (doctorAdvice != null)
-                        _buildInfoRow(
-                          'Doctor Advice:',
-                          doctorAdvice,
-                          valueStyle: const TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                    ],
-                  ),
+                // const SizedBox(height: 20),
+                //
+                // // Medical Information
+                // if (medicineName != null || doctorAdvice != null || medicineTime != null)
+                //   _buildInfoSection(
+                //     title: 'Medical Information',
+                //     children: [
+                //       if (medicineName != null) _buildInfoRow('Medicine:', medicineName),
+                //       if (medicineTime != null) _buildInfoRow('Dosage Time:', medicineTime),
+                //       if (doctorAdvice != null)
+                //         _buildInfoRow(
+                //           'Doctor Advice:',
+                //           doctorAdvice,
+                //           valueStyle: const TextStyle(fontStyle: FontStyle.italic),
+                //         ),
+                //     ],
+                //   ),
 
                 const SizedBox(height: 20),
 

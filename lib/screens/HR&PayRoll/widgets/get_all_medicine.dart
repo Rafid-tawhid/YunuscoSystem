@@ -278,7 +278,7 @@ class _MedicineListItem extends StatelessWidget {
                         labelText: 'Continue for (e.g., 2 days)',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                     ),
 
                     const SizedBox(height: 20),
