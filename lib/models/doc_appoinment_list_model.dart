@@ -5,17 +5,19 @@ class DocAppoinmentListModel {
       String? serialNo, 
       String? requestDate, 
       num? status, 
+      bool? gatePassStatus, 
       String? remarks, 
       num? urgencyType, 
       String? createdDate, 
       num? createdBy, 
-      dynamic updatedDate, 
+      String? updatedDate, 
       dynamic updatedBy,}){
     _gateId = gateId;
     _idCardNo = idCardNo;
     _serialNo = serialNo;
     _requestDate = requestDate;
     _status = status;
+    _gatePassStatus = gatePassStatus;
     _remarks = remarks;
     _urgencyType = urgencyType;
     _createdDate = createdDate;
@@ -30,6 +32,7 @@ class DocAppoinmentListModel {
     _serialNo = json['SerialNo'];
     _requestDate = json['RequestDate'];
     _status = json['Status'];
+    _gatePassStatus = json['GatePassStatus'];
     _remarks = json['Remarks'];
     _urgencyType = json['UrgencyType'];
     _createdDate = json['CreatedDate'];
@@ -42,28 +45,31 @@ class DocAppoinmentListModel {
   String? _serialNo;
   String? _requestDate;
   num? _status;
+  bool? _gatePassStatus;
   String? _remarks;
   num? _urgencyType;
   String? _createdDate;
   num? _createdBy;
-  dynamic _updatedDate;
+  String? _updatedDate;
   dynamic _updatedBy;
 DocAppoinmentListModel copyWith({  num? gateId,
   String? idCardNo,
   String? serialNo,
   String? requestDate,
   num? status,
+  bool? gatePassStatus,
   String? remarks,
   num? urgencyType,
   String? createdDate,
   num? createdBy,
-  dynamic updatedDate,
+  String? updatedDate,
   dynamic updatedBy,
 }) => DocAppoinmentListModel(  gateId: gateId ?? _gateId,
   idCardNo: idCardNo ?? _idCardNo,
   serialNo: serialNo ?? _serialNo,
   requestDate: requestDate ?? _requestDate,
   status: status ?? _status,
+  gatePassStatus: gatePassStatus ?? _gatePassStatus,
   remarks: remarks ?? _remarks,
   urgencyType: urgencyType ?? _urgencyType,
   createdDate: createdDate ?? _createdDate,
@@ -76,11 +82,12 @@ DocAppoinmentListModel copyWith({  num? gateId,
   String? get serialNo => _serialNo;
   String? get requestDate => _requestDate;
   num? get status => _status;
+  bool? get gatePassStatus => _gatePassStatus;
   String? get remarks => _remarks;
   num? get urgencyType => _urgencyType;
   String? get createdDate => _createdDate;
   num? get createdBy => _createdBy;
-  dynamic get updatedDate => _updatedDate;
+  String? get updatedDate => _updatedDate;
   dynamic get updatedBy => _updatedBy;
 
   Map<String, dynamic> toJson() {
@@ -90,6 +97,7 @@ DocAppoinmentListModel copyWith({  num? gateId,
     map['SerialNo'] = _serialNo;
     map['RequestDate'] = _requestDate;
     map['Status'] = _status;
+    map['GatePassStatus'] = _gatePassStatus;
     map['Remarks'] = _remarks;
     map['UrgencyType'] = _urgencyType;
     map['CreatedDate'] = _createdDate;

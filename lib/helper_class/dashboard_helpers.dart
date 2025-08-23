@@ -51,8 +51,8 @@ class DashboardHelpers {
     // Parse the original date-time string into a DateTime object
     DateTime originalDateTime = DateTime.parse(dateTimeString);
 
-    // Create a DateFormat object for the desired format
-    DateFormat desiredFormat = DateFormat(pattern ?? 'd MMM yyyy HH:mm:aa');
+    // Create a DateFormat object for 12-hour format with AM/PM
+    DateFormat desiredFormat = DateFormat(pattern ?? 'd MMM yyyy, hh:mm a');
 
     // Format the date according to the desired format
     String formattedDate = desiredFormat.format(originalDateTime);
