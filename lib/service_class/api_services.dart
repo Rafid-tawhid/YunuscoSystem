@@ -110,6 +110,44 @@ class ApiService {
     }
   }
 
+  Future<dynamic> patchData(String endpoint, dynamic body) async {
+    try {
+      // Perform the POST request
+      debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint/');
+      debugPrint('My Sending Data: $body');
+
+      final response = await client.patch(
+        Uri.parse('${AppConstants.baseUrl}$endpoint/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+        },
+        body: jsonEncode(body),
+      ).timeout(Duration(seconds: 10));
+
+      // Handle response based on status code
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Parse the response body
+        final jsonData = jsonDecode(response.body
+            .replaceAll('â', '’') // Replace garbled apostrophe
+            .replaceAll('â', '“') // Replace garbled quotes
+            .replaceAll('â', '”') // Replace garbled quotes
+            .replaceAll('â¦', '…'));
+        print('Data posted successfully: $jsonData');
+        return jsonData;
+      } else {
+        // Handle non-200 responses
+        _handleError(response.statusCode, response.body);
+        return null;
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('An error occurred: $e');
+      Fluttertoast.showToast(msg: 'Network Error: $e');
+      return null;
+    }
+  }
+
   Future<dynamic> postData2(String endpoint, dynamic body) async {
     try {
       // Perform the POST request

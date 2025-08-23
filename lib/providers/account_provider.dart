@@ -52,4 +52,17 @@ class AccountProvider extends ChangeNotifier{
           (pf.designation?.toLowerCase().contains(_searchQuery) == true);
     }).toList();
   }
+
+
+
+  Future<bool> changePassword(String name,String oldPass,newPass) async{
+
+      var response=await apiService.patchData('api/User/UpdatePassword', {
+        "LoginName" : name,
+        "OldPassword": oldPass,
+        "NewPassword" : newPass,
+        "RetypePassword" : newPass
+      });
+      return response==null?false:true;
+  }
 }
