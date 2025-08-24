@@ -219,30 +219,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
 
-              // Get Values Button (for testing)
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: OutlinedButton(
-                  onPressed: _getAllValues,
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(color: myColors.primaryColor),
-                  ),
-                  child: const Text(
-                    'Get All Values',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),

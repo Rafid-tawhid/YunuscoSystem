@@ -38,8 +38,8 @@ class AppointmentListScreen extends StatelessWidget {
         body: Consumer<HrProvider>(
           builder: (context,pro,_)=>pro.docAppointmentList.isEmpty?Center(child: Text('No data Found'),):TabBarView(
             children: [
-              _buildStatusList(pro.docAppointmentList.where((a) => a.status == 1).toList()),
-              _buildStatusList(pro.docAppointmentList.where((a) => a.status == 2).toList()),
+              _buildStatusList(pro.docAppointmentList.where((a) => (a.status == 1&&a.gatePassStatus==null)).toList()),
+              _buildStatusList(pro.docAppointmentList.where((a) => a.status == 2||a.gatePassStatus==false).toList()),
             ],
           ),
         ),
