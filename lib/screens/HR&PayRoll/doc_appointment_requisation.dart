@@ -480,7 +480,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
 
     return Chip(
         label: gatePass == true
-            ? Text('Gate Pass', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+            ? Text('Approved', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
             : Text(
                 urgency == 1 ? 'Regular' : 'Emergency',
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
