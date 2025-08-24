@@ -144,12 +144,17 @@ class _MedicineListItem extends StatelessWidget {
         trailing: Text('#${medicine.productId?.toString() ?? ''}'),
         onTap: () async {
           final result = await showMedicineDetailsBottomSheet(context, medicine);
+          debugPrint('MEDIC 2 $result');
           if (result != null) {
             //{medicineId: 2950, madicineType: 18, quantity: 3, note: nothing, advice: take rest, madicineContinue: 3}
             // Handle the result data here
             var hp=context.read<HrProvider>();
+
             PrescriptionMedicine medicine= PrescriptionMedicine.fromJson(result);
-            hp.addMedicineListForPrescription(medicine);
+            medicine = medicine.copyWith(note: result['medicineTime']);
+            debugPrint('MEDIC $medicine');
+
+             hp.addMedicineListForPrescription(medicine);
             // If you want to pop the current screen after getting the result:
             Navigator.pop(context, result);
           }

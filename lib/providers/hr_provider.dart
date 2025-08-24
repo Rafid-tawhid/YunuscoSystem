@@ -398,8 +398,9 @@ class HrProvider extends ChangeNotifier{
   EmployeeAppointmentInfoModel? _employeeAppointmentInfoModel;
   EmployeeAppointmentInfoModel? get employeeInfo=>_employeeAppointmentInfoModel;
   Future<bool> getEmployeeInfo(DocAppoinmentListModel appointment) async {
-
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
     var result=await apiService.getData('api/HR/GateEmployeeInfo/${appointment.idCardNo}');
+    EasyLoading.dismiss();
 
     for(var i in result['Results']){
       _employeeAppointmentInfoModel=EmployeeAppointmentInfoModel.fromJson(i);

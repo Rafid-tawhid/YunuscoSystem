@@ -301,6 +301,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         "remarks": _gatePassNotes.text,
         "prescriptionDate": DashboardHelpers.convertDateTime2(DateTime.now()),
         'needsGatePass': _needsGatePass,
+        "NotifyAccessType": 4,
         "PrescriptionDetails": medicins
       };
       if (await hp.saveGatePassInfo(prescriptionData)) {
