@@ -300,7 +300,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         "advice": _instructionController.text,
         "remarks": _gatePassNotes.text,
         "prescriptionDate": DashboardHelpers.convertDateTime2(DateTime.now()),
-        'needsGatePass': _needsGatePass,
+        'gatePassStatus': _needsGatePass,
         "NotifyAccessType": 4,
         "PrescriptionDetails": medicins
       };
