@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 
 import '../models/pf_main_model.dart';
 import '../service_class/api_services.dart';
 
-class AccountProvider extends ChangeNotifier{
-  ApiService apiService=ApiService();
+class AccountProvider extends ChangeNotifier {
+  ApiService apiService = ApiService();
   List<PfMainModel> _pfList = [];
   List<PfMainModel> _filteredPfList = [];
   bool _isLoading = false;
@@ -19,14 +20,14 @@ class AccountProvider extends ChangeNotifier{
     notifyListeners();
 
     try {
-      final data = await apiService.getData2('http://202.74.243.118:8090/api/Hr/PfSettlement');
+      final data = await apiService.getData('api/Hr/PfSettlement');
 
-      if(data!=null){
-        for(var i in data['Result']){
+      if (data != null) {
+        for (var i in data['Result']) {
           _pfList.add(PfMainModel.fromJson(i));
         }
       }
-       debugPrint('_pfList ${_pfList.length}');
+      debugPrint('_pfList ${_pfList.length}');
       _filteredPfList = _applyFilters(_pfList);
     } catch (e) {
       // Handle error
@@ -53,16 +54,26 @@ class AccountProvider extends ChangeNotifier{
     }).toList();
   }
 
+  Future<bool> changePassword(String name, String oldPass, newPass) async {
+    var response = await apiService.patchData('api/User/UpdatePassword', {"LoginName": name, "OldPassword": oldPass, "NewPassword": newPass, "RetypePassword": newPass});
+    return response == null ? false : true;
+  }
 
+  Map<String, dynamic>? personalPfInfo;
 
-  Future<bool> changePassword(String name,String oldPass,newPass) async{
-
-      var response=await apiService.patchData('api/User/UpdatePassword', {
-        "LoginName" : name,
-        "OldPassword": oldPass,
-        "NewPassword" : newPass,
-        "RetypePassword" : newPass
-      });
-      return response==null?false:true;
+  Future<Map<String, dynamic>?> fetchPfAmount() async {
+    try {
+      final data = await apiService.getData('api/HR/PFStatus/${DashboardHelpers.currentUser!.userId}');
+      if (data != null) {
+        personalPfInfo = data['Results'][0];
+        return personalPfInfo;
+      }
+      else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Something wrong $e');
+      return null;
+    }
   }
 }

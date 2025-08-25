@@ -4,11 +4,12 @@ import 'package:yunusco_group/screens/Merchandising/merchandisingSummaryScreen.d
 import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/bom_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/work_order_screen.dart';
+import 'package:yunusco_group/screens/Report/report_screen.dart';
+import 'package:yunusco_group/screens/Merchandising/buyer_order_Screen.dart';
+import 'package:yunusco_group/screens/Merchandising/costing_approval_screen.dart';
+import '../../common_widgets/dashboard_item_card.dart';
 import '../../utils/colors.dart';
 import '../../utils/constants.dart';
-import '../Report/report_screen.dart';
-import 'buyer_order_Screen.dart';
-import 'costing_approval_screen.dart';
 
 class MerchandisingScreen extends StatefulWidget {
   const MerchandisingScreen({super.key});
@@ -18,16 +19,70 @@ class MerchandisingScreen extends StatefulWidget {
 }
 
 class _MerchandisingScreenState extends State<MerchandisingScreen> {
+  late final List<DashboardMenuItem> menuItems;
+
   @override
   void initState() {
     super.initState();
+
+    menuItems = [
+      DashboardMenuItem(
+        name: "Summary\nChart",
+        icon: Icons.analytics_outlined,
+        cardColor: const Color(0xFFEDE7F6), // Light lavender
+        iconColor: const Color(0xFF673AB7), // Deep purple
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => MerchandisingSummaryScreen())),
+      ),
+      DashboardMenuItem(
+        name: "Buyer\nOrders",
+        icon: Icons.list_alt_outlined,
+        cardColor: const Color(0xFFE0F2F1), // Light mint
+        iconColor: const Color(0xFF009688), // Teal
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => BuyerOrderScreen())),
+      ),
+      DashboardMenuItem(
+        name: "Costing\nApproval",
+        icon: Icons.list,
+        cardColor: const Color(0xFFFFF8E1), // Light yellow
+        iconColor: const Color(0xFFFFB300), // Amber
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => CostingApprovalListScreen())),
+      ),
+      DashboardMenuItem(
+        name: "Purchase\nApproval",
+        icon: Icons.list,
+        cardColor: const Color(0xFFFFEBEE), // Light coral
+        iconColor: const Color(0xFFE57373), // Coral Red
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => PurchaseApprovalScreen())),
+      ),
+      DashboardMenuItem(
+        name: "BOM",
+        icon: Icons.calendar_today,
+        cardColor: const Color(0xFFE8F5E9), // Light green
+        iconColor: const Color(0xFF4CAF50), // Emerald Green
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => BomListScreen())),
+      ),
+      DashboardMenuItem(
+        name: "WO",
+        icon: Icons.work,
+        cardColor: const Color(0xFFE3F2FD), // Soft indigo
+        iconColor: const Color(0xFF3F51B5), // Indigo
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => WorkOrderScreen())),
+      ),
+      DashboardMenuItem(
+        name: "Report",
+        icon: Icons.analytics,
+        cardColor: const Color(0xFFE1F5FE), // Light blue
+        iconColor: const Color(0xFF2196F3), // Blue
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => FactoryReportSlider())),
+      ),
+    ];
 
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.blue.shade50,
       appBar: AppBar(
         title: Text(
           'Merchandising',
@@ -35,149 +90,21 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
         ),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: GridView.count(
+      body: GridView.builder(
         padding: const EdgeInsets.all(16),
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 1.2,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          _buildDashboardCard(
-            context,
-            title: "Summary\nChart",
-            icon: Icons.analytics_outlined,
-            color: const Color(0xFF6A5ACD), // Slate blue
-            destination: MerchandisingSummaryScreen(),
-          ),
-
-          _buildDashboardCard(
-            context,
-            title: "Buyer\nOrders",
-            icon: Icons.list_alt_outlined,
-            color: const Color(0xFF20B2AA), // Light sea green
-            destination: BuyerOrderScreen(),
-          ),
-          _buildDashboardCard(
-            context,
-            title: "Costing\nApproval",
-            icon: Icons.list,
-            color: const Color(0xFFD97FF1), // Light sea green
-            destination: CostingApprovalListScreen(),
-          ),
-          _buildDashboardCard(
-            context,
-            title: "Purchase\nApproval",
-            icon: Icons.list,
-            color: const Color(0xFFEA978A), // Light sea green
-            destination: PurchaseApprovalScreen(),
-          ),
-          _buildDashboardCard(
-            context,
-            title: "BOM",
-            icon: Icons.calendar_today,
-            color: Colors.green[300]!,
-            destination: BomListScreen(), // Replace with your actual screen
-          ),
-
-          _buildDashboardCard(
-            context,
-            title: "WO",
-            icon: Icons.work,
-            color: Colors.purple[300]!,
-            destination: WorkOrderScreen(), // Replace with your actual screen
-          ),
-
-          _buildDashboardCard(
-            context,
-            title: "Report",
-            icon: Icons.analytics,
-            color: Colors.indigo[300]!,
-            destination: FactoryReportSlider(), // Replace with your actual screen
-          ),
-
-
-        ],
-      ),
-    );
-  }
-  //
-
-  Widget _buildDashboardCard(
-      BuildContext context, {
-        required String title,
-        required IconData icon,
-        required Color color,
-        required Widget destination,
-      }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () {
-        Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => destination),
-        );
-      },
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1.2,
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                color.withOpacity(0.15),
-                color.withOpacity(0.05),
-              ],
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color.withOpacity(0.2),
-                ),
-                child: Icon(
-                  icon,
-                  size: 28,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade800,
-                  height: 1.3,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Tap to view',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ],
-          ),
-        ),
+        itemCount: menuItems.length,
+        itemBuilder: (context, index) {
+          return ReusableDashboardCard(menu: menuItems[index]);
+        },
       ),
     );
   }
 }
-
-
