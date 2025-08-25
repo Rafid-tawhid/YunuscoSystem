@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/doc_bottom_sheet.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/doctor_appointment_list_screen.dart';
 import '../../common_widgets/custom_button.dart';
 import '../../models/doc_appoinment_list_model.dart';
@@ -71,7 +72,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Doc-Appointment'),
+        title: const Text('Dr. Appointment'),
         centerTitle: true,
         elevation: 0,
         actions: [],
@@ -101,7 +102,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                         pro.showHideDocForm();
                       },
                       child: Text(
-                        pro.showForm ? 'Applications' : 'Create +',
+                        pro.showForm ? 'Requisition List' : 'Create +',
                         style: TextStyle(color: Colors.white),
                       ))),
               SizedBox(
@@ -126,41 +127,48 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                                   itemCount: pro.docAppointmentList.length,
                                   itemBuilder: (context, index) {
                                     final appointment = pro.docAppointmentList[index];
-                                    return Card(
-                                      margin: const EdgeInsets.symmetric(vertical: 4),
-                                      color: Colors.white,
-                                      child: ListTile(
-                                        title: Text(
-                                          'Serial: ${appointment.serialNo ?? 'N/A'}',
-                                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                                        ),
-                                        subtitle: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('ID: ${appointment.idCardNo ?? 'N/A'}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
-                                            Text('Date: ${DashboardHelpers.convertDateTime(appointment.createdDate ?? '')}'),
-                                            if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
-                                          ],
-                                        ),
-                                        trailing: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
-                                        onTap: () async{
+                                    return Stack(
+                                      children: [
+                                        Card(
+                                          color: Colors.white,
+                                          child: ListTile(
+                                            title: Text(
+                                              'Serial: ${appointment.serialNo ?? 'N/A'}',
+                                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                            ),
+                                            subtitle: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text('ID: ${appointment.idCardNo ?? 'N/A'}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+                                                Text('Date: ${DashboardHelpers.convertDateTime(appointment.createdDate ?? '')}'),
+                                                if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
+                                              ],
+                                            ),
+                                            onTap: () async{
 
-                                         if(appointment.status==2){
-                                           var hp=context.read<HrProvider>();
-                                           var data=await hp.gatePassDetailsInfo(appointment);
-                                           if(data!=null){
-                                             showAppointmentBottomSheet(
-                                               context: context,
-                                               appointment: appointment, // Your DocAppoinmentListModel instance
-                                               medicineName: data['FullName']??"No Name",
-                                               doctorAdvice: data['Advice']??"None",
-                                               medicineTime: data["PrescriptionDate"],
-                                               leaveNotes: data['Remarks']??"None",
-                                             );
-                                           }
-                                         }
-                                        },
-                                      ),
+                                             if(appointment.status==2){
+                                               var hp=context.read<HrProvider>();
+                                               var data=await hp.gatePassDetailsInfo(appointment);
+                                               if(data!=null){
+                                                 showAppointmentBottomSheet(
+                                                   context: context,
+                                                   appointment: appointment, // Your DocAppoinmentListModel instance
+                                                   medicineName: data['FullName']??"No Name",
+                                                   doctorAdvice: data['Advice']??"None",
+                                                   medicineTime: data["PrescriptionDate"],
+                                                   leaveNotes: data['Remarks']??"None",
+                                                 );
+                                               }
+                                             }
+                                            },
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
+                                        )
+                                      ],
                                     );
                                   },
                                 );
@@ -177,245 +185,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-  void showAppointmentBottomSheet({
-    required BuildContext context,
-    required DocAppoinmentListModel appointment,
-    String? medicineName,
-    String? doctorAdvice,
-    String? medicineTime,
-    String? leaveNotes,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Center(
-                  child: Container(
-                    width: 60,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Appointment Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue[800],
-                      ),
-                    ),
-                    _buildStatusBadge(appointment.status),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Basic Information
-                _buildInfoSection(
-                  title: 'Basic Information',
-                  children: [
-                    _buildInfoRow('ID Card No:', appointment.idCardNo ?? 'N/A'),
-                    _buildInfoRow('Serial No:', appointment.serialNo ?? 'N/A'),
-                    _buildInfoRow('Name:', medicineName??''),
-                    _buildInfoRow('Request Date:', _formatDate(appointment.requestDate) ?? 'N/A'),
-                    _buildInfoRow('Urgency:', _getUrgencyText(appointment.urgencyType)),
-                    _buildInfoRow(
-                      'Gate Pass:',
-                      appointment.gatePassStatus == true ? 'Approved' : 'Not Approved',
-                      valueColor: appointment.gatePassStatus == true ? Colors.green : Colors.orange,
-                    ),
-                  ],
-                ),
-
-                // const SizedBox(height: 20),
-                //
-                // // Medical Information
-                // if (medicineName != null || doctorAdvice != null || medicineTime != null)
-                //   _buildInfoSection(
-                //     title: 'Medical Information',
-                //     children: [
-                //       if (medicineName != null) _buildInfoRow('Medicine:', medicineName),
-                //       if (medicineTime != null) _buildInfoRow('Dosage Time:', medicineTime),
-                //       if (doctorAdvice != null)
-                //         _buildInfoRow(
-                //           'Doctor Advice:',
-                //           doctorAdvice,
-                //           valueStyle: const TextStyle(fontStyle: FontStyle.italic),
-                //         ),
-                //     ],
-                //   ),
-
-                const SizedBox(height: 20),
-
-                // Notes & Remarks
-                _buildInfoSection(
-                  title: 'Notes & Remarks',
-                  children: [
-                    if (appointment.remarks != null && appointment.remarks!.isNotEmpty) _buildInfoRow('Remarks:', appointment.remarks!),
-                    if (leaveNotes != null && leaveNotes.isNotEmpty)
-                      _buildInfoRow(
-                        'Leave Notes:',
-                        leaveNotes,
-                        valueStyle: const TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Metadata
-                _buildInfoSection(
-                  title: 'Metadata',
-                  children: [
-                    _buildInfoRow('Created:', _formatDate(appointment.createdDate) ?? 'N/A'),
-                    if (appointment.updatedDate != null) _buildInfoRow('Last Updated:', _formatDate(appointment.updatedDate) ?? 'N/A'),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildInfoSection({required String title, required List<Widget> children}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.blueGrey,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow(
-    String label,
-    String value, {
-    TextStyle? valueStyle,
-    Color? valueColor,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              value,
-              style: valueStyle ??
-                  TextStyle(
-                    fontSize: 14,
-                    color: valueColor ?? Colors.black87,
-                  ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge(num? status) {
-    final statusInfo = _getStatusInfo(status);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: statusInfo.color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: statusInfo.color.withOpacity(0.3)),
-      ),
-      child: Text(
-        statusInfo.text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: statusInfo.color,
-        ),
-      ),
-    );
-  }
-
-  String _getUrgencyText(num? urgencyType) {
-    switch (urgencyType) {
-      case 1:
-        return 'Normal';
-      case 2:
-        return 'Urgent';
-      case 3:
-        return 'Emergency';
-      default:
-        return 'Not Specified';
-    }
-  }
-
-  String? _formatDate(String? dateString) {
-    if (dateString == null) return null;
-    try {
-      final date = DateTime.parse(dateString);
-      return DateFormat('d MMM yyyy, hh:mm a').format(date);
-    } catch (e) {
-      return dateString;
-    }
-  }
 
   Widget DocReqForm() {
     return Column(
@@ -467,7 +237,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         Consumer<HrProvider>(
           builder: (context, pro, _) => CustomElevatedButton(
             isLoading: pro.isLoading,
-            text: 'Submit Request',
+            text: 'Submit',
             onPressed: _submitForm,
           ),
         ),
@@ -475,21 +245,24 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-  Widget _buildUrgencyChip(int? urgency, bool? gatePass) {
+  Widget _buildUrgencyChip(int? urgency,bool? gatePass) {
     if (urgency == null) return const SizedBox();
 
-    return Chip(
-        label: gatePass == true
-            ? Text('Approved', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
-            : Text(
-                urgency == 1 ? 'Regular' : 'Emergency',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-        backgroundColor: gatePass == true
-            ? Colors.green
-            : urgency == 1
-                ? Colors.orange
-                : Colors.red);
+    return Container(
+      decoration: BoxDecoration(
+        color:gatePass==true?Colors.green: urgency == 1 ?Colors.orangeAccent
+            : Colors.red,
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
+        child: Text(gatePass==true?'Approved':
+        urgency==1?'Regular':'Emergency',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
+      ),
+    );
   }
 }
 
@@ -500,17 +273,3 @@ class StatusInfo {
   StatusInfo(this.text, this.color);
 }
 
-StatusInfo _getStatusInfo(num? status) {
-  switch (status) {
-    case 1:
-      return StatusInfo('Pending', Colors.orange);
-    case 2:
-      return StatusInfo('Approved', Colors.green);
-    case 3:
-      return StatusInfo('Rejected', Colors.red);
-    case 4:
-      return StatusInfo('Completed', Colors.blue);
-    default:
-      return StatusInfo('Unknown', Colors.grey);
-  }
-}

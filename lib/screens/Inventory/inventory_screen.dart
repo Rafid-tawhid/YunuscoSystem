@@ -46,15 +46,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.indigo[800]!, myColors.primaryColor],
-            ),
-          ),
-        ),
+        backgroundColor: myColors.primaryColor,
         actions: [
           PopupMenuButton<String>(
             color: Colors.white,

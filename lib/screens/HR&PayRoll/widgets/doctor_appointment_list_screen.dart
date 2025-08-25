@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 
 import '../../../models/doc_appoinment_list_model.dart';
+import 'doc_bottom_sheet.dart';
 import 'doc_emp_prescription.dart';
 
 
@@ -21,7 +22,7 @@ class AppointmentListScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('Doctor Appointments'),
+          title: const Text('Dr. Appointments'),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Pending', icon: Icon(Icons.access_time)),
@@ -58,30 +59,38 @@ class AppointmentListScreen extends StatelessWidget {
       itemCount: appointments.length,
       itemBuilder: (context, index) {
         final appointment = appointments[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          color: Colors.white,
-          child: ListTile(
-            leading: appointment.status==1?CircleAvatar(
-              backgroundColor: _getStatusColor(appointment.status!.toInt()).withOpacity(0.2),
-              child: Icon(
-                _getStatusIcon(appointment.status!.toInt()),
-                color: _getStatusColor(appointment.status!.toInt()),
+        return Stack(
+          children: [
+
+            Card(
+              color: Colors.white,
+              child: ListTile(
+                leading: appointment.status==1?CircleAvatar(
+                  backgroundColor: _getStatusColor(appointment.status!.toInt()).withOpacity(0.2),
+                  child: Icon(
+                    _getStatusIcon(appointment.status!.toInt()),
+                    color: _getStatusColor(appointment.status!.toInt()),
+                  ),
+                ):null,
+                title: Text('Serial: ${appointment.serialNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600),),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('ID: ${appointment.idCardNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500)),
+                    Text('Date: ${_formatDate(appointment.createdDate)}'),
+                    if (appointment.remarks?.isNotEmpty ?? false)
+                      Text('Remarks: ${appointment.remarks}'),
+                  ],
+                ),
+                onTap: () => _showDetails(context, appointment),
               ),
-            ):null,
-            title: Text('Serial: ${appointment.serialNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600),),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('ID: ${appointment.idCardNo ?? 'N/A'}',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500)),
-                Text('Date: ${_formatDate(appointment.createdDate)}'),
-                if (appointment.remarks?.isNotEmpty ?? false)
-                  Text('Remarks: ${appointment.remarks}'),
-              ],
             ),
-            trailing: _buildUrgencyChip(appointment.urgencyType!.toInt()),
-            onTap: () => _showDetails(context, appointment),
-          ),
+            Positioned(
+              right: 4,
+              top: 4,
+              child: _buildUrgencyChip(appointment.urgencyType!.toInt(),appointment.gatePassStatus),
+            ),
+          ],
         );
       },
     );
@@ -106,13 +115,23 @@ class AppointmentListScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildUrgencyChip(int? urgency) {
+  Widget _buildUrgencyChip(int? urgency,bool? gatePass) {
     if (urgency == null) return const SizedBox();
 
-    return Chip(
-      label: Text(urgency==1?'Regular':'Emergency',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
-      backgroundColor: urgency == 1 ?Colors.green
-          : Colors.red,
+    return Container(
+      decoration: BoxDecoration(
+        color:gatePass==true?Colors.green: urgency == 1 ?Colors.orangeAccent
+            : Colors.red,
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 2),
+        child: Text(gatePass==true?'Approved':
+        urgency==1?'Regular':'Emergency',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
+      ),
     );
   }
 
@@ -134,6 +153,22 @@ class AppointmentListScreen extends StatelessWidget {
         if(hp.employeeInfo!=null) Navigator.push(context, CupertinoPageRoute(builder: (context)=>DoctorPrescriptionScreen(employee: hp.employeeInfo!,listInfo: appointment,)));
       }
     }
+    else if (appointment.status==2||appointment.gatePassStatus==false){
+        var hp=context.read<HrProvider>();
+        var data=await hp.gatePassDetailsInfo(appointment);
+        if(data!=null){
+          showAppointmentBottomSheet(
+            context: context,
+            appointment: appointment, // Your DocAppoinmentListModel instance
+            medicineName: data['FullName']??"No Name",
+            doctorAdvice: data['Advice']??"None",
+            medicineTime: data["PrescriptionDate"],
+            leaveNotes: data['Remarks']??"None",
+          );
+        }
+
+    }
   }
+
 
 }

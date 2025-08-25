@@ -39,7 +39,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Doctor Prescription'),
+        title: const Text('Dr. Prescription'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -149,7 +149,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                 controller: _instructionController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'Doc Advice',
+                  labelText: 'Dr. Advice',
                   border: OutlineInputBorder(),
                   alignLabelWithHint: true,
                   prefixIcon: Icon(Icons.note),

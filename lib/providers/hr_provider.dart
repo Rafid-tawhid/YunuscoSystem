@@ -364,7 +364,6 @@ class HrProvider extends ChangeNotifier{
           for (var i in result['Results']) {
             _docAppointmentList.add(DocAppoinmentListModel.fromJson(i));
           }
-          _docAppointmentList = _docAppointmentList.reversed.toList(); // Fixed this line
         } else {
           // Handle the case where 'Results' is not a list or doesn't exist
           print('Error: "Results" is not a list or is null');

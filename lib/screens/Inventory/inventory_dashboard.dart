@@ -15,6 +15,7 @@ class InventoryHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title:  Text('Inventory Menu',style: customTextStyle(18, Colors.white, FontWeight.w600),),
         centerTitle: true,
@@ -54,62 +55,26 @@ class InventoryHomeScreen extends StatelessWidget {
                     );
                 }
 
-
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      colorPrimaryMain,
-                      Color(0XFF260378),
+              child: Card(
+                color: Colors.white,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        getIcon(index),
+                        size: 44,
+                        color: myColors.primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _list[index],
+                        style:customTextStyle(18, myColors.primaryColor, FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.teal.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Decorative elements
-                    Positioned(
-                      top: -20,
-                      right: -20,
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    // Main content
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            getIcon(index),
-                            size: 44,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _list[index],
-                            style:customTextStyle(18, Colors.white, FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
               ),
             );
