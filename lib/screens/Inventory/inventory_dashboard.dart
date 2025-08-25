@@ -59,7 +59,7 @@ class InventoryHomeScreen extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 0.8,
+            childAspectRatio: 1,
           ),
           padding: const EdgeInsets.all(16),
           itemBuilder: (context, index) {

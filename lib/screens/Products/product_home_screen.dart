@@ -116,7 +116,7 @@ class ProductHomeScreen extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 20,
             crossAxisSpacing: 20,
-            childAspectRatio: 0.85,
+            childAspectRatio: 1,
           ),
           itemCount: menuItems.length,
           itemBuilder: (context, index) {
