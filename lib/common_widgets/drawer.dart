@@ -6,6 +6,7 @@ import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
 import '../screens/Profile/change_password_screen.dart';
 import '../screens/login_screen.dart';
+import '../utils/google_drive.dart';
 
 
 class MyDrawer extends StatelessWidget {
@@ -71,7 +72,8 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductCatalogScreen()));
+            //  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen()));
            //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
             },
           ),

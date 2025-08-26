@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +14,7 @@ import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/providers/planning_provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/screens/home_page.dart';
 import 'package:yunusco_group/service_class/notofication_helper.dart';
-import 'package:yunusco_group/utils/server_key.dart';
 
 import 'launcher_screen.dart';
 class MyHttpOverrides extends HttpOverrides {
@@ -34,7 +31,9 @@ void main() async {
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
     await setupNotificationChannel();
+
   }
+
 //
   HttpOverrides.global = MyHttpOverrides();
   runApp(MultiProvider(providers: [
@@ -57,6 +56,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
         title: 'Yunusco System',
         navigatorKey: NavigationService.navigatorKey,
