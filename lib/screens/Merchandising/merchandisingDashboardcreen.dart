@@ -73,7 +73,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
         icon: Icons.analytics,
         cardColor: const Color(0xFFE1F5FE), // Light blue
         iconColor: const Color(0xFF2196F3), // Blue
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => FactoryReportSlider())),
+        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => ProductionStrengthScreen())),
       ),
     ];
 

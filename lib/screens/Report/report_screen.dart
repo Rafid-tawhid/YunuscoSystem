@@ -1,379 +1,403 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:focusable_control_builder/focusable_control_builder.dart';
 import 'dart:async';
 
-class FactoryReportSlider extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/inventory_provider.dart';
+
+class ProductionStrengthScreen extends StatefulWidget {
+  const ProductionStrengthScreen({Key? key}) : super(key: key);
+
   @override
-  _FactoryReportSliderState createState() => _FactoryReportSliderState();
+  _ProductionStrengthScreenState createState() => _ProductionStrengthScreenState();
 }
 
-class _FactoryReportSliderState extends State<FactoryReportSlider> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-  Timer? _timer;
-  final FocusNode _mainFocusNode = FocusNode();
-  bool _isPaused = false;
-
-  final List<Map<String, dynamic>> _reports = [
-    {
-      'title': 'Production Today',
-      'value': '1,250 pcs',
-      'change': '+5.2%',
-      'icon': Icons.factory,
-      'color': Colors.blue[400],
-    },
-    {
-      'title': 'Efficiency',
-      'value': '78.5%',
-      'change': '+2.1%',
-      'icon': Icons.trending_up,
-      'color': Colors.green[400],
-    },
-    {
-      'title': 'Defect Rate',
-      'value': '2.4%',
-      'change': '-0.8%',
-      'icon': Icons.qr_code,
-      'color': Colors.orange[400],
-    },
-    {
-      'title': 'Line Utilization',
-      'value': '85%',
-      'change': '±0%',
-      'icon': Icons.show_chart,
-      'color': Colors.purple[400],
-    },
-    {
-      'title': 'On-Time Delivery',
-      'value': '92%',
-      'change': '+3.5%',
-      'icon': Icons.delivery_dining,
-      'color': Colors.teal[400],
-    },
-  ];
+class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
+  String? _selectedSection;
+  List<String> _sections = [];
+  DateTime _selectedDate = DateTime.now();
+  int _currentSectionIndex = 0;
+  Timer? _sectionTimer;
 
   @override
   void initState() {
     super.initState();
-    _startAutoScroll();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(_mainFocusNode);
-    });
+    getProductionStrength();
+    _setupSectionTimer();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _pageController.dispose();
-    _mainFocusNode.dispose();
+    _sectionTimer?.cancel();
     super.dispose();
   }
 
-  void _startAutoScroll() {
-    _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
-      if (!_isPaused) {
-        _goToNextPage();
+  void _setupSectionTimer() {
+    _sectionTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (mounted && _sections.isNotEmpty) {
+        setState(() {
+          _currentSectionIndex = (_currentSectionIndex + 1) % _sections.length;
+          _selectedSection = _sections[_currentSectionIndex];
+        });
       }
     });
   }
 
-  void _togglePause() {
-    setState(() {
-      _isPaused = !_isPaused;
-    });
-    HapticFeedback.selectionClick();
-  }
-
-  void _handleKeyEvent(RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        _goToNextPage();
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        _goToPreviousPage();
-      } else if (event.logicalKey == LogicalKeyboardKey.select ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
-        _togglePause();
-      }
-    }
-  }
-
-  void _goToNextPage() {
-    if (_currentPage < _reports.length - 1) {
-      _currentPage++;
-    } else {
-      _currentPage = 0;
-    }
-    _pageController.animateToPage(
-      _currentPage,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    HapticFeedback.selectionClick();
-  }
-
-  void _goToPreviousPage() {
-    if (_currentPage > 0) {
-      _currentPage--;
-    } else {
-      _currentPage = _reports.length - 1;
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      await getProductionStrength();
     }
-    _pageController.animateToPage(
-      _currentPage,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
-    HapticFeedback.selectionClick();
-  }
-
-  Widget _buildReportCard(Map<String, dynamic> report) {
-    return Stack(
-      children: [
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: report['color']!.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(report['icon'], color: report['color'], size: 40),
-              ),
-              SizedBox(height: 20),
-              Text(
-                report['title'],
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
-                ),
-              ),
-              SizedBox(height: 15),
-              Text(
-                report['value'],
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    report['change'].startsWith('+')
-                        ? Icons.arrow_upward
-                        : report['change'].startsWith('-')
-                        ? Icons.arrow_downward
-                        : Icons.remove,
-                    color: report['change'].startsWith('+')
-                        ? Colors.green
-                        : report['change'].startsWith('-')
-                        ? Colors.red
-                        : Colors.grey,
-                    size: 28,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    report['change'],
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: report['change'].startsWith('+')
-                          ? Colors.green
-                          : report['change'].startsWith('-')
-                          ? Colors.red
-                          : Colors.grey,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
-      focusNode: _mainFocusNode,
-      onKey: _handleKeyEvent,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                //  height: MediaQuery.of(context).size.height * 0.6,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: _reports.length,
-                    onPageChanged: (int page) {
-                      setState(() => _currentPage = page);
-                    },
-                    itemBuilder: (context, index) {
-                      return _buildReportCard(_reports[index]);
-                    },
-                  ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Production Strength'),
+        backgroundColor: Colors.blue[700],
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () => _selectDate(context),
+          ),
+        ],
+      ),
+      body: Consumer<InventoryPorvider>(
+        builder: (context, pro, _) {
+          if (pro.productionStrengthList.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Filter data based on selected section
+          final sectionData = pro.productionStrengthList
+              .where((item) => item.sectionName == _selectedSection)
+              .toList();
+
+          // Calculate totals
+          final totalPresent = sectionData.fold(0, (sum, item) => sum + (int.parse(item.present.toString())));
+          final totalAbsent = sectionData.fold(0, (sum, item) => sum + (int.parse(item.absent.toString())));
+          final totalStrength = sectionData.fold(0, (sum, item) => sum + (int.parse(item.strength.toString())));
+          final overallAbsentPercent = totalStrength > 0 ? (totalAbsent / totalStrength * 100) : 0;
+
+          return Column(
+            children: [
+              // Date display
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'Data for ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(width: 10),
-                    FocusableControlBuilder(
-                      onPressed: _goToPreviousPage,
-                      builder: (context, control) {
-                        return Container(
-                          width: 100,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: control.isFocused ? Colors.blue[800] : Colors.blue[200],
-                            borderRadius: BorderRadius.circular(10),
-                            border: control.isFocused
-                                ? Border.all(color: Colors.white, width: 3)
-                                : null,
-                          ),
-                          child: Icon(
-                            Icons.arrow_back,
-                            size: 36,
-                            color: Colors.white,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(_reports.length, (index) {
-                              return Container(
-                                width: _currentPage == index ? 30 : 15,
-                                height: 15,
-                                margin: EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: _currentPage == index
-                                      ? Colors.blue[800]
-                                      : Colors.grey[400],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              );
-                            }),
-                          ),
-                          SizedBox(height: 60),
-                          FocusableControlBuilder(
-                            onPressed: _togglePause,
-                            builder: (context, control) {
-                              return AnimatedContainer(
-                                duration: Duration(milliseconds: 200),
-                                width: 140,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: control.isFocused ? Colors.grey[200] : Colors.white,
-                                  borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: .5,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    AnimatedSwitcher(
-                                      duration: Duration(milliseconds: 150),
-                                      transitionBuilder: (child, animation) {
-                                        return FadeTransition(
-                                          opacity: animation,
-                                          child: child,
-                                        );
-                                      },
-                                      child: Icon(
-                                        _isPaused ? Icons.play_arrow : Icons.pause,
-                                        key: ValueKey<bool>(_isPaused),
-                                        size: 24,
-                                        color:_isPaused?Colors.red: Colors.grey[800],
-                                      ),
-                                    ),
-                                    SizedBox(width: 8),
-                                    AnimatedSwitcher(
-                                      duration: Duration(milliseconds: 150),
-                                      child: Text(
-                                        _isPaused ? 'RESUME' : 'PAUSE',
-                                        key: ValueKey<bool>(_isPaused),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey[800],
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+              ),
+
+              // Section slider
+              Container(
+                height: 60,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: PageView.builder(
+                  itemCount: _sections.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentSectionIndex = index;
+                      _selectedSection = _sections[index];
+                    });
+                    // Reset timer when user manually changes section
+                    _sectionTimer?.cancel();
+                    _setupSectionTimer();
+                  },
+                  itemBuilder: (context, index) {
+                    return Center(
+                      child: Text(
+                        _sections[index],
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[800],
+                        ),
                       ),
+                    );
+                  },
+                ),
+              ),
+
+              // Section indicators
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _sections.map((section) {
+                  int index = _sections.indexOf(section);
+                  return Container(
+                    width: 10,
+                    height: 10,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentSectionIndex == index
+                          ? Colors.blue[700]
+                          : Colors.grey[300],
                     ),
-                    SizedBox(width: 10),
-                    FocusableControlBuilder(
-                      onPressed: _goToNextPage,
-                      builder: (context, control) {
-                        return Container(
-                          width: 100,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: control.isFocused ? Colors.blue[800] : Colors.blue[200],
-                            borderRadius: BorderRadius.circular(10),
-                            border: control.isFocused
-                                ? Border.all(color: Colors.white, width: 3)
-                                : null,
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward,
-                            size: 36,
-                            color: Colors.white,
-                          ),
-                        );
-                      },
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Summary cards
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _SummaryCard(
+                      title: 'Present',
+                      value: totalPresent.toString(),
+                      color: Colors.green,
                     ),
-                    SizedBox(width: 10),
+                    _SummaryCard(
+                      title: 'Absent',
+                      value: totalAbsent.toString(),
+                      color: Colors.red,
+                    ),
+                    _SummaryCard(
+                      title: 'Strength',
+                      value: totalStrength.toString(),
+                      color: Colors.blue,
+                    ),
+                    _SummaryCard(
+                      title: 'Absent %',
+                      value: '${overallAbsentPercent.toStringAsFixed(1)}%',
+                      color: overallAbsentPercent > 10 ? Colors.orange : Colors.green,
+                    ),
                   ],
                 ),
-                SizedBox(height: 10),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Section title
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Designations in $_selectedSection',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${sectionData.length} roles',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Data table
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ListView(
+                    children: [
+                      DataTable(
+                        headingRowHeight: 50,
+                        dataRowHeight: 40,
+                        columnSpacing: 16,
+                        columns: const [
+                          DataColumn(
+                            label: Text(
+                              'Designation',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Present',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            numeric: true,
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Absent',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            numeric: true,
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Strength',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            numeric: true,
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Absent %',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            numeric: true,
+                          ),
+                        ],
+                        rows: sectionData.map((item) {
+                          return DataRow(
+                            cells: [
+                              DataCell(
+                                Text(
+                                  item.designation ?? 'N/A',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              DataCell(
+                                Center(
+                                  child: Text(
+                                    '${item.present ?? 0}',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Center(
+                                  child: Text(
+                                    '${item.absent ?? 0}',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: (item.absent ?? 0) > 0
+                                          ? Colors.red
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Center(
+                                  child: Text('${item.strength ?? 0}'),
+                                ),
+                              ),
+                              DataCell(
+                                Center(
+                                  child: Text(
+                                    '${item.absentPercent?.toStringAsFixed(1) ?? '0.0'}%',
+                                    style: TextStyle(
+                                      color: (item.absentPercent ?? 0) > 10
+                                          ? Colors.orange
+                                          : Colors.green,
+                                      fontWeight: (item.absentPercent ?? 0) > 10
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> getProductionStrength() async {
+    var ip = context.read<InventoryPorvider>();
+    await ip.getProductionStrengthInfo(_selectedDate);
+
+    if (mounted) {
+      setState(() {
+        _sections = ip.productionStrengthList.map((e) => e.sectionName ?? '').toSet().toList();
+        _sections.sort();
+        if (_sections.isNotEmpty) {
+          _selectedSection = _sections.first;
+          _currentSectionIndex = 0;
+        }
+      });
+    }
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final Color color;
+
+  const _SummaryCard({
+    Key? key,
+    required this.title,
+    required this.value,
+    required this.color,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: color.withOpacity(0.1),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
           ),
         ),
       ),

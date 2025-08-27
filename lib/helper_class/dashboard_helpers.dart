@@ -256,6 +256,7 @@ class DashboardHelpers {
     return initials.toUpperCase();
   }
 
+
   static String formmatDate2(String dateString) {
     try {
       // Parse the input string to a DateTime object
