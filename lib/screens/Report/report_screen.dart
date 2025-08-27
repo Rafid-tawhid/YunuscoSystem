@@ -24,7 +24,7 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
   void initState() {
     super.initState();
     getProductionStrength();
-   // _setupSectionTimer();
+    // _setupSectionTimer();
   }
 
   @override
@@ -137,7 +137,7 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
               // Section indicators
               if (sections.length > 1)
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   child: Row(children: [
                     // Left navigation arrow
                     IconButton(
@@ -200,7 +200,9 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
                   ]),
                 ),
 
-              SizedBox(height: 12,)
+              SizedBox(
+                height: 12,
+              )
             ],
           );
         },
@@ -350,111 +352,123 @@ class _SectionSlide extends StatelessWidget {
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Scrollbar(
-                child: ListView(
-                  children: [
-                    DataTable(
-                      headingRowHeight: 40,
-                      dataRowHeight: 36,
-                      columnSpacing: 12,
-                      columns: const [
-                        DataColumn(
-                          label: Text(
-                            'Role',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Pre',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Abs',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Str',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          numeric: true,
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'A%',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          numeric: true,
-                        ),
-                      ],
-                      rows: data.map((item) {
-                        return DataRow(
-                          cells: [
-                            DataCell(
-                              Text(
-                                item.designation ?? 'N/A',
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ),
-                            DataCell(
-                              Center(
-                                child: Text(
-                                  '${item.present ?? 0}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Center(
-                                child: Text(
-                                  '${item.absent ?? 0}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: (item.absent ?? 0) > 0 ? Colors.red : Colors.black,
-                                    fontWeight: (item.absent ?? 0) > 0 ? FontWeight.bold : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Center(
-                                child: Text(
-                                  '${item.strength ?? 0}',
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Center(
-                                child: Text(
-                                  '${item.absentPercent?.toStringAsFixed(1) ?? '0.0'}%',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: (item.absentPercent ?? 0) > 10 ? Colors.orange : Colors.green,
-                                    fontWeight: (item.absentPercent ?? 0) > 10 ? FontWeight.bold : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+              child: Column(
+                children: [
+                  DataTable(columns: [
+                    DataColumn(
+                      label: Text(
+                        'Role',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ],
-                ),
+                    DataColumn(
+                      label: Text(
+                        'Pre',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      numeric: true,
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Abs',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      numeric: true,
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Str',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      numeric: true,
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'A%',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      numeric: true,
+                    ),
+                  ], rows: []),
+                  Expanded(
+                    child: Scrollbar(
+                      child: ListView(
+                        children: [
+                          DataTable(
+                            dataRowHeight: 36,
+                            columnSpacing: 12,
+                            columns: const [
+                              DataColumn(label: SizedBox.shrink()),
+                              DataColumn(label: SizedBox.shrink(), numeric: true),
+                              DataColumn(label: SizedBox.shrink(), numeric: true),
+                              DataColumn(label: SizedBox.shrink(), numeric: true),
+                              DataColumn(label: SizedBox.shrink(), numeric: true),
+                            ],
+                            rows: data.map((item) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      item.designation ?? 'N/A',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        '${item.present ?? 0}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        '${item.absent ?? 0}',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: (item.absent ?? 0) > 0 ? Colors.red : Colors.black,
+                                          fontWeight: (item.absent ?? 0) > 0 ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        '${item.strength ?? 0}',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(
+                                        '${item.absentPercent?.toStringAsFixed(1) ?? '0.0'}%',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: (item.absentPercent ?? 0) > 10 ? Colors.orange : Colors.green,
+                                          fontWeight: (item.absentPercent ?? 0) > 10 ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

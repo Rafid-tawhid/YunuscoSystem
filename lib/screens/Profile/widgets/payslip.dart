@@ -8,6 +8,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../../helper_class/dashboard_helpers.dart';
 import '../../../models/payslip_model.dart';
@@ -106,9 +108,9 @@ class PayslipDetailScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => createAndSavePdf(payslip,context),
-        icon: const Icon(Icons.download),
-        label: const Text('Download PDF'),
-        backgroundColor: Colors.blue,
+        icon: const Icon(Icons.download,color: Colors.white,),
+        label: Text('Download PDF',style: customTextStyle(16, Colors.white, FontWeight.w500),),
+        backgroundColor: myColors.primaryColor,
       ),
     );
   }
@@ -117,7 +119,7 @@ class PayslipDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: myColors.primaryColor,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
