@@ -502,5 +502,23 @@ class HrProvider extends ChangeNotifier{
     }
   }
 
+  List<Map<String, dynamic>> searchStuffList(String val) {
+    final List<Map<String, dynamic>> filterList = [];
+
+    for (var e in _member_list) {
+      if (e.idCardNo!.toLowerCase().contains(val.toLowerCase()) ||
+          e.fullName!.toLowerCase().contains(val.toLowerCase())) {
+        filterList.add({
+          "name": e.fullName,
+          "id": e.idCardNo,
+        });
+      }
+    }
+
+    debugPrint('filterList ${filterList.length}');
+    return filterList;
+  }
+
+
 
 }

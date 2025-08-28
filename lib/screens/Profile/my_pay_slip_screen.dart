@@ -18,6 +18,8 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
   String? _selectedMonth;
   int? _selectedYear;
 
+
+
   Future<void> _selectMonth(BuildContext context) async {
     final List<String> months = DateFormat.MMMM().dateSymbols.MONTHS;
 
@@ -122,6 +124,13 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
   @override
   void initState() {
     _employeeIdController.text=DashboardHelpers.currentUser!.iDnum??'';
+    final DateTime now = DateTime.now();
+   // _selectedMonth = DateFormat.MMMM().format(now);
+    final DateTime previousMonth = DateTime(now.year, now.month - 1, 1);
+    _selectedMonth = DateFormat.MMMM().format(previousMonth);// Full month name
+    _selectedYear = now.year;
+
+    _employeeIdController.text = DashboardHelpers.currentUser!.iDnum ?? '';
     super.initState();
   }
 

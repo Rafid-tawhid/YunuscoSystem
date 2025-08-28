@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
@@ -23,8 +24,8 @@ class DocAppoinmentReq extends StatefulWidget {
 class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _idCardController = TextEditingController();
   final TextEditingController _remarksController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
 
   int? _urgencyType;
   final Map<String, int> _urgencyOptions = {
@@ -32,10 +33,17 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     'Emergency': 2,
   };
 
+
+  @override
+  void initState() {
+    getAllStuffMemberList();
+    super.initState();
+  }
+
   @override
   void dispose() {
-    _idCardController.dispose();
     _remarksController.dispose();
+    _idController.dispose();
     super.dispose();
   }
 
@@ -49,7 +57,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
       }
 
       final requestData = {
-        "idCardNo": _idCardController.text,
+        "idCardNo": _idController.text,
         "remarks": _remarksController.text,
         "urgencyType": _urgencyType,
         "requestDate": DashboardHelpers.convertDateTime2(DateTime.now()),
@@ -59,7 +67,6 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
       var hp = context.read<HrProvider>();
       if (await hp.saveDocAppoinment(requestData)) {
         //clear field
-        _idCardController.clear();
         _remarksController.clear();
         if (mounted) DashboardHelpers.showSnakBar(context: context, message: 'Doctor Appointment Success!', bgColor: myColors.green);
         if (mounted) Navigator.pop(context);
@@ -190,14 +197,51 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
   Widget DocReqForm() {
     return Column(
       children: [
-        TextFormField(
-          controller: _idCardController,
-          decoration: const InputDecoration(
-            labelText: "ID Card No",
-            border: OutlineInputBorder(),
-          ),
-          keyboardType: TextInputType.number,
-          validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
+        // TextFormField(
+        //   controller: _idCardController,
+        //   decoration: const InputDecoration(
+        //     labelText: "ID Card No",
+        //     border: OutlineInputBorder(),
+        //   ),
+        //   keyboardType: TextInputType.number,
+        //   onChanged: (val){
+        //     var hp=context.read<HrProvider>();
+        //     hp.searchStuffList(val);
+        //   },
+        //   validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
+        // ),
+
+        Consumer<HrProvider>(
+          builder: (context, pro, _) {
+            return TypeAheadField<Map<String, dynamic>>(
+              suggestionsCallback: (search) {
+                return pro.searchStuffList(search);
+              },
+              builder: (context, textController, focusNode) {
+                return TextFormField(
+                  controller: _idController, // persistent controller
+                  focusNode: focusNode,
+                  validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Search Member',
+
+                  ),
+                );
+              },
+              itemBuilder: (context, suggestion) {
+                return ListTile(
+                  title: Text(suggestion["name"]),
+                  subtitle: Text("ID: ${suggestion["id"]}"),
+                );
+              },
+              onSelected: (suggestion) {
+                // show ID in the field
+                _idController.text = suggestion["id"];
+                FocusScope.of(context).unfocus(); // close keyboard
+              },
+            );
+          },
         ),
         const SizedBox(height: 16),
 
@@ -263,6 +307,13 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         urgency==1?'Regular':'Emergency',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
       ),
     );
+  }
+
+  Future<void> getAllStuffMemberList() async {
+    var hp = context.read<HrProvider>();
+    if (hp.member_list.isEmpty) {
+      hp.getAllStuffList();
+    }
   }
 }
 
