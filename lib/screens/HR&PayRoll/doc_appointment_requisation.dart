@@ -229,6 +229,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                   ),
                 );
               },
+              //
               itemBuilder: (context, suggestion) {
                 return ListTile(
                   title: Text(suggestion["name"]),
