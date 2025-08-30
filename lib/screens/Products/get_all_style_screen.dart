@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/style_wise_efficiency_screen.dart';
@@ -9,7 +7,7 @@ import '../../helper_class/dashboard_helpers.dart';
 import '../../utils/constants.dart';
 
 class StyleSelectionScreen extends StatefulWidget {
-  const StyleSelectionScreen({Key? key}) : super(key: key);
+  const StyleSelectionScreen({super.key});
 
   @override
   _StyleSelectionScreenState createState() => _StyleSelectionScreenState();
@@ -61,11 +59,16 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
             ? TextField(
                 controller: searchController,
                 autofocus: true,
-                decoration: InputDecoration(hintText: 'Search styles...', border: InputBorder.none, hintStyle: TextStyle(color: Colors.black)),
+                decoration: InputDecoration(
+                    hintText: 'Search styles...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.black)),
                 style: TextStyle(color: Colors.black),
                 onChanged: filterStyles,
               )
-            : Text('Select Style', style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500)),
+            : Text('Select Style',
+                style: AppConstants.customTextStyle(
+                    18, Colors.black, FontWeight.w500)),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -101,9 +104,13 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                   children: [
                     Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
                     const SizedBox(height: 16),
-                    Text('No styles found', style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                    Text('No styles found',
+                        style:
+                            TextStyle(fontSize: 18, color: Colors.grey[600])),
                     const SizedBox(height: 8),
-                    Text('Try a different search term', style: TextStyle(fontSize: 14, color: Colors.grey[500])),
+                    Text('Try a different search term',
+                        style:
+                            TextStyle(fontSize: 14, color: Colors.grey[500])),
                   ],
                 ),
               )
@@ -117,23 +124,37 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                     onTap: () => _handleSelection(index, style),
                     child: Card(
                       elevation: 2,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 2),
                       color: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: isSelected ? BorderSide(color: Theme.of(context).primaryColor, width: 2) : BorderSide.none),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: isSelected
+                              ? BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                  width: 2)
+                              : BorderSide.none),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), shape: BoxShape.circle),
-                              child: Icon(Icons.style, size: 30, color: Theme.of(context).primaryColor),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.1),
+                                  shape: BoxShape.circle),
+                              child: Icon(Icons.style,
+                                  size: 30,
+                                  color: Theme.of(context).primaryColor),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Text(
                                 style ?? '',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                             ),
                           ],

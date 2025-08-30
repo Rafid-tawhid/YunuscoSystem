@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -8,15 +7,14 @@ import '../../models/attendence_model.dart';
 import '../../providers/hr_provider.dart';
 
 class AllDepartmentAttendance extends StatefulWidget {
+  const AllDepartmentAttendance({super.key});
 
   @override
-  State<AllDepartmentAttendance> createState() => _AllDepartmentAttendanceState();
+  State<AllDepartmentAttendance> createState() =>
+      _AllDepartmentAttendanceState();
 }
 
-
-
 class _AllDepartmentAttendanceState extends State<AllDepartmentAttendance> {
-
   @override
   void initState() {
     var hp = context.read<HrProvider>();
@@ -51,37 +49,36 @@ class _AllDepartmentAttendanceState extends State<AllDepartmentAttendance> {
               onDateSelected: (selectedDate) {
                 // Handle the selected date
                 print('Selected date: $selectedDate');
-                var hp=context.read<HrProvider>();
+                var hp = context.read<HrProvider>();
                 hp.getAllDepertmentsAttendance(selectedDate);
               },
               primaryColor: Colors.blue, // Optional custom color
               dateFormat: 'dd-MM-yyyy', // Optional custom format
               padding: EdgeInsets.all(8), // Optional custom padding
             ),
-            Consumer<HrProvider>(builder: (context,pro,_)=> Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: pro.allDeptAttendanceList.length,
-                itemBuilder: (context, index) {
-                  return _buildAttendanceCard(pro.allDeptAttendanceList[index]);
-                },
-              ),
-            )),
+            Consumer<HrProvider>(
+                builder: (context, pro, _) => Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: pro.allDeptAttendanceList.length,
+                        itemBuilder: (context, index) {
+                          return _buildAttendanceCard(
+                              pro.allDeptAttendanceList[index]);
+                        },
+                      ),
+                    )),
           ],
         ),
       ),
     );
   }
 
-
-
   Widget _buildAttendanceCard(AttendenceModel attendance) {
     final total = (attendance.present ?? 0) +
         (attendance.absent ?? 0) +
         (attendance.leave ?? 0);
-    final presentPercentage = total > 0
-        ? (attendance.present ?? 0) / total * 100
-        : 0;
+    final presentPercentage =
+        total > 0 ? (attendance.present ?? 0) / total * 100 : 0;
 
     return Card(
       elevation: 4,
@@ -106,7 +103,8 @@ class _AllDepartmentAttendanceState extends State<AllDepartmentAttendance> {
                   ),
                 ),
                 Chip(
-                  backgroundColor: _getStatusColor(presentPercentage.toDouble()),
+                  backgroundColor:
+                      _getStatusColor(presentPercentage.toDouble()),
                   label: Text(
                     '${presentPercentage.toStringAsFixed(1)}%',
                     style: const TextStyle(color: Colors.white),
@@ -122,8 +120,8 @@ class _AllDepartmentAttendanceState extends State<AllDepartmentAttendance> {
               children: [
                 _buildStatCircle(Icons.check_circle, 'Present',
                     attendance.present ?? 0, Colors.green),
-                _buildStatCircle(Icons.cancel, 'Absent',
-                    attendance.absent ?? 0, Colors.red),
+                _buildStatCircle(
+                    Icons.cancel, 'Absent', attendance.absent ?? 0, Colors.red),
                 _buildStatCircle(Icons.beach_access, 'Leave',
                     attendance.leave ?? 0, Colors.blue),
               ],
@@ -198,7 +196,6 @@ class _AllDepartmentAttendanceState extends State<AllDepartmentAttendance> {
   }
 }
 
-
 class DateSelector extends StatefulWidget {
   final DateTime initialDate;
   final ValueChanged<DateTime> onDateSelected;
@@ -207,13 +204,13 @@ class DateSelector extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
 
   const DateSelector({
-    Key? key,
+    super.key,
     required this.initialDate,
     required this.onDateSelected,
     this.primaryColor,
     this.dateFormat = 'dd-MM-yyyy',
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   _DateSelectorState createState() => _DateSelectorState();
@@ -243,7 +240,7 @@ class _DateSelectorState extends State<DateSelector> {
               surface: Colors.white,
               onSurface: Colors.black,
             ),
-            dialogBackgroundColor: Colors.white,
+            dialogTheme: DialogThemeData(backgroundColor: Colors.white),
           ),
           child: child!,
         );
@@ -274,8 +271,7 @@ class _DateSelectorState extends State<DateSelector> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.calendar_today,
-                  color: Colors.grey.shade600),
+              Icon(Icons.calendar_today, color: Colors.grey.shade600),
               const SizedBox(width: 12),
               Text(
                 DateFormat(widget.dateFormat).format(_selectedDate),
@@ -286,8 +282,7 @@ class _DateSelectorState extends State<DateSelector> {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.arrow_drop_down,
-                  color: Colors.grey.shade600),
+              Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
             ],
           ),
         ),

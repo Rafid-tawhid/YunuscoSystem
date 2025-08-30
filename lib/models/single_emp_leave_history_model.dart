@@ -11,7 +11,8 @@ class SingleEmpLeaveHistoryModel {
     String? status,
     num? remainingLeaveDay,
     num? policyId,
-    bool? isFirst,}){
+    bool? isFirst,
+  }) {
     _idCardNo = idCardNo;
     _leavePolicyType = leavePolicyType;
     _userId = userId;
@@ -52,7 +53,8 @@ class SingleEmpLeaveHistoryModel {
   num? _remainingLeaveDay;
   num? _policyId;
   bool? _isFirst;
-  SingleEmpLeaveHistoryModel copyWith({  dynamic idCardNo,
+  SingleEmpLeaveHistoryModel copyWith({
+    dynamic idCardNo,
     String? leavePolicyType,
     num? userId,
     String? leaveFromDate,
@@ -64,19 +66,21 @@ class SingleEmpLeaveHistoryModel {
     num? remainingLeaveDay,
     num? policyId,
     bool? isFirst,
-  }) => SingleEmpLeaveHistoryModel(  idCardNo: idCardNo ?? _idCardNo,
-    leavePolicyType: leavePolicyType ?? _leavePolicyType,
-    userId: userId ?? _userId,
-    leaveFromDate: leaveFromDate ?? _leaveFromDate,
-    leaveToDate: leaveToDate ?? _leaveToDate,
-    leaveType: leaveType ?? _leaveType,
-    leaveBalance: leaveBalance ?? _leaveBalance,
-    reasons: reasons ?? _reasons,
-    status: status ?? _status,
-    remainingLeaveDay: remainingLeaveDay ?? _remainingLeaveDay,
-    policyId: policyId ?? _policyId,
-    isFirst: isFirst ?? _isFirst,
-  );
+  }) =>
+      SingleEmpLeaveHistoryModel(
+        idCardNo: idCardNo ?? _idCardNo,
+        leavePolicyType: leavePolicyType ?? _leavePolicyType,
+        userId: userId ?? _userId,
+        leaveFromDate: leaveFromDate ?? _leaveFromDate,
+        leaveToDate: leaveToDate ?? _leaveToDate,
+        leaveType: leaveType ?? _leaveType,
+        leaveBalance: leaveBalance ?? _leaveBalance,
+        reasons: reasons ?? _reasons,
+        status: status ?? _status,
+        remainingLeaveDay: remainingLeaveDay ?? _remainingLeaveDay,
+        policyId: policyId ?? _policyId,
+        isFirst: isFirst ?? _isFirst,
+      );
   dynamic get idCardNo => _idCardNo;
   String? get leavePolicyType => _leavePolicyType;
   num? get userId => _userId;
@@ -106,5 +110,4 @@ class SingleEmpLeaveHistoryModel {
     map['IsFirst'] = _isFirst;
     return map;
   }
-
 }

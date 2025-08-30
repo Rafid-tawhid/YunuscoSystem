@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -11,13 +10,14 @@ class PerformanceReportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:  Text('PERFORMANCE',style: customTextStyle(18, Colors.white, FontWeight.w600),),
+        title: Text(
+          'PERFORMANCE',
+          style: customTextStyle(18, Colors.white, FontWeight.w600),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: myColors.primaryColor,
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -108,7 +108,8 @@ class PerformanceReportScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       'Performance Chart',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 8),
                                     Text(

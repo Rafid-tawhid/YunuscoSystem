@@ -7,7 +7,7 @@ import '../../../models/vehicle_model.dart';
 class VehicleApprovalScreen extends StatefulWidget {
   final VehicleModel vehicleModel;
 
-  const VehicleApprovalScreen({required this.vehicleModel, Key? key}) : super(key: key);
+  const VehicleApprovalScreen({required this.vehicleModel, super.key});
 
   @override
   _VehicleApprovalScreenState createState() => _VehicleApprovalScreenState();
@@ -115,8 +115,11 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
-                          icon: const Icon(Icons.cancel, size: 24, color: Colors.white),
-                          label: const Text('REJECT', style: TextStyle(fontSize: 16, color: Colors.white)),
+                          icon: const Icon(Icons.cancel,
+                              size: 24, color: Colors.white),
+                          label: const Text('REJECT',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -130,8 +133,11 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: ElevatedButton.icon(
-                          icon: const Icon(Icons.check_circle, size: 24, color: Colors.white),
-                          label: const Text('ACCEPT', style: TextStyle(fontSize: 16, color: Colors.white)),
+                          icon: const Icon(Icons.check_circle,
+                              size: 24, color: Colors.white),
+                          label: const Text('ACCEPT',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -204,39 +210,42 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: isDialogLoading ? null : () => Navigator.pop(context),
+                onPressed:
+                    isDialogLoading ? null : () => Navigator.pop(context),
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: isDialogLoading
                     ? null
                     : () async {
-                  if (dialogFormKey.currentState!.validate()) {
-                    setState(() => isDialogLoading = true);
+                        if (dialogFormKey.currentState!.validate()) {
+                          setState(() => isDialogLoading = true);
 
-                    try {
-                      var hp = context.read<HrProvider>();
-                      var data = {
-                        "VehicleReqId": widget.vehicleModel.vehicleReqId,
-                        "Status": 3, //rejected
-                        "Note": reasonController.text.trim()
-                      };
+                          try {
+                            var hp = context.read<HrProvider>();
+                            var data = {
+                              "VehicleReqId": widget.vehicleModel.vehicleReqId,
+                              "Status": 3, //rejected
+                              "Note": reasonController.text.trim()
+                            };
 
-                      var res = await hp.rejectVehicleRequisation(data);
-                      if (res) {
-                        await hp.getRequestedCarList();
-                        Navigator.pop(context); // Close dialog first
-                        DashboardHelpers.showAlert(msg: 'Rejected the requisition');
-                        _clearForm();
-                        Navigator.pop(context); // Then pop the screen
-                      }
-                    } finally {
-                      setState(() => isDialogLoading = false);
-                    }
-                  }
-                },
+                            var res = await hp.rejectVehicleRequisation(data);
+                            if (res) {
+                              await hp.getRequestedCarList();
+                              Navigator.pop(context); // Close dialog first
+                              DashboardHelpers.showAlert(
+                                  msg: 'Rejected the requisition');
+                              _clearForm();
+                              Navigator.pop(context); // Then pop the screen
+                            }
+                          } finally {
+                            setState(() => isDialogLoading = false);
+                          }
+                        }
+                      },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                child: const Text('Confirm',
+                    style: TextStyle(color: Colors.white)),
               ),
             ],
           );
@@ -262,7 +271,8 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
         var res = await hp.acceptVehicleRequisation(data);
         if (res) {
           await hp.getRequestedCarList();
-          DashboardHelpers.showAlert(msg: 'Vehicle requisition accepted successfully!!');
+          DashboardHelpers.showAlert(
+              msg: 'Vehicle requisition accepted successfully!!');
           _clearForm();
           Navigator.pop(context); // Pop the screen after success
         }
@@ -282,7 +292,7 @@ class _VehicleApprovalScreenState extends State<VehicleApprovalScreen> {
 class VehicleDetailsWidget extends StatelessWidget {
   final VehicleModel vehicle;
 
-  const VehicleDetailsWidget({Key? key, required this.vehicle}) : super(key: key);
+  const VehicleDetailsWidget({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {
@@ -293,23 +303,23 @@ class VehicleDetailsWidget extends StatelessWidget {
         _buildDetailRow('ID Card No', vehicle.idCardNo ?? 'N/A'),
         _buildDetailRow('Department', vehicle.departmentName ?? 'N/A'),
         _buildDetailRow('Designation', vehicle.designationName ?? 'N/A'),
-
         const SizedBox(height: 20),
         const Divider(),
-        const Text('Trip Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        _buildDetailRow('Vehicle Type', vehicle.vehicletypeId == 1 ? 'Private' : 'Hiace'),
+        const Text('Trip Details',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        _buildDetailRow(
+            'Vehicle Type', vehicle.vehicletypeId == 1 ? 'Private' : 'Hiace'),
         _buildDetailRow('From', vehicle.destinationFrom ?? 'N/A'),
         _buildDetailRow('To', vehicle.destinationTo ?? 'N/A'),
         _buildDetailRow('Distance', '${vehicle.distance} km'),
         _buildDetailRow('Purpose', vehicle.purpose ?? 'N/A'),
-
         const SizedBox(height: 20),
         const Divider(),
-        const Text('Timing', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('Timing',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         _buildDetailRow('Date', vehicle.requiredDate ?? 'N/A'),
         _buildDetailRow('Time', vehicle.requiredTime ?? 'N/A'),
         _buildDetailRow('Duration', vehicle.duration ?? 'N/A'),
-
         const SizedBox(height: 20),
       ],
     );

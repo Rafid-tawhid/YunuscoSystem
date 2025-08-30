@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/production_goods_model.dart';
 
 class GarmentsRequisitionScreen extends StatefulWidget {
   const GarmentsRequisitionScreen({super.key});
 
   @override
-  State<GarmentsRequisitionScreen> createState() => _GarmentsRequisitionScreenState();
+  State<GarmentsRequisitionScreen> createState() =>
+      _GarmentsRequisitionScreenState();
 }
 
 class _GarmentsRequisitionScreenState extends State<GarmentsRequisitionScreen> {
@@ -77,12 +77,12 @@ class _GarmentsRequisitionScreenState extends State<GarmentsRequisitionScreen> {
                 border: InputBorder.none,
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.black),
-                  onPressed: () {
-                    _searchController.clear();
-                    provider.searchRequisitions('');
-                  },
-                )
+                        icon: const Icon(Icons.clear, color: Colors.black),
+                        onPressed: () {
+                          _searchController.clear();
+                          provider.searchRequisitions('');
+                        },
+                      )
                     : null,
               ),
               style: const TextStyle(color: Colors.black),
@@ -190,7 +190,8 @@ class _RequisitionCard extends StatelessWidget {
                 _buildDetailRow('Style Code', requisition.styleCode),
                 _buildDetailRow('Batch No', requisition.batchNo),
                 _buildDetailRow('BOM Code', requisition.bomcode),
-                _buildDetailRow('Created By', requisition.createdBy?.toString()),
+                _buildDetailRow(
+                    'Created By', requisition.createdBy?.toString()),
                 _buildDetailRow('Created Date', requisition.createdDate),
                 _buildDetailRow('Remarks', requisition.remarks),
                 const SizedBox(height: 8),

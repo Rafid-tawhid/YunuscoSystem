@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 class LCDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> lcData;
 
-  final Map<String,dynamic> lcData;
-
-
-  LCDetailScreen({required this.lcData});
+  const LCDetailScreen({super.key, required this.lcData});
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+    final currencyFormat =
+        NumberFormat.currency(symbol: '\$', decimalDigits: 2);
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return Scaffold(
@@ -22,40 +20,45 @@ class LCDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             _buildSectionHeader('Basic Information'),
-        _buildInfoRow('LC Number', lcData['MasterLCNo']),
-        _buildInfoRow('Buyer', lcData['BuyerName']),
-        _buildInfoRow('Status', lcData['EXIMStatus']),
-        _buildInfoRow('Sales Terms', lcData['SalesTerms']),
-        _buildInfoRow('Shipment Mode', lcData['ShipmentModeStr']),
-
-        const SizedBox(height: 24),
-        _buildSectionHeader('Dates'),
-        _buildInfoRow('Issue Date', _parseDate(lcData['IssueDateStr'], dateFormat)),
-        _buildInfoRow('Ship Date', _parseDate(lcData['ShipDateStr'], dateFormat)),
-        _buildInfoRow('Expiry Date', _parseDate(lcData['ExpiryDateStr'], dateFormat)),
-
-        const SizedBox(height: 24),
-        _buildSectionHeader('Financials'),
-        _buildInfoRow('Total Amount', currencyFormat.format(lcData['MasterLCAmount'])),
-        _buildInfoRow('Unit Price', currencyFormat.format(lcData['UnitPrice'])),
-        _buildInfoRow('Order Qty', '${lcData['OrderQty']}'),
-        _buildInfoRow('Remaining Amount', currencyFormat.format(lcData['RemainingAmount'])),
-        _buildInfoRow('BTB Percentage', '${lcData['BtBPercent']}%'),
-
-        const SizedBox(height: 24),
-        _buildSectionHeader('Utilization'),
-        _buildInfoRow('Used for BTB', '${currencyFormat.format(lcData['UsedForBTB_Amount'])} (${lcData['UsedForBTB_Percentage']}%)'),
-          _buildInfoRow('Used for FDD', '${currencyFormat.format(lcData['UsedForFDD_Amount'])} (${lcData['UsedForFDD_Percentage']}%)'),
-              _buildInfoRow('Used for FTT', '${currencyFormat.format(lcData['UsedForFTT_Amount'])} (${lcData['UsedForFTT_Percentage']}%)'),
-
-                  if (lcData['Remark'] != null) ...[
+            _buildInfoRow('LC Number', lcData['MasterLCNo']),
+            _buildInfoRow('Buyer', lcData['BuyerName']),
+            _buildInfoRow('Status', lcData['EXIMStatus']),
+            _buildInfoRow('Sales Terms', lcData['SalesTerms']),
+            _buildInfoRow('Shipment Mode', lcData['ShipmentModeStr']),
+            const SizedBox(height: 24),
+            _buildSectionHeader('Dates'),
+            _buildInfoRow(
+                'Issue Date', _parseDate(lcData['IssueDateStr'], dateFormat)),
+            _buildInfoRow(
+                'Ship Date', _parseDate(lcData['ShipDateStr'], dateFormat)),
+            _buildInfoRow(
+                'Expiry Date', _parseDate(lcData['ExpiryDateStr'], dateFormat)),
+            const SizedBox(height: 24),
+            _buildSectionHeader('Financials'),
+            _buildInfoRow('Total Amount',
+                currencyFormat.format(lcData['MasterLCAmount'])),
+            _buildInfoRow(
+                'Unit Price', currencyFormat.format(lcData['UnitPrice'])),
+            _buildInfoRow('Order Qty', '${lcData['OrderQty']}'),
+            _buildInfoRow('Remaining Amount',
+                currencyFormat.format(lcData['RemainingAmount'])),
+            _buildInfoRow('BTB Percentage', '${lcData['BtBPercent']}%'),
+            const SizedBox(height: 24),
+            _buildSectionHeader('Utilization'),
+            _buildInfoRow('Used for BTB',
+                '${currencyFormat.format(lcData['UsedForBTB_Amount'])} (${lcData['UsedForBTB_Percentage']}%)'),
+            _buildInfoRow('Used for FDD',
+                '${currencyFormat.format(lcData['UsedForFDD_Amount'])} (${lcData['UsedForFDD_Percentage']}%)'),
+            _buildInfoRow('Used for FTT',
+                '${currencyFormat.format(lcData['UsedForFTT_Amount'])} (${lcData['UsedForFTT_Percentage']}%)'),
+            if (lcData['Remark'] != null) ...[
               const SizedBox(height: 24),
-          _buildSectionHeader('Remarks'),
-          _buildInfoRow('Notes', lcData['Remark']),
-          ],
+              _buildSectionHeader('Remarks'),
+              _buildInfoRow('Notes', lcData['Remark']),
+            ],
           ],
         ),
       ),

@@ -1,18 +1,19 @@
 class BuyerWiseValueModel {
   BuyerWiseValueModel({
-      List<BuyerWise>? buyerWise, 
-      List<Summary>? summary, 
-      List<ItemWiseWise>? itemWiseWise, 
-      List<MorrisLine>? morrisLine, 
-      List<BuyerWiseQty>? buyerWiseQty, 
-      List<ItemWiseValue>? itemWiseValue,}){
+    List<BuyerWise>? buyerWise,
+    List<Summary>? summary,
+    List<ItemWiseWise>? itemWiseWise,
+    List<MorrisLine>? morrisLine,
+    List<BuyerWiseQty>? buyerWiseQty,
+    List<ItemWiseValue>? itemWiseValue,
+  }) {
     _buyerWise = buyerWise;
     _summary = summary;
     _itemWiseWise = itemWiseWise;
     _morrisLine = morrisLine;
     _buyerWiseQty = buyerWiseQty;
     _itemWiseValue = itemWiseValue;
-}
+  }
 
   BuyerWiseValueModel.fromJson(dynamic json) {
     if (json['BuyerWise'] != null) {
@@ -58,19 +59,22 @@ class BuyerWiseValueModel {
   List<MorrisLine>? _morrisLine;
   List<BuyerWiseQty>? _buyerWiseQty;
   List<ItemWiseValue>? _itemWiseValue;
-BuyerWiseValueModel copyWith({  List<BuyerWise>? buyerWise,
-  List<Summary>? summary,
-  List<ItemWiseWise>? itemWiseWise,
-  List<MorrisLine>? morrisLine,
-  List<BuyerWiseQty>? buyerWiseQty,
-  List<ItemWiseValue>? itemWiseValue,
-}) => BuyerWiseValueModel(  buyerWise: buyerWise ?? _buyerWise,
-  summary: summary ?? _summary,
-  itemWiseWise: itemWiseWise ?? _itemWiseWise,
-  morrisLine: morrisLine ?? _morrisLine,
-  buyerWiseQty: buyerWiseQty ?? _buyerWiseQty,
-  itemWiseValue: itemWiseValue ?? _itemWiseValue,
-);
+  BuyerWiseValueModel copyWith({
+    List<BuyerWise>? buyerWise,
+    List<Summary>? summary,
+    List<ItemWiseWise>? itemWiseWise,
+    List<MorrisLine>? morrisLine,
+    List<BuyerWiseQty>? buyerWiseQty,
+    List<ItemWiseValue>? itemWiseValue,
+  }) =>
+      BuyerWiseValueModel(
+        buyerWise: buyerWise ?? _buyerWise,
+        summary: summary ?? _summary,
+        itemWiseWise: itemWiseWise ?? _itemWiseWise,
+        morrisLine: morrisLine ?? _morrisLine,
+        buyerWiseQty: buyerWiseQty ?? _buyerWiseQty,
+        itemWiseValue: itemWiseValue ?? _itemWiseValue,
+      );
   List<BuyerWise>? get buyerWise => _buyerWise;
   List<Summary>? get summary => _summary;
   List<ItemWiseWise>? get itemWiseWise => _itemWiseWise;
@@ -100,16 +104,16 @@ BuyerWiseValueModel copyWith({  List<BuyerWise>? buyerWise,
     }
     return map;
   }
-
 }
 
 class ItemWiseValue {
   ItemWiseValue({
-      String? label, 
-      num? value,}){
+    String? label,
+    num? value,
+  }) {
     _label = label;
     _value = value;
-}
+  }
 
   ItemWiseValue.fromJson(dynamic json) {
     _label = json['label'];
@@ -117,11 +121,14 @@ class ItemWiseValue {
   }
   String? _label;
   num? _value;
-ItemWiseValue copyWith({  String? label,
-  num? value,
-}) => ItemWiseValue(  label: label ?? _label,
-  value: value ?? _value,
-);
+  ItemWiseValue copyWith({
+    String? label,
+    num? value,
+  }) =>
+      ItemWiseValue(
+        label: label ?? _label,
+        value: value ?? _value,
+      );
   String? get label => _label;
   num? get value => _value;
 
@@ -131,16 +138,16 @@ ItemWiseValue copyWith({  String? label,
     map['value'] = _value;
     return map;
   }
-
 }
 
 class BuyerWiseQty {
   BuyerWiseQty({
-      String? label, 
-      num? value,}){
+    String? label,
+    num? value,
+  }) {
     _label = label;
     _value = value;
-}
+  }
 
   BuyerWiseQty.fromJson(dynamic json) {
     _label = json['label'];
@@ -148,11 +155,14 @@ class BuyerWiseQty {
   }
   String? _label;
   num? _value;
-BuyerWiseQty copyWith({  String? label,
-  num? value,
-}) => BuyerWiseQty(  label: label ?? _label,
-  value: value ?? _value,
-);
+  BuyerWiseQty copyWith({
+    String? label,
+    num? value,
+  }) =>
+      BuyerWiseQty(
+        label: label ?? _label,
+        value: value ?? _value,
+      );
   String? get label => _label;
   num? get value => _value;
 
@@ -162,18 +172,18 @@ BuyerWiseQty copyWith({  String? label,
     map['value'] = _value;
     return map;
   }
-
 }
 
 class MorrisLine {
   MorrisLine({
-      String? monthName,
-      num? orderValue,
-      num? shipmentValue,}){
+    String? monthName,
+    num? orderValue,
+    num? shipmentValue,
+  }) {
     _monthName = monthName;
     _orderValue = orderValue;
     _shipmentValue = shipmentValue;
-}
+  }
 
   MorrisLine.fromJson(dynamic json) {
     _monthName = json['MonthName'];
@@ -183,13 +193,16 @@ class MorrisLine {
   String? _monthName;
   num? _orderValue;
   num? _shipmentValue;
-MorrisLine copyWith({  String? monthName,
-  num? orderValue,
-  num? shipmentValue,
-}) => MorrisLine(  monthName: monthName ?? _monthName,
-  orderValue: orderValue ?? _orderValue,
-  shipmentValue: shipmentValue ?? _shipmentValue,
-);
+  MorrisLine copyWith({
+    String? monthName,
+    num? orderValue,
+    num? shipmentValue,
+  }) =>
+      MorrisLine(
+        monthName: monthName ?? _monthName,
+        orderValue: orderValue ?? _orderValue,
+        shipmentValue: shipmentValue ?? _shipmentValue,
+      );
   String? get monthName => _monthName;
   num? get orderValue => _orderValue;
   num? get shipmentValue => _shipmentValue;
@@ -201,16 +214,16 @@ MorrisLine copyWith({  String? monthName,
     map['ShipmentValue'] = _shipmentValue;
     return map;
   }
-
 }
 
 class ItemWiseWise {
   ItemWiseWise({
-      String? item, 
-      num? quantity,}){
+    String? item,
+    num? quantity,
+  }) {
     _item = item;
     _quantity = quantity;
-}
+  }
 
   ItemWiseWise.fromJson(dynamic json) {
     _item = json['Item'];
@@ -218,11 +231,14 @@ class ItemWiseWise {
   }
   String? _item;
   num? _quantity;
-ItemWiseWise copyWith({  String? item,
-  num? quantity,
-}) => ItemWiseWise(  item: item ?? _item,
-  quantity: quantity ?? _quantity,
-);
+  ItemWiseWise copyWith({
+    String? item,
+    num? quantity,
+  }) =>
+      ItemWiseWise(
+        item: item ?? _item,
+        quantity: quantity ?? _quantity,
+      );
   String? get item => _item;
   num? get quantity => _quantity;
 
@@ -232,20 +248,20 @@ ItemWiseWise copyWith({  String? item,
     map['Quantity'] = _quantity;
     return map;
   }
-
 }
 
 class Summary {
   Summary({
-      num? costingCount, 
-      num? orderQuantity, 
-      num? orderValue, 
-      num? purchaseValue,}){
+    num? costingCount,
+    num? orderQuantity,
+    num? orderValue,
+    num? purchaseValue,
+  }) {
     _costingCount = costingCount;
     _orderQuantity = orderQuantity;
     _orderValue = orderValue;
     _purchaseValue = purchaseValue;
-}
+  }
 
   Summary.fromJson(dynamic json) {
     _costingCount = json['CostingCount'];
@@ -257,15 +273,18 @@ class Summary {
   num? _orderQuantity;
   num? _orderValue;
   num? _purchaseValue;
-Summary copyWith({  num? costingCount,
-  num? orderQuantity,
-  num? orderValue,
-  num? purchaseValue,
-}) => Summary(  costingCount: costingCount ?? _costingCount,
-  orderQuantity: orderQuantity ?? _orderQuantity,
-  orderValue: orderValue ?? _orderValue,
-  purchaseValue: purchaseValue ?? _purchaseValue,
-);
+  Summary copyWith({
+    num? costingCount,
+    num? orderQuantity,
+    num? orderValue,
+    num? purchaseValue,
+  }) =>
+      Summary(
+        costingCount: costingCount ?? _costingCount,
+        orderQuantity: orderQuantity ?? _orderQuantity,
+        orderValue: orderValue ?? _orderValue,
+        purchaseValue: purchaseValue ?? _purchaseValue,
+      );
   num? get costingCount => _costingCount;
   num? get orderQuantity => _orderQuantity;
   num? get orderValue => _orderValue;
@@ -279,16 +298,16 @@ Summary copyWith({  num? costingCount,
     map['PurchaseValue'] = _purchaseValue;
     return map;
   }
-
 }
 
 class BuyerWise {
   BuyerWise({
-      String? buyerName, 
-      num? orderValue,}){
+    String? buyerName,
+    num? orderValue,
+  }) {
     _buyerName = buyerName;
     _orderValue = orderValue;
-}
+  }
 
   BuyerWise.fromJson(dynamic json) {
     _buyerName = json['BuyerName'];
@@ -296,11 +315,14 @@ class BuyerWise {
   }
   String? _buyerName;
   num? _orderValue;
-BuyerWise copyWith({  String? buyerName,
-  num? orderValue,
-}) => BuyerWise(  buyerName: buyerName ?? _buyerName,
-  orderValue: orderValue ?? _orderValue,
-);
+  BuyerWise copyWith({
+    String? buyerName,
+    num? orderValue,
+  }) =>
+      BuyerWise(
+        buyerName: buyerName ?? _buyerName,
+        orderValue: orderValue ?? _orderValue,
+      );
   String? get buyerName => _buyerName;
   num? get orderValue => _orderValue;
 
@@ -310,5 +332,4 @@ BuyerWise copyWith({  String? buyerName,
     map['OrderValue'] = _orderValue;
     return map;
   }
-
 }

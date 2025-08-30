@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:yunusco_group/launcher_screen.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
 import 'package:yunusco_group/screens/home_page.dart';
 import '../models/user_model.dart';
@@ -27,13 +26,19 @@ class DashboardHelpers {
   static String profileImageUrl = '';
 
   static void showAlert({required String msg}) {
-    Fluttertoast.showToast(msg: msg, toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.SNACKBAR, backgroundColor: Colors.black.withOpacity(.5), textColor: Colors.white, fontSize: 16.0);
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black.withOpacity(.5),
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
   static Future<void> setUserInfo() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var data = preferences.get('user');
-    debugPrint('FETCH USER DATA ${data}');
+    debugPrint('FETCH USER DATA $data');
     currentUser = UserModel.fromJson(jsonDecode(data.toString()));
   }
 
@@ -102,18 +107,24 @@ class DashboardHelpers {
                     CupertinoButton(
                       child: Text(
                         'Cancel',
-                        style: AppConstants.customTextStyle(14, Colors.black, FontWeight.bold),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.black, FontWeight.bold),
                       ),
                       onPressed: () {
-                        completer.complete(null); // Complete with null if canceled
+                        completer
+                            .complete(null); // Complete with null if canceled
                         Navigator.of(context).pop(); // Close the bottom sheet
                       },
                     ),
                     CupertinoButton(
-                      child: Text('Done', style: AppConstants.customTextStyle(14, myColors.green, FontWeight.bold)),
+                      child: Text('Done',
+                          style: AppConstants.customTextStyle(
+                              14, myColors.green, FontWeight.bold)),
                       onPressed: () {
-                        String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-                        completer.complete(formattedDate); // Complete with selected date
+                        String formattedDate =
+                            DateFormat('yyyy-MM-dd').format(selectedDate);
+                        completer.complete(
+                            formattedDate); // Complete with selected date
                         Navigator.of(context).pop(); // Close the bottom sheet
                       },
                     ),
@@ -195,13 +206,15 @@ class DashboardHelpers {
     minutes %= 60;
 
     // Format the time components back into a string
-    String newTimeString = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+    String newTimeString =
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
 
     return newTimeString;
   }
 
   static Future<void> openMap(latitude, longitude) async {
-    final googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    final googleMapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     final appleMapsUrl = 'https://maps.apple.com/?q=$latitude,$longitude';
 
     if (await canLaunch(googleMapsUrl)) {
@@ -214,7 +227,7 @@ class DashboardHelpers {
   }
 
   static Future<void> openUrl(String urlString) async {
-    debugPrint('Open Url: ${urlString}');
+    debugPrint('Open Url: $urlString');
     if (!await launchUrl(Uri.parse(urlString))) {
       throw Exception('Could not launch $urlString');
     }
@@ -224,7 +237,8 @@ class DashboardHelpers {
     return MediaQuery.of(context).viewInsets.bottom > 0;
   }
 
-  static String getFirstCharacterCombinationName(String firstName, String? lastName) {
+  static String getFirstCharacterCombinationName(
+      String firstName, String? lastName) {
     if (lastName == null) {
       if (firstName.contains(' ')) {
         List<String> nameParts = firstName.split(' ');
@@ -241,7 +255,7 @@ class DashboardHelpers {
     if (text.length <= length) {
       return text;
     } else {
-      return text.substring(0, length) + "..";
+      return "${text.substring(0, length)}..";
     }
   }
 
@@ -255,7 +269,6 @@ class DashboardHelpers {
     // Return the initials in uppercase
     return initials.toUpperCase();
   }
-
 
   static String formmatDate2(String dateString) {
     try {
@@ -304,7 +317,8 @@ class DashboardHelpers {
     }
 
     int hours = decimalHours.floor(); // Get the integer part as hours
-    int minutes = ((decimalHours - hours) * 60).round(); // Convert the decimal part to minutes
+    int minutes = ((decimalHours - hours) * 60)
+        .round(); // Convert the decimal part to minutes
 
     return '${hours}hr ${minutes}min';
   }
@@ -314,7 +328,8 @@ class DashboardHelpers {
     showAlert(msg: 'Copied!');
   }
 
-  static void showAnimatedDialog(BuildContext context, String message, String? title) {
+  static void showAnimatedDialog(
+      BuildContext context, String message, String? title) {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -357,7 +372,10 @@ class DashboardHelpers {
                   ),
                   SizedBox(height: 12),
                   // Alert Content
-                  Text(message, textAlign: TextAlign.left, style: AppConstants.customTextStyle(14, myColors.greyTxt, FontWeight.w500)),
+                  Text(message,
+                      textAlign: TextAlign.left,
+                      style: AppConstants.customTextStyle(
+                          14, myColors.greyTxt, FontWeight.w500)),
                   SizedBox(height: 20),
                   // Action Buttons
                   Row(
@@ -375,10 +393,12 @@ class DashboardHelpers {
                           FocusScope.of(context).unfocus();
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
                           child: Text(
                             'Close',
-                            style: AppConstants.customTextStyle(16, Colors.black, FontWeight.w600),
+                            style: AppConstants.customTextStyle(
+                                16, Colors.black, FontWeight.w600),
                           ),
                         ),
                       ),
@@ -428,7 +448,6 @@ class DashboardHelpers {
     );
   }
 
-
   static Future<bool?> showConfirmDialog({
     required BuildContext context,
     String title = 'Please Confirm',
@@ -468,7 +487,8 @@ class DashboardHelpers {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.warning_rounded, size: 50, color: Colors.amber),
+                  const Icon(Icons.warning_rounded,
+                      size: 50, color: Colors.amber),
                   const SizedBox(height: 15),
                   Text(title,
                       style: const TextStyle(
@@ -478,7 +498,9 @@ class DashboardHelpers {
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+                    child: Text(message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16)),
                   ),
                   const Spacer(),
                   Row(
@@ -486,26 +508,34 @@ class DashboardHelpers {
                     children: [
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop(false); // Return false for cancel
+                          Navigator.of(context)
+                              .pop(false); // Return false for cancel
                           if (onCancel != null) onCancel();
                         },
                         style: TextButton.styleFrom(
                           minimumSize: const Size(120, 45),
                         ),
-                        child: Text(cancelText, style: const TextStyle(fontSize: 16)),
+                        child: Text(cancelText,
+                            style: const TextStyle(fontSize: 16)),
                       ),
                       ElevatedButton(
-                        onPressed: (){
-                          Navigator.of(context).pop(true); // Return true for confirm
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pop(true); // Return true for confirm
                           if (onSubmit != null) onSubmit();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: acceptButtonColor ?? Colors.green.shade100,
-                          foregroundColor: acceptButtonColor!=null?Colors.white:Colors.green,
+                          backgroundColor:
+                              acceptButtonColor ?? Colors.green.shade100,
+                          foregroundColor: acceptButtonColor != null
+                              ? Colors.white
+                              : Colors.green,
                           minimumSize: const Size(120, 45),
                           elevation: 0,
                         ),
-                        child: Text(confirmText, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(confirmText,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ],
                   ),
@@ -527,7 +557,12 @@ class DashboardHelpers {
     );
   }
 
-  static Future<dynamic> showBottomDialog({required BuildContext context, bool? dragable, bool? dismissible, double? height, required Widget child}) {
+  static Future<dynamic> showBottomDialog(
+      {required BuildContext context,
+      bool? dragable,
+      bool? dismissible,
+      double? height,
+      required Widget child}) {
     return showModalBottomSheet(
       context: context,
       enableDrag: dragable ?? true,
@@ -541,7 +576,7 @@ class DashboardHelpers {
         ),
       ),
       constraints: BoxConstraints(
-        minHeight: height != null ? height : 300,
+        minHeight: height ?? 300,
         maxHeight: height ?? 360,
       ),
       builder: (BuildContext context) => child,
@@ -576,7 +611,8 @@ class DashboardHelpers {
 
   static String formatTime24Hour(TimeOfDay time) {
     final String hour = time.hour.toString().padLeft(2, '0'); // Ensure 2 digits
-    final String minute = time.minute.toString().padLeft(2, '0'); // Ensure 2 digits
+    final String minute =
+        time.minute.toString().padLeft(2, '0'); // Ensure 2 digits
     return '$hour:$minute';
   }
 
@@ -606,7 +642,8 @@ class DashboardHelpers {
             children: [
               // Action Bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -679,7 +716,8 @@ class DashboardHelpers {
     return pickedDate;
   }
 
-  static Future<TimeOfDay?> pickTime(BuildContext context, TimeOfDay? initialTime) async {
+  static Future<TimeOfDay?> pickTime(
+      BuildContext context, TimeOfDay? initialTime) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
@@ -757,7 +795,8 @@ class DashboardHelpers {
     }
   }
 
-  static Future<void> openNumber({required String number, bool isMessage = false}) async {
+  static Future<void> openNumber(
+      {required String number, bool isMessage = false}) async {
     final uri = isMessage
         ? Uri(scheme: 'sms', path: number) // Open message app
         : Uri(scheme: 'tel', path: number); // Open dial pad
@@ -769,12 +808,14 @@ class DashboardHelpers {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchLatLngs(List<String> zipCodes) async {
+  static Future<List<Map<String, dynamic>>> fetchLatLngs(
+      List<String> zipCodes) async {
     const apiKey = 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY';
     List<Map<String, dynamic>> coordinates = [];
 
     for (String zipCode in zipCodes) {
-      final url = 'https://maps.googleapis.com/maps/api/geocode/json?address=$zipCode&key=$apiKey';
+      final url =
+          'https://maps.googleapis.com/maps/api/geocode/json?address=$zipCode&key=$apiKey';
 
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -845,9 +886,9 @@ class DashboardHelpers {
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
-
     } else {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
+      Navigator.push(
+          context, CupertinoPageRoute(builder: (context) => LoginScreen()));
     }
   }
 
@@ -862,8 +903,6 @@ class DashboardHelpers {
     // change 31 july
     //AppConstants.token = s;
   }
-
-
 
   static double daysBetween(String dateStr1, String dateStr2) {
     /**
@@ -902,16 +941,24 @@ class DashboardHelpers {
     return date2!.difference(date1!).inSeconds / 86400; // 86400 seconds = 1 day
   }
 
-  static Future<void> saveUserModules(String roles, List<String> loginModules) async {
+  static Future<void> saveUserModules(
+      String roles, List<String> loginModules) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList(roles, loginModules);
   }
 
-  static void showSnakBar({required BuildContext context, required String message, Color? bgColor}) {
+  static void showSnakBar(
+      {required BuildContext context,
+      required String message,
+      Color? bgColor}) {
     ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(content: Text(message,style: TextStyle(color: Colors.white),),
-         backgroundColor: bgColor??myColors.green,
-       ),
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: bgColor ?? myColors.green,
+      ),
     );
   }
 }

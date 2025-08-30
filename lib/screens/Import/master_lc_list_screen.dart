@@ -91,7 +91,8 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       _loadMoreData();
     }
   }
@@ -99,7 +100,8 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
   Future<void> _searchData() async {
     _currentPage = 1;
     final provider = context.read<ProductProvider>();
-    await provider.getMasterLcData(_searchController.text, _currentPage, _pageSize);
+    await provider.getMasterLcData(
+        _searchController.text, _currentPage, _pageSize);
   }
 
   void _onSearchChanged() {
@@ -212,7 +214,8 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
           children: [
             Text(item.buyerName ?? 'No Buyer'),
             const SizedBox(height: 4),
-            Text('Amount: ${NumberFormat.currency(symbol: '\$').format(item.masterLCAmount)}'),
+            Text(
+                'Amount: ${NumberFormat.currency(symbol: '\$').format(item.masterLCAmount)}'),
           ],
         ),
         trailing: Column(
@@ -220,13 +223,18 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
           children: [
             Text(item.eXIMStatus ?? 'No Status'),
             const SizedBox(height: 4),
-            Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(item.issueDateStr ?? DateTime.now().toString()))),
+            Text(DateFormat('MMM dd, yyyy').format(DateTime.parse(
+                item.issueDateStr ?? DateTime.now().toString()))),
           ],
         ),
         onTap: () async {
           var pp = context.read<ProductProvider>();
           if (await pp.getLcDetails(item.masterLCId)) {
-            Navigator.push(context, CupertinoPageRoute(builder: (context) => LCDetailScreen(lcData: pp.lcDetailsData)));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) =>
+                        LCDetailScreen(lcData: pp.lcDetailsData)));
           }
         },
       ),

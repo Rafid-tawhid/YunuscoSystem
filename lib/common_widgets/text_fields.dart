@@ -18,7 +18,7 @@ class CustomTextFormField extends StatelessWidget {
   final VoidCallback? onTap;
 
   const CustomTextFormField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     this.prefixIcon,
@@ -34,7 +34,7 @@ class CustomTextFormField extends StatelessWidget {
     this.isFocused = false,
     this.onFieldSubmitted,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,9 @@ class CustomTextFormField extends StatelessWidget {
             vertical: 16, // Larger padding for TV
             horizontal: 12,
           ),
-          prefixIcon: prefixIcon==null?null:Icon(prefixIcon, color: iconColor, size: 24), // Larger icon
+          prefixIcon: prefixIcon == null
+              ? null
+              : Icon(prefixIcon, color: iconColor, size: 24), // Larger icon
           labelText: labelText,
           labelStyle: TextStyle(
             color: isFocused ? focusedBorderColor : textColor,

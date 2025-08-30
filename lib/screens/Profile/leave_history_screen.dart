@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -16,22 +15,22 @@ class LeaveHistoryScreen extends StatefulWidget {
 }
 
 class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
-
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((v){
+    WidgetsBinding.instance.addPostFrameCallback((v) {
       getAttendanceHistory();
     });
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        title:  Text('Leave Applications',style: customTextStyle(18, Colors.white, FontWeight.w600),),
+        title: Text(
+          'Leave Applications',
+          style: customTextStyle(18, Colors.white, FontWeight.w600),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: myColors.primaryColor,
@@ -51,29 +50,30 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
           ),
         ),
         child: Consumer<HrProvider>(
-          builder: (context,pro,_)=>pro.isLoading?Center(child: CircularProgressIndicator(),):
-          pro.leaveDataList.isEmpty
-              ? const Center(
-            child: Text(
-              'No leave applications found',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          )
-              : ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: pro.leaveDataList.length,
-            itemBuilder: (context, index) {
-              final leave = pro.leaveDataList[index];
-              return _buildLeaveCard(leave);
-            },
-          ),
+          builder: (context, pro, _) => pro.isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : pro.leaveDataList.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No leave applications found',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: pro.leaveDataList.length,
+                      itemBuilder: (context, index) {
+                        final leave = pro.leaveDataList[index];
+                        return _buildLeaveCard(leave);
+                      },
+                    ),
         ),
       ),
-
     );
   }
   //
-
 
   Widget _buildLeaveCard(LeaveDataModel leave) {
     return Card(
@@ -85,29 +85,31 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          // Header row with employee info
-          Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-               'Employee Id : ${leave.employeeIdCardNo}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            Chip(
-              label: Text(
-                leave.leaveStatus ?? 'Pending',
-                style: const TextStyle(color: Colors.white),),
-                backgroundColor: _getStatusColor(leave.leaveStatus),
-              ),
+            // Header row with employee info
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Employee Id : ${leave.employeeIdCardNo}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    leave.leaveStatus ?? 'Pending',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: _getStatusColor(leave.leaveStatus),
+                ),
               ],
             ),
             const SizedBox(height: 8),
 
             // Applied for employee (if different)
-            if (leave.applaiedForEmployee != null && leave.applaiedForEmployee != leave.employeeIdCardNo)
+            if (leave.applaiedForEmployee != null &&
+                leave.applaiedForEmployee != leave.employeeIdCardNo)
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
@@ -255,13 +257,10 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
     }
   }
 
-  void getAttendanceHistory() async{
-    var hp=context.read<HrProvider>();
-    if(hp.leaveDataList.isEmpty){
+  void getAttendanceHistory() async {
+    var hp = context.read<HrProvider>();
+    if (hp.leaveDataList.isEmpty) {
       hp.getPersonalAttendance();
     }
   }
 }
-
-
-

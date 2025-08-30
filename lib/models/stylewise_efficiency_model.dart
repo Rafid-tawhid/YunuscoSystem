@@ -23,7 +23,8 @@ class StylewiseEfficiencyModel {
     // Parse date efficiencies
     final dateEfficiencies = <DateTime, double?>{};
     if (json['DateEfficiencies'] != null) {
-      (json['DateEfficiencies'] as Map<String, dynamic>).forEach((dateStr, value) {
+      (json['DateEfficiencies'] as Map<String, dynamic>)
+          .forEach((dateStr, value) {
         try {
           final date = DateTime.parse(dateStr);
           dateEfficiencies[date] = value?.toDouble();

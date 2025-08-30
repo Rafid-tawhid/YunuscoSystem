@@ -1,15 +1,16 @@
 class PurchaseRequisationListModel {
   PurchaseRequisationListModel({
-      num? purchaseRequisitionId, 
-      String? purchaseRequisitionCode, 
-      dynamic department, 
-      String? userName, 
-      num? createdBy, 
-      String? createdDate, 
-      String? productType, 
-      dynamic approvalFieldCode, 
-      String? remarks, 
-      dynamic isComplete,}){
+    num? purchaseRequisitionId,
+    String? purchaseRequisitionCode,
+    dynamic department,
+    String? userName,
+    num? createdBy,
+    String? createdDate,
+    String? productType,
+    dynamic approvalFieldCode,
+    String? remarks,
+    dynamic isComplete,
+  }) {
     _purchaseRequisitionId = purchaseRequisitionId;
     _purchaseRequisitionCode = purchaseRequisitionCode;
     _department = department;
@@ -20,7 +21,7 @@ class PurchaseRequisationListModel {
     _approvalFieldCode = approvalFieldCode;
     _remarks = remarks;
     _isComplete = isComplete;
-}
+  }
 
   PurchaseRequisationListModel.fromJson(dynamic json) {
     _purchaseRequisitionId = json['PurchaseRequisitionId'];
@@ -44,27 +45,31 @@ class PurchaseRequisationListModel {
   dynamic _approvalFieldCode;
   String? _remarks;
   dynamic _isComplete;
-PurchaseRequisationListModel copyWith({  num? purchaseRequisitionId,
-  String? purchaseRequisitionCode,
-  dynamic department,
-  String? userName,
-  num? createdBy,
-  String? createdDate,
-  String? productType,
-  dynamic approvalFieldCode,
-  String? remarks,
-  dynamic isComplete,
-}) => PurchaseRequisationListModel(  purchaseRequisitionId: purchaseRequisitionId ?? _purchaseRequisitionId,
-  purchaseRequisitionCode: purchaseRequisitionCode ?? _purchaseRequisitionCode,
-  department: department ?? _department,
-  userName: userName ?? _userName,
-  createdBy: createdBy ?? _createdBy,
-  createdDate: createdDate ?? _createdDate,
-  productType: productType ?? _productType,
-  approvalFieldCode: approvalFieldCode ?? _approvalFieldCode,
-  remarks: remarks ?? _remarks,
-  isComplete: isComplete ?? _isComplete,
-);
+  PurchaseRequisationListModel copyWith({
+    num? purchaseRequisitionId,
+    String? purchaseRequisitionCode,
+    dynamic department,
+    String? userName,
+    num? createdBy,
+    String? createdDate,
+    String? productType,
+    dynamic approvalFieldCode,
+    String? remarks,
+    dynamic isComplete,
+  }) =>
+      PurchaseRequisationListModel(
+        purchaseRequisitionId: purchaseRequisitionId ?? _purchaseRequisitionId,
+        purchaseRequisitionCode:
+            purchaseRequisitionCode ?? _purchaseRequisitionCode,
+        department: department ?? _department,
+        userName: userName ?? _userName,
+        createdBy: createdBy ?? _createdBy,
+        createdDate: createdDate ?? _createdDate,
+        productType: productType ?? _productType,
+        approvalFieldCode: approvalFieldCode ?? _approvalFieldCode,
+        remarks: remarks ?? _remarks,
+        isComplete: isComplete ?? _isComplete,
+      );
   num? get purchaseRequisitionId => _purchaseRequisitionId;
   String? get purchaseRequisitionCode => _purchaseRequisitionCode;
   dynamic get department => _department;
@@ -90,5 +95,4 @@ PurchaseRequisationListModel copyWith({  num? purchaseRequisitionId,
     map['IsComplete'] = _isComplete;
     return map;
   }
-
 }

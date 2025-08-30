@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -7,10 +6,10 @@ class ImageWithShimmer extends StatelessWidget {
   final String defaultImage;
 
   const ImageWithShimmer({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.defaultImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

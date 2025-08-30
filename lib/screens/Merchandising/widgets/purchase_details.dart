@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class PurchaseOrderReportScreen extends StatelessWidget {
   final Map<String, dynamic> orderData;
 
-  const PurchaseOrderReportScreen({Key? key, required this.orderData}) : super(key: key);
+  const PurchaseOrderReportScreen({super.key, required this.orderData});
 
   @override
   Widget build(BuildContext context) {
@@ -21,28 +21,43 @@ class PurchaseOrderReportScreen extends StatelessWidget {
           children: [
             _buildSectionHeader('Basic Information'),
             _buildInfoRow('Order Date', _formatDate(orderData['OrderDate'])),
-            _buildInfoRow('Buyer', '${orderData['BuyerName']} (ID: ${orderData['BuyerId']})'),
+            _buildInfoRow('Buyer',
+                '${orderData['BuyerName']} (ID: ${orderData['BuyerId']})'),
             _buildInfoRow('Supplier ID', orderData['SupplierId'].toString()),
-            _buildInfoRow('Amount', '\$${orderData['AmountAfterDiscount']?.toStringAsFixed(2) ?? '0.00'}'),
-            _buildInfoRow('Discount', '${orderData['Discount']?.toStringAsFixed(2) ?? '0.00'}%'),
-
+            _buildInfoRow('Amount',
+                '\$${orderData['AmountAfterDiscount']?.toStringAsFixed(2) ?? '0.00'}'),
+            _buildInfoRow('Discount',
+                '${orderData['Discount']?.toStringAsFixed(2) ?? '0.00'}%'),
             _buildSectionHeader('Shipping & Delivery'),
-            _buildInfoRow('Expected Delivery', _formatDate(orderData['ExpectedDeliveryDate'])),
-            _buildInfoRow('Is Import', orderData['IsImport']==true ? 'Yes' : 'No'),
-            _buildInfoRow('Partial Shipment', _boolToText(orderData['PartialShipment'])),
-            _buildInfoRow('Trans Shipment', _boolToText(orderData['TransShipment'])),
-            _buildInfoRow('Shipping Line',orderData['ShippingLineIsOpen']!=null&& orderData['ShippingLineIsOpen'] ? 'Open' : 'Closed'),
-
+            _buildInfoRow('Expected Delivery',
+                _formatDate(orderData['ExpectedDeliveryDate'])),
+            _buildInfoRow(
+                'Is Import', orderData['IsImport'] == true ? 'Yes' : 'No'),
+            _buildInfoRow(
+                'Partial Shipment', _boolToText(orderData['PartialShipment'])),
+            _buildInfoRow(
+                'Trans Shipment', _boolToText(orderData['TransShipment'])),
+            _buildInfoRow(
+                'Shipping Line',
+                orderData['ShippingLineIsOpen'] != null &&
+                        orderData['ShippingLineIsOpen']
+                    ? 'Open'
+                    : 'Closed'),
             _buildSectionHeader('Terms & Conditions'),
-            _buildInfoRow('Shipping Terms', _handleNull(orderData['ShippingTerms'])),
-            _buildInfoRow('Packing Instruction', _handleNull(orderData['PackingInstruction'])),
+            _buildInfoRow(
+                'Shipping Terms', _handleNull(orderData['ShippingTerms'])),
+            _buildInfoRow('Packing Instruction',
+                _handleNull(orderData['PackingInstruction'])),
             _buildInfoRow('Remarks', _handleNull(orderData['Remarks'])),
-
             _buildSectionHeader('Document Requirements'),
-            _buildInfoRow('Original Invoice', _boolToText(orderData['CRoriginalInvoice'])),
-            _buildInfoRow('Organic Certificate', _boolToText(orderData['CRorganicCertificate'])),
-            _buildInfoRow('Test Certificate', _boolToText(orderData['CRtestCertificate'])),
-            _buildInfoRow('Packing List', _boolToText(orderData['CRpackingList'])),
+            _buildInfoRow('Original Invoice',
+                _boolToText(orderData['CRoriginalInvoice'])),
+            _buildInfoRow('Organic Certificate',
+                _boolToText(orderData['CRorganicCertificate'])),
+            _buildInfoRow('Test Certificate',
+                _boolToText(orderData['CRtestCertificate'])),
+            _buildInfoRow(
+                'Packing List', _boolToText(orderData['CRpackingList'])),
           ],
         ),
       ),

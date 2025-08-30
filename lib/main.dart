@@ -17,6 +17,7 @@ import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/service_class/notofication_helper.dart';
 
 import 'launcher_screen.dart';
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -31,7 +32,6 @@ void main() async {
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
     await setupNotificationChannel();
-
   }
 
 //
@@ -49,14 +49,12 @@ void main() async {
   ], child: MyApp()));
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
         title: 'Yunusco System',
         navigatorKey: NavigationService.navigatorKey,
@@ -82,7 +80,10 @@ Future<void> setupNotificationChannel() async {
     importance: Importance.high,
   );
 
-  await FlutterLocalNotificationsPlugin().resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+  await FlutterLocalNotificationsPlugin()
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
 
   // var server_key=await ServerKey.server_token();
   // debugPrint('server_key ${server_key}');

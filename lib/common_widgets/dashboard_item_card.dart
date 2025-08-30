@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class DashboardMenuItem {
@@ -21,9 +20,9 @@ class ReusableDashboardCard extends StatelessWidget {
   final DashboardMenuItem menu;
 
   const ReusableDashboardCard({
-    Key? key,
+    super.key,
     required this.menu,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -15,7 +15,9 @@ class SectionScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<ManagementProvider>().getAllDropdownInfoForJobcard(),
+            onPressed: () => context
+                .read<ManagementProvider>()
+                .getAllDropdownInfoForJobcard(),
           ),
         ],
       ),
@@ -35,7 +37,8 @@ class SectionScreen extends StatelessWidget {
             separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (_, index) => SectionTile(
               department: provider.allDropdownInfoForJobcard!.sections![index],
-              onTap: () => _showDepartmentDetails(context, provider.allDropdownInfoForJobcard!.sections![index]),
+              onTap: () => _showDepartmentDetails(context,
+                  provider.allDropdownInfoForJobcard!.sections![index]),
             ),
           );
         },

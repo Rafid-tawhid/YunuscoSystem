@@ -1,14 +1,15 @@
 class Testing {
   Testing({
-      num? userId, 
-      num? id, 
-      String? title, 
-      String? body,}){
+    num? userId,
+    num? id,
+    String? title,
+    String? body,
+  }) {
     _userId = userId;
     _id = id;
     _title = title;
     _body = body;
-}
+  }
 
   Testing.fromJson(dynamic json) {
     _userId = json['userId'];
@@ -20,15 +21,18 @@ class Testing {
   num? _id;
   String? _title;
   String? _body;
-Testing copyWith({  num? userId,
-  num? id,
-  String? title,
-  String? body,
-}) => Testing(  userId: userId ?? _userId,
-  id: id ?? _id,
-  title: title ?? _title,
-  body: body ?? _body,
-);
+  Testing copyWith({
+    num? userId,
+    num? id,
+    String? title,
+    String? body,
+  }) =>
+      Testing(
+        userId: userId ?? _userId,
+        id: id ?? _id,
+        title: title ?? _title,
+        body: body ?? _body,
+      );
   num? get userId => _userId;
   num? get id => _id;
   String? get title => _title;
@@ -42,5 +46,4 @@ Testing copyWith({  num? userId,
     map['body'] = _body;
     return map;
   }
-
 }

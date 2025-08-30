@@ -1,10 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
-import 'package:yunusco_group/providers/hr_provider.dart';
-import 'package:yunusco_group/screens/Merchandising/buyer_order_details.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/buyer_order_details_model.dart';
@@ -71,44 +67,42 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
     return AppBar(
       title: _isSearching
           ? TextField(
-        controller: _searchController,
-        autofocus: true,
-        decoration: const InputDecoration(
-          hintText: 'Search orders...',
-          border: InputBorder.none,
-          hintStyle: TextStyle(color: Colors.black),
-        ),
-        style: const TextStyle(color: Colors.black),
-        onChanged: (value) {
-          context.read<MerchandisingProvider>().searchOrders(value);
-        },
-      )
+              controller: _searchController,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Search orders...',
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.black),
+              ),
+              style: const TextStyle(color: Colors.black),
+              onChanged: (value) {
+                context.read<MerchandisingProvider>().searchOrders(value);
+              },
+            )
           : const Text('Buyer Orders'),
       actions: [
         _isSearching
             ? IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            setState(() {
-              _isSearching = false;
-              _searchController.clear();
-              context.read<MerchandisingProvider>().searchOrders('');
-            });
-          },
-        )
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  setState(() {
+                    _isSearching = false;
+                    _searchController.clear();
+                    context.read<MerchandisingProvider>().searchOrders('');
+                  });
+                },
+              )
             : IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            setState(() {
-              _isSearching = true;
-            });
-          },
-        ),
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  setState(() {
+                    _isSearching = true;
+                  });
+                },
+              ),
       ],
     );
   }
-
-
 
   Widget _buildOrderCard(BuildContext context, BuyerOrderDetailsModel order) {
     final isPending = order.finalStatus?.toLowerCase() == 'pending';
@@ -175,7 +169,11 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                           onPressed: () {
                             // View details action
                           },
-                          child:  Text('VIEW',style: customTextStyle(14, myColors.grey, FontWeight.w600),),
+                          child: Text(
+                            'VIEW',
+                            style: customTextStyle(
+                                14, myColors.grey, FontWeight.w600),
+                          ),
                         ),
                         if (isPending) ...[
                           const SizedBox(width: 8),
@@ -186,7 +184,11 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                             onPressed: () {
                               // Reject action
                             },
-                            child:  Text('REJECT',style: customTextStyle(14,Colors.white, FontWeight.w600),),
+                            child: Text(
+                              'REJECT',
+                              style: customTextStyle(
+                                  14, Colors.white, FontWeight.w600),
+                            ),
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
@@ -196,9 +198,12 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                             onPressed: () {
                               // Accept action
                             },
-                            child:  Text('ACCEPT',style: customTextStyle(14,Colors.white, FontWeight.w600),),
+                            child: Text(
+                              'ACCEPT',
+                              style: customTextStyle(
+                                  14, Colors.white, FontWeight.w600),
+                            ),
                           ),
-
                         ],
                       ],
                     ),
@@ -239,10 +244,14 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
 
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
-      case 'approved': return Colors.green[100]!;
-      case 'pending': return Colors.orange[100]!;
-      case 'rejected': return Colors.red[100]!;
-      default: return Colors.grey[200]!;
+      case 'approved':
+        return Colors.green[100]!;
+      case 'pending':
+        return Colors.orange[100]!;
+      case 'rejected':
+        return Colors.red[100]!;
+      default:
+        return Colors.grey[200]!;
     }
   }
 
@@ -255,6 +264,3 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
     mp.setLoading(false);
   }
 }
-
-
-

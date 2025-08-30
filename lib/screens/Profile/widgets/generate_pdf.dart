@@ -2,14 +2,7 @@ import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
-import 'package:printing/printing.dart';
 
-import 'package:flutter/material.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../models/payslip_model.dart';
@@ -60,10 +53,12 @@ class PayslipPDFGenerator {
                   style: pw.TextStyle(
                       fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.Divider(),
-              _buildInfoRow('Total Working Days', payslip.totalWorkingDays.toString() ?? ''),
-              _buildInfoRow('Present Days', payslip.presentDays.toString()  ?? ''),
+              _buildInfoRow('Total Working Days',
+                  payslip.totalWorkingDays.toString() ?? ''),
+              _buildInfoRow(
+                  'Present Days', payslip.presentDays.toString() ?? ''),
               _buildInfoRow('Absent Days', payslip.absentDays.toString() ?? ''),
-              _buildInfoRow('Late Days', payslip.lateDays.toString()  ?? ''),
+              _buildInfoRow('Late Days', payslip.lateDays.toString() ?? ''),
               pw.SizedBox(height: 20),
 
               // Salary Details
@@ -71,9 +66,12 @@ class PayslipPDFGenerator {
                   style: pw.TextStyle(
                       fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.Divider(),
-              _buildInfoRow('Gross Salary', '${payslip.grossSalary?.toStringAsFixed(2) ?? '0.00'}'),
-              _buildInfoRow('Net Income', '${payslip.netPeyable?.toStringAsFixed(2) ?? '0.00'}'),
-              _buildInfoRow('Deductions', '${payslip.netDeduction?.toStringAsFixed(2) ?? '0.00'}'),
+              _buildInfoRow('Gross Salary',
+                  payslip.grossSalary?.toStringAsFixed(2) ?? '0.00'),
+              _buildInfoRow('Net Income',
+                  payslip.netPeyable?.toStringAsFixed(2) ?? '0.00'),
+              _buildInfoRow('Deductions',
+                  payslip.netDeduction?.toStringAsFixed(2) ?? '0.00'),
               pw.SizedBox(height: 10),
 
               // Net Payable
@@ -84,7 +82,8 @@ class PayslipPDFGenerator {
                   border: pw.Border.all(),
                   color: PdfColors.grey300,
                 ),
-                child: pw.Text('Net Payable: ${payslip.netPeyable?.toStringAsFixed(2) ?? '0.00'}',
+                child: pw.Text(
+                    'Net Payable: ${payslip.netPeyable?.toStringAsFixed(2) ?? '0.00'}',
                     style: pw.TextStyle(
                         fontSize: 18, fontWeight: pw.FontWeight.bold)),
               ),
@@ -96,7 +95,8 @@ class PayslipPDFGenerator {
 
     // Get directory for saving
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/Payslip_${payslip.idCardNo}_${payslip.salaryMonth}_${payslip.salaryYear}.pdf');
+    final file = File(
+        '${directory.path}/Payslip_${payslip.idCardNo}_${payslip.salaryMonth}_${payslip.salaryYear}.pdf');
     await file.writeAsBytes(await pdf.save());
 
     return file;
@@ -124,7 +124,8 @@ class PayslipPDFGenerator {
           await downloadsDirectory.create(recursive: true);
         }
 
-        final newPath = '${downloadsDirectory.path}/${pdfFile.path.split('/').last}';
+        final newPath =
+            '${downloadsDirectory.path}/${pdfFile.path.split('/').last}';
         await pdfFile.copy(newPath);
         return true;
       }

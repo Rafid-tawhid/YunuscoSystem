@@ -12,7 +12,10 @@ class PfInfoScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:  Text('Provident Fund Information',style: customTextStyle(18, Colors.white, FontWeight.w500),),
+        title: Text(
+          'Provident Fund Information',
+          style: customTextStyle(18, Colors.white, FontWeight.w500),
+        ),
         backgroundColor: myColors.primaryColor,
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -50,7 +53,8 @@ class PfInfoScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.account_balance_wallet, size: 64, color: Colors.grey),
+                  Icon(Icons.account_balance_wallet,
+                      size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
                     'No PF data available',
@@ -82,18 +86,23 @@ class PfInfoScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Header with user info
-             // _buildInfoRow('User ID', pfData['UserId']?.toString() ?? 'N/A'),
-              _buildInfoRow('ID Card No', pfData['IdCardNo']?.toString() ?? 'N/A'),
-              _buildInfoRow('Full Name', pfData['FullName']?.toString() ?? 'N/A'),
+              // _buildInfoRow('User ID', pfData['UserId']?.toString() ?? 'N/A'),
+              _buildInfoRow(
+                  'ID Card No', pfData['IdCardNo']?.toString() ?? 'N/A'),
+              _buildInfoRow(
+                  'Full Name', pfData['FullName']?.toString() ?? 'N/A'),
 
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
 
               // Employment details
-              _buildInfoRow('Department', pfData['DepartmentName']?.toString() ?? 'N/A'),
-              _buildInfoRow('Designation', pfData['DesignationName']?.toString() ?? 'N/A'),
-              _buildInfoRow('Section', pfData['SectionName']?.toString() ?? 'N/A'),
+              _buildInfoRow(
+                  'Department', pfData['DepartmentName']?.toString() ?? 'N/A'),
+              _buildInfoRow('Designation',
+                  pfData['DesignationName']?.toString() ?? 'N/A'),
+              _buildInfoRow(
+                  'Section', pfData['SectionName']?.toString() ?? 'N/A'),
 
               const SizedBox(height: 16),
               const Divider(),
@@ -101,7 +110,8 @@ class PfInfoScreen extends StatelessWidget {
 
               // PF details
               _buildInfoRow('Active Date', _formatDate(pfData['ActiveDate'])),
-              _buildInfoRow('Installments', pfData['NumberOfInstallment']?.toString() ?? '0'),
+              _buildInfoRow('Installments',
+                  pfData['NumberOfInstallment']?.toString() ?? '0'),
 
               const SizedBox(height: 20),
 

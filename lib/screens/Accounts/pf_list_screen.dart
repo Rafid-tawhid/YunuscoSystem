@@ -43,12 +43,12 @@ class _PfListScreenState extends State<PfListScreen> {
                 border: InputBorder.none,
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.black),
-                  onPressed: () {
-                    _searchController.clear();
-                    provider.searchPfRecords('');
-                  },
-                )
+                        icon: const Icon(Icons.clear, color: Colors.black),
+                        onPressed: () {
+                          _searchController.clear();
+                          provider.searchPfRecords('');
+                        },
+                      )
                     : null,
               ),
               style: const TextStyle(color: Colors.black),
@@ -115,7 +115,8 @@ class _PfCard extends StatelessWidget {
           pfRecord.employeeName ?? 'No Employee Name',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text('${pfRecord.department ?? ''} • ${pfRecord.designation ?? ''}'),
+        subtitle: Text(
+            '${pfRecord.department ?? ''} • ${pfRecord.designation ?? ''}'),
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -129,12 +130,16 @@ class _PfCard extends StatelessWidget {
                 _buildDetailRow('Bank', pfRecord.bankName),
                 _buildDetailRow('Account No', pfRecord.salaryAccountNo),
                 const SizedBox(height: 12),
-                _buildAmountRow('Employee Contribution', pfRecord.totalEmployeeAmount),
-                _buildAmountRow('Company Contribution', pfRecord.totalCompanyAmount),
-                _buildAmountRow('Total PF Amount', pfRecord.totalAmount, isTotal: true),
+                _buildAmountRow(
+                    'Employee Contribution', pfRecord.totalEmployeeAmount),
+                _buildAmountRow(
+                    'Company Contribution', pfRecord.totalCompanyAmount),
+                _buildAmountRow('Total PF Amount', pfRecord.totalAmount,
+                    isTotal: true),
                 const SizedBox(height: 8),
                 if (pfRecord.pfdeactivatedDate != null)
-                  _buildStatusRow('Deactivated on ${pfRecord.pfdeactivatedDate}'),
+                  _buildStatusRow(
+                      'Deactivated on ${pfRecord.pfdeactivatedDate}'),
               ],
             ),
           ),

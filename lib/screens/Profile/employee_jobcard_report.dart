@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:yunusco_group/common_widgets/custom_dropdown.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/JobCardDropdownModel.dart';
-import 'package:yunusco_group/models/employee_attendance_model.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_attendance_card.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -15,10 +12,12 @@ class EmployeeJobCardReportScreen extends StatefulWidget {
   const EmployeeJobCardReportScreen({super.key});
 
   @override
-  _EmployeeJobCardReportScreenState createState() => _EmployeeJobCardReportScreenState();
+  _EmployeeJobCardReportScreenState createState() =>
+      _EmployeeJobCardReportScreenState();
 }
 
-class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScreen> {
+class _EmployeeJobCardReportScreenState
+    extends State<EmployeeJobCardReportScreen> {
   DateTime? _fromDate;
   DateTime? _toDate;
   Departments? selectedDept;
@@ -54,7 +53,9 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
   }
 
   void _searchAttendance() {
-    if (_fromDate == null || _toDate == null || _usernameController.text.isEmpty) {
+    if (_fromDate == null ||
+        _toDate == null ||
+        _usernameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
       );
@@ -70,12 +71,12 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
     debugPrint('From Date: $formattedFromDate');
     debugPrint('To Date: $formattedToDate');
 
-    var hp=context.read<HrProvider>();
-    hp.getEmployeeAttendance(_usernameController.text.trim(),formattedFromDate,formattedToDate);
+    var hp = context.read<HrProvider>();
+    hp.getEmployeeAttendance(
+        _usernameController.text.trim(), formattedFromDate, formattedToDate);
 
     // Add your API call logic here
   }
-
 
   @override
   void initState() {
@@ -90,13 +91,14 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:  Text('Employee JobCard Report',style: customTextStyle(18, Colors.white, FontWeight.w600),),
+        title: Text(
+          'Employee JobCard Report',
+          style: customTextStyle(18, Colors.white, FontWeight.w600),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: myColors.primaryColor,
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -117,7 +119,7 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
                 ),
               ),
               const SizedBox(height: 20),
-          
+
               // From Date Picker
               InkWell(
                 onTap: () => _selectFromDate(context),
@@ -137,7 +139,7 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
                 ),
               ),
               const SizedBox(height: 20),
-          
+
               // To Date Picker
               InkWell(
                 onTap: () => _selectToDate(context),
@@ -186,7 +188,9 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
               //     hintText: 'Select Section',
               //   ):SizedBox.shrink(),
               // ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               // Search Button
               SizedBox(
                 width: double.infinity,
@@ -199,7 +203,7 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child:  Text(
+                  child: Text(
                     'Find Attendance',
                     style: customTextStyle(16, Colors.white, FontWeight.w500),
                   ),
@@ -207,7 +211,9 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
               ),
 
               const SizedBox(height: 10),
-              Consumer<HrProvider>(builder: (context,pro,_)=>EmployeeCards(attendanceList: pro.employeeAttendanceList))
+              Consumer<HrProvider>(
+                  builder: (context, pro, _) =>
+                      EmployeeCards(attendanceList: pro.employeeAttendanceList))
             ],
           ),
         ),
@@ -216,11 +222,11 @@ class _EmployeeJobCardReportScreenState extends State<EmployeeJobCardReportScree
   }
 
   void setInitialInfo() {
-    var hp=context.read<HrProvider>();
+    var hp = context.read<HrProvider>();
     hp.employeeAttendanceList.clear();
     hp.getAllDropdownInfoForJobcard();
     setState(() {
-      _usernameController.text=DashboardHelpers.currentUser!.loginName??'';
+      _usernameController.text = DashboardHelpers.currentUser!.loginName ?? '';
     });
   }
 }

@@ -1,5 +1,4 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/buyer_wise_value_model.dart';
@@ -15,7 +14,8 @@ class BuyerQtyPieChart extends StatelessWidget {
       return const Center(child: Text("No data available"));
     }
 
-    final sortedItems = [...items]..sort((a, b) => (b.value ?? 0).compareTo(a.value ?? 0));
+    final sortedItems = [...items]
+      ..sort((a, b) => (b.value ?? 0).compareTo(a.value ?? 0));
     final total = items.fold<double>(0, (sum, e) => sum + (e.value ?? 0));
 
     final colors = [
@@ -44,7 +44,8 @@ class BuyerQtyPieChart extends StatelessWidget {
                 return PieChartSectionData(
                   value: item.value?.toDouble() ?? 0,
                   color: colors[i % colors.length],
-                  title: "${((item.value ?? 0) / total * 100).toStringAsFixed(1)}%",
+                  title:
+                      "${((item.value ?? 0) / total * 100).toStringAsFixed(1)}%",
                   radius: 160,
                   titleStyle: const TextStyle(
                     fontSize: 12,
@@ -78,7 +79,8 @@ class BuyerQtyPieChart extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(item.label ?? '-', style: const TextStyle(fontSize: 14)),
+                  child: Text(item.label ?? '-',
+                      style: const TextStyle(fontSize: 14)),
                 ),
                 Text("$percent%", style: const TextStyle(fontSize: 14)),
               ],

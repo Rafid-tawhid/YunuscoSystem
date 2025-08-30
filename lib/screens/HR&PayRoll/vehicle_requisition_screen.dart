@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +13,7 @@ import 'package:yunusco_group/screens/HR&PayRoll/requested_car_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/vehicle_req_dropdown.dart';
 import 'package:yunusco_group/utils/colors.dart';
-import 'package:yunusco_group/utils/constants.dart';
 
-import '../../common_widgets/search_field.dart';
 import 'members_screen.dart';
 
 class VehicleRequisitionForm extends StatefulWidget {
@@ -42,11 +38,11 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
   // Vehicle type options
   final List<Map<String, dynamic>> _vehicleTypes = [
     {'name': 'Sedan Car', 'value': 1},
-      {'name': 'Hiace', 'value': 2},
+    {'name': 'Hiace', 'value': 2},
   ];
-  String placeId1='';
-  String placeId2='';
-  String purpouse='';
+  String placeId1 = '';
+  String placeId2 = '';
+  String purpouse = '';
 
   @override
   void dispose() {
@@ -93,27 +89,35 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       members.add(e.idCardNo ?? '');
     }
     return {
-      "IdCardNo": _selectedThirdPerson==null?DashboardHelpers.currentUser!.iDnum:_selectedThirdPerson!.idCardNo,
+      "IdCardNo": _selectedThirdPerson == null
+          ? DashboardHelpers.currentUser!.iDnum
+          : _selectedThirdPerson!.idCardNo,
       "Distance": _distanceController.text,
       "CarryGoods": '',
       "Purpose": purpouse,
       "CreatedBy": DashboardHelpers.currentUser!.iDnum,
       "DestinationTo": _destinationController.text,
       "DestinationFrom": _travelStartFromController.text,
-      "RequiredDate": DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd'),
+      "RequiredDate": DashboardHelpers.convertDateTime(_selectedDate.toString(),
+          pattern: 'yyyy-MM-dd'),
       "RequiredTime": getTimeDate(_selectedTime),
       "Duration": _durationController.text,
       "EmployeeId": members.join(", "),
-      "DepartmentName": _selectedThirdPerson==null?DashboardHelpers.currentUser!.department:_selectedThirdPerson!.departmentName,
+      "DepartmentName": _selectedThirdPerson == null
+          ? DashboardHelpers.currentUser!.department
+          : _selectedThirdPerson!.departmentName,
       "VehicletypeId": _selectedVehicleType ?? 1,
       "Status": 1, //pending
-      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd'),
+      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(),
+          pattern: 'yyyy-MM-dd'),
     };
   }
-  
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate() && _selectedVehicleType != null &&_selectedDate!=null&&_selectedTime!=null) {
+    if (_formKey.currentState!.validate() &&
+        _selectedVehicleType != null &&
+        _selectedDate != null &&
+        _selectedTime != null) {
       final formData = _prepareFormData();
       print('Form Data to Submit: $formData');
       var hp = context.read<HrProvider>();
@@ -122,16 +126,19 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Requisition submitted!\nVehicle Type : ${_selectedVehicleType==1?'Private':'Hiace'}',style: TextStyle(color: Colors.white),),
+          content: Text(
+            'Requisition submitted!\nVehicle Type : ${_selectedVehicleType == 1 ? 'Private' : 'Hiace'}',
+            style: TextStyle(color: Colors.white),
+          ),
           duration: const Duration(seconds: 5),
         ),
       );
       Navigator.pop(context);
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill all required fields, including vehicle type'),
+          content:
+              Text('Please fill all required fields, including vehicle type'),
           backgroundColor: Colors.red,
         ),
       );
@@ -147,39 +154,50 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
         centerTitle: true,
         elevation: 0,
         actions: [
-          IconButton(onPressed: () async {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => VehicleRequestListScreen(),
-              ),
-            );
-          }, icon: Icon(Icons.list))
+          IconButton(
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VehicleRequestListScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.list))
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
               Row(
                 children: [
-                  _selectedThirdPerson!=null?Text('Requested for: ${_selectedThirdPerson!.fullName}'):
-                  Text('Requested by: ${DashboardHelpers.currentUser!.userName}'),
+                  _selectedThirdPerson != null
+                      ? Text('Requested for: ${_selectedThirdPerson!.fullName}')
+                      : Text(
+                          'Requested by: ${DashboardHelpers.currentUser!.userName}'),
                   Spacer(),
-                  IconButton(onPressed: (){
-                    Navigator.push(context, CupertinoPageRoute(builder: (context) => PersonSelectionScreen(forSomeOnesVehicleReq: true,))).then((persons) {
-                      if (persons != null) {
-                        debugPrint('SELECT THIRD PERSON FOR VEHICLE $persons');
-                         setState(() {
-                           _selectedThirdPerson=persons;
-                         });
-                      }
-                    });
-                  }, icon: Icon(Icons.alternate_email))
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => PersonSelectionScreen(
+                                      forSomeOnesVehicleReq: true,
+                                    ))).then((persons) {
+                          if (persons != null) {
+                            debugPrint(
+                                'SELECT THIRD PERSON FOR VEHICLE $persons');
+                            setState(() {
+                              _selectedThirdPerson = persons;
+                            });
+                          }
+                        });
+                      },
+                      icon: Icon(Icons.alternate_email))
                 ],
               ),
 
@@ -304,7 +322,7 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
               const SizedBox(height: 20),
               VehiclePurposeDropdown(
                 onPurposeSelected: (String value) {
-                  purpouse=value;
+                  purpouse = value;
                 },
               ),
               const SizedBox(height: 20),
@@ -322,7 +340,9 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                           prefixIcon: Icon(Icons.calendar_today),
                         ),
                         child: Text(
-                          _selectedDate == null ? 'Select date' : DateFormat('dd-MM-yyyy').format(_selectedDate!),
+                          _selectedDate == null
+                              ? 'Select date'
+                              : DateFormat('dd-MM-yyyy').format(_selectedDate!),
                         ),
                       ),
                     ),
@@ -338,7 +358,9 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                           prefixIcon: Icon(Icons.access_time),
                         ),
                         child: Text(
-                          _selectedTime == null ? 'Select time' : _selectedTime!.format(context),
+                          _selectedTime == null
+                              ? 'Select time'
+                              : _selectedTime!.format(context),
                         ),
                       ),
                     ),
@@ -367,7 +389,11 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
               const SizedBox(height: 10),
               InkWell(
                 onTap: () {
-                  Navigator.push(context, CupertinoPageRoute(builder: (context) => PersonSelectionScreen())).then((persons) {
+                  Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => PersonSelectionScreen()))
+                      .then((persons) {
                     if (persons != null) {
                       debugPrint('person $persons');
                     }
@@ -386,13 +412,15 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               SelectedPeopleWidget(),
               const SizedBox(height: 30),
               // Submit Button
               Consumer<HrProvider>(
-                builder: (context,pro,_)=>ElevatedButton(
-                  onPressed: pro.isLoading?null: _submitForm,
+                builder: (context, pro, _) => ElevatedButton(
+                  onPressed: pro.isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: myColors.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -400,11 +428,12 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: pro.isLoading?CircularProgressIndicator():
-                  Text(
-                    'Submit Requisition',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  child: pro.isLoading
+                      ? CircularProgressIndicator()
+                      : Text(
+                          'Submit Requisition',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                 ),
               )
             ],
@@ -432,7 +461,6 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
     return timeFormat.format(combinedDateTime);
   }
 
-
   Future<Map<String, dynamic>> getRoadDistanceRoutesAPI({
     required String originPlaceId,
     required String destinationPlaceId,
@@ -446,7 +474,8 @@ class _VehicleRequisitionFormState extends State<VehicleRequisitionForm> {
       final headers = {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline',
+        'X-Goog-FieldMask':
+            'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline',
       };
 
       final body = json.encode({

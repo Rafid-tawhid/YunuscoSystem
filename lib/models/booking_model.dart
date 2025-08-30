@@ -93,12 +93,12 @@ class BookingRef {
   @override
   int get hashCode {
     return id.hashCode ^
-    userId.hashCode ^
-    userName.hashCode ^
-    title.hashCode ^
-    description.hashCode ^
-    startTime.hashCode ^
-    endTime.hashCode ^
-    createdAt.hashCode;
+        userId.hashCode ^
+        userName.hashCode ^
+        title.hashCode ^
+        description.hashCode ^
+        startTime.hashCode ^
+        endTime.hashCode ^
+        createdAt.hashCode;
   }
 }

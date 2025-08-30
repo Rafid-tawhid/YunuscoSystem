@@ -12,8 +12,11 @@ import '../../common_widgets/dashboard_item_card.dart';
 import 'management_screen.dart';
 
 class ManagementDashboardScreen extends StatefulWidget {
+  const ManagementDashboardScreen({super.key});
+
   @override
-  State<ManagementDashboardScreen> createState() => _ManagementDashboardScreenState();
+  State<ManagementDashboardScreen> createState() =>
+      _ManagementDashboardScreenState();
 }
 
 class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
@@ -45,7 +48,8 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.blue,
         onTap: () => Navigator.push(
           context,
-          CupertinoPageRoute(builder: (context) => ManagementProductionScreen()),
+          CupertinoPageRoute(
+              builder: (context) => ManagementProductionScreen()),
         ),
       ),
       DashboardMenuItem(
@@ -55,9 +59,9 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.green,
         onTap: dropdownInfo?.departments?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
@@ -67,9 +71,9 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.orange,
         onTap: dropdownInfo?.sections?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => SectionScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => SectionScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
@@ -79,9 +83,9 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.purple,
         onTap: dropdownInfo?.lines?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => LineScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => LineScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
@@ -91,9 +95,9 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.red,
         onTap: dropdownInfo?.units?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => UnitScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => UnitScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
@@ -119,12 +123,13 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
       appBar: AppBar(
-        title: const Text('Management',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Management',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       body: Padding(

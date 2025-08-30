@@ -77,12 +77,12 @@ class _BomListScreenState extends State<BomListScreen> {
                 border: InputBorder.none,
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.black),
-                  onPressed: () {
-                    _searchController.clear();
-                    provider.searchBoms('');
-                  },
-                )
+                        icon: const Icon(Icons.clear, color: Colors.black),
+                        onPressed: () {
+                          _searchController.clear();
+                          provider.searchBoms('');
+                        },
+                      )
                     : null,
               ),
               style: const TextStyle(color: Colors.black),

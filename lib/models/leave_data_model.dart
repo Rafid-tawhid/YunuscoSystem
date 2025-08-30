@@ -1,24 +1,25 @@
 class LeaveDataModel {
   LeaveDataModel({
-      String? employeeIdCardNo, 
-      String? applaiedForEmployee, 
-      String? departmentName, 
-      dynamic departmentId, 
-      String? joiningDate, 
-      String? leaveFromDate, 
-      String? leaveToDate, 
-      String? leaveCreationDate, 
-      String? leaveType, 
-      String? reasons, 
-      num? dayCount, 
-      num? sl, 
-      num? el, 
-      num? cl, 
-      String? leavePolicyType, 
-      String? appliedByName, 
-      String? passedByName, 
-      String? leaveStatus, 
-      num? currentApprover,}){
+    String? employeeIdCardNo,
+    String? applaiedForEmployee,
+    String? departmentName,
+    dynamic departmentId,
+    String? joiningDate,
+    String? leaveFromDate,
+    String? leaveToDate,
+    String? leaveCreationDate,
+    String? leaveType,
+    String? reasons,
+    num? dayCount,
+    num? sl,
+    num? el,
+    num? cl,
+    String? leavePolicyType,
+    String? appliedByName,
+    String? passedByName,
+    String? leaveStatus,
+    num? currentApprover,
+  }) {
     _employeeIdCardNo = employeeIdCardNo;
     _applaiedForEmployee = applaiedForEmployee;
     _departmentName = departmentName;
@@ -38,7 +39,7 @@ class LeaveDataModel {
     _passedByName = passedByName;
     _leaveStatus = leaveStatus;
     _currentApprover = currentApprover;
-}
+  }
 
   LeaveDataModel.fromJson(dynamic json) {
     _employeeIdCardNo = json['EmployeeIdCardNo'];
@@ -80,45 +81,48 @@ class LeaveDataModel {
   String? _passedByName;
   String? _leaveStatus;
   num? _currentApprover;
-LeaveDataModel copyWith({  String? employeeIdCardNo,
-  String? applaiedForEmployee,
-  String? departmentName,
-  dynamic departmentId,
-  String? joiningDate,
-  String? leaveFromDate,
-  String? leaveToDate,
-  String? leaveCreationDate,
-  String? leaveType,
-  String? reasons,
-  num? dayCount,
-  num? sl,
-  num? el,
-  num? cl,
-  String? leavePolicyType,
-  String? appliedByName,
-  String? passedByName,
-  String? leaveStatus,
-  num? currentApprover,
-}) => LeaveDataModel(  employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
-  applaiedForEmployee: applaiedForEmployee ?? _applaiedForEmployee,
-  departmentName: departmentName ?? _departmentName,
-  departmentId: departmentId ?? _departmentId,
-  joiningDate: joiningDate ?? _joiningDate,
-  leaveFromDate: leaveFromDate ?? _leaveFromDate,
-  leaveToDate: leaveToDate ?? _leaveToDate,
-  leaveCreationDate: leaveCreationDate ?? _leaveCreationDate,
-  leaveType: leaveType ?? _leaveType,
-  reasons: reasons ?? _reasons,
-  dayCount: dayCount ?? _dayCount,
-  sl: sl ?? _sl,
-  el: el ?? _el,
-  cl: cl ?? _cl,
-  leavePolicyType: leavePolicyType ?? _leavePolicyType,
-  appliedByName: appliedByName ?? _appliedByName,
-  passedByName: passedByName ?? _passedByName,
-  leaveStatus: leaveStatus ?? _leaveStatus,
-  currentApprover: currentApprover ?? _currentApprover,
-);
+  LeaveDataModel copyWith({
+    String? employeeIdCardNo,
+    String? applaiedForEmployee,
+    String? departmentName,
+    dynamic departmentId,
+    String? joiningDate,
+    String? leaveFromDate,
+    String? leaveToDate,
+    String? leaveCreationDate,
+    String? leaveType,
+    String? reasons,
+    num? dayCount,
+    num? sl,
+    num? el,
+    num? cl,
+    String? leavePolicyType,
+    String? appliedByName,
+    String? passedByName,
+    String? leaveStatus,
+    num? currentApprover,
+  }) =>
+      LeaveDataModel(
+        employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
+        applaiedForEmployee: applaiedForEmployee ?? _applaiedForEmployee,
+        departmentName: departmentName ?? _departmentName,
+        departmentId: departmentId ?? _departmentId,
+        joiningDate: joiningDate ?? _joiningDate,
+        leaveFromDate: leaveFromDate ?? _leaveFromDate,
+        leaveToDate: leaveToDate ?? _leaveToDate,
+        leaveCreationDate: leaveCreationDate ?? _leaveCreationDate,
+        leaveType: leaveType ?? _leaveType,
+        reasons: reasons ?? _reasons,
+        dayCount: dayCount ?? _dayCount,
+        sl: sl ?? _sl,
+        el: el ?? _el,
+        cl: cl ?? _cl,
+        leavePolicyType: leavePolicyType ?? _leavePolicyType,
+        appliedByName: appliedByName ?? _appliedByName,
+        passedByName: passedByName ?? _passedByName,
+        leaveStatus: leaveStatus ?? _leaveStatus,
+        currentApprover: currentApprover ?? _currentApprover,
+      );
   String? get employeeIdCardNo => _employeeIdCardNo;
   String? get applaiedForEmployee => _applaiedForEmployee;
   String? get departmentName => _departmentName;
@@ -162,5 +166,4 @@ LeaveDataModel copyWith({  String? employeeIdCardNo,
     map['CurrentApprover'] = _currentApprover;
     return map;
   }
-
 }

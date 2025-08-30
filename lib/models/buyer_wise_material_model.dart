@@ -1,18 +1,19 @@
 class BuyerWiseMaterialModel {
   BuyerWiseMaterialModel({
-      num? buyerId, 
-      String? buyerName, 
-      String? typeName, 
-      String? productCategoryName, 
-      String? productName, 
-      String? uomName,}){
+    num? buyerId,
+    String? buyerName,
+    String? typeName,
+    String? productCategoryName,
+    String? productName,
+    String? uomName,
+  }) {
     _buyerId = buyerId;
     _buyerName = buyerName;
     _typeName = typeName;
     _productCategoryName = productCategoryName;
     _productName = productName;
     _uomName = uomName;
-}
+  }
 
   BuyerWiseMaterialModel.fromJson(dynamic json) {
     _buyerId = json['BuyerId'];
@@ -28,19 +29,22 @@ class BuyerWiseMaterialModel {
   String? _productCategoryName;
   String? _productName;
   String? _uomName;
-BuyerWiseMaterialModel copyWith({  num? buyerId,
-  String? buyerName,
-  String? typeName,
-  String? productCategoryName,
-  String? productName,
-  String? uomName,
-}) => BuyerWiseMaterialModel(  buyerId: buyerId ?? _buyerId,
-  buyerName: buyerName ?? _buyerName,
-  typeName: typeName ?? _typeName,
-  productCategoryName: productCategoryName ?? _productCategoryName,
-  productName: productName ?? _productName,
-  uomName: uomName ?? _uomName,
-);
+  BuyerWiseMaterialModel copyWith({
+    num? buyerId,
+    String? buyerName,
+    String? typeName,
+    String? productCategoryName,
+    String? productName,
+    String? uomName,
+  }) =>
+      BuyerWiseMaterialModel(
+        buyerId: buyerId ?? _buyerId,
+        buyerName: buyerName ?? _buyerName,
+        typeName: typeName ?? _typeName,
+        productCategoryName: productCategoryName ?? _productCategoryName,
+        productName: productName ?? _productName,
+        uomName: uomName ?? _uomName,
+      );
   num? get buyerId => _buyerId;
   String? get buyerName => _buyerName;
   String? get typeName => _typeName;
@@ -58,5 +62,4 @@ BuyerWiseMaterialModel copyWith({  num? buyerId,
     map['UomName'] = _uomName;
     return map;
   }
-
 }

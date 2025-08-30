@@ -7,11 +7,12 @@ import '../../models/vehicle_model.dart';
 
 class VehicleRequestListScreen extends StatefulWidget {
   const VehicleRequestListScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  State<VehicleRequestListScreen> createState() => _VehicleRequestListScreenState();
+  State<VehicleRequestListScreen> createState() =>
+      _VehicleRequestListScreenState();
 }
 
 class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
@@ -42,7 +43,9 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
                   itemCount: pro.vehicleList.length,
                   itemBuilder: (context, index) {
                     // Sort the list in descending order (e.g., by `id`)
-                    final sortedList = List.from(pro.vehicleList)..sort((a, b) => b.vehicleReqId.compareTo(a.vehicleReqId)); // Descending
+                    final sortedList = List.from(pro.vehicleList)
+                      ..sort((a, b) => b.vehicleReqId
+                          .compareTo(a.vehicleReqId)); // Descending
                     final vehicle = sortedList[index];
                     return _buildVehicleCard(vehicle, context);
                   },
@@ -55,7 +58,8 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
   Widget _buildVehicleCard(VehicleModel vehicle, BuildContext context) {
     return InkWell(
       onTap: () {
-        if (vehicle.status == 1 && DashboardHelpers.currentUser!.iDnum == '38832') {
+        if (vehicle.status == 1 &&
+            DashboardHelpers.currentUser!.iDnum == '38832') {
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -107,11 +111,14 @@ class _VehicleRequestListScreenState extends State<VehicleRequestListScreen> {
                 _buildDetailRow('Phone', vehicle.driverMobileNo ?? ''),
                 Row(
                   children: [
-                    Expanded(child: _buildDetailRow('Driver', vehicle.driverName!)),
-                    if (vehicle.driverMobileNo != null || vehicle.driverMobileNo != '' && vehicle.status == 2)
+                    Expanded(
+                        child: _buildDetailRow('Driver', vehicle.driverName!)),
+                    if (vehicle.driverMobileNo != null ||
+                        vehicle.driverMobileNo != '' && vehicle.status == 2)
                       TextButton(
                           onPressed: () {
-                            DashboardHelpers.makePhoneCall(vehicle.driverMobileNo ?? '');
+                            DashboardHelpers.makePhoneCall(
+                                vehicle.driverMobileNo ?? '');
                           },
                           child: Text('Call Driver ${vehicle.driverMobileNo}'))
                   ],

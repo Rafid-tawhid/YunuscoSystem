@@ -31,52 +31,58 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
         icon: Icons.analytics_outlined,
         cardColor: const Color(0xFFEDE7F6), // Light lavender
         iconColor: const Color(0xFF673AB7), // Deep purple
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => MerchandisingSummaryScreen())),
+        onTap: () => Navigator.push(context,
+            CupertinoPageRoute(builder: (_) => MerchandisingSummaryScreen())),
       ),
       DashboardMenuItem(
         name: "Buyer\nOrders",
         icon: Icons.list_alt_outlined,
         cardColor: const Color(0xFFE0F2F1), // Light mint
         iconColor: const Color(0xFF009688), // Teal
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => BuyerOrderScreen())),
+        onTap: () => Navigator.push(
+            context, CupertinoPageRoute(builder: (_) => BuyerOrderScreen())),
       ),
       DashboardMenuItem(
         name: "Costing\nApproval",
         icon: Icons.list,
         cardColor: const Color(0xFFFFF8E1), // Light yellow
         iconColor: const Color(0xFFFFB300), // Amber
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => CostingApprovalListScreen())),
+        onTap: () => Navigator.push(context,
+            CupertinoPageRoute(builder: (_) => CostingApprovalListScreen())),
       ),
       DashboardMenuItem(
         name: "Purchase\nApproval",
         icon: Icons.list,
         cardColor: const Color(0xFFFFEBEE), // Light coral
         iconColor: const Color(0xFFE57373), // Coral Red
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => PurchaseApprovalScreen())),
+        onTap: () => Navigator.push(context,
+            CupertinoPageRoute(builder: (_) => PurchaseApprovalScreen())),
       ),
       DashboardMenuItem(
         name: "BOM",
         icon: Icons.calendar_today,
         cardColor: const Color(0xFFE8F5E9), // Light green
         iconColor: const Color(0xFF4CAF50), // Emerald Green
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => BomListScreen())),
+        onTap: () => Navigator.push(
+            context, CupertinoPageRoute(builder: (_) => BomListScreen())),
       ),
       DashboardMenuItem(
         name: "WO",
         icon: Icons.work,
         cardColor: const Color(0xFFE3F2FD), // Soft indigo
         iconColor: const Color(0xFF3F51B5), // Indigo
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => WorkOrderScreen())),
+        onTap: () => Navigator.push(
+            context, CupertinoPageRoute(builder: (_) => WorkOrderScreen())),
       ),
       DashboardMenuItem(
         name: "Report",
         icon: Icons.analytics,
         cardColor: const Color(0xFFE1F5FE), // Light blue
         iconColor: const Color(0xFF2196F3), // Blue
-        onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (_) => ProductionStrengthScreen())),
+        onTap: () => Navigator.push(context,
+            CupertinoPageRoute(builder: (_) => ProductionStrengthScreen())),
       ),
     ];
-
   }
 
   @override

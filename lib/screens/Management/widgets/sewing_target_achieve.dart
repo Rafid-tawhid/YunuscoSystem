@@ -1,17 +1,15 @@
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/management_dashboard_model.dart';
 
-
 class MorrisLineSection extends StatelessWidget {
   final List<MorrisLine>? morrisLine;
 
-  const MorrisLineSection({Key? key, this.morrisLine}) : super(key: key);
+  const MorrisLineSection({super.key, this.morrisLine});
 
   @override
   Widget build(BuildContext context) {
@@ -85,16 +83,16 @@ class MorrisLineSection extends StatelessWidget {
                         barTouchData: BarTouchData(
                           enabled: true,
                           touchTooltipData: BarTouchTooltipData(
-
                             getTooltipItem: (group, groupIndex, rod, rodIndex) {
                               final data = morrisLine![groupIndex];
                               final percentage = ((data.acheiveQty ?? 0) /
-                                  (data.targetQty ?? 1)) * 100;
+                                      (data.targetQty ?? 1)) *
+                                  100;
                               return BarTooltipItem(
                                 '${data.name}\n'
-                                    'Target: ${NumberFormat.decimalPattern().format(data.targetQty)}\n'
-                                    'Achieved: ${NumberFormat.decimalPattern().format(data.acheiveQty)}\n'
-                                    'Progress: ${percentage.toStringAsFixed(1)}%',
+                                'Target: ${NumberFormat.decimalPattern().format(data.targetQty)}\n'
+                                'Achieved: ${NumberFormat.decimalPattern().format(data.acheiveQty)}\n'
+                                'Progress: ${percentage.toStringAsFixed(1)}%',
                                 const TextStyle(color: Colors.white),
                               );
                             },
@@ -175,8 +173,9 @@ class MorrisLineSection extends StatelessWidget {
                         ),
                         barGroups: morrisLine!.asMap().entries.map((entry) {
                           final data = entry.value;
-                          final percentage = ((data.acheiveQty ?? 0) /
-                              (data.targetQty ?? 1)) * 100;
+                          final percentage =
+                              ((data.acheiveQty ?? 0) / (data.targetQty ?? 1)) *
+                                  100;
 
                           return BarChartGroupData(
                             x: entry.key,

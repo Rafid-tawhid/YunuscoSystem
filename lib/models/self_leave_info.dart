@@ -1,27 +1,28 @@
 class SelfLeaveInfo {
   SelfLeaveInfo({
-      String? idCardNo, 
-      String? leaveYear, 
-      num? sickLeave, 
-      num? sickLeavePolicyId, 
-      String? sickLeavePolicyType, 
-      num? sickLeavePolicyDays, 
-      num? casualLeave, 
-      num? casualLeavePolicyId, 
-      String? casualLeavePolicyType, 
-      num? casualLeavePolicyDays, 
-      num? maternityLeave, 
-      num? maternityLeavePolicyId, 
-      String? maternityLeavePolicyType, 
-      num? maternityLeavePolicyDays, 
-      num? earnLeave, 
-      num? earnLeavePolicyId, 
-      String? earnLeavePolicyType, 
-      num? earnLeavePolicyDays, 
-      num? leaveWithoutPay, 
-      num? leaveWithoutPayPolicyId, 
-      String? leaveWithoutPayPolicyType, 
-      num? leaveWithoutPayPolicyDays,}){
+    String? idCardNo,
+    String? leaveYear,
+    num? sickLeave,
+    num? sickLeavePolicyId,
+    String? sickLeavePolicyType,
+    num? sickLeavePolicyDays,
+    num? casualLeave,
+    num? casualLeavePolicyId,
+    String? casualLeavePolicyType,
+    num? casualLeavePolicyDays,
+    num? maternityLeave,
+    num? maternityLeavePolicyId,
+    String? maternityLeavePolicyType,
+    num? maternityLeavePolicyDays,
+    num? earnLeave,
+    num? earnLeavePolicyId,
+    String? earnLeavePolicyType,
+    num? earnLeavePolicyDays,
+    num? leaveWithoutPay,
+    num? leaveWithoutPayPolicyId,
+    String? leaveWithoutPayPolicyType,
+    num? leaveWithoutPayPolicyDays,
+  }) {
     _idCardNo = idCardNo;
     _leaveYear = leaveYear;
     _sickLeave = sickLeave;
@@ -44,10 +45,10 @@ class SelfLeaveInfo {
     _leaveWithoutPayPolicyId = leaveWithoutPayPolicyId;
     _leaveWithoutPayPolicyType = leaveWithoutPayPolicyType;
     _leaveWithoutPayPolicyDays = leaveWithoutPayPolicyDays;
-}
+  }
 
   SelfLeaveInfo.fromJson(dynamic json) {
-    _idCardNo = json['IdCardNo']??'';
+    _idCardNo = json['IdCardNo'] ?? '';
     _leaveYear = json['LeaveYear'];
     _sickLeave = json['SickLeave'];
     _sickLeavePolicyId = json['SickLeavePolicyId'];
@@ -92,51 +93,60 @@ class SelfLeaveInfo {
   num? _leaveWithoutPayPolicyId;
   String? _leaveWithoutPayPolicyType;
   num? _leaveWithoutPayPolicyDays;
-SelfLeaveInfo copyWith({  String? idCardNo,
-  String? leaveYear,
-  num? sickLeave,
-  num? sickLeavePolicyId,
-  String? sickLeavePolicyType,
-  num? sickLeavePolicyDays,
-  num? casualLeave,
-  num? casualLeavePolicyId,
-  String? casualLeavePolicyType,
-  num? casualLeavePolicyDays,
-  num? maternityLeave,
-  num? maternityLeavePolicyId,
-  String? maternityLeavePolicyType,
-  num? maternityLeavePolicyDays,
-  num? earnLeave,
-  num? earnLeavePolicyId,
-  String? earnLeavePolicyType,
-  num? earnLeavePolicyDays,
-  num? leaveWithoutPay,
-  num? leaveWithoutPayPolicyId,
-  String? leaveWithoutPayPolicyType,
-  num? leaveWithoutPayPolicyDays,
-}) => SelfLeaveInfo(  idCardNo: idCardNo ?? _idCardNo,
-  leaveYear: leaveYear ?? _leaveYear,
-  sickLeave: sickLeave ?? _sickLeave,
-  sickLeavePolicyId: sickLeavePolicyId ?? _sickLeavePolicyId,
-  sickLeavePolicyType: sickLeavePolicyType ?? _sickLeavePolicyType,
-  sickLeavePolicyDays: sickLeavePolicyDays ?? _sickLeavePolicyDays,
-  casualLeave: casualLeave ?? _casualLeave,
-  casualLeavePolicyId: casualLeavePolicyId ?? _casualLeavePolicyId,
-  casualLeavePolicyType: casualLeavePolicyType ?? _casualLeavePolicyType,
-  casualLeavePolicyDays: casualLeavePolicyDays ?? _casualLeavePolicyDays,
-  maternityLeave: maternityLeave ?? _maternityLeave,
-  maternityLeavePolicyId: maternityLeavePolicyId ?? _maternityLeavePolicyId,
-  maternityLeavePolicyType: maternityLeavePolicyType ?? _maternityLeavePolicyType,
-  maternityLeavePolicyDays: maternityLeavePolicyDays ?? _maternityLeavePolicyDays,
-  earnLeave: earnLeave ?? _earnLeave,
-  earnLeavePolicyId: earnLeavePolicyId ?? _earnLeavePolicyId,
-  earnLeavePolicyType: earnLeavePolicyType ?? _earnLeavePolicyType,
-  earnLeavePolicyDays: earnLeavePolicyDays ?? _earnLeavePolicyDays,
-  leaveWithoutPay: leaveWithoutPay ?? _leaveWithoutPay,
-  leaveWithoutPayPolicyId: leaveWithoutPayPolicyId ?? _leaveWithoutPayPolicyId,
-  leaveWithoutPayPolicyType: leaveWithoutPayPolicyType ?? _leaveWithoutPayPolicyType,
-  leaveWithoutPayPolicyDays: leaveWithoutPayPolicyDays ?? _leaveWithoutPayPolicyDays,
-);
+  SelfLeaveInfo copyWith({
+    String? idCardNo,
+    String? leaveYear,
+    num? sickLeave,
+    num? sickLeavePolicyId,
+    String? sickLeavePolicyType,
+    num? sickLeavePolicyDays,
+    num? casualLeave,
+    num? casualLeavePolicyId,
+    String? casualLeavePolicyType,
+    num? casualLeavePolicyDays,
+    num? maternityLeave,
+    num? maternityLeavePolicyId,
+    String? maternityLeavePolicyType,
+    num? maternityLeavePolicyDays,
+    num? earnLeave,
+    num? earnLeavePolicyId,
+    String? earnLeavePolicyType,
+    num? earnLeavePolicyDays,
+    num? leaveWithoutPay,
+    num? leaveWithoutPayPolicyId,
+    String? leaveWithoutPayPolicyType,
+    num? leaveWithoutPayPolicyDays,
+  }) =>
+      SelfLeaveInfo(
+        idCardNo: idCardNo ?? _idCardNo,
+        leaveYear: leaveYear ?? _leaveYear,
+        sickLeave: sickLeave ?? _sickLeave,
+        sickLeavePolicyId: sickLeavePolicyId ?? _sickLeavePolicyId,
+        sickLeavePolicyType: sickLeavePolicyType ?? _sickLeavePolicyType,
+        sickLeavePolicyDays: sickLeavePolicyDays ?? _sickLeavePolicyDays,
+        casualLeave: casualLeave ?? _casualLeave,
+        casualLeavePolicyId: casualLeavePolicyId ?? _casualLeavePolicyId,
+        casualLeavePolicyType: casualLeavePolicyType ?? _casualLeavePolicyType,
+        casualLeavePolicyDays: casualLeavePolicyDays ?? _casualLeavePolicyDays,
+        maternityLeave: maternityLeave ?? _maternityLeave,
+        maternityLeavePolicyId:
+            maternityLeavePolicyId ?? _maternityLeavePolicyId,
+        maternityLeavePolicyType:
+            maternityLeavePolicyType ?? _maternityLeavePolicyType,
+        maternityLeavePolicyDays:
+            maternityLeavePolicyDays ?? _maternityLeavePolicyDays,
+        earnLeave: earnLeave ?? _earnLeave,
+        earnLeavePolicyId: earnLeavePolicyId ?? _earnLeavePolicyId,
+        earnLeavePolicyType: earnLeavePolicyType ?? _earnLeavePolicyType,
+        earnLeavePolicyDays: earnLeavePolicyDays ?? _earnLeavePolicyDays,
+        leaveWithoutPay: leaveWithoutPay ?? _leaveWithoutPay,
+        leaveWithoutPayPolicyId:
+            leaveWithoutPayPolicyId ?? _leaveWithoutPayPolicyId,
+        leaveWithoutPayPolicyType:
+            leaveWithoutPayPolicyType ?? _leaveWithoutPayPolicyType,
+        leaveWithoutPayPolicyDays:
+            leaveWithoutPayPolicyDays ?? _leaveWithoutPayPolicyDays,
+      );
   String? get idCardNo => _idCardNo;
   String? get leaveYear => _leaveYear;
   num? get sickLeave => _sickLeave;
@@ -186,5 +196,4 @@ SelfLeaveInfo copyWith({  String? idCardNo,
     map['LeaveWithoutPayPolicyDays'] = _leaveWithoutPayPolicyDays;
     return map;
   }
-
 }

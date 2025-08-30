@@ -6,7 +6,7 @@ import '../service_class/api_services.dart';
 
 class AccountProvider extends ChangeNotifier {
   ApiService apiService = ApiService();
-  List<PfMainModel> _pfList = [];
+  final List<PfMainModel> _pfList = [];
   List<PfMainModel> _filteredPfList = [];
   bool _isLoading = false;
   String _searchQuery = '';
@@ -55,7 +55,12 @@ class AccountProvider extends ChangeNotifier {
   }
 
   Future<bool> changePassword(String name, String oldPass, newPass) async {
-    var response = await apiService.patchData('api/User/UpdatePassword', {"LoginName": name, "OldPassword": oldPass, "NewPassword": newPass, "RetypePassword": newPass});
+    var response = await apiService.patchData('api/User/UpdatePassword', {
+      "LoginName": name,
+      "OldPassword": oldPass,
+      "NewPassword": newPass,
+      "RetypePassword": newPass
+    });
     return response == null ? false : true;
   }
 
@@ -63,12 +68,12 @@ class AccountProvider extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> fetchPfAmount() async {
     try {
-      final data = await apiService.getData('api/HR/PFStatus/${DashboardHelpers.currentUser!.userId}');
+      final data = await apiService
+          .getData('api/HR/PFStatus/${DashboardHelpers.currentUser!.userId}');
       if (data != null) {
         personalPfInfo = data['Results'][0];
         return personalPfInfo;
-      }
-      else {
+      } else {
         return null;
       }
     } catch (e) {

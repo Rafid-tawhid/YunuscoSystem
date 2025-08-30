@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
@@ -25,8 +27,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (response.statusCode == 200) {
         setState(() {
           dashboardData = json.decode(response.body);
-          unpaidRenters = List<Map<String, dynamic>>.from(dashboardData['unpaidRenters'] ?? []);
-          utilityStatus = List<Map<String, dynamic>>.from(dashboardData['utilityStatus'] ?? []);
+          unpaidRenters = List<Map<String, dynamic>>.from(
+              dashboardData['unpaidRenters'] ?? []);
+          utilityStatus = List<Map<String, dynamic>>.from(
+              dashboardData['utilityStatus'] ?? []);
           isLoading = false;
         });
       }
@@ -55,112 +59,119 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Monthly Summary Card
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Monthly Summary',
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatItem('Total Collection', dashboardData['totalCollection'] ?? 0),
-                        _buildStatItem('Total Deduction', dashboardData['totalDeduction'] ?? 0),
-                        _buildStatItem('Current Balance', dashboardData['currentBalance'] ?? 0),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Empty Flats: ${dashboardData['emptyFlatsCount'] ?? 0}',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Utility Payments Status
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Utility Payments Status',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: utilityStatus.map((utility) {
-                        return FilterChip(
-                          label: Text(utility['name']),
-                          selected: utility['paid'],
-                          onSelected: (bool value) {
-                            // Handle utility payment toggle
-                          },
-                          selectedColor: Colors.green,
-                          checkmarkColor: Colors.white,
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Unpaid Renters List
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Unpaid Renters (${unpaidRenters.length})',
-                      style: Theme.of(context).textTheme.headlineMedium     ,
-                    ),
-                    SizedBox(height: 8),
-                    unpaidRenters.isEmpty
-                        ? Text('All renters have paid for this month')
-                        : Column(
-                      children: unpaidRenters.map((renter) {
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: renter['photoPath'] != null
-                                ? NetworkImage(renter['photoPath'])
-                                : AssetImage('assets/default_avatar.png'),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Monthly Summary Card
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Monthly Summary',
+                            style: Theme.of(context).textTheme.headlineLarge,
                           ),
-                          title: Text(renter['name']),
-                          subtitle: Text('Flat: ${renter['flatNumber']}'),
-                          trailing: Text('\$${renter['dueAmount']}'),
-                          onTap: () {
-                            // Navigate to renter details
-                          },
-                        );
-                      }).toList(),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildStatItem('Total Collection',
+                                  dashboardData['totalCollection'] ?? 0),
+                              _buildStatItem('Total Deduction',
+                                  dashboardData['totalDeduction'] ?? 0),
+                              _buildStatItem('Current Balance',
+                                  dashboardData['currentBalance'] ?? 0),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Empty Flats: ${dashboardData['emptyFlatsCount'] ?? 0}',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // Utility Payments Status
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Utility Payments Status',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: utilityStatus.map((utility) {
+                              return FilterChip(
+                                label: Text(utility['name']),
+                                selected: utility['paid'],
+                                onSelected: (bool value) {
+                                  // Handle utility payment toggle
+                                },
+                                selectedColor: Colors.green,
+                                checkmarkColor: Colors.white,
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // Unpaid Renters List
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Unpaid Renters (${unpaidRenters.length})',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          SizedBox(height: 8),
+                          unpaidRenters.isEmpty
+                              ? Text('All renters have paid for this month')
+                              : Column(
+                                  children: unpaidRenters.map((renter) {
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage: renter['photoPath'] !=
+                                                null
+                                            ? NetworkImage(renter['photoPath'])
+                                            : AssetImage(
+                                                'assets/default_avatar.png'),
+                                      ),
+                                      title: Text(renter['name']),
+                                      subtitle:
+                                          Text('Flat: ${renter['flatNumber']}'),
+                                      trailing:
+                                          Text('\$${renter['dueAmount']}'),
+                                      onTap: () {
+                                        // Navigate to renter details
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {

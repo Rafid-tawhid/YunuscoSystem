@@ -1,17 +1,18 @@
 class WorkOrderModel {
   WorkOrderModel({
-      String? code, 
-      String? blockOrder, 
-      String? blockVersion, 
-      String? buyerName, 
-      num? buyerId, 
-      String? po, 
-      String? color, 
-      String? styleCodes, 
-      num? createdBy, 
-      String? createdDate, 
-      bool? isOnlineShortName, 
-      bool? isLock,}){
+    String? code,
+    String? blockOrder,
+    String? blockVersion,
+    String? buyerName,
+    num? buyerId,
+    String? po,
+    String? color,
+    String? styleCodes,
+    num? createdBy,
+    String? createdDate,
+    bool? isOnlineShortName,
+    bool? isLock,
+  }) {
     _code = code;
     _blockOrder = blockOrder;
     _blockVersion = blockVersion;
@@ -24,7 +25,7 @@ class WorkOrderModel {
     _createdDate = createdDate;
     _isOnlineShortName = isOnlineShortName;
     _isLock = isLock;
-}
+  }
 
   WorkOrderModel.fromJson(dynamic json) {
     _code = json['Code'];
@@ -52,31 +53,34 @@ class WorkOrderModel {
   String? _createdDate;
   bool? _isOnlineShortName;
   bool? _isLock;
-WorkOrderModel copyWith({  String? code,
-  String? blockOrder,
-  String? blockVersion,
-  String? buyerName,
-  num? buyerId,
-  String? po,
-  String? color,
-  String? styleCodes,
-  num? createdBy,
-  String? createdDate,
-  bool? isOnlineShortName,
-  bool? isLock,
-}) => WorkOrderModel(  code: code ?? _code,
-  blockOrder: blockOrder ?? _blockOrder,
-  blockVersion: blockVersion ?? _blockVersion,
-  buyerName: buyerName ?? _buyerName,
-  buyerId: buyerId ?? _buyerId,
-  po: po ?? _po,
-  color: color ?? _color,
-  styleCodes: styleCodes ?? _styleCodes,
-  createdBy: createdBy ?? _createdBy,
-  createdDate: createdDate ?? _createdDate,
-  isOnlineShortName: isOnlineShortName ?? _isOnlineShortName,
-  isLock: isLock ?? _isLock,
-);
+  WorkOrderModel copyWith({
+    String? code,
+    String? blockOrder,
+    String? blockVersion,
+    String? buyerName,
+    num? buyerId,
+    String? po,
+    String? color,
+    String? styleCodes,
+    num? createdBy,
+    String? createdDate,
+    bool? isOnlineShortName,
+    bool? isLock,
+  }) =>
+      WorkOrderModel(
+        code: code ?? _code,
+        blockOrder: blockOrder ?? _blockOrder,
+        blockVersion: blockVersion ?? _blockVersion,
+        buyerName: buyerName ?? _buyerName,
+        buyerId: buyerId ?? _buyerId,
+        po: po ?? _po,
+        color: color ?? _color,
+        styleCodes: styleCodes ?? _styleCodes,
+        createdBy: createdBy ?? _createdBy,
+        createdDate: createdDate ?? _createdDate,
+        isOnlineShortName: isOnlineShortName ?? _isOnlineShortName,
+        isLock: isLock ?? _isLock,
+      );
   String? get code => _code;
   String? get blockOrder => _blockOrder;
   String? get blockVersion => _blockVersion;
@@ -106,5 +110,4 @@ WorkOrderModel copyWith({  String? code,
     map['IsLock'] = _isLock;
     return map;
   }
-
 }

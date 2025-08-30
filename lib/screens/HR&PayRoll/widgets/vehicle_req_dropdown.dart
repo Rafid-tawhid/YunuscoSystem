@@ -1,18 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:yunusco_group/utils/constants.dart';
 
 class VehiclePurposeDropdown extends StatefulWidget {
   final ValueChanged<String> onPurposeSelected;
   final String? initialValue;
 
   const VehiclePurposeDropdown({
-    Key? key,
+    super.key,
     required this.onPurposeSelected,
     this.initialValue,
-  }) : super(key: key);
+  });
 
   @override
   State<VehiclePurposeDropdown> createState() => _VehiclePurposeDropdownState();
@@ -77,5 +73,4 @@ class _VehiclePurposeDropdownState extends State<VehiclePurposeDropdown> {
       },
     );
   }
-
 }

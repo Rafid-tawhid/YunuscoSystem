@@ -6,7 +6,7 @@ import '../../models/members_model.dart';
 
 class PersonSelectionScreen extends StatefulWidget {
   bool? forSomeOnesVehicleReq;
-  PersonSelectionScreen({this.forSomeOnesVehicleReq});
+  PersonSelectionScreen({super.key, this.forSomeOnesVehicleReq});
 
   @override
   State<PersonSelectionScreen> createState() => _PersonSelectionScreenState();
@@ -17,9 +17,6 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
   bool _isSearching = false;
   List<dynamic> _filteredList = [];
   MembersModel? _lastSelectMember;
-
-
-
 
   @override
   void initState() {
@@ -45,7 +42,10 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
         final designation = person.designationName?.toLowerCase() ?? '';
         final idCard = person.idCardNo?.toLowerCase() ?? '';
 
-        return name.contains(query) || department.contains(query) || designation.contains(query)||idCard.contains(query);
+        return name.contains(query) ||
+            department.contains(query) ||
+            designation.contains(query) ||
+            idCard.contains(query);
       }).toList();
     });
   }
@@ -83,7 +83,8 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
       ),
       body: Consumer<HrProvider>(
         builder: (context, provider, child) {
-          final displayList = _isSearching ? _filteredList : provider.member_list;
+          final displayList =
+              _isSearching ? _filteredList : provider.member_list;
 
           return ListView.builder(
             itemCount: displayList.length,
@@ -104,14 +105,14 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
                     value: person.isSelected,
                     onChanged: (bool? value) {
                       // Find the original index in member_list if we're searching
-                      final originalIndex = provider.member_list.indexWhere((p) => p == person);
+                      final originalIndex =
+                          provider.member_list.indexWhere((p) => p == person);
                       if (originalIndex != -1) {
                         provider.toggleSelection(originalIndex);
                       }
-                      if(widget.forSomeOnesVehicleReq==true){
-                        _lastSelectMember=person;
+                      if (widget.forSomeOnesVehicleReq == true) {
+                        _lastSelectMember = person;
                       }
-
                     },
                     secondary: CircleAvatar(
                       child: Text(person.fullName.toString().substring(0, 1)),
@@ -128,7 +129,7 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
           borderSide: BorderSide(color: Colors.green.shade300),
         ),
         onPressed: () {
-          Navigator.pop(context,_lastSelectMember);
+          Navigator.pop(context, _lastSelectMember);
         },
         tooltip: 'Save',
         child: const Icon(Icons.check_circle, color: Colors.white),

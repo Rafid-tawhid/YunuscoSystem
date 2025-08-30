@@ -1,16 +1,17 @@
 class EmployeeAppointmentInfoModel {
   EmployeeAppointmentInfoModel({
-      String? idCardNo, 
-      String? fullName, 
-      String? joiningDate, 
-      String? departmentName, 
-      String? designationName, 
-      String? sectionName, 
-      String? productionLineName, 
-      String? productionUnitName, 
-      String? gender, 
-      String? dateOfBirth, 
-      num? ageYears,}){
+    String? idCardNo,
+    String? fullName,
+    String? joiningDate,
+    String? departmentName,
+    String? designationName,
+    String? sectionName,
+    String? productionLineName,
+    String? productionUnitName,
+    String? gender,
+    String? dateOfBirth,
+    num? ageYears,
+  }) {
     _idCardNo = idCardNo;
     _fullName = fullName;
     _joiningDate = joiningDate;
@@ -22,7 +23,7 @@ class EmployeeAppointmentInfoModel {
     _gender = gender;
     _dateOfBirth = dateOfBirth;
     _ageYears = ageYears;
-}
+  }
 
   EmployeeAppointmentInfoModel.fromJson(dynamic json) {
     _idCardNo = json['IdCardNo'];
@@ -48,29 +49,32 @@ class EmployeeAppointmentInfoModel {
   String? _gender;
   String? _dateOfBirth;
   num? _ageYears;
-EmployeeAppointmentInfoModel copyWith({  String? idCardNo,
-  String? fullName,
-  String? joiningDate,
-  String? departmentName,
-  String? designationName,
-  String? sectionName,
-  String? productionLineName,
-  String? productionUnitName,
-  String? gender,
-  String? dateOfBirth,
-  num? ageYears,
-}) => EmployeeAppointmentInfoModel(  idCardNo: idCardNo ?? _idCardNo,
-  fullName: fullName ?? _fullName,
-  joiningDate: joiningDate ?? _joiningDate,
-  departmentName: departmentName ?? _departmentName,
-  designationName: designationName ?? _designationName,
-  sectionName: sectionName ?? _sectionName,
-  productionLineName: productionLineName ?? _productionLineName,
-  productionUnitName: productionUnitName ?? _productionUnitName,
-  gender: gender ?? _gender,
-  dateOfBirth: dateOfBirth ?? _dateOfBirth,
-  ageYears: ageYears ?? _ageYears,
-);
+  EmployeeAppointmentInfoModel copyWith({
+    String? idCardNo,
+    String? fullName,
+    String? joiningDate,
+    String? departmentName,
+    String? designationName,
+    String? sectionName,
+    String? productionLineName,
+    String? productionUnitName,
+    String? gender,
+    String? dateOfBirth,
+    num? ageYears,
+  }) =>
+      EmployeeAppointmentInfoModel(
+        idCardNo: idCardNo ?? _idCardNo,
+        fullName: fullName ?? _fullName,
+        joiningDate: joiningDate ?? _joiningDate,
+        departmentName: departmentName ?? _departmentName,
+        designationName: designationName ?? _designationName,
+        sectionName: sectionName ?? _sectionName,
+        productionLineName: productionLineName ?? _productionLineName,
+        productionUnitName: productionUnitName ?? _productionUnitName,
+        gender: gender ?? _gender,
+        dateOfBirth: dateOfBirth ?? _dateOfBirth,
+        ageYears: ageYears ?? _ageYears,
+      );
   String? get idCardNo => _idCardNo;
   String? get fullName => _fullName;
   String? get joiningDate => _joiningDate;
@@ -98,5 +102,4 @@ EmployeeAppointmentInfoModel copyWith({  String? idCardNo,
     map['AgeYears'] = _ageYears;
     return map;
   }
-
 }

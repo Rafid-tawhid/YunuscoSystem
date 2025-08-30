@@ -8,6 +8,8 @@ import 'package:yunusco_group/screens/Profile/widgets/payslip.dart';
 import '../../common_widgets/custom_button.dart';
 
 class EmployeePaySlip extends StatefulWidget {
+  const EmployeePaySlip({super.key});
+
   @override
   _EmployeePaySlipState createState() => _EmployeePaySlipState();
 }
@@ -17,8 +19,6 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
   final _employeeIdController = TextEditingController();
   String? _selectedMonth;
   int? _selectedYear;
-
-
 
   Future<void> _selectMonth(BuildContext context) async {
     final List<String> months = DateFormat.MMMM().dateSymbols.MONTHS;
@@ -59,7 +59,8 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
   Future<void> _selectYear(BuildContext context) async {
     final DateTime now = DateTime.now();
     final int currentYear = now.year;
-    final List<int> years = List.generate(10, (index) => currentYear - 9 + index);
+    final List<int> years =
+        List.generate(10, (index) => currentYear - 9 + index);
 
     final int? picked = await showDialog<int>(
       context: context,
@@ -95,12 +96,15 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()&&_selectedMonth!=null&&_selectedYear!=null) {
-      var hp=context.read<HrProvider>();
+    if (_formKey.currentState!.validate() &&
+        _selectedMonth != null &&
+        _selectedYear != null) {
+      var hp = context.read<HrProvider>();
 
-     // var data= await hp.getPaySlipInfo(_selectedMonth!,_selectedYear.toString());
-      var data= await hp.getPaySlipInfoWithDetailsBreakdown(_selectedMonth!,_selectedYear.toString());
-      if(data!=null){
+      // var data= await hp.getPaySlipInfo(_selectedMonth!,_selectedYear.toString());
+      var data = await hp.getPaySlipInfoWithDetailsBreakdown(
+          _selectedMonth!, _selectedYear.toString());
+      if (data != null) {
         // Navigate to the payslip screen
         Navigator.push(
           context,
@@ -110,24 +114,22 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
             ),
           ),
         );
-      }
-      else {
+      } else {
         DashboardHelpers.showAlert(msg: 'Something went wrong');
       }
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select all field')));
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please select all field')));
     }
   }
 
-
   @override
   void initState() {
-    _employeeIdController.text=DashboardHelpers.currentUser!.iDnum??'';
+    _employeeIdController.text = DashboardHelpers.currentUser!.iDnum ?? '';
     final DateTime now = DateTime.now();
-   // _selectedMonth = DateFormat.MMMM().format(now);
+    // _selectedMonth = DateFormat.MMMM().format(now);
     final DateTime previousMonth = DateTime(now.year, now.month - 1, 1);
-    _selectedMonth = DateFormat.MMMM().format(previousMonth);// Full month name
+    _selectedMonth = DateFormat.MMMM().format(previousMonth); // Full month name
     _selectedYear = now.year;
 
     _employeeIdController.text = DashboardHelpers.currentUser!.iDnum ?? '';
@@ -185,8 +187,9 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              _selectedMonth == null ? 'Select month' : _selectedMonth??''),
+                            Text(_selectedMonth == null
+                                ? 'Select month'
+                                : _selectedMonth ?? ''),
                             Icon(Icons.arrow_drop_down),
                           ],
                         ),
@@ -206,7 +209,9 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(_selectedYear == null ? 'Select year' : _selectedYear.toString()),
+                            Text(_selectedYear == null
+                                ? 'Select year'
+                                : _selectedYear.toString()),
                             Icon(Icons.arrow_drop_down),
                           ],
                         ),
@@ -217,7 +222,7 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
               ),
               SizedBox(height: 30),
               Consumer<HrProvider>(
-                builder: (context,pro,_)=>CustomElevatedButton(
+                builder: (context, pro, _) => CustomElevatedButton(
                   isLoading: pro.isLoading,
                   text: 'Submit',
                   onPressed: _submitForm,

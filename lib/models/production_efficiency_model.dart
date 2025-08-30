@@ -1,24 +1,25 @@
 class ProductionEfficiencyModel {
   ProductionEfficiencyModel({
-      String? sectionName, 
-      String? buyerName, 
-      String? lineName, 
-      num? buyerId, 
-      num? sectionId, 
-      num? lineId, 
-      String? styleNo, 
-      String? po, 
-      String? item, 
-      num? smv, 
-      num? workingHour, 
-      num? manpower, 
-      num? targetEffiency, 
-      num? dayTarget, 
-      num? todaysProduction, 
-      num? achievedEffiency, 
-      num? capacity, 
-      num? variance, 
-      String? productionDate,}){
+    String? sectionName,
+    String? buyerName,
+    String? lineName,
+    num? buyerId,
+    num? sectionId,
+    num? lineId,
+    String? styleNo,
+    String? po,
+    String? item,
+    num? smv,
+    num? workingHour,
+    num? manpower,
+    num? targetEffiency,
+    num? dayTarget,
+    num? todaysProduction,
+    num? achievedEffiency,
+    num? capacity,
+    num? variance,
+    String? productionDate,
+  }) {
     _sectionName = sectionName;
     _buyerName = buyerName;
     _lineName = lineName;
@@ -38,7 +39,7 @@ class ProductionEfficiencyModel {
     _capacity = capacity;
     _variance = variance;
     _productionDate = productionDate;
-}
+  }
 
   ProductionEfficiencyModel.fromJson(dynamic json) {
     _sectionName = json['SectionName'];
@@ -80,45 +81,48 @@ class ProductionEfficiencyModel {
   num? _capacity;
   num? _variance;
   String? _productionDate;
-ProductionEfficiencyModel copyWith({  String? sectionName,
-  String? buyerName,
-  String? lineName,
-  num? buyerId,
-  num? sectionId,
-  num? lineId,
-  String? styleNo,
-  String? po,
-  String? item,
-  num? smv,
-  num? workingHour,
-  num? manpower,
-  num? targetEffiency,
-  num? dayTarget,
-  num? todaysProduction,
-  num? achievedEffiency,
-  num? capacity,
-  num? variance,
-  String? productionDate,
-}) => ProductionEfficiencyModel(  sectionName: sectionName ?? _sectionName,
-  buyerName: buyerName ?? _buyerName,
-  lineName: lineName ?? _lineName,
-  buyerId: buyerId ?? _buyerId,
-  sectionId: sectionId ?? _sectionId,
-  lineId: lineId ?? _lineId,
-  styleNo: styleNo ?? _styleNo,
-  po: po ?? _po,
-  item: item ?? _item,
-  smv: smv ?? _smv,
-  workingHour: workingHour ?? _workingHour,
-  manpower: manpower ?? _manpower,
-  targetEffiency: targetEffiency ?? _targetEffiency,
-  dayTarget: dayTarget ?? _dayTarget,
-  todaysProduction: todaysProduction ?? _todaysProduction,
-  achievedEffiency: achievedEffiency ?? _achievedEffiency,
-  capacity: capacity ?? _capacity,
-  variance: variance ?? _variance,
-  productionDate: productionDate ?? _productionDate,
-);
+  ProductionEfficiencyModel copyWith({
+    String? sectionName,
+    String? buyerName,
+    String? lineName,
+    num? buyerId,
+    num? sectionId,
+    num? lineId,
+    String? styleNo,
+    String? po,
+    String? item,
+    num? smv,
+    num? workingHour,
+    num? manpower,
+    num? targetEffiency,
+    num? dayTarget,
+    num? todaysProduction,
+    num? achievedEffiency,
+    num? capacity,
+    num? variance,
+    String? productionDate,
+  }) =>
+      ProductionEfficiencyModel(
+        sectionName: sectionName ?? _sectionName,
+        buyerName: buyerName ?? _buyerName,
+        lineName: lineName ?? _lineName,
+        buyerId: buyerId ?? _buyerId,
+        sectionId: sectionId ?? _sectionId,
+        lineId: lineId ?? _lineId,
+        styleNo: styleNo ?? _styleNo,
+        po: po ?? _po,
+        item: item ?? _item,
+        smv: smv ?? _smv,
+        workingHour: workingHour ?? _workingHour,
+        manpower: manpower ?? _manpower,
+        targetEffiency: targetEffiency ?? _targetEffiency,
+        dayTarget: dayTarget ?? _dayTarget,
+        todaysProduction: todaysProduction ?? _todaysProduction,
+        achievedEffiency: achievedEffiency ?? _achievedEffiency,
+        capacity: capacity ?? _capacity,
+        variance: variance ?? _variance,
+        productionDate: productionDate ?? _productionDate,
+      );
   String? get sectionName => _sectionName;
   String? get buyerName => _buyerName;
   String? get lineName => _lineName;
@@ -162,5 +166,4 @@ ProductionEfficiencyModel copyWith({  String? sectionName,
     map['ProductionDate'] = _productionDate;
     return map;
   }
-
 }

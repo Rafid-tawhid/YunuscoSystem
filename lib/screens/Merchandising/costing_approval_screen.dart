@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yunusco_group/screens/Merchandising/widgets/approval_top_cards.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -10,13 +9,17 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../models/costing_approval_list_model.dart';
 
 class CostingApprovalListScreen extends StatefulWidget {
+  const CostingApprovalListScreen({super.key});
+
   @override
-  State<CostingApprovalListScreen> createState() => _CostingApprovalListScreenState();
+  State<CostingApprovalListScreen> createState() =>
+      _CostingApprovalListScreenState();
 }
 
 class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
   final NumberFormat currencyFormat = NumberFormat.currency(symbol: '\$');
-  final NumberFormat percentFormat = NumberFormat.decimalPercentPattern(decimalDigits: 2);
+  final NumberFormat percentFormat =
+      NumberFormat.decimalPercentPattern(decimalDigits: 2);
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _note = TextEditingController();
@@ -56,7 +59,9 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _isSearching ? _buildSearchField() : const Text('Costing Approvals', style: TextStyle(fontSize: 18)),
+        title: _isSearching
+            ? _buildSearchField()
+            : const Text('Costing Approvals', style: TextStyle(fontSize: 18)),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -103,7 +108,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
                     child: Consumer<MerchandisingProvider>(
                       builder: (context, pro, _) {
                         if (pro.isLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
                         if (pro.costingApprovalFilterList.isEmpty) {
@@ -111,7 +117,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
+                                Icon(Icons.search_off,
+                                    size: 48, color: Colors.grey.shade400),
                                 const SizedBox(height: 16),
                                 Text(
                                   'Nothing found',
@@ -142,7 +149,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
                             color: Colors.grey.shade200,
                           ),
                           itemBuilder: (context, index) {
-                            final approval = pro.costingApprovalFilterList[index];
+                            final approval =
+                                pro.costingApprovalFilterList[index];
                             return _buildApprovalItem(approval);
                           },
                         );
@@ -224,21 +232,31 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
               _buildDetailRow('Created Date', approval.createdDate),
               _buildDetailRow('Submit To', approval.submitToPerson),
               _buildDetailRow('Version', approval.version?.toString()),
-              _buildDetailRow('Material Budget', currencyFormat.format(approval.materialMaxBudget)),
-              _buildDetailRow('Material Cost', currencyFormat.format(approval.materialCost)),
-              _buildDetailRow('Buying Cost', currencyFormat.format(approval.buyingCost)),
+              _buildDetailRow('Material Budget',
+                  currencyFormat.format(approval.materialMaxBudget)),
+              _buildDetailRow('Material Cost',
+                  currencyFormat.format(approval.materialCost)),
+              _buildDetailRow(
+                  'Buying Cost', currencyFormat.format(approval.buyingCost)),
               _buildDetailRow('CM', currencyFormat.format(approval.cm)),
               _buildDetailRow('SMV', approval.smv?.toString()),
-              _buildDetailRow('Profit %', percentFormat.format((approval.profitCostInPercent ?? 0) / 100)),
+              _buildDetailRow(
+                  'Profit %',
+                  percentFormat
+                      .format((approval.profitCostInPercent ?? 0) / 100)),
               _buildDetailRow('Total Qty', approval.totalOrderQty?.toString()),
-              SizedBox(height: 8,),
+              SizedBox(
+                height: 8,
+              ),
               //notes
               TextField(
                 controller: _note,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Controls height
+                  contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8), // Controls height
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4), // Slightly rounded corners
+                    borderRadius:
+                        BorderRadius.circular(4), // Slightly rounded corners
                     borderSide: BorderSide(color: Colors.grey, width: 1.0),
                   ), // Grey border
                   enabledBorder: OutlineInputBorder(
@@ -262,7 +280,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
             children: [
               IconButton(
                   onPressed: () {
-                    DashboardHelpers.openUrl('${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
+                    DashboardHelpers.openUrl(
+                        '${AppConstants.baseUrl}Merchandising/MerchandisingReport/CostSheet?CostingCode=${approval.costingCode}&version=0');
                   },
                   icon: Icon(
                     Icons.info_outline,
@@ -294,7 +313,9 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
                   acceptItem(approval);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: approval.finalStatus == 'Pending' ? Colors.green : Colors.orange,
+                  backgroundColor: approval.finalStatus == 'Pending'
+                      ? Colors.green
+                      : Colors.orange,
                 ),
                 child: Text(
                   approval.finalStatus == 'Pending' ? 'Accept' : 'View',
@@ -386,7 +407,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
     try {
       final mp = context.read<MerchandisingProvider>();
       // Use Future.micro task if you need to avoid direct execution in initState
-      await mp.getCostingApprovalList(DashboardHelpers.currentUser!.userId.toString());
+      await mp.getCostingApprovalList(
+          DashboardHelpers.currentUser!.userId.toString());
     } catch (e) {
       debugPrint('Error loading data: $e');
       // Optionally show error to user
@@ -408,7 +430,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
       ];
 
       var mp = context.read<MerchandisingProvider>();
-      mp.acceptRejectConstingApproval(approvalItem, url: 'HR/Approval/CommonReject');
+      mp.acceptRejectConstingApproval(approvalItem,
+          url: 'HR/Approval/CommonReject');
       _note.clear();
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
@@ -431,7 +454,8 @@ class _CostingApprovalListScreenState extends State<CostingApprovalListScreen> {
       ];
 
       var mp = context.read<MerchandisingProvider>();
-      var data = await mp.acceptRejectConstingApproval(approvalItem, url: 'api/Merchandising/ApproveMerchandising');
+      var data = await mp.acceptRejectConstingApproval(approvalItem,
+          url: 'api/Merchandising/ApproveMerchandising');
       _note.clear();
       if (data != null) {
         DashboardHelpers.showAlert(msg: 'Approved Successfully');

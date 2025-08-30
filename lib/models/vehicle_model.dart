@@ -1,26 +1,27 @@
 class VehicleModel {
   VehicleModel({
-      num? vehicleReqId, 
-      String? idCardNo, 
-      String? destinationFrom, 
-      String? destinationTo, 
-      String? distance, 
-      String? purpose, 
-      String? requiredDate, 
-      String? requiredTime, 
-      String? duration, 
-      String? employeeId, 
-      String? carryGoods, 
-      num? vehicletypeId, 
-      String? vehicleNo, 
-      String? driverMobileNo, 
-      String? driverName, 
-      dynamic userName, 
-      String? departmentName, 
-      String? sectionName, 
-      String? designationName, 
-      String? fullName, 
-      num? status,}){
+    num? vehicleReqId,
+    String? idCardNo,
+    String? destinationFrom,
+    String? destinationTo,
+    String? distance,
+    String? purpose,
+    String? requiredDate,
+    String? requiredTime,
+    String? duration,
+    String? employeeId,
+    String? carryGoods,
+    num? vehicletypeId,
+    String? vehicleNo,
+    String? driverMobileNo,
+    String? driverName,
+    dynamic userName,
+    String? departmentName,
+    String? sectionName,
+    String? designationName,
+    String? fullName,
+    num? status,
+  }) {
     _vehicleReqId = vehicleReqId;
     _idCardNo = idCardNo;
     _destinationFrom = destinationFrom;
@@ -42,7 +43,7 @@ class VehicleModel {
     _designationName = designationName;
     _fullName = fullName;
     _status = status;
-}
+  }
 
   VehicleModel.fromJson(dynamic json) {
     _vehicleReqId = json['VehicleReqId'];
@@ -88,49 +89,52 @@ class VehicleModel {
   String? _designationName;
   String? _fullName;
   num? _status;
-VehicleModel copyWith({  num? vehicleReqId,
-  String? idCardNo,
-  String? destinationFrom,
-  String? destinationTo,
-  String? distance,
-  String? purpose,
-  String? requiredDate,
-  String? requiredTime,
-  String? duration,
-  String? employeeId,
-  String? carryGoods,
-  num? vehicletypeId,
-  String? vehicleNo,
-  String? driverMobileNo,
-  String? driverName,
-  dynamic userName,
-  String? departmentName,
-  String? sectionName,
-  String? designationName,
-  String? fullName,
-  num? status,
-}) => VehicleModel(  vehicleReqId: vehicleReqId ?? _vehicleReqId,
-  idCardNo: idCardNo ?? _idCardNo,
-  destinationFrom: destinationFrom ?? _destinationFrom,
-  destinationTo: destinationTo ?? _destinationTo,
-  distance: distance ?? _distance,
-  purpose: purpose ?? _purpose,
-  requiredDate: requiredDate ?? _requiredDate,
-  requiredTime: requiredTime ?? _requiredTime,
-  duration: duration ?? _duration,
-  employeeId: employeeId ?? _employeeId,
-  carryGoods: carryGoods ?? _carryGoods,
-  vehicletypeId: vehicletypeId ?? _vehicletypeId,
-  vehicleNo: vehicleNo ?? _vehicleNo,
-  driverMobileNo: driverMobileNo ?? _driverMobileNo,
-  driverName: driverName ?? _driverName,
-  userName: userName ?? _userName,
-  departmentName: departmentName ?? _departmentName,
-  sectionName: sectionName ?? _sectionName,
-  designationName: designationName ?? _designationName,
-  fullName: fullName ?? _fullName,
-  status: status ?? _status,
-);
+  VehicleModel copyWith({
+    num? vehicleReqId,
+    String? idCardNo,
+    String? destinationFrom,
+    String? destinationTo,
+    String? distance,
+    String? purpose,
+    String? requiredDate,
+    String? requiredTime,
+    String? duration,
+    String? employeeId,
+    String? carryGoods,
+    num? vehicletypeId,
+    String? vehicleNo,
+    String? driverMobileNo,
+    String? driverName,
+    dynamic userName,
+    String? departmentName,
+    String? sectionName,
+    String? designationName,
+    String? fullName,
+    num? status,
+  }) =>
+      VehicleModel(
+        vehicleReqId: vehicleReqId ?? _vehicleReqId,
+        idCardNo: idCardNo ?? _idCardNo,
+        destinationFrom: destinationFrom ?? _destinationFrom,
+        destinationTo: destinationTo ?? _destinationTo,
+        distance: distance ?? _distance,
+        purpose: purpose ?? _purpose,
+        requiredDate: requiredDate ?? _requiredDate,
+        requiredTime: requiredTime ?? _requiredTime,
+        duration: duration ?? _duration,
+        employeeId: employeeId ?? _employeeId,
+        carryGoods: carryGoods ?? _carryGoods,
+        vehicletypeId: vehicletypeId ?? _vehicletypeId,
+        vehicleNo: vehicleNo ?? _vehicleNo,
+        driverMobileNo: driverMobileNo ?? _driverMobileNo,
+        driverName: driverName ?? _driverName,
+        userName: userName ?? _userName,
+        departmentName: departmentName ?? _departmentName,
+        sectionName: sectionName ?? _sectionName,
+        designationName: designationName ?? _designationName,
+        fullName: fullName ?? _fullName,
+        status: status ?? _status,
+      );
   num? get vehicleReqId => _vehicleReqId;
   String? get idCardNo => _idCardNo;
   String? get destinationFrom => _destinationFrom;
@@ -178,5 +182,4 @@ VehicleModel copyWith({  num? vehicleReqId,
     map['Status'] = _status;
     return map;
   }
-
 }

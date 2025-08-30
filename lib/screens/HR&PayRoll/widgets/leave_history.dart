@@ -27,7 +27,7 @@ class LeaveSummaryWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Consumer<HrProvider>(
-          builder: (context,pro,_)=>Column(
+          builder: (context, pro, _) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
@@ -39,7 +39,8 @@ class LeaveSummaryWidget extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               // In your parent widget:
-              if(pro.selfLeaveInfo!=null) CompactLeaveInfo(leaveInfo: pro.selfLeaveInfo!),
+              if (pro.selfLeaveInfo != null)
+                CompactLeaveInfo(leaveInfo: pro.selfLeaveInfo!),
               // ...leaveData.map((leave) => _buildLeaveRow(
               //   leave['type'] as String,
               //   leave['total'] as dynamic,
@@ -54,34 +55,26 @@ class LeaveSummaryWidget extends StatelessWidget {
   }
 }
 
-
-
-
 class CompactLeaveInfo extends StatelessWidget {
   final SelfLeaveInfo leaveInfo;
   final double rowHeight = 30.0;
 
-  const CompactLeaveInfo({Key? key, required this.leaveInfo}) : super(key: key);
+  const CompactLeaveInfo({super.key, required this.leaveInfo});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: Column(
         children: [
-          _buildRow('Sick Leave',
-              leaveInfo.sickLeave,
-              leaveInfo.sickLeavePolicyDays),
-          _buildRow('Casual Leave',
-              leaveInfo.casualLeave,
+          _buildRow(
+              'Sick Leave', leaveInfo.sickLeave, leaveInfo.sickLeavePolicyDays),
+          _buildRow('Casual Leave', leaveInfo.casualLeave,
               leaveInfo.casualLeavePolicyDays),
-          _buildRow('Maternity Leave',
-              leaveInfo.maternityLeave,
+          _buildRow('Maternity Leave', leaveInfo.maternityLeave,
               leaveInfo.maternityLeavePolicyDays),
-          _buildRow('Earn Leave',
-              leaveInfo.earnLeave,
-              leaveInfo.earnLeavePolicyDays),
-          _buildRow('Leave Without Pay',
-              leaveInfo.leaveWithoutPay,
+          _buildRow(
+              'Earn Leave', leaveInfo.earnLeave, leaveInfo.earnLeavePolicyDays),
+          _buildRow('Leave Without Pay', leaveInfo.leaveWithoutPay,
               leaveInfo.leaveWithoutPayPolicyDays),
         ],
       ),

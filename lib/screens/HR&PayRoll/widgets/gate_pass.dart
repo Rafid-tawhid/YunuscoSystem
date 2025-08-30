@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +41,8 @@ class GatePassDetailsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    const Icon(Icons.medical_services, size: 50, color: Colors.red),
+                    const Icon(Icons.medical_services,
+                        size: 50, color: Colors.red),
                     const SizedBox(height: 10),
                     const Text(
                       'MEDICAL GATE PASS',
@@ -73,7 +73,8 @@ class GatePassDetailsScreen extends StatelessWidget {
               children: [
                 _buildDetailRow('Employee ID', gatePassData['employeeId']),
                 _buildDetailRow('Approved By', gatePassData['approvedBy']),
-                _buildDetailRow('Issued At', gatePassData['generatedAt'].toString()??''),
+                _buildDetailRow(
+                    'Issued At', gatePassData['generatedAt'].toString() ?? ''),
               ],
             ),
 
@@ -81,9 +82,11 @@ class GatePassDetailsScreen extends StatelessWidget {
             _buildSectionCard(
               title: 'PASS VALIDITY',
               children: [
-                _buildDetailRow('Valid Until', DashboardHelpers.convertDateTime2(DateTime.now())),
+                _buildDetailRow('Valid Until',
+                    DashboardHelpers.convertDateTime2(DateTime.now())),
                 _buildDetailRow('Status', gatePassData['status']),
-                _buildDetailRow('Used', gatePassData['used'] == true ? 'Yes' : 'No'),
+                _buildDetailRow(
+                    'Used', gatePassData['used'] == true ? 'Yes' : 'No'),
               ],
             ),
 
@@ -95,11 +98,16 @@ class GatePassDetailsScreen extends StatelessWidget {
                 title: 'MEDICAL DETAILS',
                 children: [
                   if (gatePassData['prescription'] != null)
-                    _buildDetailRow('Prescription', gatePassData['prescription'], isMultiLine: true),
+                    _buildDetailRow(
+                        'Prescription', gatePassData['prescription'],
+                        isMultiLine: true),
                   if (gatePassData['medicine'] != null)
-                    _buildDetailRow('Medicine', gatePassData['medicine'], isMultiLine: true),
+                    _buildDetailRow('Medicine', gatePassData['medicine'],
+                        isMultiLine: true),
                   if (gatePassData['instructions'] != null)
-                    _buildDetailRow('Instructions', gatePassData['instructions'], isMultiLine: true),
+                    _buildDetailRow(
+                        'Instructions', gatePassData['instructions'],
+                        isMultiLine: true),
                 ],
               ),
 
@@ -108,7 +116,8 @@ class GatePassDetailsScreen extends StatelessWidget {
               _buildSectionCard(
                 title: 'GATE PASS REASON',
                 children: [
-                  _buildDetailRow('Reason', gatePassData['gatePassReason'], isMultiLine: true),
+                  _buildDetailRow('Reason', gatePassData['gatePassReason'],
+                      isMultiLine: true),
                 ],
               ),
 
@@ -117,10 +126,10 @@ class GatePassDetailsScreen extends StatelessWidget {
             buildQrCode(gatePassData),
             ElevatedButton(
               onPressed: () => generateAndSavePdf(gatePassData, context),
-              child: Text('Save as PDF'),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
+              child: Text('Save as PDF'),
             ),
           ],
         ),
@@ -128,8 +137,8 @@ class GatePassDetailsScreen extends StatelessWidget {
     );
   }
 
-
-  Future<void> generateAndSavePdf(Map<String, dynamic> data, BuildContext context) async {
+  Future<void> generateAndSavePdf(
+      Map<String, dynamic> data, BuildContext context) async {
     try {
       // Create a sanitized copy of the data
       final sanitizedData = Map<String, dynamic>.from(data);
@@ -167,7 +176,8 @@ class GatePassDetailsScreen extends StatelessWidget {
                 pw.Header(
                   level: 0,
                   child: pw.Text('Gate Pass',
-                      style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                      style: pw.TextStyle(
+                          fontSize: 24, fontWeight: pw.FontWeight.bold)),
                 ),
                 pw.SizedBox(height: 20),
                 pw.Center(
@@ -179,15 +189,22 @@ class GatePassDetailsScreen extends StatelessWidget {
                 ),
                 pw.SizedBox(height: 30),
                 pw.Text('Pass Details:',
-                    style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                    style: pw.TextStyle(
+                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 10),
-                _buildPdfDetailRow('Employee ID:', data['employeeId']?.toString() ?? 'N/A'),
-               // _buildPdfDetailRow('Employee Name:', data['employeeName']?.toString() ?? 'N/A'),
-                _buildPdfDetailRow('Passcode:', data['gatePassCode']?.toString() ?? 'N/A'),
-                _buildPdfDetailRow('Valid Until:', DashboardHelpers.convertDateTime2(DateTime.now()),),
+                _buildPdfDetailRow(
+                    'Employee ID:', data['employeeId']?.toString() ?? 'N/A'),
+                // _buildPdfDetailRow('Employee Name:', data['employeeName']?.toString() ?? 'N/A'),
+                _buildPdfDetailRow(
+                    'Passcode:', data['gatePassCode']?.toString() ?? 'N/A'),
+                _buildPdfDetailRow(
+                  'Valid Until:',
+                  DashboardHelpers.convertDateTime2(DateTime.now()),
+                ),
                 pw.SizedBox(height: 20),
                 pw.Text('Issued by: ${data['approvedBy'] ?? 'System'}'),
-                pw.Text('Issued on: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}'),
+                pw.Text(
+                    'Issued on: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}'),
               ],
             );
           },
@@ -196,7 +213,8 @@ class GatePassDetailsScreen extends StatelessWidget {
 
       // Save PDF to device
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/gate_pass_${data['employeeId']}.pdf');
+      final file =
+          File('${directory.path}/gate_pass_${data['employeeId']}.pdf');
       await file.writeAsBytes(await pdf.save());
 
       // Show success message
@@ -208,7 +226,6 @@ class GatePassDetailsScreen extends StatelessWidget {
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
       );
-
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error generating PDF: $e')),
@@ -221,14 +238,15 @@ class GatePassDetailsScreen extends StatelessWidget {
       padding: const pw.EdgeInsets.only(bottom: 8),
       child: pw.Row(
         children: [
-          pw.Text(label,),
+          pw.Text(
+            label,
+          ),
           pw.SizedBox(width: 10),
           pw.Text(value),
         ],
       ),
     );
   }
-
 
   Widget buildQrCode(Map<String, dynamic> data) {
     // Create a sanitized copy of the data
@@ -263,8 +281,7 @@ class GatePassDetailsScreen extends StatelessWidget {
           embeddedImageStyle: QrEmbeddedImageStyle(size: Size(40, 40)),
         ),
         SizedBox(height: 20),
-        Text('Scan this code for verification',
-            style: TextStyle(fontSize: 16)),
+        Text('Scan this code for verification', style: TextStyle(fontSize: 16)),
       ],
     );
   }
@@ -297,11 +314,13 @@ class GatePassDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String? value, {bool isMultiLine = false}) {
+  Widget _buildDetailRow(String label, String? value,
+      {bool isMultiLine = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        crossAxisAlignment: isMultiLine ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+        crossAxisAlignment:
+            isMultiLine ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
           SizedBox(
             width: 120,

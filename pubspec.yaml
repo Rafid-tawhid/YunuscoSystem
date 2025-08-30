@@ -78,6 +78,7 @@ dependencies:
 
 
 
+  uuid: any
 flutter_launcher_icons:
   android: true
   ios: true

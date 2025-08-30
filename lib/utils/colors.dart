@@ -14,7 +14,7 @@ class myColors {
   static Color orange = const Color(0XFFFF7F50);
   static Color divider = const Color(0xffF6F6F6);
   static Color errRedTextColor = const Color(0xffC40606);
-  static Color primaryColor=const Color(0xff161a49);
+  static Color primaryColor = const Color(0xff161a49);
   static const Color primaryStroke = Color(0xFFE9E9E9);
   static const Color textFont = Color(0xFF000000);
   static const Color boxColor = Color(0xffF8F9F9);
@@ -45,7 +45,6 @@ class myColors {
   static const Color lightGrey = Color(0xFFDADADA);
   static const Color yellow = Color(0xFFFFAA47);
   static const Color paste = Color(0xFF7FD8BE);
-
 }
 
 const Color colorPrimaryMain = Color(0xFF06113E);
@@ -66,4 +65,3 @@ const textFieldFillColor = Color(0xFFE7F3FF);
 const colorShadow = Color.fromRGBO(210, 210, 210, 0.23);
 const colorShadow2 = Color.fromRGBO(213, 213, 213, 0.25);
 const Color feedback = Color(0xFF2365A8);
-

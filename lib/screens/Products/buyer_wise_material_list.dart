@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/buyer_wise_material_model.dart';
 
 class BuyerWiseMaterialList extends StatelessWidget {
   final String buyerName;
 
-  const BuyerWiseMaterialList({Key? key, required this.buyerName})
-      : super(key: key);
+  const BuyerWiseMaterialList({super.key, required this.buyerName});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title:  Text('$buyerName Materials',
-            style: TextStyle(color: Colors.black)),
+        title:
+            Text('$buyerName Materials', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         elevation: 0,
-
         actions: [
           // IconButton(
           //   icon: const Icon(Icons.search, color: Colors.black),
@@ -32,7 +29,9 @@ class BuyerWiseMaterialList extends StatelessWidget {
         children: [
           _buildStatsHeader(),
           Expanded(
-            child: Consumer<ProductProvider>(builder: (context,provider,_)=>_buildMaterialList(provider)),
+            child: Consumer<ProductProvider>(
+                builder: (context, provider, _) =>
+                    _buildMaterialList(provider)),
           ),
         ],
       ),
@@ -45,23 +44,34 @@ class BuyerWiseMaterialList extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-        BoxShadow(
-        color: Colors.black12,
-        blurRadius: 4,
-        offset: Offset(0, 2),)
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          )
         ],
       ),
       child: Consumer<ProductProvider>(
-        builder: (context,provider,_)=>Row(
+        builder: (context, provider, _) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildStatItem('Buyers', provider.buyerMaterialList.length.toString(),
-                Colors.blue),
-            _buildStatItem('Categories',
-                provider.buyerMaterialList.map((e) => e.productCategoryName).toSet().length.toString(),
+            _buildStatItem('Buyers',
+                provider.buyerMaterialList.length.toString(), Colors.blue),
+            _buildStatItem(
+                'Categories',
+                provider.buyerMaterialList
+                    .map((e) => e.productCategoryName)
+                    .toSet()
+                    .length
+                    .toString(),
                 Colors.green),
-            _buildStatItem('Products',
-                provider.buyerMaterialList.map((e) => e.productName).toSet().length.toString(),
+            _buildStatItem(
+                'Products',
+                provider.buyerMaterialList
+                    .map((e) => e.productName)
+                    .toSet()
+                    .length
+                    .toString(),
                 Colors.orange),
           ],
         ),
@@ -100,7 +110,6 @@ class BuyerWiseMaterialList extends StatelessWidget {
   }
 
   Widget _buildMaterialList(ProductProvider provider) {
-
     if (provider.buyerMaterialList.isEmpty) {
       return Center(
         child: Column(
@@ -183,8 +192,8 @@ class BuyerWiseMaterialList extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: _getTypeColor(material.typeName),
                       borderRadius: BorderRadius.circular(12),
@@ -255,7 +264,7 @@ class BuyerWiseMaterialList extends StatelessWidget {
   }
 
   void _showSearch(BuildContext context) {
-    var pp=context.read<ProductProvider>();
+    var pp = context.read<ProductProvider>();
     showSearch(
       context: context,
       delegate: _BuyerMaterialSearchDelegate(pp.buyerMaterialList),
@@ -303,22 +312,27 @@ class _BuyerMaterialSearchDelegate extends SearchDelegate {
   Widget _buildSearchResults() {
     final results = query.isEmpty
         ? materials
-        : materials.where((material) =>
-    (material.buyerName?.toLowerCase().contains(query.toLowerCase()) ??
-        false) ||
-        (material.productName?.toLowerCase().contains(query.toLowerCase()) ??
-            false) ||
-        (material.productCategoryName
-            ?.toLowerCase()
-            .contains(query.toLowerCase()) ??
-            false)).toList();
+        : materials
+            .where((material) =>
+                (material.buyerName
+                        ?.toLowerCase()
+                        .contains(query.toLowerCase()) ??
+                    false) ||
+                (material.productName
+                        ?.toLowerCase()
+                        .contains(query.toLowerCase()) ??
+                    false) ||
+                (material.productCategoryName
+                        ?.toLowerCase()
+                        .contains(query.toLowerCase()) ??
+                    false))
+            .toList();
 
     return ListView.builder(
       itemCount: results.length,
       itemBuilder: (context, index) {
         final material = results[index];
         return ListTile(
-
           leading: CircleAvatar(
             backgroundColor: Colors.blue[50],
             child: Text(material.buyerName?.substring(0, 1) ?? '?'),

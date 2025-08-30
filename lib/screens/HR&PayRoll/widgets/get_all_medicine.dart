@@ -32,7 +32,8 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   }
 
   void _onSearchChanged() {
-    Provider.of<HrProvider>(context, listen: false).filterMedicines(_searchController.text);
+    Provider.of<HrProvider>(context, listen: false)
+        .filterMedicines(_searchController.text);
   }
 
   void _toggleSearch() {
@@ -73,7 +74,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: _isSearching ? _buildSearchField() : const Text('Medicines', style: TextStyle(fontSize: 18)),
+        title: _isSearching
+            ? _buildSearchField()
+            : const Text('Medicines', style: TextStyle(fontSize: 18)),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -81,15 +84,15 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
             duration: const Duration(milliseconds: 200),
             child: _isSearching
                 ? IconButton(
-              key: const ValueKey('close'),
-              onPressed: _toggleSearch,
-              icon: const Icon(Icons.close),
-            )
+                    key: const ValueKey('close'),
+                    onPressed: _toggleSearch,
+                    icon: const Icon(Icons.close),
+                  )
                 : IconButton(
-              key: const ValueKey('search'),
-              onPressed: _toggleSearch,
-              icon: const Icon(Icons.search),
-            ),
+                    key: const ValueKey('search'),
+                    onPressed: _toggleSearch,
+                    icon: const Icon(Icons.search),
+                  ),
           ),
         ],
       ),
@@ -113,9 +116,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     );
   }
 
-  Future<void> getAllMedicine() async{
-    var hp=context.read<HrProvider>();
-    if(hp.medicines.isEmpty){
+  Future<void> getAllMedicine() async {
+    var hp = context.read<HrProvider>();
+    if (hp.medicines.isEmpty) {
       hp.getAllMedicine();
     }
   }
@@ -143,18 +146,20 @@ class _MedicineListItem extends StatelessWidget {
         ),
         trailing: Text('#${medicine.productId?.toString() ?? ''}'),
         onTap: () async {
-          final result = await showMedicineDetailsBottomSheet(context, medicine);
+          final result =
+              await showMedicineDetailsBottomSheet(context, medicine);
           debugPrint('MEDIC 2 $result');
           if (result != null) {
             //{medicineId: 2950, madicineType: 18, quantity: 3, note: nothing, advice: take rest, madicineContinue: 3}
             // Handle the result data here
-            var hp=context.read<HrProvider>();
+            var hp = context.read<HrProvider>();
 
-            PrescriptionMedicine medicine= PrescriptionMedicine.fromJson(result);
+            PrescriptionMedicine medicine =
+                PrescriptionMedicine.fromJson(result);
             medicine = medicine.copyWith(note: result['medicineTime']);
             debugPrint('MEDIC $medicine');
 
-             hp.addMedicineListForPrescription(medicine);
+            hp.addMedicineListForPrescription(medicine);
             // If you want to pop the current screen after getting the result:
             Navigator.pop(context, result);
           }
@@ -163,20 +168,27 @@ class _MedicineListItem extends StatelessWidget {
     );
   }
 
-
   Future<Map<String, dynamic>?> showMedicineDetailsBottomSheet(
-      BuildContext context,
-      MedicineModel medicine,
-      ) async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    final TextEditingController _quantityController = TextEditingController();
-    final TextEditingController _daysController = TextEditingController();
+    BuildContext context,
+    MedicineModel medicine,
+  ) async {
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final TextEditingController quantityController = TextEditingController();
+    final TextEditingController daysController = TextEditingController();
 
     // Dropdown and checkbox state
-    String _selectedTime = '0+0+1';
-    bool _medicineStatus = false;
+    String selectedTime = '0+0+1';
+    bool medicineStatus = false;
 
-    final List<String> medicineTimes = ['0+0+1', '0+1+0', '0+1+1', '1+0+0','1+0+1','1+1+0','1+1+1'];
+    final List<String> medicineTimes = [
+      '0+0+1',
+      '0+1+0',
+      '0+1+1',
+      '1+0+0',
+      '1+0+1',
+      '1+1+0',
+      '1+1+1'
+    ];
 
     return await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
@@ -193,7 +205,7 @@ class _MedicineListItem extends StatelessWidget {
           child: StatefulBuilder(
             builder: (context, setState) {
               return Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,13 +213,14 @@ class _MedicineListItem extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       medicine.productName ?? 'Medicine Details',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
 
                     // Quantity
                     TextFormField(
-                      controller: _quantityController,
+                      controller: quantityController,
                       decoration: const InputDecoration(
                         labelText: 'Quantity*',
                         border: OutlineInputBorder(),
@@ -228,7 +241,7 @@ class _MedicineListItem extends StatelessWidget {
 
                     // Medicine Time (Dropdown)
                     DropdownButtonFormField<String>(
-                      value: _selectedTime,
+                      value: selectedTime,
                       decoration: const InputDecoration(
                         labelText: 'Medicine Time',
                         border: OutlineInputBorder(),
@@ -242,7 +255,7 @@ class _MedicineListItem extends StatelessWidget {
                       onChanged: (value) {
                         if (value != null) {
                           setState(() {
-                            _selectedTime = value;
+                            selectedTime = value;
                           });
                         }
                       },
@@ -252,25 +265,26 @@ class _MedicineListItem extends StatelessWidget {
                     // Medicine Status (Radio Buttons using bool)
                     const Text(
                       "Medicine Status",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     RadioListTile<bool>(
                       title: const Text("Before"),
                       value: true,
-                      groupValue: _medicineStatus,
+                      groupValue: medicineStatus,
                       onChanged: (value) {
                         setState(() {
-                          _medicineStatus = value!;
+                          medicineStatus = value!;
                         });
                       },
                     ),
                     RadioListTile<bool>(
                       title: const Text("After"),
                       value: false,
-                      groupValue: _medicineStatus,
+                      groupValue: medicineStatus,
                       onChanged: (value) {
                         setState(() {
-                          _medicineStatus = value!;
+                          medicineStatus = value!;
                         });
                       },
                     ),
@@ -278,7 +292,7 @@ class _MedicineListItem extends StatelessWidget {
 
                     // Continue Days
                     TextFormField(
-                      controller: _daysController,
+                      controller: daysController,
                       decoration: const InputDecoration(
                         labelText: 'Continue for (e.g., 2 days)',
                         border: OutlineInputBorder(),
@@ -290,15 +304,15 @@ class _MedicineListItem extends StatelessWidget {
                     CustomElevatedButton(
                       text: 'Add+',
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                        if (formKey.currentState!.validate()) {
                           final data = {
                             "productName": medicine.productName,
                             "medicineId": medicine.productId,
                             "madicineType": medicine.productTypeId,
-                            "quantity": int.parse(_quantityController.text),
-                            "madicineContinue": _daysController.text,
-                            "medicineTime": _selectedTime,
-                            "medicineStatus": _medicineStatus,
+                            "quantity": int.parse(quantityController.text),
+                            "madicineContinue": daysController.text,
+                            "medicineTime": selectedTime,
+                            "medicineStatus": medicineStatus,
                           };
                           Navigator.pop(context, data);
                         }
@@ -314,5 +328,4 @@ class _MedicineListItem extends StatelessWidget {
       },
     );
   }
-
 }

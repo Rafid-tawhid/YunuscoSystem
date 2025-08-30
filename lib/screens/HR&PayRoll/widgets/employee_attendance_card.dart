@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
@@ -18,10 +17,14 @@ class EmployeeCards extends StatelessWidget {
     return Column(
       children: [
         Consumer<HrProvider>(
-          builder: (context, pro, _) => pro.employeeAttendanceList.isNotEmpty ? AttendanceSummary(attendanceData: pro.employeeAttendanceList) : SizedBox.shrink(),
+          builder: (context, pro, _) => pro.employeeAttendanceList.isNotEmpty
+              ? AttendanceSummary(attendanceData: pro.employeeAttendanceList)
+              : SizedBox.shrink(),
         ),
         Consumer<HrProvider>(
-          builder: (context, pro, _) => pro.employeeAttendanceList.isNotEmpty ? _AttendanceSummaryCard() : SizedBox.shrink(),
+          builder: (context, pro, _) => pro.employeeAttendanceList.isNotEmpty
+              ? _AttendanceSummaryCard()
+              : SizedBox.shrink(),
         ),
         // Remove Expanded and use Column directly
         Consumer<HrProvider>(
@@ -34,7 +37,9 @@ class EmployeeCards extends StatelessWidget {
                       child: Text('No records found.'),
                     )
                   : Column(
-                      children: attendanceList.map((record) => _AttendanceListItem(record: record)).toList(),
+                      children: attendanceList
+                          .map((record) => _AttendanceListItem(record: record))
+                          .toList(),
                     ),
         ),
       ],
@@ -104,7 +109,9 @@ class _AttendanceListItem extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          DashboardHelpers.convertDateTime(DateTime.parse(record.dayDate.toString()).toString(), pattern: 'MMM d, yyyy'),
+          DashboardHelpers.convertDateTime(
+              DateTime.parse(record.dayDate.toString()).toString(),
+              pattern: 'MMM d, yyyy'),
           style: const TextStyle(color: Colors.grey),
         ),
         children: [
@@ -112,11 +119,13 @@ class _AttendanceListItem extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildDetailRow('Employee ID', record.employeeId?.toString() ?? 'N/A'),
+                _buildDetailRow(
+                    'Employee ID', record.employeeId?.toString() ?? 'N/A'),
                 _buildDetailRow('In Time', record.inTime ?? 'Not recorded'),
                 _buildDetailRow('Out Time', record.outTime ?? 'Not recorded'),
                 _buildDetailRow('Status', _getStatusText()),
-                if (record.inFlag != null) _buildDetailRow('Flag', record.inFlag!),
+                if (record.inFlag != null)
+                  _buildDetailRow('Flag', record.inFlag!),
               ],
             ),
           ),

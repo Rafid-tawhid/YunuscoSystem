@@ -1,19 +1,20 @@
 class LineSetupModel {
   LineSetupModel({
-      num? lineId, 
-      String? name1, 
-      String? name2, 
-      String? name3, 
-      String? allocationDate, 
-      num? code, 
-      num? targetValueIE, 
-      num? targetValue, 
-      num? wip, 
-      bool? isActive, 
-      bool? isPlanRunning, 
-      num? workingHour, 
-      num? allocatedManPower, 
-      num? smv,}){
+    num? lineId,
+    String? name1,
+    String? name2,
+    String? name3,
+    String? allocationDate,
+    num? code,
+    num? targetValueIE,
+    num? targetValue,
+    num? wip,
+    bool? isActive,
+    bool? isPlanRunning,
+    num? workingHour,
+    num? allocatedManPower,
+    num? smv,
+  }) {
     _lineId = lineId;
     _name1 = name1;
     _name2 = name2;
@@ -28,7 +29,7 @@ class LineSetupModel {
     _workingHour = workingHour;
     _allocatedManPower = allocatedManPower;
     _smv = smv;
-}
+  }
 
   LineSetupModel.fromJson(dynamic json) {
     _lineId = json['LineId'];
@@ -60,35 +61,38 @@ class LineSetupModel {
   num? _workingHour;
   num? _allocatedManPower;
   num? _smv;
-LineSetupModel copyWith({  num? lineId,
-  String? name1,
-  String? name2,
-  String? name3,
-  String? allocationDate,
-  num? code,
-  num? targetValueIE,
-  num? targetValue,
-  num? wip,
-  bool? isActive,
-  bool? isPlanRunning,
-  num? workingHour,
-  num? allocatedManPower,
-  num? smv,
-}) => LineSetupModel(  lineId: lineId ?? _lineId,
-  name1: name1 ?? _name1,
-  name2: name2 ?? _name2,
-  name3: name3 ?? _name3,
-  allocationDate: allocationDate ?? _allocationDate,
-  code: code ?? _code,
-  targetValueIE: targetValueIE ?? _targetValueIE,
-  targetValue: targetValue ?? _targetValue,
-  wip: wip ?? _wip,
-  isActive: isActive ?? _isActive,
-  isPlanRunning: isPlanRunning ?? _isPlanRunning,
-  workingHour: workingHour ?? _workingHour,
-  allocatedManPower: allocatedManPower ?? _allocatedManPower,
-  smv: smv ?? _smv,
-);
+  LineSetupModel copyWith({
+    num? lineId,
+    String? name1,
+    String? name2,
+    String? name3,
+    String? allocationDate,
+    num? code,
+    num? targetValueIE,
+    num? targetValue,
+    num? wip,
+    bool? isActive,
+    bool? isPlanRunning,
+    num? workingHour,
+    num? allocatedManPower,
+    num? smv,
+  }) =>
+      LineSetupModel(
+        lineId: lineId ?? _lineId,
+        name1: name1 ?? _name1,
+        name2: name2 ?? _name2,
+        name3: name3 ?? _name3,
+        allocationDate: allocationDate ?? _allocationDate,
+        code: code ?? _code,
+        targetValueIE: targetValueIE ?? _targetValueIE,
+        targetValue: targetValue ?? _targetValue,
+        wip: wip ?? _wip,
+        isActive: isActive ?? _isActive,
+        isPlanRunning: isPlanRunning ?? _isPlanRunning,
+        workingHour: workingHour ?? _workingHour,
+        allocatedManPower: allocatedManPower ?? _allocatedManPower,
+        smv: smv ?? _smv,
+      );
   num? get lineId => _lineId;
   String? get name1 => _name1;
   String? get name2 => _name2;
@@ -122,5 +126,4 @@ LineSetupModel copyWith({  num? lineId,
     map['SMV'] = _smv;
     return map;
   }
-
 }

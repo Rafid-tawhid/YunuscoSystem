@@ -7,11 +7,15 @@ import 'package:yunusco_group/utils/colors.dart';
 import '../models/requisation_products_model.dart';
 
 class CreatePurchaseRequisitionScreen extends StatefulWidget {
+  const CreatePurchaseRequisitionScreen({super.key});
+
   @override
-  _CreatePurchaseRequisitionScreenState createState() => _CreatePurchaseRequisitionScreenState();
+  _CreatePurchaseRequisitionScreenState createState() =>
+      _CreatePurchaseRequisitionScreenState();
 }
 
-class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisitionScreen> {
+class _CreatePurchaseRequisitionScreenState
+    extends State<CreatePurchaseRequisitionScreen> {
   final _formKey = GlobalKey<FormState>();
   List<RequisationProductsModel> items = [];
 
@@ -44,11 +48,19 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Purchase Requisition",style: TextStyle(color: Colors.white),),
+        title: Text(
+          "Purchase Requisition",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: myColors.primaryColor,
-        leading: IconButton(onPressed: (){
-          Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
         centerTitle: true,
       ),
       body: Padding(
@@ -81,7 +93,8 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                   ),
                 ),
                 readOnly: true,
-                validator: (value) => value?.isEmpty ?? true ? 'Required field' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required field' : null,
               ),
               const SizedBox(height: 16),
 
@@ -90,7 +103,8 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                 onTap: () async {
                   final product = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProductSelectionScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => ProductSelectionScreen()),
                   );
                   if (product != null) {
                     setState(() {
@@ -98,7 +112,8 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                       _materialNameController.text = product.productName ?? '';
                     });
 
-                    debugPrint('_selectedProduct ${_selectedProduct!.toJson()}');
+                    debugPrint(
+                        '_selectedProduct ${_selectedProduct!.toJson()}');
                   }
                 },
                 child: TextFormField(
@@ -108,7 +123,8 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                     labelText: "Product*",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (value) => value?.isEmpty ?? true ? 'Please select a product' : null,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Please select a product' : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -137,7 +153,9 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value?.isEmpty ?? true) return 'Required field';
-                        if (double.tryParse(value!) == null) return 'Invalid number';
+                        if (double.tryParse(value!) == null) {
+                          return 'Invalid number';
+                        }
                         return null;
                       },
                     ),
@@ -153,7 +171,9 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value?.isEmpty ?? true) return 'Required field';
-                        if (int.tryParse(value!) == null) return 'Invalid number';
+                        if (int.tryParse(value!) == null) {
+                          return 'Invalid number';
+                        }
                         return null;
                       },
                     ),
@@ -185,42 +205,49 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
               ElevatedButton(
                 onPressed: _addItem,
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                  backgroundColor: myColors.green
+                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor: myColors.green),
+                child: Text(
+                  "Add Item",
+                  style: TextStyle(color: Colors.white),
                 ),
-                child: Text("Add Item",style: TextStyle(color: Colors.white),),
               ),
               const SizedBox(height: 24),
 
               // Added Items List
               if (items.isNotEmpty) ...[
-                Text('Added Items (${items.length})', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Added Items (${items.length})',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 ...items.map((item) => _buildItemCard(item)),
                 const SizedBox(height: 16),
               ],
 
-
-
-              SizedBox(height: 16,),
-              if (items.isNotEmpty) TextFormField(
-                controller: _remarksController,
-                decoration: InputDecoration(
-                  labelText: "Remarks",
-                  border: OutlineInputBorder(),
-                ),
+              SizedBox(
+                height: 16,
               ),
-              SizedBox(height: 24,),
+              if (items.isNotEmpty)
+                TextFormField(
+                  controller: _remarksController,
+                  decoration: InputDecoration(
+                    labelText: "Remarks",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              SizedBox(
+                height: 24,
+              ),
               // Submit Button
               if (items.isNotEmpty)
                 ElevatedButton(
                   onPressed: _submitRequisition,
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50),
-                    backgroundColor:myColors.primaryColor
+                      minimumSize: Size(double.infinity, 50),
+                      backgroundColor: myColors.primaryColor),
+                  child: Text(
+                    "Submit Requisition",
+                    style: TextStyle(color: Colors.white),
                   ),
-
-                  child: Text("Submit Requisition",style: TextStyle(color: Colors.white),),
                 ),
             ],
           ),
@@ -239,10 +266,12 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
   }) {
     return DropdownButtonFormField<Map<String, dynamic>>(
       value: value,
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item['name']),
-      )).toList(),
+      items: items
+          .map((item) => DropdownMenuItem(
+                value: item,
+                child: Text(item['name']),
+              ))
+          .toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
@@ -261,7 +290,7 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (item.productName != null) Text(item.productName??''),
+            if (item.productName != null) Text(item.productName ?? ''),
             Text("Qty: ${item.actualReqQty}"),
             if (item.uomName != null) Text("UOM: ${item.uomName!}"),
           ],
@@ -339,24 +368,26 @@ class _CreatePurchaseRequisitionScreenState extends State<CreatePurchaseRequisit
       "requisitionMaster": {
         "productType": _selectedDivision!['id'],
         "remarks": _remarksController.text,
-        "division": _selectedDivision!['id']=='G'?1:2
+        "division": _selectedDivision!['id'] == 'G' ? 1 : 2
       },
-      "requisitionDetails": items.map((item) => {
-        "productId": item.productId,
-        "productDescription": item.productDescription,
-        "unitId": item.uomId,
-        "actualReqQty": item.actualReqQty,
-        "totalReqQty": item.totalReqQty,
-        "consumeDays": item.consumeDays,
-        "note": item.note,
-        "brand": item.brand,
-        "requiredDate": item.requiredDate
-      }).toList()
+      "requisitionDetails": items
+          .map((item) => {
+                "productId": item.productId,
+                "productDescription": item.productDescription,
+                "unitId": item.uomId,
+                "actualReqQty": item.actualReqQty,
+                "totalReqQty": item.totalReqQty,
+                "consumeDays": item.consumeDays,
+                "note": item.note,
+                "brand": item.brand,
+                "requiredDate": item.requiredDate
+              })
+          .toList()
     };
 
-    var pp=context.read<ProductProvider>();
-    var result=await pp.submitGeneralRequisation(data);
-    if(result){
+    var pp = context.read<ProductProvider>();
+    var result = await pp.submitGeneralRequisation(data);
+    if (result) {
       DashboardHelpers.showAlert(msg: 'Requisition submitted successfully!');
       Navigator.pop(context);
     }

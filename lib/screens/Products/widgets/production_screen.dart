@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
-import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_widget.dart';
 
@@ -12,14 +11,20 @@ class ProductionSummaryScreen extends StatefulWidget {
   const ProductionSummaryScreen({super.key});
 
   @override
-  _ProductionSummaryScreenState createState() => _ProductionSummaryScreenState();
+  _ProductionSummaryScreenState createState() =>
+      _ProductionSummaryScreenState();
 }
 
 class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
   DateTime _selectedDate = DateTime.now();
   String? _selectedDepartment;
   //
-  final List<String> _departments = ['Printing', 'Molding', 'Sewing', 'Finishing'];
+  final List<String> _departments = [
+    'Printing',
+    'Molding',
+    'Sewing',
+    'Finishing'
+  ];
 
   @override
   void initState() {
@@ -61,23 +66,26 @@ class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
                     const SizedBox(height: 10),
                     InkWell(
                       onTap: () async {
-                        final selectedDate = await SimpleMonthYearPicker.showMonthYearPickerDialog(
-                            context: context,
-                            titleTextStyle: TextStyle(),
-                            monthTextStyle: TextStyle(),
-                            yearTextStyle: TextStyle(),
-                            disableFuture: true // This will disable future years. It is false by default.
-                            );
+                        final selectedDate = await SimpleMonthYearPicker
+                            .showMonthYearPickerDialog(
+                                context: context,
+                                titleTextStyle: TextStyle(),
+                                monthTextStyle: TextStyle(),
+                                yearTextStyle: TextStyle(),
+                                disableFuture:
+                                    true // This will disable future years. It is false by default.
+                                );
                         // Use the selected date as needed.
                         debugPrint("month :${selectedDate.month}");
-                        debugPrint("year :" + selectedDate.year.toString());
+                        debugPrint("year :${selectedDate.year}");
                         debugPrint('Selected date: $selectedDate');
                         setState(() {
-                          _selectedDate=selectedDate;
+                          _selectedDate = selectedDate;
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(8),
@@ -118,11 +126,14 @@ class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
                       _selectedDepartment = selected ? dept : null;
                     });
                     var pp = context.read<ProductProvider>();
-                    debugPrint('_selectedDepartment ${_selectedDepartment}');
+                    debugPrint('_selectedDepartment $_selectedDepartment');
                     debugPrint('year ${_selectedDate.year}');
                     debugPrint('month ${_selectedDate.month}');
                     if (_selectedDepartment != null) {
-                      pp.getProductionSummary(_selectedDate.month.toString(), _selectedDate.year.toString(), _selectedDepartment.toString());
+                      pp.getProductionSummary(
+                          _selectedDate.month.toString(),
+                          _selectedDate.year.toString(),
+                          _selectedDepartment.toString());
                     }
                   },
                   color: Colors.purple.shade500,
@@ -156,6 +167,4 @@ class _ProductionSummaryScreenState extends State<ProductionSummaryScreen> {
       ),
     );
   }
-
-
 }

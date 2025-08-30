@@ -91,9 +91,10 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(DateFormat('dd MMM yyyy').format(_fromDate)),
+                                    Text(DateFormat('dd MMM yyyy')
+                                        .format(_fromDate)),
                                     const Icon(Icons.calendar_today, size: 20),
                                   ],
                                 ),
@@ -122,9 +123,10 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(DateFormat('dd MMM yyyy').format(_toDate)),
+                                    Text(DateFormat('dd MMM yyyy')
+                                        .format(_toDate)),
                                     const Icon(Icons.calendar_today, size: 20),
                                   ],
                                 ),
@@ -145,10 +147,11 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                   onPressed: _isLoading
                       ? null
                       : () async {
-                    setState(() => _isLoading = true);
-                    await pro.getAllWorkOrder(from: _fromDate, to: _toDate);
-                    setState(() => _isLoading = false);
-                  },
+                          setState(() => _isLoading = true);
+                          await pro.getAllWorkOrder(
+                              from: _fromDate, to: _toDate);
+                          setState(() => _isLoading = false);
+                        },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: myColors.primaryColor,
@@ -158,103 +161,119 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
                   ),
                   child: _isLoading
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  )
-                      :  Text(
-                    'Get Work Orders',
-                    style: customTextStyle(14, Colors.white, FontWeight.w600),
-                  ),
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        )
+                      : Text(
+                          'Get Work Orders',
+                          style: customTextStyle(
+                              14, Colors.white, FontWeight.w600),
+                        ),
                 ),
               ),
               const SizedBox(height: 10),
               Align(
-                alignment: Alignment.centerRight,
-                  child: Text('Order: ${pro.workOrderList.length}',style: customTextStyle(10, Colors.black, FontWeight.w500),)),
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Order: ${pro.workOrderList.length}',
+                    style: customTextStyle(10, Colors.black, FontWeight.w500),
+                  )),
               // Results
               Expanded(
                 child: pro.workOrderList.isEmpty
                     ? Center(
-                  child: Text(
-                    pro.workOrderList.isEmpty
-                        ? 'No work orders found for selected date range'
-                        : 'Select dates and tap the button',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                )
-                    : ListView.builder(
-                  itemCount: pro.workOrderList.length,
-                  itemBuilder: (context, index) {
-                    final order = pro.workOrderList[index];
-                    return Card(
-                      color: Colors.white,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  order.code ?? 'N/A',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Chip(
-                                  label: Text(
-                                    order.isLock ?? false
-                                        ? 'Locked'
-                                        : 'Active',
-                                    style: const TextStyle(
-                                        color: Colors.white),
-                                  ),
-                                  backgroundColor: order.isLock ?? false
-                                      ? Colors.red
-                                      : Colors.green,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text('PO: ${order.po ?? 'N/A'}'),
-                            Text('Buyer: ${order.buyerName ?? 'N/A'}'),
-                            Text('Style: ${order.styleCodes ?? 'N/A'}'),
-                            Text('Color: ${order.color ?? 'N/A'}'),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Text(
-                                  'Created: ${DashboardHelpers.convertDateTime(order.createdDate.toString(),pattern: 'dd-MMM-yyyy, HH:mm:aa') ?? 'N/A'}',
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                Spacer(),
-                                TextButton(onPressed: () async {
-                                  EasyLoading.show(maskType: EasyLoadingMaskType.black);
-                                  var success= await pro.getWorderOrderDetails(order.code);
-                                  EasyLoading.dismiss();
-                                  if(success){
-                                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>EnhancedProductDisplayScreen(jsonData: pro.workOrderDetails,)));
-                                  }
-
-                                }, child: Text('Report'))
-                              ],
-                            ),
-                          ],
+                        child: Text(
+                          pro.workOrderList.isEmpty
+                              ? 'No work orders found for selected date range'
+                              : 'Select dates and tap the button',
+                          style: const TextStyle(color: Colors.grey),
                         ),
+                      )
+                    : ListView.builder(
+                        itemCount: pro.workOrderList.length,
+                        itemBuilder: (context, index) {
+                          final order = pro.workOrderList[index];
+                          return Card(
+                            color: Colors.white,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            elevation: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        order.code ?? 'N/A',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Chip(
+                                        label: Text(
+                                          order.isLock ?? false
+                                              ? 'Locked'
+                                              : 'Active',
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                        backgroundColor: order.isLock ?? false
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text('PO: ${order.po ?? 'N/A'}'),
+                                  Text('Buyer: ${order.buyerName ?? 'N/A'}'),
+                                  Text('Style: ${order.styleCodes ?? 'N/A'}'),
+                                  Text('Color: ${order.color ?? 'N/A'}'),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Created: ${DashboardHelpers.convertDateTime(order.createdDate.toString(), pattern: 'dd-MMM-yyyy, HH:mm:aa') ?? 'N/A'}',
+                                        style: const TextStyle(
+                                            color: Colors.grey, fontSize: 12),
+                                      ),
+                                      Spacer(),
+                                      TextButton(
+                                          onPressed: () async {
+                                            EasyLoading.show(
+                                                maskType:
+                                                    EasyLoadingMaskType.black);
+                                            var success =
+                                                await pro.getWorderOrderDetails(
+                                                    order.code);
+                                            EasyLoading.dismiss();
+                                            if (success) {
+                                              Navigator.push(
+                                                  context,
+                                                  CupertinoPageRoute(
+                                                      builder: (context) =>
+                                                          EnhancedProductDisplayScreen(
+                                                            jsonData: pro
+                                                                .workOrderDetails,
+                                                          )));
+                                            }
+                                          },
+                                          child: Text('Report'))
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
@@ -262,6 +281,7 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
       ),
     );
   }
+
 //
   Map<String, dynamic> parseNestedJson(String rawData) {
     // Decode the outer JSON
@@ -279,7 +299,7 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
   void getWorkOrder() async {
     var mp = context.read<MerchandisingProvider>();
     setState(() => _isLoading = true);
-    await mp.getAllWorkOrder(from:_fromDate, to: _toDate);
+    await mp.getAllWorkOrder(from: _fromDate, to: _toDate);
     setState(() => _isLoading = false);
   }
 }

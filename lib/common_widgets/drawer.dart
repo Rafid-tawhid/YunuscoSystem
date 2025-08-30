@@ -1,13 +1,9 @@
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
-import '../screens/Profile/change_password_screen.dart';
 import '../screens/login_screen.dart';
 import '../utils/google_drive.dart';
-
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -20,44 +16,47 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-         if(DashboardHelpers.currentUser!=null) DrawerHeader(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF000044),
-                  Color(0xFF1A0033), // Adds a subtle purple tone
+          if (DashboardHelpers.currentUser != null)
+            DrawerHeader(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF000044),
+                    Color(0xFF1A0033), // Adds a subtle purple tone
+                  ],
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage(
+                      'assets/images/icon.png',
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    DashboardHelpers.currentUser!.userName ?? 'Sarah Johnson',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    DashboardHelpers.currentUser!.designation ??
+                        'sarah.johnson@example.com',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
+                  ),
                 ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white,
-                  backgroundImage: AssetImage(
-                      'assets/images/icon.png',),
-                ),
-                const SizedBox(height: 10),
-                 Text(
-                 DashboardHelpers.currentUser!.userName?? 'Sarah Johnson',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  DashboardHelpers.currentUser!.designation??'sarah.johnson@example.com',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
           ListTile(
             leading: const Icon(Icons.home, color: Colors.black54),
             title: const Text('Home'),
@@ -72,9 +71,12 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductCatalogScreen()));
-            //  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen()));
-           //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProductCatalogScreen()));
+              //  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen()));
+              //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
             },
           ),
           const Divider(),
@@ -83,6 +85,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Production'),
             onTap: () {
               Navigator.pop(context);
+
               /// Navigate to this screen from another widget
               // Navigator.push(
               //   context,
@@ -98,7 +101,8 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () async {
               await context.read<AuthProvider>().logout();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
             },
           ),
         ],
@@ -106,4 +110,3 @@ class MyDrawer extends StatelessWidget {
     );
   }
 }
-

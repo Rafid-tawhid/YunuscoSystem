@@ -14,13 +14,17 @@ class ApiService {
   final String baseUrl = AppConstants.baseUrl;
 
   // Create the client with the interceptor
-  final client = InterceptedClient.build(interceptors: [CustomInterceptor(),]);
+  final client = InterceptedClient.build(interceptors: [
+    CustomInterceptor(),
+  ]);
 
   // Method to perform GET request
   Future<dynamic> getData(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$baseUrl$endpoint')).timeout(Duration(seconds: 10));
+      final response = await client
+          .get(Uri.parse('$baseUrl$endpoint'))
+          .timeout(Duration(seconds: 10));
       // Handle response based on status code
       if (response.statusCode == 200) {
         // Parse the response body
@@ -47,7 +51,8 @@ class ApiService {
   Future<dynamic> getData2(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$endpoint')).timeout(Duration(seconds: 10));
+      final response =
+          await client.get(Uri.parse(endpoint)).timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200) {
@@ -78,14 +83,16 @@ class ApiService {
       debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint/');
       debugPrint('My Sending Data: $body');
 
-      final response = await client.post(
-        Uri.parse('${AppConstants.baseUrl}$endpoint/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
-        },
-        body: jsonEncode(body),
-      ).timeout(Duration(seconds: 10));
+      final response = await client
+          .post(
+            Uri.parse('${AppConstants.baseUrl}$endpoint/'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -116,14 +123,16 @@ class ApiService {
       debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint/');
       debugPrint('My Sending Data: $body');
 
-      final response = await client.patch(
-        Uri.parse('${AppConstants.baseUrl}$endpoint/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
-        },
-        body: jsonEncode(body),
-      ).timeout(Duration(seconds: 10));
+      final response = await client
+          .patch(
+            Uri.parse('${AppConstants.baseUrl}$endpoint/'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -154,14 +163,16 @@ class ApiService {
       debugPrint('URL: $endpoint');
       debugPrint('SEND DATA: $body');
 
-      final response = await client.post(
-        Uri.parse(endpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${AppConstants.token}', // Optional
-        },
-        body: jsonEncode(body),
-      ).timeout(Duration(seconds: 10));
+      final response = await client
+          .post(
+            Uri.parse(endpoint),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${AppConstants.token}', // Optional
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -217,7 +228,7 @@ class ApiService {
   }
 
   Future<dynamic> putData2(String endpoint, dynamic body) async {
-    debugPrint('SEND DATA ${body}');
+    debugPrint('SEND DATA $body');
     try {
       // Perform the POST request
       debugPrint('URL: ${AppConstants.baseUrl}$endpoint');
@@ -252,56 +263,69 @@ class ApiService {
 
   // Error handling based on status code
   void _handleError(int statusCode, String responseBody) {
-    debugPrint('ERROR RESPONSE : ${responseBody}');
+    debugPrint('ERROR RESPONSE : $responseBody');
     switch (statusCode) {
       case 204:
         EasyLoading.dismiss();
         print("Not Found: $responseBody");
         var response = jsonDecode(responseBody);
-        debugPrint('responseBody ${response}');
+        debugPrint('responseBody $response');
 
         Fluttertoast.showToast(
-            msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
+            msg: response['Message'] ?? "Resource Not Found",
+            toastLength: Toast.LENGTH_LONG);
         break;
       case 400:
         EasyLoading.dismiss();
         print("Bad Request: $responseBody");
         var response = jsonDecode(responseBody);
-        Fluttertoast.showToast(msg:response['Message'] ??response['msg']?? "Bad Request: $responseBody",toastLength: Toast.LENGTH_LONG);
+        Fluttertoast.showToast(
+            msg: response['Message'] ??
+                response['msg'] ??
+                "Bad Request: $responseBody",
+            toastLength: Toast.LENGTH_LONG);
         break;
       case 401:
         EasyLoading.dismiss();
         print("Unauthorized Access: $responseBody");
 
-        Fluttertoast.showToast(msg: "Unauthorized Access",toastLength: Toast.LENGTH_LONG);
+        Fluttertoast.showToast(
+            msg: "Unauthorized Access", toastLength: Toast.LENGTH_LONG);
         break;
       case 403:
         EasyLoading.dismiss();
         print("Forbidden: $responseBody");
-        Fluttertoast.showToast(msg: "Please enter valid username or password",toastLength: Toast.LENGTH_LONG);
+        Fluttertoast.showToast(
+            msg: "Please enter valid username or password",
+            toastLength: Toast.LENGTH_LONG);
         break;
       case 404:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
         debugPrint('responseBody $response');
         Fluttertoast.showToast(
-            msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
+            msg: response['Message'] ?? "Resource Not Found",
+            toastLength: Toast.LENGTH_LONG);
       case 409:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
-        debugPrint('responseBody ${response}');
+        debugPrint('responseBody $response');
         Fluttertoast.showToast(
-            msg: response['Message'] ?? "Resource Not Found",toastLength: Toast.LENGTH_LONG);
+            msg: response['Message'] ?? "Resource Not Found",
+            toastLength: Toast.LENGTH_LONG);
         break;
       case 500:
         EasyLoading.dismiss();
         print("Internal Server Error: $responseBody");
-        Fluttertoast.showToast(msg: "Internal Server Error",toastLength: Toast.LENGTH_LONG);
+        Fluttertoast.showToast(
+            msg: "Internal Server Error", toastLength: Toast.LENGTH_LONG);
         break;
       default:
         EasyLoading.dismiss();
         print("Unhandled Error: $responseBody");
-        Fluttertoast.showToast(msg: "Error $statusCode: $responseBody",toastLength: Toast.LENGTH_LONG);
+        Fluttertoast.showToast(
+            msg: "Error $statusCode: $responseBody",
+            toastLength: Toast.LENGTH_LONG);
         break;
     }
   }
@@ -312,7 +336,7 @@ class ApiService {
       debugPrint('URL: ${AppConstants.baseUrl}$endpoint');
 
       final response = await client.delete(
-        Uri.parse('${{AppConstants.baseUrl}}${endpoint}'),
+        Uri.parse('${{AppConstants.baseUrl}}$endpoint'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
@@ -343,7 +367,8 @@ class ApiService {
     required Map<String, dynamic> formData,
   }) async {
     try {
-      EasyLoading.show(status: 'Loading..', maskType: EasyLoadingMaskType.black);
+      EasyLoading.show(
+          status: 'Loading..', maskType: EasyLoadingMaskType.black);
       debugPrint('Starting leave data upload with image: ${imageFile?.path}');
 
       final request = http.MultipartRequest(
@@ -373,7 +398,6 @@ class ApiService {
         formData.map((key, value) => MapEntry(key, value.toString())),
       );
 
-
       debugPrint('Request fields: ${request.fields}');
       debugPrint('Request files: ${request.files.map((f) => f.field)}');
 
@@ -395,8 +419,7 @@ class ApiService {
       EasyLoading.dismiss();
       Fluttertoast.showToast(msg: 'Upload failed: ${e.toString()}');
       return null;
-    }
-    finally {
+    } finally {
       EasyLoading.dismiss();
     }
   }

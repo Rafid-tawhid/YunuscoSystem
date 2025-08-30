@@ -1,16 +1,17 @@
 class DoctorRequisationModel {
   DoctorRequisationModel({
-      String? idCardNo, 
-      String? requestDate, 
-      num? status, 
-      String? remarks, 
-      num? urgencyType,}){
+    String? idCardNo,
+    String? requestDate,
+    num? status,
+    String? remarks,
+    num? urgencyType,
+  }) {
     _idCardNo = idCardNo;
     _requestDate = requestDate;
     _status = status;
     _remarks = remarks;
     _urgencyType = urgencyType;
-}
+  }
 
   DoctorRequisationModel.fromJson(dynamic json) {
     _idCardNo = json['idCardNo'];
@@ -24,17 +25,20 @@ class DoctorRequisationModel {
   num? _status;
   String? _remarks;
   num? _urgencyType;
-DoctorRequisationModel copyWith({  String? idCardNo,
-  String? requestDate,
-  num? status,
-  String? remarks,
-  num? urgencyType,
-}) => DoctorRequisationModel(  idCardNo: idCardNo ?? _idCardNo,
-  requestDate: requestDate ?? _requestDate,
-  status: status ?? _status,
-  remarks: remarks ?? _remarks,
-  urgencyType: urgencyType ?? _urgencyType,
-);
+  DoctorRequisationModel copyWith({
+    String? idCardNo,
+    String? requestDate,
+    num? status,
+    String? remarks,
+    num? urgencyType,
+  }) =>
+      DoctorRequisationModel(
+        idCardNo: idCardNo ?? _idCardNo,
+        requestDate: requestDate ?? _requestDate,
+        status: status ?? _status,
+        remarks: remarks ?? _remarks,
+        urgencyType: urgencyType ?? _urgencyType,
+      );
   String? get idCardNo => _idCardNo;
   String? get requestDate => _requestDate;
   num? get status => _status;
@@ -50,5 +54,4 @@ DoctorRequisationModel copyWith({  String? idCardNo,
     map['urgencyType'] = _urgencyType;
     return map;
   }
-
 }

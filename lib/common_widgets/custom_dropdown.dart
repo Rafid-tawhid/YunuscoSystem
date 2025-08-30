@@ -9,14 +9,14 @@ class CustomDropdown<T> extends StatelessWidget {
   final double menuMaxHeight;
 
   const CustomDropdown({
-    Key? key,
+    super.key,
     required this.items,
     required this.value,
     required this.displayText,
     required this.onChanged,
     this.hintText = 'Select',
     this.menuMaxHeight = 240,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,8 @@ class CustomDropdown<T> extends StatelessWidget {
           focusedBorder: InputBorder.none,
         ),
         dropdownColor: Colors.white,
-        menuMaxHeight: menuMaxHeight, // This controls the max height of the dropdown menu
+        menuMaxHeight:
+            menuMaxHeight, // This controls the max height of the dropdown menu
         style: const TextStyle(fontSize: 16, color: Colors.black),
         selectedItemBuilder: (BuildContext context) {
           return items.map<Widget>((T item) {

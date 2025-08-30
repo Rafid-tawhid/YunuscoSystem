@@ -6,15 +6,13 @@ import 'package:yunusco_group/providers/hr_provider.dart';
 import '../../models/single_emp_leave_history_model.dart';
 
 class EmployeeLeaveHistoryScreen extends StatelessWidget {
-
-
-  const EmployeeLeaveHistoryScreen({Key? key,}) : super(key: key);
-
-
+  const EmployeeLeaveHistoryScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    var hp=context.read<HrProvider>();
+    var hp = context.read<HrProvider>();
     hp.getSingleEmployeeLeaveHistory();
     return Scaffold(
       appBar: AppBar(
@@ -23,30 +21,33 @@ class EmployeeLeaveHistoryScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: Consumer<HrProvider>(
-        builder: (context,pro,_)=>Container(
-          decoration: BoxDecoration(
-            color: Colors.white
-          ),
+        builder: (context, pro, _) => Container(
+          decoration: BoxDecoration(color: Colors.white),
           child: pro.singleEmpLeaveList.isEmpty
               ? _buildEmptyState()
               : ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: pro.singleEmpLeaveList.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final leave = pro.singleEmpLeaveList[index];
-              return _buildLeaveCard(leave, context);
-            },
-          ),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: pro.singleEmpLeaveList.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final leave = pro.singleEmpLeaveList[index];
+                    return _buildLeaveCard(leave, context);
+                  },
+                ),
         ),
       ),
     );
   }
 
-  Widget _buildLeaveCard(SingleEmpLeaveHistoryModel leave, BuildContext context) {
+  Widget _buildLeaveCard(
+      SingleEmpLeaveHistoryModel leave, BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy');
-    final fromDate = leave.leaveFromDate != null ? DateTime.parse(leave.leaveFromDate!) : null;
-    final toDate = leave.leaveToDate != null ? DateTime.parse(leave.leaveToDate!) : null;
+    final fromDate = leave.leaveFromDate != null
+        ? DateTime.parse(leave.leaveFromDate!)
+        : null;
+    final toDate =
+        leave.leaveToDate != null ? DateTime.parse(leave.leaveToDate!) : null;
 
     return Card(
       elevation: 4,
@@ -65,12 +66,13 @@ class EmployeeLeaveHistoryScreen extends StatelessWidget {
                 Text(
                   leave.leavePolicyType ?? 'Leave',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getStatusColor(leave.status),
                     borderRadius: BorderRadius.circular(20),
@@ -89,7 +91,7 @@ class EmployeeLeaveHistoryScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${fromDate != null ? dateFormat.format(fromDate) : 'N/A'} '
-                      '- ${toDate != null ? dateFormat.format(toDate) : 'N/A'}',
+                  '- ${toDate != null ? dateFormat.format(toDate) : 'N/A'}',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],

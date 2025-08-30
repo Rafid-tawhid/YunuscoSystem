@@ -23,10 +23,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
     _searchController.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
-    final provider = Provider.of<PlanningProvider>(context,listen: false);
-    _selectedDate=DashboardHelpers.convertDateTime2(DateTime.now());
+    final provider = Provider.of<PlanningProvider>(context, listen: false);
+    _selectedDate = DashboardHelpers.convertDateTime2(DateTime.now());
     provider.getAllPlanningList(_selectedDate!);
     super.initState();
   }
@@ -45,7 +46,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(_selectedDate??''),
+              Text(_selectedDate ?? ''),
               IconButton(
                 icon: Icon(Icons.calendar_today, size: 20),
                 onPressed: () async {
@@ -57,10 +58,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   );
                   if (picked != null) {
                     // Handle the selected date
-                    String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+                    String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(picked);
                     print("Selected date: $formattedDate");
                     setState(() {
-                      _selectedDate=formattedDate;
+                      _selectedDate = formattedDate;
                     });
                     provider.getAllPlanningList(_selectedDate!);
                   }
@@ -78,12 +80,25 @@ class _PlanningScreenState extends State<PlanningScreen> {
   AppBar _buildNormalAppBar() {
     return AppBar(
       backgroundColor: myColors.primaryColor,
-      leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back,color: Colors.white,)),
-      title: Text('Line Planning',style: TextStyle(color: Colors.white),),
+      leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          )),
+      title: Text(
+        'Line Planning',
+        style: TextStyle(color: Colors.white),
+      ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.search,color: Colors.white,),
+          icon: Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
           onPressed: () {
             setState(() {
               _isSearching = true;
@@ -97,7 +112,14 @@ class _PlanningScreenState extends State<PlanningScreen> {
   AppBar _buildSearchAppBar() {
     return AppBar(
       backgroundColor: myColors.primaryColor,
-      leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+      leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          )),
       title: TextField(
         controller: _searchController,
         autofocus: true,
@@ -113,7 +135,10 @@ class _PlanningScreenState extends State<PlanningScreen> {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.clear,color: Colors.white,),
+          icon: Icon(
+            Icons.clear,
+            color: Colors.white,
+          ),
           onPressed: () {
             setState(() {
               _isSearching = false;
@@ -128,12 +153,12 @@ class _PlanningScreenState extends State<PlanningScreen> {
   Widget _buildBody(List<LineSetupModel> lines) {
     final displayList = _isSearching
         ? lines.where((line) {
-      final query = _searchController.text.toLowerCase();
-      return line.name1?.toLowerCase().contains(query) == true ||
-          line.name2?.toLowerCase().contains(query) == true ||
-          line.name3?.toLowerCase().contains(query) == true ||
-          line.code?.toString().contains(query) == true;
-    }).toList()
+            final query = _searchController.text.toLowerCase();
+            return line.name1?.toLowerCase().contains(query) == true ||
+                line.name2?.toLowerCase().contains(query) == true ||
+                line.name3?.toLowerCase().contains(query) == true ||
+                line.code?.toString().contains(query) == true;
+          }).toList()
         : lines;
 
     return ListView.builder(
@@ -176,7 +201,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 ),
               ],
             ),
-
             Divider(height: 20),
             GridView.count(
               crossAxisCount: 2,
@@ -188,7 +212,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 _buildInfoItem('Target', '${line.targetValue ?? 'N/A'}'),
                 _buildInfoItem('WIP', '${line.wip ?? 'N/A'}'),
                 _buildInfoItem('SMV', '${line.smv ?? 'N/A'}'),
-                _buildInfoItem('Man Power', '${line.allocatedManPower ?? 'N/A'}'),
+                _buildInfoItem(
+                    'Man Power', '${line.allocatedManPower ?? 'N/A'}'),
                 _buildInfoItem('Hours', '${line.workingHour ?? 'N/A'}'),
               ],
             ),

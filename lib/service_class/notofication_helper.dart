@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:provider/provider.dart';
@@ -16,17 +15,15 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../screens/HR&PayRoll/doc_appointment_requisation.dart';
 import '../screens/HR&PayRoll/requested_car_list.dart';
-import '../screens/HR&PayRoll/widgets/vehicle_accept_rej_screen.dart';
 import '../screens/login_screen.dart';
 import 'api_services.dart';
 
-
 class NavigationService {
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 }
 
 class NotificationServices {
-
   // static Future<AccessToken> getFirebaseBearerToken() async {
   //   final accountCredentials = ServiceAccountCredentials.fromJson(
   //       json.decode(await rootBundle.loadString('images/utils/server_key.json')));
@@ -41,21 +38,21 @@ class NotificationServices {
   //   return token;
   // }
 
-
-
   static Future<void> setupPushNotifications(BuildContext context) async {
     try {
-      final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+      final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
       // 1. Request permission (platform-aware)
-      NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      NotificationSettings settings = await firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
-        provisional: true, // iOS-only: Allow sending notifications without explicit permission
+        provisional:
+            true, // iOS-only: Allow sending notifications without explicit permission
       );
 
-      debugPrint('Notification permission status: ${settings.authorizationStatus}');
+      debugPrint(
+          'Notification permission status: ${settings.authorizationStatus}');
 
       // 2. Handle permission denied or limited (e.g., iOS "provisional")
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
@@ -64,28 +61,29 @@ class NotificationServices {
       }
 
       // 3. Get and handle FCM token
-      String? token = await _firebaseMessaging.getToken();
+      String? token = await firebaseMessaging.getToken();
       if (token == null) {
         debugPrint('Failed to get FCM token');
         return;
       }
 
       debugPrint("FCM Token: $token");
-      await _sendTokenToServer(token,context); // Send to your backend
+      await _sendTokenToServer(token, context); // Send to your backend
 
       // 4. Handle token refresh (e.g., on app restore or reinstall)
-      _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      firebaseMessaging.onTokenRefresh.listen((newToken) {
         debugPrint("FCM Token refreshed: $newToken");
-        _sendTokenToServer(newToken,context);
+        _sendTokenToServer(newToken, context);
       });
 
       // 5. Set up foreground/background message handlers
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-      FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessageClick);
+      FirebaseMessaging.onMessageOpenedApp
+          .listen(_handleBackgroundMessageClick);
 
       // 6. Configure for iOS/macOS
       if (Platform.isIOS || Platform.isMacOS) {
-        await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+        await firebaseMessaging.setForegroundNotificationPresentationOptions(
           alert: true, // Show heads-up notification
           badge: true, // Update app badge
           sound: true, // Play sound
@@ -94,11 +92,10 @@ class NotificationServices {
 
       // 7. Handle initial notification (app opened from terminated state)
       RemoteMessage? initialMessage =
-      await _firebaseMessaging.getInitialMessage();
+          await firebaseMessaging.getInitialMessage();
       if (initialMessage != null) {
         _handleNotificationClick(initialMessage);
       }
-
     } catch (e, stackTrace) {
       debugPrint('Error setting up push notifications: $e\n$stackTrace');
       // Optional: Log error to analytics (e.g., Sentry, Firebase Crashlytics)
@@ -107,7 +104,8 @@ class NotificationServices {
 
 // --- Helper Methods ---
 
-  static Future<void> _openAppSettingsOrShowRationale(BuildContext context) async {
+  static Future<void> _openAppSettingsOrShowRationale(
+      BuildContext context) async {
     // Show a dialog explaining why permissions are needed
     bool? shouldOpenSettings = await showDialog<bool>(
       context: context,
@@ -134,26 +132,26 @@ class NotificationServices {
     }
   }
 
-  static Future<void> _sendTokenToServer(String token,BuildContext ctx) async {
+  static Future<void> _sendTokenToServer(String token, BuildContext ctx) async {
     // Implement your API call here
 
-    ApiService apiService=ApiService();
-   var res=await apiService.postData('api/user/CheckDeviceToken',{
+    ApiService apiService = ApiService();
+    var res = await apiService.postData('api/user/CheckDeviceToken', {
       "roleId": DashboardHelpers.currentUser!.roleId,
       "FirebaseDeviceToken": token,
       "Userid": DashboardHelpers.currentUser!.userId
     });
-   if(res!=null){
-     debugPrint('Sending token to server successfully.....');
-   }
-   else {
-     // change july 31
-     // remove all exists credential
-     SharedPreferences pref=await SharedPreferences.getInstance();
-     pref.remove('token');
-     AppConstants.token='';
-     Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (ctx)=>LoginScreen()));
-   }
+    if (res != null) {
+      debugPrint('Sending token to server successfully.....');
+    } else {
+      // change july 31
+      // remove all exists credential
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref.remove('token');
+      AppConstants.token = '';
+      Navigator.pushReplacement(
+          ctx, MaterialPageRoute(builder: (ctx) => LoginScreen()));
+    }
   }
   //
 
@@ -163,7 +161,7 @@ class NotificationServices {
 
     //count increase
     final context = NavigationService.navigatorKey.currentContext;
-    var np=context!.read<NotificationProvider>();
+    var np = context!.read<NotificationProvider>();
     np.addCount();
     _showNotification(message); // Your existing notification display logic
   }
@@ -173,14 +171,14 @@ class NotificationServices {
     _handleNotificationClick(message); // Navigate to a specific screen
   }
 
-
   static Future<void> initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@drawable/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_launcher');
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+        FlutterLocalNotificationsPlugin();
 
-    final InitializationSettings initializationSettings = InitializationSettings(
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: DarwinInitializationSettings(),
     );
@@ -201,18 +199,16 @@ class NotificationServices {
 
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
   }
-
-
 
   //
   static Future<void> _showNotification(RemoteMessage message) async {
     final notification = message.notification;
     final android = message.notification?.android;
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+        FlutterLocalNotificationsPlugin();
 
     if (notification != null) {
       await flutterLocalNotificationsPlugin.show(
@@ -223,7 +219,8 @@ class NotificationServices {
           android: AndroidNotificationDetails(
             'high_importance_channel',
             'High Importance Notifications',
-            channelDescription: 'This channel is used for important notifications.',
+            channelDescription:
+                'This channel is used for important notifications.',
             icon: android?.smallIcon ?? '@drawable/ic_launcher',
             importance: Importance.max,
             priority: Priority.high,
@@ -238,6 +235,7 @@ class NotificationServices {
       );
     }
   }
+
   static void _handleNotificationClick(RemoteMessage message) {
     debugPrint("Notification clicked with data: ${message.data}");
     // Extract navigation route from payload or use default
@@ -257,21 +255,18 @@ class NotificationServices {
     final context = NavigationService.navigatorKey.currentContext;
     if (context == null) return;
 
-    if(data['type']=="VehicleRequest"){
+    if (data['type'] == "VehicleRequest") {
       //
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()));
+      Navigator.push(context,
+          CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()));
     }
-    if(data['type']=="MedicalLeave"){
+    if (data['type'] == "MedicalLeave") {
       //
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
+      Navigator.push(context,
+          CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
+    } else {
+      Navigator.push(context,
+          CupertinoPageRoute(builder: (context) => NotificationsScreen()));
     }
-    else {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => NotificationsScreen()));
-    }
-
-
   }
 }
-
-
-

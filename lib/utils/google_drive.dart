@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:uuid/uuid.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class ProductCatalogScreen extends StatefulWidget {
   const ProductCatalogScreen({super.key});
@@ -21,7 +19,8 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   final TextEditingController _modelNameController = TextEditingController();
   final TextEditingController _serialNumberController = TextEditingController();
   final TextEditingController _manufacturerController = TextEditingController();
-  final TextEditingController _specificationsController = TextEditingController();
+  final TextEditingController _specificationsController =
+      TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
 
@@ -70,18 +69,17 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
     await Permission.photos.request();
     await Permission.mediaLibrary.request();
     await Permission.camera.request();
-
   }
 
   Future<void> _pickImages() async {
     try {
-      final List<XFile>? images = await _imagePicker.pickMultiImage(
+      final List<XFile> images = await _imagePicker.pickMultiImage(
         maxWidth: 1920,
         maxHeight: 1080,
         imageQuality: 85,
       );
 
-      if (images != null && images.isNotEmpty) {
+      if (images.isNotEmpty) {
         setState(() {
           _productImages.addAll(images);
         });
@@ -142,10 +140,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
       for (int i = 0; i < _productImages.length; i++) {
         setState(() {
           _uploadProgress = 0.2 + (0.5 * (i + 1) / _productImages.length);
-          _uploadStatus = 'Uploading image ${i + 1}/${_productImages.length}...';
+          _uploadStatus =
+              'Uploading image ${i + 1}/${_productImages.length}...';
         });
 
-       final imageUrl = await uploadImageWithoutAuth(_productImages[i], productId);
+        final imageUrl =
+            await uploadImageWithoutAuth(_productImages[i], productId);
         imageUrls.add(imageUrl);
       }
 
@@ -181,9 +181,9 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
         _uploadStatus = 'Product saved successfully!';
       });
 
-      _showSuccess('Product "${_modelNameController.text}" saved successfully!');
+      _showSuccess(
+          'Product "${_modelNameController.text}" saved successfully!');
       _clearForm();
-
     } catch (e) {
       _showError('Failed to save product: $e');
     } finally {
@@ -193,17 +193,13 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
     }
   }
 
-
   Future<String> uploadImageWithoutAuth(XFile image, String uniqueId) async {
-    final ref = FirebaseStorage.instance
-        .ref()
-        .child('uploads/$uniqueId.jpg');
+    final ref = FirebaseStorage.instance.ref().child('uploads/$uniqueId.jpg');
 
     final uploadTask = ref.putFile(File(image.path));
     final snapshot = await uploadTask;
     return await snapshot.ref.getDownloadURL();
   }
-
 
   void _clearForm() {
     setState(() {
@@ -232,7 +228,6 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
-
       ),
     );
   }
@@ -365,7 +360,8 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                             radius: 14,
                             backgroundColor: Colors.red,
                             child: IconButton(
-                              icon: const Icon(Icons.close, size: 12, color: Colors.white),
+                              icon: const Icon(Icons.close,
+                                  size: 12, color: Colors.white),
                               onPressed: () => _removeImage(index),
                             ),
                           ),
@@ -518,7 +514,8 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textStyle:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               child: const Text('SAVE PRODUCT TO CATALOG'),
             ),

@@ -61,11 +61,8 @@ class PrescriptionMedicine {
     );
   }
 
-
   @override
   String toString() {
     return 'PrescriptionMedicine(productName: $productName, medicineId: $medicineId, medicineType: $medicineType, quantity: $quantity, note: $note, advice: $advice, medicineContinue: $medicineContinue)';
   }
-
 }
-

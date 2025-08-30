@@ -14,6 +14,8 @@ import '../../models/booking_model.dart';
 import 'members_screen.dart';
 
 class BoardRoomBookingScreen extends StatefulWidget {
+  const BoardRoomBookingScreen({super.key});
+
   @override
   _BoardRoomBookingScreenState createState() => _BoardRoomBookingScreenState();
 }
@@ -21,7 +23,7 @@ class BoardRoomBookingScreen extends StatefulWidget {
 class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
   DateTime _selectedDate = DateTime.now();
   List<TimeSlot> _timeSlots = [];
-  List<TimeSlot> _selectedSlots = [];
+  final List<TimeSlot> _selectedSlots = [];
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -88,7 +90,8 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       DateTime end = (bookingData['endTime'] as Timestamp).toDate();
 
       for (var slot in _timeSlots) {
-        if ((slot.start.isAfter(start) || slot.start.isAtSameMomentAs(start)) && (slot.end.isBefore(end) || slot.end.isAtSameMomentAs(end))) {
+        if ((slot.start.isAfter(start) || slot.start.isAtSameMomentAs(start)) &&
+            (slot.end.isBefore(end) || slot.end.isAtSameMomentAs(end))) {
           slot.isBooked = true;
         }
       }
@@ -114,14 +117,13 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     }
   }
 
-  void _toggleSlotSelection(TimeSlot slot,HrProvider provider) async {
+  void _toggleSlotSelection(TimeSlot slot, HrProvider provider) async {
     if (slot.isBooked) {
       EasyLoading.show(maskType: EasyLoadingMaskType.black);
       final bookingDetails = await _getBookingDetails(slot);
       EasyLoading.dismiss();
       if (bookingDetails != null) {
-
-        _showBookingDetailsDialog(context, bookingDetails,provider);
+        _showBookingDetailsDialog(context, bookingDetails, provider);
       }
       return;
     }
@@ -131,7 +133,9 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
         _selectedSlots.remove(slot);
       } else {
         // Only allow selecting consecutive slots
-        if (_selectedSlots.isEmpty || slot.start == _selectedSlots.last.end || slot.end == _selectedSlots.first.start) {
+        if (_selectedSlots.isEmpty ||
+            slot.start == _selectedSlots.last.end ||
+            slot.end == _selectedSlots.first.start) {
           _selectedSlots.add(slot);
           _selectedSlots.sort((a, b) => a.start.compareTo(b.start));
         } else {
@@ -143,108 +147,113 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
     });
   }
 
-  void _showBookingDetailsDialog(BuildContext context, Map<String, dynamic> booking,HrProvider pro) {
-
+  void _showBookingDetailsDialog(
+      BuildContext context, Map<String, dynamic> booking, HrProvider pro) {
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        title: Container(
-          padding: EdgeInsets.only(bottom: 8),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey[300]!,
-                width: 1.0,
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
               ),
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Booking Details',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
+              title: Container(
+                padding: EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey[300]!,
+                      width: 1.0,
+                    ),
                   ),
                 ),
-              ),
-             // TextButton(onPressed: (){}, child: Icon(Icons.message_outlined)),
-              IconButton(onPressed: (){
-
-               var selectedMembers= pro.member_list.where((m) => m.isSelected).toList();
-                var data=jsonEncode(BookingRef.fromMap(booking).toString());
-                debugPrint('Meeting Details : ${data.toString()}');
-                debugPrint('Selected Member : $selectedMembers');
-              }, icon: Icon(Icons.message_outlined)),
-            ],
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDetailRow(Icons.title, 'Title', booking['title']),
-              SizedBox(height: 12),
-              _buildDetailRow(Icons.person, 'Booked by', booking['userName']),
-              SizedBox(height: 12),
-              _buildDetailRow(
-                  Icons.access_time,
-                  'Time',
-                  '${DateFormat('h:mm a').format((booking['startTime'] as Timestamp).toDate())} - '
-                      '${DateFormat('h:mm a').format((booking['endTime'] as Timestamp).toDate())}'
-              ),
-              if (booking['description'] != null && booking['description'].isNotEmpty)
-                Column(
+                child: Row(
                   children: [
-                    SizedBox(height: 12),
-                    _buildDetailRow(Icons.description, 'Description', booking['description']),
+                    Expanded(
+                      child: Text(
+                        'Booking Details',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                        ),
+                      ),
+                    ),
+                    // TextButton(onPressed: (){}, child: Icon(Icons.message_outlined)),
+                    IconButton(
+                        onPressed: () {
+                          var selectedMembers = pro.member_list
+                              .where((m) => m.isSelected)
+                              .toList();
+                          var data = jsonEncode(
+                              BookingRef.fromMap(booking).toString());
+                          debugPrint('Meeting Details : ${data.toString()}');
+                          debugPrint('Selected Member : $selectedMembers');
+                        },
+                        icon: Icon(Icons.message_outlined)),
                   ],
                 ),
-            ],
-          ),
-        ),
-        actions: [
-          if (booking['userId'] == DashboardHelpers.currentUser!.userId)
-            TextButton(
-              onPressed: () => _cancelBooking(booking['id']),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red[600],
-                padding: EdgeInsets.symmetric(horizontal: 16),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.cancel, size: 18),
-                  SizedBox(width: 4),
-                  Text('Cancel Booking'),
-                ],
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDetailRow(Icons.title, 'Title', booking['title']),
+                    SizedBox(height: 12),
+                    _buildDetailRow(
+                        Icons.person, 'Booked by', booking['userName']),
+                    SizedBox(height: 12),
+                    _buildDetailRow(
+                        Icons.access_time,
+                        'Time',
+                        '${DateFormat('h:mm a').format((booking['startTime'] as Timestamp).toDate())} - '
+                            '${DateFormat('h:mm a').format((booking['endTime'] as Timestamp).toDate())}'),
+                    if (booking['description'] != null &&
+                        booking['description'].isNotEmpty)
+                      Column(
+                        children: [
+                          SizedBox(height: 12),
+                          _buildDetailRow(Icons.description, 'Description',
+                              booking['description']),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.green[700],
-              padding: EdgeInsets.symmetric(horizontal: 16),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.check, size: 18),
-                SizedBox(width: 4),
-                Text('Close'),
+              actions: [
+                if (booking['userId'] == DashboardHelpers.currentUser!.userId)
+                  TextButton(
+                    onPressed: () => _cancelBooking(booking['id']),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.red[600],
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.cancel, size: 18),
+                        SizedBox(width: 4),
+                        Text('Cancel Booking'),
+                      ],
+                    ),
+                  ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.green[700],
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check, size: 18),
+                      SizedBox(width: 4),
+                      Text('Close'),
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
-      )
-    );
+            ));
   }
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
@@ -278,11 +287,15 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       ],
     );
   }
+
   Future<void> _cancelBooking(String bookingId) async {
     try {
       // First get the booking to verify ownership
       EasyLoading.show(maskType: EasyLoadingMaskType.black);
-      final bookingDoc = await FirebaseFirestore.instance.collection('bookings').doc(bookingId).get();
+      final bookingDoc = await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .get();
       EasyLoading.dismiss();
       if (!bookingDoc.exists) {
         throw Exception('Booking not found');
@@ -296,7 +309,10 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       }
 
       // Delete the booking
-      await FirebaseFirestore.instance.collection('bookings').doc(bookingId).delete();
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .delete();
 
       // Refresh the slots
       _initializeTimeSlots();
@@ -327,10 +343,12 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
       // final user = FirebaseAuth.instance.currentUser;
       // if (user == null) throw Exception('User not logged in');
 
-      var hp=context.read<HrProvider>();
-      final selectedMembers = hp.member_list.where((m) => m.isSelected).toList();
+      var hp = context.read<HrProvider>();
+      final selectedMembers =
+          hp.member_list.where((m) => m.isSelected).toList();
 
-      final bookingRef = FirebaseFirestore.instance.collection('bookings').doc();
+      final bookingRef =
+          FirebaseFirestore.instance.collection('bookings').doc();
       final membersRef = FirebaseFirestore.instance.collection('members').doc();
 
       await bookingRef.set({
@@ -343,8 +361,6 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
         'endTime': _selectedSlots.last.end,
         'createdAt': DateTime.now(),
       });
-
-
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Booking successful!')),
@@ -361,7 +377,12 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
 
   Future<Map<String, dynamic>?> _getBookingDetails(TimeSlot slot) async {
     try {
-      final query = await FirebaseFirestore.instance.collection('bookings').where('startTime', isLessThanOrEqualTo: slot.end).where('endTime', isGreaterThanOrEqualTo: slot.start).limit(1).get();
+      final query = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('startTime', isLessThanOrEqualTo: slot.end)
+          .where('endTime', isGreaterThanOrEqualTo: slot.start)
+          .limit(1)
+          .get();
 
       if (query.docs.isNotEmpty) {
         return query.docs.first.data();
@@ -404,13 +425,19 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                     onPressed: () => _selectDate(context),
                   ),
                   Spacer(),
-                  IconButton(onPressed: (){
-                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>PersonSelectionScreen())).then((persons){
-                      if(persons!=null){
-                        debugPrint('person $persons');
-                      }
-                    });
-                  }, icon: Icon(Icons.person_add_alt_rounded))
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) =>
+                                    PersonSelectionScreen())).then((persons) {
+                          if (persons != null) {
+                            debugPrint('person $persons');
+                          }
+                        });
+                      },
+                      icon: Icon(Icons.person_add_alt_rounded))
                 ],
               ),
               SelectedPeopleWidget(),
@@ -427,13 +454,16 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                   final isSelected = _selectedSlots.contains(slot);
                   return GestureDetector(
                     onTap: () {
-                      var pro=Provider.of<HrProvider>(context,listen: false);
-                      _toggleSlotSelection(slot,pro);
+                      var pro = Provider.of<HrProvider>(context, listen: false);
+                      _toggleSlotSelection(slot, pro);
                     },
                     child: Tooltip(
-                      message: slot.isBooked ? 'View booking details' : 'Select time slot',
+                      message: slot.isBooked
+                          ? 'View booking details'
+                          : 'Select time slot',
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           color: slot.isBooked
                               ? Colors.grey[400]
@@ -452,7 +482,9 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                         child: Text(
                           DateFormat('h:mm a').format(slot.start),
                           style: TextStyle(
-                            color: slot.isBooked || isSelected ? Colors.white : Colors.black,
+                            color: slot.isBooked || isSelected
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -486,9 +518,11 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blueAccent, width: 1.4),
+                    borderSide:
+                        BorderSide(color: Colors.blueAccent, width: 1.4),
                   ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   filled: true,
                   fillColor: Colors.grey[50],
                 ),
@@ -516,9 +550,11 @@ class _BoardRoomBookingScreenState extends State<BoardRoomBookingScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blueAccent, width: 1.4),
+                    borderSide:
+                        BorderSide(color: Colors.blueAccent, width: 1.4),
                   ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   filled: true,
                   fillColor: Colors.grey[50],
                 ),
@@ -580,7 +616,12 @@ class TimeSlot {
   });
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is TimeSlot && runtimeType == other.runtimeType && start == other.start && end == other.end;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimeSlot &&
+          runtimeType == other.runtimeType &&
+          start == other.start &&
+          end == other.end;
 
   @override
   int get hashCode => start.hashCode ^ end.hashCode;

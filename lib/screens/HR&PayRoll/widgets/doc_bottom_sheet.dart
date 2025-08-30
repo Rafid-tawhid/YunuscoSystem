@@ -69,13 +69,19 @@ void showAppointmentBottomSheet({
                 children: [
                   _buildInfoRow('ID Card No:', appointment.idCardNo ?? 'N/A'),
                   _buildInfoRow('Serial No:', appointment.serialNo ?? 'N/A'),
-                  _buildInfoRow('Name:', medicineName??''),
-                  _buildInfoRow('Request Date:', _formatDate(appointment.requestDate) ?? 'N/A'),
-                  _buildInfoRow('Urgency:', _getUrgencyText(appointment.urgencyType)),
+                  _buildInfoRow('Name:', medicineName ?? ''),
+                  _buildInfoRow('Request Date:',
+                      _formatDate(appointment.requestDate) ?? 'N/A'),
+                  _buildInfoRow(
+                      'Urgency:', _getUrgencyText(appointment.urgencyType)),
                   _buildInfoRow(
                     'Gate Pass:',
-                    appointment.gatePassStatus == true ? 'Approved' : 'Not Approved',
-                    valueColor: appointment.gatePassStatus == true ? Colors.green : Colors.orange,
+                    appointment.gatePassStatus == true
+                        ? 'Approved'
+                        : 'Not Approved',
+                    valueColor: appointment.gatePassStatus == true
+                        ? Colors.green
+                        : Colors.orange,
                   ),
                 ],
               ),
@@ -104,7 +110,9 @@ void showAppointmentBottomSheet({
               _buildInfoSection(
                 title: 'Notes & Remarks',
                 children: [
-                  if (appointment.remarks != null && appointment.remarks!.isNotEmpty) _buildInfoRow('Remarks:', appointment.remarks!),
+                  if (appointment.remarks != null &&
+                      appointment.remarks!.isNotEmpty)
+                    _buildInfoRow('Remarks:', appointment.remarks!),
                   if (leaveNotes != null && leaveNotes.isNotEmpty)
                     _buildInfoRow(
                       'Leave Notes:',
@@ -120,8 +128,11 @@ void showAppointmentBottomSheet({
               _buildInfoSection(
                 title: 'Metadata',
                 children: [
-                  _buildInfoRow('Created:', _formatDate(appointment.createdDate) ?? 'N/A'),
-                  if (appointment.updatedDate != null) _buildInfoRow('Last Updated:', _formatDate(appointment.updatedDate) ?? 'N/A'),
+                  _buildInfoRow('Created:',
+                      _formatDate(appointment.createdDate) ?? 'N/A'),
+                  if (appointment.updatedDate != null)
+                    _buildInfoRow('Last Updated:',
+                        _formatDate(appointment.updatedDate) ?? 'N/A'),
                 ],
               ),
 
@@ -134,7 +145,8 @@ void showAppointmentBottomSheet({
   );
 }
 
-Widget _buildInfoSection({required String title, required List<Widget> children}) {
+Widget _buildInfoSection(
+    {required String title, required List<Widget> children}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -164,11 +176,11 @@ Widget _buildInfoSection({required String title, required List<Widget> children}
 }
 
 Widget _buildInfoRow(
-    String label,
-    String value, {
-      TextStyle? valueStyle,
-      Color? valueColor,
-    }) {
+  String label,
+  String value, {
+  TextStyle? valueStyle,
+  Color? valueColor,
+}) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 6),
     child: Row(

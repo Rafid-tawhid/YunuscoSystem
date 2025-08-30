@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:yunusco_group/screens/Products/garments_requisation_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -8,9 +6,7 @@ import '../../common_widgets/dashboard_item_card.dart';
 import 'inventory_screen.dart';
 
 class InventoryHomeScreen extends StatelessWidget {
-  InventoryHomeScreen({super.key});
-
-
+  const InventoryHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +59,10 @@ class InventoryHomeScreen extends StatelessWidget {
           ),
           padding: const EdgeInsets.all(16),
           itemBuilder: (context, index) {
-              final item = menuItems[index];
+            final item = menuItems[index];
 
-              return ReusableDashboardCard(menu: item);
-            },
+            return ReusableDashboardCard(menu: item);
+          },
         ),
       ),
     );

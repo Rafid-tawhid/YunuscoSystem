@@ -14,6 +14,8 @@ import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
+  const HrMainMenuScreen({super.key});
+
   @override
   State<HrMainMenuScreen> createState() => _DepartmentListScreenState();
 }
@@ -56,10 +58,13 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
           color: Colors.white,
         ),
         actionsIconTheme: IconThemeData(color: Colors.white),
-        title: Text('HR & Payroll', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text('HR & Payroll',
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20)),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
-
       ),
       body: GridView.builder(
         padding: EdgeInsets.all(16),
@@ -82,34 +87,51 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     switch (index) {
       case 0:
         if (DashboardHelpers.currentUser!.isDepartmentHead == true) {
-          Navigator.push(context, CupertinoPageRoute(builder: (context) => AllDepartmentAttendance()));
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) => AllDepartmentAttendance()));
         } else {
           DashboardHelpers.showAlert(msg: 'Not Available');
         }
         break;
       case 1:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => PerformanceReportScreen()));
         break;
       case 2:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
+        Navigator.push(context,
+            CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
         break;
       case 3:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeJobCardReportScreen()));
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => EmployeeJobCardReportScreen()));
         break;
       case 4:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveApplicationScreen()));
+        Navigator.push(context,
+            CupertinoPageRoute(builder: (context) => LeaveApplicationScreen()));
         break;
       case 5:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeeLeaveHistoryScreen()));
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => EmployeeLeaveHistoryScreen()));
         break;
       case 6:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeePaySlip()));
+        Navigator.push(context,
+            CupertinoPageRoute(builder: (context) => EmployeePaySlip()));
         break;
       case 7:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => BoardRoomBookingScreen()));
+        Navigator.push(context,
+            CupertinoPageRoute(builder: (context) => BoardRoomBookingScreen()));
         break;
       case 8:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
+        Navigator.push(context,
+            CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
         break;
     }
   }

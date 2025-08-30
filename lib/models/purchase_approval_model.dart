@@ -1,27 +1,28 @@
 class PurchaseApprovalModel {
   PurchaseApprovalModel({
-      num? purchaseOrderId, 
-      String? finalStatus, 
-      String? purchaseOrderCode, 
-      num? version, 
-      bool? isLock, 
-      String? createdDate, 
-      String? createdBy, 
-      String? submitToPerson, 
-      String? buyerName, 
-      String? supplierName, 
-      num? styleNumber, 
-      num? buyerPO, 
-      num? buyerOrderCode, 
-      num? costsheetCode, 
-      num? totalAmount, 
-      num? totalOrderQty, 
-      num? approvalId, 
-      num? approvalTypeId, 
-      num? aprrovalPolicyId, 
-      num? approvalLevel, 
-      String? aprrovalTypePrimaryKey, 
-      num? currentApprover,}){
+    num? purchaseOrderId,
+    String? finalStatus,
+    String? purchaseOrderCode,
+    num? version,
+    bool? isLock,
+    String? createdDate,
+    String? createdBy,
+    String? submitToPerson,
+    String? buyerName,
+    String? supplierName,
+    num? styleNumber,
+    num? buyerPO,
+    num? buyerOrderCode,
+    num? costsheetCode,
+    num? totalAmount,
+    num? totalOrderQty,
+    num? approvalId,
+    num? approvalTypeId,
+    num? aprrovalPolicyId,
+    num? approvalLevel,
+    String? aprrovalTypePrimaryKey,
+    num? currentApprover,
+  }) {
     _purchaseOrderId = purchaseOrderId;
     _finalStatus = finalStatus;
     _purchaseOrderCode = purchaseOrderCode;
@@ -44,7 +45,7 @@ class PurchaseApprovalModel {
     _approvalLevel = approvalLevel;
     _aprrovalTypePrimaryKey = aprrovalTypePrimaryKey;
     _currentApprover = currentApprover;
-}
+  }
 
   PurchaseApprovalModel.fromJson(dynamic json) {
     _purchaseOrderId = json['PurchaseOrderId'];
@@ -92,51 +93,55 @@ class PurchaseApprovalModel {
   num? _approvalLevel;
   String? _aprrovalTypePrimaryKey;
   num? _currentApprover;
-PurchaseApprovalModel copyWith({  num? purchaseOrderId,
-  String? finalStatus,
-  String? purchaseOrderCode,
-  num? version,
-  bool? isLock,
-  String? createdDate,
-  String? createdBy,
-  String? submitToPerson,
-  String? buyerName,
-  String? supplierName,
-  num? styleNumber,
-  num? buyerPO,
-  num? buyerOrderCode,
-  num? costsheetCode,
-  num? totalAmount,
-  num? totalOrderQty,
-  num? approvalId,
-  num? approvalTypeId,
-  num? aprrovalPolicyId,
-  num? approvalLevel,
-  String? aprrovalTypePrimaryKey,
-  num? currentApprover,
-}) => PurchaseApprovalModel(  purchaseOrderId: purchaseOrderId ?? _purchaseOrderId,
-  finalStatus: finalStatus ?? _finalStatus,
-  purchaseOrderCode: purchaseOrderCode ?? _purchaseOrderCode,
-  version: version ?? _version,
-  isLock: isLock ?? _isLock,
-  createdDate: createdDate ?? _createdDate,
-  createdBy: createdBy ?? _createdBy,
-  submitToPerson: submitToPerson ?? _submitToPerson,
-  buyerName: buyerName ?? _buyerName,
-  supplierName: supplierName ?? _supplierName,
-  styleNumber: styleNumber ?? _styleNumber,
-  buyerPO: buyerPO ?? _buyerPO,
-  buyerOrderCode: buyerOrderCode ?? _buyerOrderCode,
-  costsheetCode: costsheetCode ?? _costsheetCode,
-  totalAmount: totalAmount ?? _totalAmount,
-  totalOrderQty: totalOrderQty ?? _totalOrderQty,
-  approvalId: approvalId ?? _approvalId,
-  approvalTypeId: approvalTypeId ?? _approvalTypeId,
-  aprrovalPolicyId: aprrovalPolicyId ?? _aprrovalPolicyId,
-  approvalLevel: approvalLevel ?? _approvalLevel,
-  aprrovalTypePrimaryKey: aprrovalTypePrimaryKey ?? _aprrovalTypePrimaryKey,
-  currentApprover: currentApprover ?? _currentApprover,
-);
+  PurchaseApprovalModel copyWith({
+    num? purchaseOrderId,
+    String? finalStatus,
+    String? purchaseOrderCode,
+    num? version,
+    bool? isLock,
+    String? createdDate,
+    String? createdBy,
+    String? submitToPerson,
+    String? buyerName,
+    String? supplierName,
+    num? styleNumber,
+    num? buyerPO,
+    num? buyerOrderCode,
+    num? costsheetCode,
+    num? totalAmount,
+    num? totalOrderQty,
+    num? approvalId,
+    num? approvalTypeId,
+    num? aprrovalPolicyId,
+    num? approvalLevel,
+    String? aprrovalTypePrimaryKey,
+    num? currentApprover,
+  }) =>
+      PurchaseApprovalModel(
+        purchaseOrderId: purchaseOrderId ?? _purchaseOrderId,
+        finalStatus: finalStatus ?? _finalStatus,
+        purchaseOrderCode: purchaseOrderCode ?? _purchaseOrderCode,
+        version: version ?? _version,
+        isLock: isLock ?? _isLock,
+        createdDate: createdDate ?? _createdDate,
+        createdBy: createdBy ?? _createdBy,
+        submitToPerson: submitToPerson ?? _submitToPerson,
+        buyerName: buyerName ?? _buyerName,
+        supplierName: supplierName ?? _supplierName,
+        styleNumber: styleNumber ?? _styleNumber,
+        buyerPO: buyerPO ?? _buyerPO,
+        buyerOrderCode: buyerOrderCode ?? _buyerOrderCode,
+        costsheetCode: costsheetCode ?? _costsheetCode,
+        totalAmount: totalAmount ?? _totalAmount,
+        totalOrderQty: totalOrderQty ?? _totalOrderQty,
+        approvalId: approvalId ?? _approvalId,
+        approvalTypeId: approvalTypeId ?? _approvalTypeId,
+        aprrovalPolicyId: aprrovalPolicyId ?? _aprrovalPolicyId,
+        approvalLevel: approvalLevel ?? _approvalLevel,
+        aprrovalTypePrimaryKey:
+            aprrovalTypePrimaryKey ?? _aprrovalTypePrimaryKey,
+        currentApprover: currentApprover ?? _currentApprover,
+      );
   num? get purchaseOrderId => _purchaseOrderId;
   String? get finalStatus => _finalStatus;
   String? get purchaseOrderCode => _purchaseOrderCode;
@@ -186,5 +191,4 @@ PurchaseApprovalModel copyWith({  num? purchaseOrderId,
     map['CurrentApprover'] = _currentApprover;
     return map;
   }
-
 }

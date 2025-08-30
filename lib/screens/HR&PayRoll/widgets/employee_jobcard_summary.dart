@@ -5,12 +5,13 @@ import '../../../models/employee_attendance_model.dart';
 class AttendanceSummary extends StatelessWidget {
   final List<EmployeeAttendanceModel> attendanceData;
 
-  const AttendanceSummary({Key? key, required this.attendanceData}) : super(key: key);
+  const AttendanceSummary({super.key, required this.attendanceData});
 
   @override
   Widget build(BuildContext context) {
     // Calculate summary data
-    int totalWorkingDays = attendanceData.where((day)=>day.inFlag!='WH').length;
+    int totalWorkingDays =
+        attendanceData.where((day) => day.inFlag != 'WH').length;
     int presentDays = attendanceData.where((day) => day.present == 1).length;
     int absentDays = attendanceData.where((day) => day.absent == 1).length;
     int leaveDays = attendanceData.where((day) => day.leave == 1).length;
@@ -19,16 +20,19 @@ class AttendanceSummary extends StatelessWidget {
     // Calculate total working hours
     Duration totalWorkingHours = Duration();
     for (var day in attendanceData) {
-      if (day.totalWorkingHours != null && day.totalWorkingHours.toString().isNotEmpty) {
+      if (day.totalWorkingHours != null &&
+          day.totalWorkingHours.toString().isNotEmpty) {
         List<String> parts = day.totalWorkingHours!.split(':');
         if (parts.length == 2) {
-          totalWorkingHours += Duration(hours: int.parse(parts[0]), minutes: int.parse(parts[1]));
+          totalWorkingHours += Duration(
+              hours: int.parse(parts[0]), minutes: int.parse(parts[1]));
         }
       }
     }
 
     // Format total working hours
-    String formattedTotalHours = "${totalWorkingHours.inHours}:${(totalWorkingHours.inMinutes % 60).toString().padLeft(2, '0')}";
+    String formattedTotalHours =
+        "${totalWorkingHours.inHours}:${(totalWorkingHours.inMinutes % 60).toString().padLeft(2, '0')}";
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -60,7 +64,8 @@ class AttendanceSummary extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildSummaryItem('Working Days', totalWorkingDays.toString()),
-              _buildSummaryItem('Present', presentDays.toString(), Colors.green),
+              _buildSummaryItem(
+                  'Present', presentDays.toString(), Colors.green),
             ],
           ),
           SizedBox(height: 12),

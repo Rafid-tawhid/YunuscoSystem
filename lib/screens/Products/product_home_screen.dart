@@ -1,26 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/production_dashboard.dart';
 import 'package:yunusco_group/screens/Products/production_efficiency_screen.dart';
-import 'package:yunusco_group/screens/Products/style_wise_efficiency_screen.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../common_widgets/dashboard_item_card.dart';
-import '../../utils/colors.dart';
-import 'garments_requisation_screen.dart';
 import 'get_all_style_screen.dart';
 import 'widgets/buyers_screen.dart';
 
 class ProductHomeScreen extends StatelessWidget {
-  ProductHomeScreen({super.key});
-
+  const ProductHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +39,14 @@ class ProductHomeScreen extends StatelessWidget {
         icon: Icons.assured_workload,
         cardColor: const Color(0xFFE8F5E9), // Light green
         iconColor: const Color(0xFF388E3C), // Dark green
-        onTap: () async{
+        onTap: () async {
           var pp = context.read<ProductProvider>();
           var currentDate = convertDate(DateTime.now());
           await pp.getProductionEfficiencyReport(currentDate);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ProductionEfficiencyScreen()),
+            MaterialPageRoute(
+                builder: (context) => ProductionEfficiencyScreen()),
           );
         },
       ),
@@ -64,7 +58,8 @@ class ProductHomeScreen extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ProductionSummaryScreen()),
+            MaterialPageRoute(
+                builder: (context) => const ProductionSummaryScreen()),
           );
         },
       ),
@@ -85,7 +80,7 @@ class ProductHomeScreen extends StatelessWidget {
         icon: Icons.style_sharp,
         cardColor: const Color(0xFFFFF8E1), // Light amber
         iconColor: const Color(0xFFFFA000), // Dark amber
-        onTap: () async{
+        onTap: () async {
           var pp = context.read<ProductProvider>();
           await pp.getAllStyleData();
           if (pp.buyerStyleList.isNotEmpty) {

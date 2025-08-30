@@ -48,20 +48,30 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
     }
   }
 
-  List<PurchaseApprovalModel> _getFilteredList(List<PurchaseApprovalModel> list) {
+  List<PurchaseApprovalModel> _getFilteredList(
+      List<PurchaseApprovalModel> list) {
     if (_searchController.text.isEmpty) return list;
 
     return list.where((item) {
-      return item.purchaseOrderCode!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          item.buyerName!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          item.supplierName!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          item.finalStatus!.toLowerCase().contains(_searchController.text.toLowerCase());
+      return item.purchaseOrderCode!
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()) ||
+          item.buyerName!
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()) ||
+          item.supplierName!
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()) ||
+          item.finalStatus!
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase());
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final purchaseList = Provider.of<MerchandisingProvider>(context).purchaseApprovalList;
+    final purchaseList =
+        Provider.of<MerchandisingProvider>(context).purchaseApprovalList;
     final filteredList = _getFilteredList(purchaseList);
 
     return Scaffold(
@@ -81,7 +91,9 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _searchController.text.isEmpty ? 'No purchase approvals found' : 'No results for "${_searchController.text}"',
+                        _searchController.text.isEmpty
+                            ? 'No purchase approvals found'
+                            : 'No results for "${_searchController.text}"',
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       if (_searchController.text.isNotEmpty)
@@ -179,13 +191,22 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
             child: Column(
               children: [
                 _buildDetailRow('Created By', purchase.createdBy),
-                _buildDetailRow('Created Date', purchase.createdDate != null ? dateFormat.format(DateTime.parse(purchase.createdDate!)) : 'N/A'),
+                _buildDetailRow(
+                    'Created Date',
+                    purchase.createdDate != null
+                        ? dateFormat
+                            .format(DateTime.parse(purchase.createdDate!))
+                        : 'N/A'),
                 _buildDetailRow('Submit To', purchase.submitToPerson),
-                _buildDetailRow('Style Number', purchase.styleNumber?.toString()),
+                _buildDetailRow(
+                    'Style Number', purchase.styleNumber?.toString()),
                 _buildDetailRow('Buyer PO', purchase.buyerPO?.toString()),
-                _buildDetailRow('Buyer Order Code', purchase.buyerOrderCode?.toString()),
-                _buildDetailRow('Costsheet Code', purchase.costsheetCode?.toString()),
-                _buildDetailRow('Total Qty', purchase.totalOrderQty?.toString()),
+                _buildDetailRow(
+                    'Buyer Order Code', purchase.buyerOrderCode?.toString()),
+                _buildDetailRow(
+                    'Costsheet Code', purchase.costsheetCode?.toString()),
+                _buildDetailRow(
+                    'Total Qty', purchase.totalOrderQty?.toString()),
                 _buildDetailRow('Version', purchase.version?.toString()),
               ],
             ),
@@ -239,7 +260,9 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: purchase.finalStatus == 'Pending' ? Colors.green : Colors.blue,
+                    backgroundColor: purchase.finalStatus == 'Pending'
+                        ? Colors.green
+                        : Colors.blue,
                   ),
                   child: Text(
                     purchase.finalStatus == 'Pending' ? 'Accept' : 'View',
@@ -305,7 +328,8 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reject Purchase Order'),
-        content: const Text('Are you sure you want to reject this purchase order?'),
+        content:
+            const Text('Are you sure you want to reject this purchase order?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -343,7 +367,8 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
       ];
 
       var mp = context.read<MerchandisingProvider>();
-      mp.acceptRejectConstingApproval(purchaseItem, url: 'HR/Approval/ApproveNew');
+      mp.acceptRejectConstingApproval(purchaseItem,
+          url: 'HR/Approval/ApproveNew');
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
     }
@@ -364,7 +389,8 @@ class _PurchaseApprovalScreenState extends State<PurchaseApprovalScreen> {
       ];
 
       var mp = context.read<MerchandisingProvider>();
-      mp.acceptRejectConstingApproval(approvalItem, url: 'HR/Approval/CommonReject');
+      mp.acceptRejectConstingApproval(approvalItem,
+          url: 'HR/Approval/CommonReject');
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
     }

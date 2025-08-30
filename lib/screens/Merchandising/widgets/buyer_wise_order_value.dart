@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../models/buyer_wise_value_model.dart';
 
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-
 class BarChartExample extends StatefulWidget {
   final List<BuyerWiseQty> items;
 
@@ -85,4 +82,3 @@ class _BarChartExampleState extends State<BarChartExample> {
     );
   }
 }
-

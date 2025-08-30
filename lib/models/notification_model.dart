@@ -1,26 +1,27 @@
 class NotificationModel {
   NotificationModel({
-      num? leaveId, 
-      String? employeeIdCardNo, 
-      String? applaiedForEmployee, 
-      String? departmentName, 
-      dynamic departmentId, 
-      String? joiningDate, 
-      String? leaveFromDate, 
-      String? leaveToDate, 
-      String? leaveCreationDate, 
-      String? leaveType, 
-      String? reasons, 
-      num? dayCount, 
-      num? sl, 
-      num? el, 
-      num? cl, 
-      String? leavePolicyType, 
-      String? appliedByName, 
-      String? passedByName, 
-      String? leaveStatus, 
-      num? currentApprover, 
-      num? finalStatus,}){
+    num? leaveId,
+    String? employeeIdCardNo,
+    String? applaiedForEmployee,
+    String? departmentName,
+    dynamic departmentId,
+    String? joiningDate,
+    String? leaveFromDate,
+    String? leaveToDate,
+    String? leaveCreationDate,
+    String? leaveType,
+    String? reasons,
+    num? dayCount,
+    num? sl,
+    num? el,
+    num? cl,
+    String? leavePolicyType,
+    String? appliedByName,
+    String? passedByName,
+    String? leaveStatus,
+    num? currentApprover,
+    num? finalStatus,
+  }) {
     _leaveId = leaveId;
     _employeeIdCardNo = employeeIdCardNo;
     _applaiedForEmployee = applaiedForEmployee;
@@ -42,7 +43,7 @@ class NotificationModel {
     _leaveStatus = leaveStatus;
     _currentApprover = currentApprover;
     _finalStatus = finalStatus;
-}
+  }
 
   NotificationModel.fromJson(dynamic json) {
     _leaveId = json['LeaveId'];
@@ -88,49 +89,52 @@ class NotificationModel {
   String? _leaveStatus;
   num? _currentApprover;
   num? _finalStatus;
-NotificationModel copyWith({  num? leaveId,
-  String? employeeIdCardNo,
-  String? applaiedForEmployee,
-  String? departmentName,
-  dynamic departmentId,
-  String? joiningDate,
-  String? leaveFromDate,
-  String? leaveToDate,
-  String? leaveCreationDate,
-  String? leaveType,
-  String? reasons,
-  num? dayCount,
-  num? sl,
-  num? el,
-  num? cl,
-  String? leavePolicyType,
-  String? appliedByName,
-  String? passedByName,
-  String? leaveStatus,
-  num? currentApprover,
-  num? finalStatus,
-}) => NotificationModel(  leaveId: leaveId ?? _leaveId,
-  employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
-  applaiedForEmployee: applaiedForEmployee ?? _applaiedForEmployee,
-  departmentName: departmentName ?? _departmentName,
-  departmentId: departmentId ?? _departmentId,
-  joiningDate: joiningDate ?? _joiningDate,
-  leaveFromDate: leaveFromDate ?? _leaveFromDate,
-  leaveToDate: leaveToDate ?? _leaveToDate,
-  leaveCreationDate: leaveCreationDate ?? _leaveCreationDate,
-  leaveType: leaveType ?? _leaveType,
-  reasons: reasons ?? _reasons,
-  dayCount: dayCount ?? _dayCount,
-  sl: sl ?? _sl,
-  el: el ?? _el,
-  cl: cl ?? _cl,
-  leavePolicyType: leavePolicyType ?? _leavePolicyType,
-  appliedByName: appliedByName ?? _appliedByName,
-  passedByName: passedByName ?? _passedByName,
-  leaveStatus: leaveStatus ?? _leaveStatus,
-  currentApprover: currentApprover ?? _currentApprover,
-  finalStatus: finalStatus ?? _finalStatus,
-);
+  NotificationModel copyWith({
+    num? leaveId,
+    String? employeeIdCardNo,
+    String? applaiedForEmployee,
+    String? departmentName,
+    dynamic departmentId,
+    String? joiningDate,
+    String? leaveFromDate,
+    String? leaveToDate,
+    String? leaveCreationDate,
+    String? leaveType,
+    String? reasons,
+    num? dayCount,
+    num? sl,
+    num? el,
+    num? cl,
+    String? leavePolicyType,
+    String? appliedByName,
+    String? passedByName,
+    String? leaveStatus,
+    num? currentApprover,
+    num? finalStatus,
+  }) =>
+      NotificationModel(
+        leaveId: leaveId ?? _leaveId,
+        employeeIdCardNo: employeeIdCardNo ?? _employeeIdCardNo,
+        applaiedForEmployee: applaiedForEmployee ?? _applaiedForEmployee,
+        departmentName: departmentName ?? _departmentName,
+        departmentId: departmentId ?? _departmentId,
+        joiningDate: joiningDate ?? _joiningDate,
+        leaveFromDate: leaveFromDate ?? _leaveFromDate,
+        leaveToDate: leaveToDate ?? _leaveToDate,
+        leaveCreationDate: leaveCreationDate ?? _leaveCreationDate,
+        leaveType: leaveType ?? _leaveType,
+        reasons: reasons ?? _reasons,
+        dayCount: dayCount ?? _dayCount,
+        sl: sl ?? _sl,
+        el: el ?? _el,
+        cl: cl ?? _cl,
+        leavePolicyType: leavePolicyType ?? _leavePolicyType,
+        appliedByName: appliedByName ?? _appliedByName,
+        passedByName: passedByName ?? _passedByName,
+        leaveStatus: leaveStatus ?? _leaveStatus,
+        currentApprover: currentApprover ?? _currentApprover,
+        finalStatus: finalStatus ?? _finalStatus,
+      );
   num? get leaveId => _leaveId;
   String? get employeeIdCardNo => _employeeIdCardNo;
   String? get applaiedForEmployee => _applaiedForEmployee;
@@ -178,5 +182,4 @@ NotificationModel copyWith({  num? leaveId,
     map['FinalStatus'] = _finalStatus;
     return map;
   }
-
 }

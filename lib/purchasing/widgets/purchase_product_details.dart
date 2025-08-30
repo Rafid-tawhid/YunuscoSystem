@@ -29,7 +29,8 @@ class RequisitionDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRequisitionCard(RequisitionDetailsModel req, BuildContext context) {
+  Widget _buildRequisitionCard(
+      RequisitionDetailsModel req, BuildContext context) {
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -111,8 +112,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Notes if available
-            if (req.note?.isNotEmpty == true)
-              _buildNotesSection(req),
+            if (req.note?.isNotEmpty == true) _buildNotesSection(req),
           ],
         ),
       ),
@@ -129,19 +129,20 @@ class RequisitionDetailsScreen extends StatelessWidget {
       ),
       child: req.imagePathString != null
           ? ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: req.imagePathString!,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          errorWidget: (context, url, error) => const Icon(Icons.inventory, size: 30),
-        ),
-      )
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: req.imagePathString!,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.inventory, size: 30),
+              ),
+            )
           : const Center(
-        child: Icon(Icons.inventory, size: 30),
-      ),
+              child: Icon(Icons.inventory, size: 30),
+            ),
     );
   }
 
@@ -152,7 +153,8 @@ class RequisitionDetailsScreen extends StatelessWidget {
         _buildDetailRow('Employee', req.employeeName),
         _buildDetailRow('Department', req.department),
         _buildDetailRow('Section', req.section),
-        _buildDetailRow('Product Description', req.productDescription?.toString()),
+        _buildDetailRow(
+            'Product Description', req.productDescription?.toString()),
         _buildDetailRow('Unit', '${req.unit} (${req.unitId})'),
         _buildDetailRow('Required By', _formatDate(req.requiredDate)),
         _buildDetailRow('Approved By', req.approvedBy),
@@ -173,8 +175,12 @@ class RequisitionDetailsScreen extends StatelessWidget {
         children: [
           _buildQuantityPill('Requested', req.actualReqQty, Colors.orange),
           _buildQuantityPill('Approved', req.approvedQty, Colors.green),
-          _buildQuantityPill('In Stock', req.iNHandQty,
-              req.iNHandQty != null && req.iNHandQty! < 10 ? Colors.red : Colors.blue),
+          _buildQuantityPill(
+              'In Stock',
+              req.iNHandQty,
+              req.iNHandQty != null && req.iNHandQty! < 10
+                  ? Colors.red
+                  : Colors.blue),
         ],
       ),
     );
@@ -231,10 +237,13 @@ class RequisitionDetailsScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _buildPurchaseDetailRow('Date', _formatDate(req.lastPurchaseDate)),
+              _buildPurchaseDetailRow(
+                  'Date', _formatDate(req.lastPurchaseDate)),
               _buildPurchaseDetailRow('Supplier', req.supplierName),
-              _buildPurchaseDetailRow('Rate', req.lastPurchaseRate?.toStringAsFixed(2)),
-              _buildPurchaseDetailRow('Total', '\$${req.totalPurchaseAmount?.toStringAsFixed(2)}'),
+              _buildPurchaseDetailRow(
+                  'Rate', req.lastPurchaseRate?.toStringAsFixed(2)),
+              _buildPurchaseDetailRow(
+                  'Total', '\$${req.totalPurchaseAmount?.toStringAsFixed(2)}'),
             ],
           ),
         ),

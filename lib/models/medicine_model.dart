@@ -38,14 +38,15 @@ class MedicineModel {
     String? baseName,
     num? productCategoryId,
     num? productTypeId,
-  }) => MedicineModel(
-    productId: productId ?? _productId,
-    productCode: productCode ?? _productCode,
-    productName: productName ?? _productName,
-    baseName: baseName ?? _baseName,
-    productCategoryId: productCategoryId ?? _productCategoryId,
-    productTypeId: productTypeId ?? _productTypeId,
-  );
+  }) =>
+      MedicineModel(
+        productId: productId ?? _productId,
+        productCode: productCode ?? _productCode,
+        productName: productName ?? _productName,
+        baseName: baseName ?? _baseName,
+        productCategoryId: productCategoryId ?? _productCategoryId,
+        productTypeId: productTypeId ?? _productTypeId,
+      );
 
   num? get productId => _productId;
   String? get productCode => _productCode;

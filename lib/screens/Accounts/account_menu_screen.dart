@@ -17,7 +17,8 @@ class AccountMenuScreen extends StatelessWidget {
         cardColor: Colors.orange.shade100,
         iconColor: Colors.orangeAccent.shade700,
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => PfInfoScreen()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => PfInfoScreen()));
         },
       ),
       DashboardMenuItem(
@@ -26,11 +27,11 @@ class AccountMenuScreen extends StatelessWidget {
         cardColor: Colors.purple.shade100,
         iconColor: Colors.purple.shade700,
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
         },
       ),
     ];
-
 
     return Scaffold(
       backgroundColor: Colors.blue.shade50,

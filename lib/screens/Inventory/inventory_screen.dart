@@ -14,18 +14,20 @@ class InventoryStockScreen extends StatefulWidget {
 class _InventoryStockScreenState extends State<InventoryStockScreen> {
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = false;
-  String _selectedStoreType='4';
+  String _selectedStoreType = '4';
 
   @override
   void initState() {
-    _loadData(_selectedDate,_selectedStoreType??'4');
+    _loadData(_selectedDate, _selectedStoreType ?? '4');
     super.initState();
   }
 
-  Future<void> _loadData(DateTime date,String storeType) async {
+  Future<void> _loadData(DateTime date, String storeType) async {
     setState(() => _isLoading = true);
     try {
-      await context.read<InventoryPorvider>().getInventoryStockSummery(date,storeType);
+      await context
+          .read<InventoryPorvider>()
+          .getInventoryStockSummery(date, storeType);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error loading data: ${e.toString()}")),
@@ -34,8 +36,6 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
       setState(() => _isLoading = false);
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,8 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                 ),
               ];
             },
-            icon: Icon(Icons.filter_alt_outlined, color: Colors.white), // Using store icon
+            icon: Icon(Icons.filter_alt_outlined,
+                color: Colors.white), // Using store icon
           ),
         ],
         //
@@ -82,49 +83,47 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Consumer<InventoryPorvider>(
-          builder: (context, provider, _) => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Selected date display
-              Center(
-                  child: InkWell(
-                    onTap: (){
-                      _selectDate(context);
-                    },
-                  child: Text(
-                    DashboardHelpers.convertDateTime(
-                        _selectedDate.toString(),
-                        pattern: 'dd-MMM-yyyy'
+              padding: EdgeInsets.all(16),
+              child: Consumer<InventoryPorvider>(
+                builder: (context, provider, _) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Selected date display
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: Text(
+                          DashboardHelpers.convertDateTime(
+                              _selectedDate.toString(),
+                              pattern: 'dd-MMM-yyyy'),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.indigo[800],
+                          ),
+                        ),
+                      ),
                     ),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.indigo[800],
-                    ),
-                  ),
+                    SizedBox(height: 16),
+                    _buildStockMovementChart(provider),
+                    SizedBox(height: 24),
+                    _buildInventoryTable(provider),
+                  ],
                 ),
               ),
-              SizedBox(height: 16),
-              _buildStockMovementChart(provider),
-              SizedBox(height: 24),
-              _buildInventoryTable(provider),
-            ],
-          ),
-        ),
-      ),
-
+            ),
     );
   }
 
   Widget _buildSummaryCards(InventoryPorvider pro) {
-    final totalIn = pro.inventoryStockList.fold<double>(
-        0, (sum, item) => sum + (item.goodsINQty ?? 0));
-    final totalOut = pro.inventoryStockList.fold<double>(
-        0, (sum, item) => sum + (item.goodsOutQty ?? 0));
-    final totalBalance = pro.inventoryStockList.fold<double>(
-        0, (sum, item) => sum + (item.balanceQty ?? 0));
+    final totalIn = pro.inventoryStockList
+        .fold<double>(0, (sum, item) => sum + (item.goodsINQty ?? 0));
+    final totalOut = pro.inventoryStockList
+        .fold<double>(0, (sum, item) => sum + (item.goodsOutQty ?? 0));
+    final totalBalance = pro.inventoryStockList
+        .fold<double>(0, (sum, item) => sum + (item.balanceQty ?? 0));
 
     return Row(
       children: [
@@ -246,10 +245,8 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                     color: Colors.grey[800],
                   ),
                 ),
-                Text(DashboardHelpers.convertDateTime(
-                    _selectedDate.toString(),
-                    pattern: 'dd-MMM-yyyy'
-                ))
+                Text(DashboardHelpers.convertDateTime(_selectedDate.toString(),
+                    pattern: 'dd-MMM-yyyy'))
               ],
             ),
             SizedBox(height: 12),
@@ -280,17 +277,20 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
                       ),
                       columns: [
                         DataColumn(label: _buildHeader("Store")),
-                        DataColumn(label: _buildHeader("Currency"), numeric: true),
+                        DataColumn(
+                            label: _buildHeader("Currency"), numeric: true),
                         DataColumn(label: _buildHeader("In"), numeric: true),
                         DataColumn(label: _buildHeader("Out"), numeric: true),
-                        DataColumn(label: _buildHeader("Balance"), numeric: true),
+                        DataColumn(
+                            label: _buildHeader("Balance"), numeric: true),
                         DataColumn(label: _buildHeader("Value"), numeric: true),
                       ],
                       rows: pro.inventoryStockList.map((item) {
                         return DataRow(
                           cells: [
                             DataCell(Text(
-                              item.storeType?.replaceAll("Store", "").trim() ?? '--',
+                              item.storeType?.replaceAll("Store", "").trim() ??
+                                  '--',
                               style: TextStyle(fontWeight: FontWeight.w500),
                             )),
                             DataCell(Text(item.currency ?? '-')),
@@ -336,7 +336,6 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
     );
   }
 
-
   void _exportData(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Exporting inventory data...")),
@@ -380,7 +379,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
 
     if (picked != null && picked != _selectedDate) {
       setState(() => _selectedDate = picked);
-      _loadData(picked,_selectedStoreType??'');
+      _loadData(picked, _selectedStoreType ?? '');
     }
   }
 
@@ -389,18 +388,22 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
     // Here you can call your API or perform any action
     print('Selected store type: $storeType');
     setState(() {
-      _selectedStoreType=storeType;
+      _selectedStoreType = storeType;
     });
-    _loadData(_selectedDate,storeType);
+    _loadData(_selectedDate, storeType);
   }
 
 // Helper function to get store name
   String getStoreName(String type) {
     switch (type) {
-      case '1': return 'General Store';
-      case '2': return 'Accessories Store';
-      case '3': return 'Garments Store';
-      default: return '4';
+      case '1':
+        return 'General Store';
+      case '2':
+        return 'Accessories Store';
+      case '3':
+        return 'Garments Store';
+      default:
+        return '4';
     }
   }
 }

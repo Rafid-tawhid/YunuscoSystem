@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import 'package:flutter/material.dart';
 import 'dart:convert';
 
 class Product {
@@ -161,13 +159,15 @@ class Total {
 class EnhancedProductDisplayScreen extends StatefulWidget {
   final dynamic jsonData;
 
-  const EnhancedProductDisplayScreen({Key? key, required this.jsonData}) : super(key: key);
+  const EnhancedProductDisplayScreen({super.key, required this.jsonData});
 
   @override
-  _EnhancedProductDisplayScreenState createState() => _EnhancedProductDisplayScreenState();
+  _EnhancedProductDisplayScreenState createState() =>
+      _EnhancedProductDisplayScreenState();
 }
 
-class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScreen> {
+class _EnhancedProductDisplayScreenState
+    extends State<EnhancedProductDisplayScreen> {
   List<Product> products = [];
   List<Extra> extras = [];
   List<Total> totalItems = [];
@@ -226,25 +226,23 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionTitle('Main Products'),
-              _buildProductTable(products),
-
-              const SizedBox(height: 24),
-              _buildSectionTitle('Extra Items'),
-              _buildExtraTable(extras),
-
-              const SizedBox(height: 24),
-              _buildSectionTitle('Total Summary'),
-              _buildTotalTable(totalItems),
-            ],
-          ),
-        ),
-      ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionTitle('Main Products'),
+                    _buildProductTable(products),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle('Extra Items'),
+                    _buildExtraTable(extras),
+                    const SizedBox(height: 24),
+                    _buildSectionTitle('Total Summary'),
+                    _buildTotalTable(totalItems),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -278,7 +276,7 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
             ),
           ),
           Divider(height: 1),
-          ...items.map((item) => _buildProductRow(item)).toList(),
+          ...items.map((item) => _buildProductRow(item)),
         ],
       ),
     );
@@ -293,7 +291,8 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(item.styleName, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(item.styleName,
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Text(item.styleNumber),
             ],
           ),
@@ -339,7 +338,7 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
             ),
           ),
           Divider(height: 1),
-          ...items.map((item) => _buildExtraRow(item)).toList(),
+          ...items.map((item) => _buildExtraRow(item)),
         ],
       ),
     );
@@ -354,7 +353,8 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(item.styleName, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(item.styleName,
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Text(item.styleRef),
             ],
           ),
@@ -394,7 +394,7 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
             ),
           ),
           Divider(height: 1),
-          ...items.map((item) => _buildTotalRow(item)).toList(),
+          ...items.map((item) => _buildTotalRow(item)),
         ],
       ),
     );
@@ -437,7 +437,8 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
     );
   }
 
-  Widget _buildSizeBadge(String size, int quantity, [bool isHighlighted = false]) {
+  Widget _buildSizeBadge(String size, int quantity,
+      [bool isHighlighted = false]) {
     return Column(
       children: [
         Text(size, style: TextStyle(fontSize: 12)),
@@ -484,5 +485,4 @@ class _EnhancedProductDisplayScreenState extends State<EnhancedProductDisplayScr
       ],
     );
   }
-
 }

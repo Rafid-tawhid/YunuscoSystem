@@ -10,7 +10,6 @@ import 'package:yunusco_group/models/members_model.dart';
 import 'package:yunusco_group/models/payslip_model.dart';
 import 'package:yunusco_group/models/single_emp_leave_history_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
-import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/JobCardDropdownModel.dart';
 import '../models/employee_appointment_info_model.dart';
@@ -21,32 +20,29 @@ import '../models/prescription_medicine.dart';
 import '../models/self_leave_info.dart';
 import '../models/vehicle_model.dart';
 
-class HrProvider extends ChangeNotifier{
-  ApiService apiService=ApiService();
+class HrProvider extends ChangeNotifier {
+  ApiService apiService = ApiService();
 
+  final List<AttendenceModel> _allDeptAttendanceList = [];
+  List<AttendenceModel> get allDeptAttendanceList => _allDeptAttendanceList;
 
-  List<AttendenceModel> _allDeptAttendanceList=[];
-  List<AttendenceModel> get allDeptAttendanceList =>_allDeptAttendanceList;
+  Future<bool> getAllDepertmentsAttendance(DateTime datetime) async {
+    String date = formatDateSlash(datetime);
 
-  Future<bool> getAllDepertmentsAttendance(DateTime datetime) async{
-
-    String date= formatDateSlash(datetime);
-
-    var data=await apiService.getData('api/User/DepartmentAttendance?Date=${date}&Department=0');
-    if(data!=null){
+    var data = await apiService
+        .getData('api/User/DepartmentAttendance?Date=$date&Department=0');
+    if (data != null) {
       _allDeptAttendanceList.clear();
-      for(var i in data){
+      for (var i in data) {
         _allDeptAttendanceList.add(AttendenceModel.fromJson(i));
       }
       notifyListeners();
       debugPrint('_allDeptAttendanceList ${_allDeptAttendanceList.length}');
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
-
 
   String formatDateSlash(DateTime date) {
     String month = date.month.toString().padLeft(2, '0');
@@ -54,57 +50,55 @@ class HrProvider extends ChangeNotifier{
     return '$month-$day-${date.year}';
   }
 
-
-  bool _showLeavHistory=false;
-  bool get showLeavHistory=>_showLeavHistory;
-  showAndHideLeaveHistory(){
-    _showLeavHistory=!_showLeavHistory;
+  bool _showLeavHistory = false;
+  bool get showLeavHistory => _showLeavHistory;
+  showAndHideLeaveHistory() {
+    _showLeavHistory = !_showLeavHistory;
     notifyListeners();
   }
 
+  final List<EmployeeAttendanceModel> _employeeAttendanceList = [];
+  List<EmployeeAttendanceModel> get employeeAttendanceList =>
+      _employeeAttendanceList;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-
-  List<EmployeeAttendanceModel> _employeeAttendanceList=[];
-  List<EmployeeAttendanceModel> get employeeAttendanceList =>_employeeAttendanceList;
-  bool _isLoading=false;
-  bool get isLoading=>_isLoading;
-
-  setLoading(bool val){
-    _isLoading=val;
+  setLoading(bool val) {
+    _isLoading = val;
     notifyListeners();
   }
 
-  Future<bool> getEmployeeAttendance(String name, String formattedFromDate, String formattedToDate) async{
-
+  Future<bool> getEmployeeAttendance(
+      String name, String formattedFromDate, String formattedToDate) async {
     setLoading(true);
-    var data=await apiService.getData('api/User/EmpJobcardReport?IdCard=$name&fromDate=$formattedFromDate&toDate=$formattedToDate&Departmant=0&Section=0&ProductionUnit=0&ProductionLine=0');
+    var data = await apiService.getData(
+        'api/User/EmpJobcardReport?IdCard=$name&fromDate=$formattedFromDate&toDate=$formattedToDate&Departmant=0&Section=0&ProductionUnit=0&ProductionLine=0');
     setLoading(false);
-    if(data!=null){
+    if (data != null) {
       _employeeAttendanceList.clear();
-      for(var i in data){
+      for (var i in data) {
         _employeeAttendanceList.add(EmployeeAttendanceModel.fromJson(i));
       }
       notifyListeners();
       debugPrint('_employeeAttendanceList ${_employeeAttendanceList.length}');
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
 
+  final List<LeaveDataModel> _leaveDataList = [];
+  List<LeaveDataModel> get leaveDataList => _leaveDataList;
 
-  List<LeaveDataModel> _leaveDataList=[];
-  List<LeaveDataModel> get leaveDataList=>_leaveDataList;
-
-  void getPersonalAttendance() async{
+  void getPersonalAttendance() async {
     setLoading(true);
     //http://192.168.15.6:8090/api/Leave/GetRcntPenLevLst?IdCard=31401
-    var data=await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=${DashboardHelpers.currentUser!.iDnum}');
+    var data = await apiService.getData(
+        'api/Leave/GetRcntPenLevLst?IdCard=${DashboardHelpers.currentUser!.iDnum}');
     setLoading(false);
-    if(data!=null){
+    if (data != null) {
       _leaveDataList.clear();
-      for(var i in data['Results']){
+      for (var i in data['Results']) {
         _leaveDataList.add(LeaveDataModel.fromJson(i));
       }
       notifyListeners();
@@ -113,48 +107,52 @@ class HrProvider extends ChangeNotifier{
   }
 
   SelfLeaveInfo? _selfLeaveInfo;
-  SelfLeaveInfo? get selfLeaveInfo=>_selfLeaveInfo;
+  SelfLeaveInfo? get selfLeaveInfo => _selfLeaveInfo;
 
-  List<LeaveBalance> _leaveTypeList=[];
-  List<LeaveBalance> get leaveTypeList=>_leaveTypeList;
+  List<LeaveBalance> _leaveTypeList = [];
+  List<LeaveBalance> get leaveTypeList => _leaveTypeList;
 
-  Future<void> getLeaveApplicationInfo() async{
-
+  Future<void> getLeaveApplicationInfo() async {
     setLoading(true);
-     var data=await apiService.getData('api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
-     setLoading(false);
+    var data = await apiService.getData(
+        'api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
+    setLoading(false);
 
-    if(data!=null){
-      _selfLeaveInfo=SelfLeaveInfo.fromJson(data['Results']);
-      _leaveTypeList=convertToLeaveBalances(_selfLeaveInfo!.toJson());
+    if (data != null) {
+      _selfLeaveInfo = SelfLeaveInfo.fromJson(data['Results']);
+      _leaveTypeList = convertToLeaveBalances(_selfLeaveInfo!.toJson());
     }
     debugPrint('leaveList ${_leaveTypeList.length}');
     notifyListeners();
-
   }
 
-  Future<bool> submitApplicationForLeave(DateTime? fromDate, DateTime? toDate,File? attachment, String reason,LeaveBalance leaveType,int dayCount) async{
-    var data=await apiService.uploadImageWithData(
-
-      url: 'api/Leave/SubmitLeaveRequest',
+  Future<bool> submitApplicationForLeave(
+      DateTime? fromDate,
+      DateTime? toDate,
+      File? attachment,
+      String reason,
+      LeaveBalance leaveType,
+      int dayCount) async {
+    var data = await apiService.uploadImageWithData(
+        url: 'api/Leave/SubmitLeaveRequest',
         imageFile: attachment,
-      formData: {
-        "UserId" : DashboardHelpers.currentUser!.userId,
-        "IdCardNo": DashboardHelpers.currentUser!.iDnum,
-        "LeaveFromDate": DashboardHelpers.convertDateTime(fromDate.toString(),pattern: 'yyyy-MM-dd'),
-        "LeaveToDate": DashboardHelpers.convertDateTime(toDate.toString(),pattern: 'yyyy-MM-dd'),
-        "LeaveType": leaveType.policyId,
-        "LeaveBalance": dayCount,
-        "Reasons": reason,
-        "DocumentFile":attachment,
-        "remainingLeaveDay": leaveType.remaining,
-        "policyId": leaveType.policyId,
-        "IsFirst": false
-      }
-    );
-    return data==null?false:true;
+        formData: {
+          "UserId": DashboardHelpers.currentUser!.userId,
+          "IdCardNo": DashboardHelpers.currentUser!.iDnum,
+          "LeaveFromDate": DashboardHelpers.convertDateTime(fromDate.toString(),
+              pattern: 'yyyy-MM-dd'),
+          "LeaveToDate": DashboardHelpers.convertDateTime(toDate.toString(),
+              pattern: 'yyyy-MM-dd'),
+          "LeaveType": leaveType.policyId,
+          "LeaveBalance": dayCount,
+          "Reasons": reason,
+          "DocumentFile": attachment,
+          "remainingLeaveDay": leaveType.remaining,
+          "policyId": leaveType.policyId,
+          "IsFirst": false
+        });
+    return data == null ? false : true;
   }
-
 
   List<LeaveBalance> convertToLeaveBalances(Map<String, dynamic> json) {
     return [
@@ -196,52 +194,55 @@ class HrProvider extends ChangeNotifier{
     ];
   }
 
+  final List<SingleEmpLeaveHistoryModel> _singleEmpLeaveList = [];
+  List<SingleEmpLeaveHistoryModel> get singleEmpLeaveList =>
+      _singleEmpLeaveList;
 
-  List<SingleEmpLeaveHistoryModel> _singleEmpLeaveList=[];
-  List<SingleEmpLeaveHistoryModel> get singleEmpLeaveList=>_singleEmpLeaveList;
+  Future<void> getSingleEmployeeLeaveHistory() async {
+    var data = await apiService.getData(
+        'api/Leave/SingleEmpLeaveHistory?IdCard=${DashboardHelpers.currentUser!.iDnum}');
 
-  Future<void> getSingleEmployeeLeaveHistory() async{
-    var data=await apiService.getData('api/Leave/SingleEmpLeaveHistory?IdCard=${DashboardHelpers.currentUser!.iDnum}');
-
-    if(data!=null){
+    if (data != null) {
       _singleEmpLeaveList.clear();
-      for(var i in data['Results']){
+      for (var i in data['Results']) {
         _singleEmpLeaveList.add(SingleEmpLeaveHistoryModel.fromJson(i));
       }
     }
     debugPrint('_singleEmpLeaveList ${_singleEmpLeaveList.length}');
     notifyListeners();
-
   }
-  
-  
 
-  Future<PayslipModel?> getPaySlipInfo(String month,String year) async{
+  Future<PayslipModel?> getPaySlipInfo(String month, String year) async {
     setLoading(true);
-    var response=await apiService.postData('api/hr/GetPayslip', {
-        "Company": 1,
-        "DepartmenmtId": 0,
-        "SectionId": 0,
-        "UnitiD": 0,
-        "LineId": 0,
-        "DesignationId": 0,
-        "SalaryMonth": month,
-        "SalaryYear": year,
-        "ReportType": 6,
-        "CompanyText": "Yunusco (BD) Limited",
-        "IdList": DashboardHelpers.currentUser!.iDnum,
-        "Grade": 0,
-        "DivisionId": 0,
-        "IsM": false,
-        "UserType": "COM"
+    var response = await apiService.postData('api/hr/GetPayslip', {
+      "Company": 1,
+      "DepartmenmtId": 0,
+      "SectionId": 0,
+      "UnitiD": 0,
+      "LineId": 0,
+      "DesignationId": 0,
+      "SalaryMonth": month,
+      "SalaryYear": year,
+      "ReportType": 6,
+      "CompanyText": "Yunusco (BD) Limited",
+      "IdList": DashboardHelpers.currentUser!.iDnum,
+      "Grade": 0,
+      "DivisionId": 0,
+      "IsM": false,
+      "UserType": "COM"
     });
     setLoading(false);
-    return response==null?null:response['Data'].isEmpty?null: PayslipModel.fromJson(response['Data'][0]);
+    return response == null
+        ? null
+        : response['Data'].isEmpty
+            ? null
+            : PayslipModel.fromJson(response['Data'][0]);
   }
 
-  Future<PayslipModel?> getPaySlipInfoWithDetailsBreakdown(String month,String year) async{
+  Future<PayslipModel?> getPaySlipInfoWithDetailsBreakdown(
+      String month, String year) async {
     setLoading(true);
-    var response=await apiService.postData('api/hr/SingleSalRptBreakDown', {
+    var response = await apiService.postData('api/hr/SingleSalRptBreakDown', {
       "Company": 1,
       "DepartmenmtId": 0,
       "SectionId": 0,
@@ -260,22 +261,22 @@ class HrProvider extends ChangeNotifier{
     });
 
     setLoading(false);
-    return response==null?null:response['Data'].isEmpty?null: PayslipModel.fromJson(response['Data'][0]);
+    return response == null
+        ? null
+        : response['Data'].isEmpty
+            ? null
+            : PayslipModel.fromJson(response['Data'][0]);
   }
 
   JobCardDropdownModel? allDropdownInfoForJobcard;
 
-  Future<void> getAllDropdownInfoForJobcard() async{
-    var data=await apiService.getData('api/HR/SalaryReportDropDown');
-    if(data!=null){
+  Future<void> getAllDropdownInfoForJobcard() async {
+    var data = await apiService.getData('api/HR/SalaryReportDropDown');
+    if (data != null) {
       allDropdownInfoForJobcard = JobCardDropdownModel.fromJson(data['Result']);
     }
     notifyListeners();
   }
-
-
-
-
 
   final List<MembersModel> _member_list = [];
 
@@ -291,11 +292,11 @@ class HrProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> getAllStuffList() async{
-    var data=await apiService.getData('api/Test/StaffEmpData');
-    if(data!=null){
+  Future<void> getAllStuffList() async {
+    var data = await apiService.getData('api/Test/StaffEmpData');
+    if (data != null) {
       _member_list.clear();
-      for(var i in data){
+      for (var i in data) {
         _member_list.add(MembersModel.fromJson(i));
       }
     }
@@ -303,26 +304,26 @@ class HrProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool> saveVehicleRequisation(dynamic formData) async{
+  Future<bool> saveVehicleRequisation(dynamic formData) async {
     setLoading(true);
-    var result=await apiService.postData('api/Inventory/SaveVehicleRequisition', formData);
+    var result = await apiService.postData(
+        'api/Inventory/SaveVehicleRequisition', formData);
     setLoading(false);
-    return result==null?false:true;
+    return result == null ? false : true;
   }
 
-
-  List<VehicleModel> _vehicleList=[];
-
+  final List<VehicleModel> _vehicleList = [];
 
   List<VehicleModel> get vehicleList => _vehicleList;
 
-  Future<void> getRequestedCarList() async{
+  Future<void> getRequestedCarList() async {
     setLoading(true);
-    var data=await apiService.getData('api/inventory/UserWiseVehicleRequisitionList');
+    var data = await apiService
+        .getData('api/inventory/UserWiseVehicleRequisitionList');
     setLoading(false);
-    if(data!=null){
+    if (data != null) {
       _vehicleList.clear();
-      for(var i in data['returnvalue']){
+      for (var i in data['returnvalue']) {
         _vehicleList.add(VehicleModel.fromJson(i));
       }
     }
@@ -331,24 +332,27 @@ class HrProvider extends ChangeNotifier{
   }
 
   Future<bool> acceptVehicleRequisation(dynamic data) async {
-    var result=await apiService.postData('api/Inventory/RequisitionApproved', data);
-    return result==null?false:true;
+    var result =
+        await apiService.postData('api/Inventory/RequisitionApproved', data);
+    return result == null ? false : true;
   }
+
   Future<bool> rejectVehicleRequisation(dynamic data) async {
-    var result=await apiService.postData('api/Inventory/RequisitionReject', data);
-    return result==null?false:true;
+    var result =
+        await apiService.postData('api/Inventory/RequisitionReject', data);
+    return result == null ? false : true;
   }
 
-  Future<bool> saveDocAppoinment(dynamic data) async{
+  Future<bool> saveDocAppoinment(dynamic data) async {
     setLoading(true);
-    var result=await apiService.postData('api/HR/SaveAccessoriesGatePass', data);
+    var result =
+        await apiService.postData('api/HR/SaveAccessoriesGatePass', data);
     setLoading(false);
-    return result==null?false:true;
+    return result == null ? false : true;
   }
 
-  List<DocAppoinmentListModel> _docAppointmentList=[];
-  List<DocAppoinmentListModel> get docAppointmentList=>_docAppointmentList;
-
+  final List<DocAppoinmentListModel> _docAppointmentList = [];
+  List<DocAppoinmentListModel> get docAppointmentList => _docAppointmentList;
 
   Future<bool> getAllDocAppointment() async {
     setLoading(true);
@@ -381,7 +385,6 @@ class HrProvider extends ChangeNotifier{
       notifyListeners();
       setLoading(false);
       return true;
-
     } catch (e) {
       // Handle any errors that occur during the process
       setLoading(false);
@@ -395,32 +398,30 @@ class HrProvider extends ChangeNotifier{
   }
 
   EmployeeAppointmentInfoModel? _employeeAppointmentInfoModel;
-  EmployeeAppointmentInfoModel? get employeeInfo=>_employeeAppointmentInfoModel;
+  EmployeeAppointmentInfoModel? get employeeInfo =>
+      _employeeAppointmentInfoModel;
   Future<bool> getEmployeeInfo(DocAppoinmentListModel appointment) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    var result=await apiService.getData('api/HR/GateEmployeeInfo/${appointment.idCardNo}');
+    var result = await apiService
+        .getData('api/HR/GateEmployeeInfo/${appointment.idCardNo}');
     EasyLoading.dismiss();
 
-    for(var i in result['Results']){
-      _employeeAppointmentInfoModel=EmployeeAppointmentInfoModel.fromJson(i);
+    for (var i in result['Results']) {
+      _employeeAppointmentInfoModel = EmployeeAppointmentInfoModel.fromJson(i);
     }
     notifyListeners();
-    return result==null?false:true;
+    return result == null ? false : true;
   }
-
-
-
-
 
   final List<MedicineModel> _medicines = [];
   List<MedicineModel> _filteredMedicines = [];
 
-  void getAllMedicine() async{
-    var data=await apiService.getData('api/HR/MedicineList');
-    if(data!=null){
+  void getAllMedicine() async {
+    var data = await apiService.getData('api/HR/MedicineList');
+    if (data != null) {
       _medicines.clear();
       _filteredMedicines.clear();
-      for(var i in data['Results']){
+      for (var i in data['Results']) {
         _medicines.add(MedicineModel.fromJson(i));
       }
     }
@@ -428,7 +429,6 @@ class HrProvider extends ChangeNotifier{
     _filteredMedicines = List.from(_medicines);
     notifyListeners();
   }
-
 
   List<MedicineModel> get medicines => _medicines;
   List<MedicineModel> get filteredMedicines => _filteredMedicines;
@@ -438,16 +438,21 @@ class HrProvider extends ChangeNotifier{
       _filteredMedicines = _medicines;
     } else {
       _filteredMedicines = _medicines.where((medicine) {
-        return medicine.productName?.toLowerCase().contains(query.toLowerCase()) == true ||
-            medicine.productCode?.toLowerCase().contains(query.toLowerCase()) == true ||
-            medicine.baseName?.toLowerCase().contains(query.toLowerCase()) == true;
+        return medicine.productName
+                    ?.toLowerCase()
+                    .contains(query.toLowerCase()) ==
+                true ||
+            medicine.productCode?.toLowerCase().contains(query.toLowerCase()) ==
+                true ||
+            medicine.baseName?.toLowerCase().contains(query.toLowerCase()) ==
+                true;
       }).toList();
     }
     notifyListeners();
   }
 //
 
-  final List<PrescriptionMedicine>  _prepareMedicineList =[];
+  final List<PrescriptionMedicine> _prepareMedicineList = [];
   List<PrescriptionMedicine> get prepareMedicineList => _prepareMedicineList;
 
   void addMedicineListForPrescription(PrescriptionMedicine result) {
@@ -476,28 +481,29 @@ class HrProvider extends ChangeNotifier{
 
   Future<bool> saveGatePassInfo(dynamic data) async {
     setLoading(true);
-    var result=await apiService.postData('api/HR/SavePrescription', data);
+    var result = await apiService.postData('api/HR/SavePrescription', data);
     //clear medicine list
     _prepareMedicineList.clear();
     setLoading(false);
-    return result==null?false:true;
+    return result == null ? false : true;
   }
 
-  bool _showForm=false;
-  bool get showForm=>_showForm;
-  showHideDocForm(){
-    _showForm=!_showForm;
+  bool _showForm = false;
+  bool get showForm => _showForm;
+  showHideDocForm() {
+    _showForm = !_showForm;
     notifyListeners();
   }
 
-  Future<dynamic> gatePassDetailsInfo(DocAppoinmentListModel appointment) async {
+  Future<dynamic> gatePassDetailsInfo(
+      DocAppoinmentListModel appointment) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    var data=await apiService.getData('api/HR/GatePassDetails/${appointment.gateId}');
+    var data = await apiService
+        .getData('api/HR/GatePassDetails/${appointment.gateId}');
     EasyLoading.dismiss();
-    if(data!=null){
+    if (data != null) {
       return data['Results'][0];
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -518,7 +524,4 @@ class HrProvider extends ChangeNotifier{
     debugPrint('filterList ${filterList.length}');
     return filterList;
   }
-
-
-
 }

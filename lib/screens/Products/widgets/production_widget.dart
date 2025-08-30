@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -6,14 +5,19 @@ import 'package:provider/provider.dart';
 import '../../../providers/product_provider.dart';
 
 class WeeklyProductionScreen extends StatelessWidget {
+  const WeeklyProductionScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (context, provider, _) {
         final weeklyData = provider.productionSummaryList;
-        final totalQty = weeklyData.fold(0.0, (sum, item) => sum + (double.parse(item['SumQty'].toString())));
-        final totalTarget = weeklyData.fold(0.0, (sum, item) => sum + (double.parse(item['SumTarget'].toString())));
-        final overallPercentage = totalTarget > 0.0 ? (totalQty / totalTarget) * 100 : 0;
+        final totalQty = weeklyData.fold(0.0,
+            (sum, item) => sum + (double.parse(item['SumQty'].toString())));
+        final totalTarget = weeklyData.fold(0.0,
+            (sum, item) => sum + (double.parse(item['SumTarget'].toString())));
+        final overallPercentage =
+            totalTarget > 0.0 ? (totalQty / totalTarget) * 100 : 0;
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -43,7 +47,8 @@ class WeeklyProductionScreen extends StatelessWidget {
                         children: [
                           _buildStatItem('Total Production', totalQty),
                           _buildStatItem('Total Target', totalTarget),
-                          _buildStatItem('Achievement', overallPercentage, isPercent: true),
+                          _buildStatItem('Achievement', overallPercentage,
+                              isPercent: true),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -71,7 +76,7 @@ class WeeklyProductionScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              ...weeklyData.map((weekData) => _buildWeekCard(weekData)).toList(),
+              ...weeklyData.map((weekData) => _buildWeekCard(weekData)),
             ],
           ),
         );
@@ -143,7 +148,9 @@ class WeeklyProductionScreen extends StatelessWidget {
 
   Widget _buildStatItem(String label, dynamic value, {bool isPercent = false}) {
     final formatter = NumberFormat('#,##0');
-    final displayValue = isPercent ? '${NumberFormat('#,##0.0').format(value)}%' : formatter.format(value);
+    final displayValue = isPercent
+        ? '${NumberFormat('#,##0.0').format(value)}%'
+        : formatter.format(value);
 
     return Column(
       children: [
@@ -169,7 +176,9 @@ class WeeklyProductionScreen extends StatelessWidget {
 
   Widget _buildWeekStat(String label, dynamic value, {bool isPercent = false}) {
     final formatter = NumberFormat('#,##0');
-    final displayValue = isPercent ? '${NumberFormat('#,##0.0').format(value)}%' : formatter.format(value);
+    final displayValue = isPercent
+        ? '${NumberFormat('#,##0.0').format(value)}%'
+        : formatter.format(value);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

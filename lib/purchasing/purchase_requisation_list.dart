@@ -13,10 +13,12 @@ class PurchaseRequisitionListScreen extends StatefulWidget {
   const PurchaseRequisitionListScreen({super.key});
 
   @override
-  State<PurchaseRequisitionListScreen> createState() => _PurchaseRequisitionListScreenState();
+  State<PurchaseRequisitionListScreen> createState() =>
+      _PurchaseRequisitionListScreenState();
 }
 
-class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListScreen> {
+class _PurchaseRequisitionListScreenState
+    extends State<PurchaseRequisitionListScreen> {
   @override
   void initState() {
     super.initState();
@@ -36,17 +38,24 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
           'Purchase Requisitions',
           style: TextStyle(color: Colors.white),
         ),
-        leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: () => Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(),
+            onPressed: () =>
+                Provider.of<ProductProvider>(context, listen: false)
+                    .getAllRequisitions(),
           ),
         ],
       ),
@@ -57,9 +66,14 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
             child: Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: myColors.green),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: myColors.green),
                   onPressed: () {
-                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>CreatePurchaseRequisitionScreen()));
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) =>
+                                CreatePurchaseRequisitionScreen()));
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -80,7 +94,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
             child: Consumer<ProductProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                 return Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator());
                 } else if (provider.requisitions.isEmpty) {
                   return const Center(child: Text('No requisition found.'));
                 }
@@ -109,10 +123,15 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
       child: InkWell(
         onTap: () async {
           // Navigate to detail screen
-          var pp=context.read<ProductProvider>();
-          var res=await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
-          if(res){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>RequisitionDetailsScreen(requisitions: pp.requisationProductDetails)));
+          var pp = context.read<ProductProvider>();
+          var res = await pp.getRequisationProductDetails(
+              requisition.purchaseRequisitionCode);
+          if (res) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RequisitionDetailsScreen(
+                        requisitions: pp.requisationProductDetails)));
           }
         },
         child: Padding(
@@ -135,15 +154,24 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
                       requisition.isComplete == true ? 'Completed' : 'Pending',
                       style: const TextStyle(color: Colors.white),
                     ),
-                    backgroundColor: requisition.isComplete == true ? Colors.green : Colors.orange,
+                    backgroundColor: requisition.isComplete == true
+                        ? Colors.green
+                        : Colors.orange,
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               _buildInfoRow(Icons.person, requisition.userName ?? 'Unknown'),
-              if(requisition.department!=null) _buildInfoRow(Icons.business, requisition.department?.toString() ?? 'No Department'),
-              _buildInfoRow(Icons.category, requisition.productType ?? 'No Product Type'),
-              _buildInfoRow(Icons.calendar_today, DashboardHelpers.convertDateTime(requisition.createdDate??'') ?? 'No Date'),
+              if (requisition.department != null)
+                _buildInfoRow(Icons.business,
+                    requisition.department?.toString() ?? 'No Department'),
+              _buildInfoRow(
+                  Icons.category, requisition.productType ?? 'No Product Type'),
+              _buildInfoRow(
+                  Icons.calendar_today,
+                  DashboardHelpers.convertDateTime(
+                          requisition.createdDate ?? '') ??
+                      'No Date'),
               if (requisition.remarks?.isNotEmpty == true) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -170,7 +198,6 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
       ),
     );
   }
-
 
   Widget _buildDetailItem(String label, String value) {
     return Padding(

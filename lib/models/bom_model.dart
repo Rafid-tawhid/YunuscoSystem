@@ -1,21 +1,22 @@
 class BomModel {
   BomModel({
-      num? id, 
-      String? bOMCode, 
-      String? buyer, 
-      String? buyerOrderCode, 
-      String? buyerPo, 
-      String? item, 
-      String? styleName, 
-      num? styleID, 
-      String? color, 
-      num? createdByID, 
-      String? createdBy, 
-      String? createdDate, 
-      bool? isSubmit, 
-      bool? isLock, 
-      bool? isLockFinish, 
-      String? styleNumber,}){
+    num? id,
+    String? bOMCode,
+    String? buyer,
+    String? buyerOrderCode,
+    String? buyerPo,
+    String? item,
+    String? styleName,
+    num? styleID,
+    String? color,
+    num? createdByID,
+    String? createdBy,
+    String? createdDate,
+    bool? isSubmit,
+    bool? isLock,
+    bool? isLockFinish,
+    String? styleNumber,
+  }) {
     _id = id;
     _bOMCode = bOMCode;
     _buyer = buyer;
@@ -32,7 +33,7 @@ class BomModel {
     _isLock = isLock;
     _isLockFinish = isLockFinish;
     _styleNumber = styleNumber;
-}
+  }
 
   BomModel.fromJson(dynamic json) {
     _id = json['ID'];
@@ -68,39 +69,42 @@ class BomModel {
   bool? _isLock;
   bool? _isLockFinish;
   String? _styleNumber;
-BomModel copyWith({  num? id,
-  String? bOMCode,
-  String? buyer,
-  String? buyerOrderCode,
-  String? buyerPo,
-  String? item,
-  String? styleName,
-  num? styleID,
-  String? color,
-  num? createdByID,
-  String? createdBy,
-  String? createdDate,
-  bool? isSubmit,
-  bool? isLock,
-  bool? isLockFinish,
-  String? styleNumber,
-}) => BomModel(  id: id ?? _id,
-  bOMCode: bOMCode ?? _bOMCode,
-  buyer: buyer ?? _buyer,
-  buyerOrderCode: buyerOrderCode ?? _buyerOrderCode,
-  buyerPo: buyerPo ?? _buyerPo,
-  item: item ?? _item,
-  styleName: styleName ?? _styleName,
-  styleID: styleID ?? _styleID,
-  color: color ?? _color,
-  createdByID: createdByID ?? _createdByID,
-  createdBy: createdBy ?? _createdBy,
-  createdDate: createdDate ?? _createdDate,
-  isSubmit: isSubmit ?? _isSubmit,
-  isLock: isLock ?? _isLock,
-  isLockFinish: isLockFinish ?? _isLockFinish,
-  styleNumber: styleNumber ?? _styleNumber,
-);
+  BomModel copyWith({
+    num? id,
+    String? bOMCode,
+    String? buyer,
+    String? buyerOrderCode,
+    String? buyerPo,
+    String? item,
+    String? styleName,
+    num? styleID,
+    String? color,
+    num? createdByID,
+    String? createdBy,
+    String? createdDate,
+    bool? isSubmit,
+    bool? isLock,
+    bool? isLockFinish,
+    String? styleNumber,
+  }) =>
+      BomModel(
+        id: id ?? _id,
+        bOMCode: bOMCode ?? _bOMCode,
+        buyer: buyer ?? _buyer,
+        buyerOrderCode: buyerOrderCode ?? _buyerOrderCode,
+        buyerPo: buyerPo ?? _buyerPo,
+        item: item ?? _item,
+        styleName: styleName ?? _styleName,
+        styleID: styleID ?? _styleID,
+        color: color ?? _color,
+        createdByID: createdByID ?? _createdByID,
+        createdBy: createdBy ?? _createdBy,
+        createdDate: createdDate ?? _createdDate,
+        isSubmit: isSubmit ?? _isSubmit,
+        isLock: isLock ?? _isLock,
+        isLockFinish: isLockFinish ?? _isLockFinish,
+        styleNumber: styleNumber ?? _styleNumber,
+      );
   num? get id => _id;
   String? get bOMCode => _bOMCode;
   String? get buyer => _buyer;
@@ -138,5 +142,4 @@ BomModel copyWith({  num? id,
     map['StyleNumber'] = _styleNumber;
     return map;
   }
-
 }

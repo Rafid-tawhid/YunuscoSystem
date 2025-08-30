@@ -31,7 +31,8 @@ class NotificationProvider extends ChangeNotifier {
       // Create a new list instead of clearing to ensure reference changes
       final List<NotificationModel> tempList = [];
 
-      final response = await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=$userId');
+      final response =
+          await apiService.getData('api/Leave/GetRcntPenLevLst?IdCard=$userId');
 
       if (response == null || response['Results'] == null) {
         _getAllNotification = []; // Assign empty list

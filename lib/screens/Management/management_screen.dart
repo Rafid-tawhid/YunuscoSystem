@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
@@ -15,10 +14,12 @@ class ManagementProductionScreen extends StatefulWidget {
   const ManagementProductionScreen({super.key});
 
   @override
-  State<ManagementProductionScreen> createState() => _ManagementProductionScreenState();
+  State<ManagementProductionScreen> createState() =>
+      _ManagementProductionScreenState();
 }
 
-class _ManagementProductionScreenState extends State<ManagementProductionScreen> {
+class _ManagementProductionScreenState
+    extends State<ManagementProductionScreen> {
   @override
   void initState() {
     super.initState();
@@ -41,7 +42,8 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
       ),
       body: SingleChildScrollView(
         child: Consumer<ManagementProvider>(
-          builder: (context, provider, _) => provider.managementDashboardData != null
+          builder: (context, provider, _) => provider.managementDashboardData !=
+                  null
               ? Column(
                   children: [
                     Padding(
@@ -51,7 +53,9 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    ProductionDataSection(productionData: provider.managementDashboardData!.productionData),
+                    ProductionDataSection(
+                        productionData:
+                            provider.managementDashboardData!.productionData),
 
                     // UnitWiseSewing Section
                     Padding(
@@ -61,7 +65,9 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    UnitWiseSewingSection(unitWiseSewing: provider.managementDashboardData!.unitWiseSewing),
+                    UnitWiseSewingSection(
+                        unitWiseSewing:
+                            provider.managementDashboardData!.unitWiseSewing),
 
                     // Sewing Production Section
                     Padding(
@@ -71,7 +77,9 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    SewingProductionSection(sewingProduction: provider.managementDashboardData!.sewingProduction),
+                    SewingProductionSection(
+                        sewingProduction:
+                            provider.managementDashboardData!.sewingProduction),
 
                     // Morris Line Section
                     Padding(
@@ -81,7 +89,9 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    MorrisLineSection(morrisLine: provider.managementDashboardData!.morrisLine),
+                    MorrisLineSection(
+                        morrisLine:
+                            provider.managementDashboardData!.morrisLine),
 
                     // Finish Production Section
                     Padding(
@@ -91,7 +101,9 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    FinishProductionSection(finishProduction: provider.managementDashboardData!.finishProduction),
+                    FinishProductionSection(
+                        finishProduction:
+                            provider.managementDashboardData!.finishProduction),
 
                     // // Unit Wise Sewing Y Section
                     // Padding(
@@ -126,7 +138,7 @@ class _ManagementProductionScreenState extends State<ManagementProductionScreen>
 class ProductionDataSection extends StatelessWidget {
   final List<ProductionData>? productionData;
 
-  ProductionDataSection({this.productionData});
+  const ProductionDataSection({super.key, this.productionData});
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +149,7 @@ class ProductionDataSection extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             'Summary This Month',
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
         Row(
@@ -160,11 +172,13 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'This Month',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Sewing :${productionData!.first.sewingQty.toString()}',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -189,11 +203,13 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'Previous Month',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Sewing :${productionData!.first.cuttingQty.toString()}',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -222,11 +238,13 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'This Month',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Finish :${productionData!.first.finishQty.toString()}',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -251,11 +269,13 @@ class ProductionDataSection extends StatelessWidget {
                     children: [
                       Text(
                         'Previous Month',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                       Text(
                         'Finish :${productionData!.first.moldingQty.toString()}',
-                        style: AppConstants.customTextStyle(14, Colors.white, FontWeight.w600),
+                        style: AppConstants.customTextStyle(
+                            14, Colors.white, FontWeight.w600),
                       ),
                     ],
                   ),
@@ -275,7 +295,7 @@ class ProductionDataSection extends StatelessWidget {
 class UnitWiseSewingYSection extends StatelessWidget {
   final List<UnitWiseSewingY>? unitWiseSewingY;
 
-  UnitWiseSewingYSection({this.unitWiseSewingY});
+  const UnitWiseSewingYSection({super.key, this.unitWiseSewingY});
 
   @override
   Widget build(BuildContext context) {
@@ -297,8 +317,7 @@ class UnitWiseSewingYSection extends StatelessWidget {
 class FinishFifteenSection extends StatelessWidget {
   final List<FinishFifteen>? finishFifteen;
 
-
-  FinishFifteenSection({this.finishFifteen});
+  const FinishFifteenSection({super.key, this.finishFifteen});
 
   @override
   Widget build(BuildContext context) {

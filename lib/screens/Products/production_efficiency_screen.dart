@@ -9,10 +9,12 @@ class ProductionEfficiencyScreen extends StatefulWidget {
   const ProductionEfficiencyScreen({super.key});
 
   @override
-  State<ProductionEfficiencyScreen> createState() => _ProductionEfficiencyScreenState();
+  State<ProductionEfficiencyScreen> createState() =>
+      _ProductionEfficiencyScreenState();
 }
 
-class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen> {
+class _ProductionEfficiencyScreenState
+    extends State<ProductionEfficiencyScreen> {
   DateTime? selectedDate;
   int? selectedBuyerId;
   int? selectedSectionId;
@@ -42,14 +44,20 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
       });
       final formattedDate = DateFormat('yyyy-MM-dd').format(picked);
       Future.microtask(() {
-        context.read<ProductProvider>().getProductionEfficiencyReport(formattedDate);
+        context
+            .read<ProductProvider>()
+            .getProductionEfficiencyReport(formattedDate);
       });
     }
   }
 
-  List<ProductionEfficiencyModel> _filterByPO(List<ProductionEfficiencyModel> list, String query) {
+  List<ProductionEfficiencyModel> _filterByPO(
+      List<ProductionEfficiencyModel> list, String query) {
     if (query.isEmpty) return list;
-    return list.where((item) => item.po?.toLowerCase().contains(query.toLowerCase()) ?? false).toList();
+    return list
+        .where((item) =>
+            item.po?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
   }
 
   @override
@@ -115,7 +123,9 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: Text(
-              selectedDate == null ? 'Select Date' : DateFormat('dd MMM yyyy').format(selectedDate!),
+              selectedDate == null
+                  ? 'Select Date'
+                  : DateFormat('dd MMM yyyy').format(selectedDate!),
             ),
             trailing: const Icon(Icons.arrow_drop_down),
             onTap: () => _selectDate(context),
@@ -140,7 +150,8 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
             child: filteredList.isEmpty
                 ? const Center(child: Text('No data available'))
                 : ListView.builder(
-                    padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                    padding:
+                        const EdgeInsets.only(left: 8, right: 8, bottom: 8),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final item = filteredList[index];
@@ -155,7 +166,7 @@ class _ProductionEfficiencyScreenState extends State<ProductionEfficiencyScreen>
 
   Widget _buildFilterSection(BuildContext context, ProductProvider provider) {
     return Consumer<ProductProvider>(
-      builder: (context,pro,_)=>Visibility(
+      builder: (context, pro, _) => Visibility(
         visible: pro.showFilter,
         child: Card(
           color: Colors.white,

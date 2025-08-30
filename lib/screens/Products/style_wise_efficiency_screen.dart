@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:yunusco_group/utils/colors.dart';
 import '../../models/stylewise_efficiency_model.dart';
 
 class StylewiseEfficiencyScreen extends StatelessWidget {
@@ -51,10 +49,11 @@ class StylewiseEfficiencyScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildSummaryItem('Total Styles', efficiencies.length.toString()),
+                _buildSummaryItem(
+                    'Total Styles', efficiencies.length.toString()),
                 _buildSummaryItem(
                   'Avg Efficiency',
-                  _calculateAverageEfficiency().toStringAsFixed(1) + '%',
+                  '${_calculateAverageEfficiency().toStringAsFixed(1)}%',
                 ),
                 _buildSummaryItem(
                   'Active Lines',
@@ -187,8 +186,8 @@ class StylewiseEfficiencyScreen extends StatelessWidget {
                         color: efficiency >= 90
                             ? Colors.green
                             : efficiency >= 75
-                            ? Colors.blue
-                            : Colors.orange,
+                                ? Colors.blue
+                                : Colors.orange,
                       ),
                     ),
                   ],

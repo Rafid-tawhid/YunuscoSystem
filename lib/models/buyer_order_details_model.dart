@@ -1,28 +1,29 @@
 class BuyerOrderDetailsModel {
   BuyerOrderDetailsModel({
-      num? id, 
-      num? approvalId, 
-      num? currentApprover, 
-      num? aprrovalPolicyId, 
-      num? approvalLevel, 
-      num? approvalTypeId, 
-      String? aprrovalTypePrimaryKey, 
-      num? submitToPerson, 
-      String? masterOrderCode, 
-      num? version, 
-      num? buyerId, 
-      String? buyerName, 
-      String? styleName, 
-      String? catagoryName, 
-      String? createdDate, 
-      String? createdBy, 
-      num? materialMaxBudget, 
-      num? totalOrderQty, 
-      num? totalValue, 
-      num? totalStyleReferance, 
-      num? totalPreCosting, 
-      bool? isLock, 
-      String? finalStatus,}){
+    num? id,
+    num? approvalId,
+    num? currentApprover,
+    num? aprrovalPolicyId,
+    num? approvalLevel,
+    num? approvalTypeId,
+    String? aprrovalTypePrimaryKey,
+    num? submitToPerson,
+    String? masterOrderCode,
+    num? version,
+    num? buyerId,
+    String? buyerName,
+    String? styleName,
+    String? catagoryName,
+    String? createdDate,
+    String? createdBy,
+    num? materialMaxBudget,
+    num? totalOrderQty,
+    num? totalValue,
+    num? totalStyleReferance,
+    num? totalPreCosting,
+    bool? isLock,
+    String? finalStatus,
+  }) {
     _id = id;
     _approvalId = approvalId;
     _currentApprover = currentApprover;
@@ -46,7 +47,7 @@ class BuyerOrderDetailsModel {
     _totalPreCosting = totalPreCosting;
     _isLock = isLock;
     _finalStatus = finalStatus;
-}
+  }
 
   BuyerOrderDetailsModel.fromJson(dynamic json) {
     _id = json['ID'];
@@ -96,53 +97,57 @@ class BuyerOrderDetailsModel {
   num? _totalPreCosting;
   bool? _isLock;
   String? _finalStatus;
-BuyerOrderDetailsModel copyWith({  num? id,
-  num? approvalId,
-  num? currentApprover,
-  num? aprrovalPolicyId,
-  num? approvalLevel,
-  num? approvalTypeId,
-  String? aprrovalTypePrimaryKey,
-  num? submitToPerson,
-  String? masterOrderCode,
-  num? version,
-  num? buyerId,
-  String? buyerName,
-  String? styleName,
-  String? catagoryName,
-  String? createdDate,
-  String? createdBy,
-  num? materialMaxBudget,
-  num? totalOrderQty,
-  num? totalValue,
-  num? totalStyleReferance,
-  num? totalPreCosting,
-  bool? isLock,
-  String? finalStatus,
-}) => BuyerOrderDetailsModel(  id: id ?? _id,
-  approvalId: approvalId ?? _approvalId,
-  currentApprover: currentApprover ?? _currentApprover,
-  aprrovalPolicyId: aprrovalPolicyId ?? _aprrovalPolicyId,
-  approvalLevel: approvalLevel ?? _approvalLevel,
-  approvalTypeId: approvalTypeId ?? _approvalTypeId,
-  aprrovalTypePrimaryKey: aprrovalTypePrimaryKey ?? _aprrovalTypePrimaryKey,
-  submitToPerson: submitToPerson ?? _submitToPerson,
-  masterOrderCode: masterOrderCode ?? _masterOrderCode,
-  version: version ?? _version,
-  buyerId: buyerId ?? _buyerId,
-  buyerName: buyerName ?? _buyerName,
-  styleName: styleName ?? _styleName,
-  catagoryName: catagoryName ?? _catagoryName,
-  createdDate: createdDate ?? _createdDate,
-  createdBy: createdBy ?? _createdBy,
-  materialMaxBudget: materialMaxBudget ?? _materialMaxBudget,
-  totalOrderQty: totalOrderQty ?? _totalOrderQty,
-  totalValue: totalValue ?? _totalValue,
-  totalStyleReferance: totalStyleReferance ?? _totalStyleReferance,
-  totalPreCosting: totalPreCosting ?? _totalPreCosting,
-  isLock: isLock ?? _isLock,
-  finalStatus: finalStatus ?? _finalStatus,
-);
+  BuyerOrderDetailsModel copyWith({
+    num? id,
+    num? approvalId,
+    num? currentApprover,
+    num? aprrovalPolicyId,
+    num? approvalLevel,
+    num? approvalTypeId,
+    String? aprrovalTypePrimaryKey,
+    num? submitToPerson,
+    String? masterOrderCode,
+    num? version,
+    num? buyerId,
+    String? buyerName,
+    String? styleName,
+    String? catagoryName,
+    String? createdDate,
+    String? createdBy,
+    num? materialMaxBudget,
+    num? totalOrderQty,
+    num? totalValue,
+    num? totalStyleReferance,
+    num? totalPreCosting,
+    bool? isLock,
+    String? finalStatus,
+  }) =>
+      BuyerOrderDetailsModel(
+        id: id ?? _id,
+        approvalId: approvalId ?? _approvalId,
+        currentApprover: currentApprover ?? _currentApprover,
+        aprrovalPolicyId: aprrovalPolicyId ?? _aprrovalPolicyId,
+        approvalLevel: approvalLevel ?? _approvalLevel,
+        approvalTypeId: approvalTypeId ?? _approvalTypeId,
+        aprrovalTypePrimaryKey:
+            aprrovalTypePrimaryKey ?? _aprrovalTypePrimaryKey,
+        submitToPerson: submitToPerson ?? _submitToPerson,
+        masterOrderCode: masterOrderCode ?? _masterOrderCode,
+        version: version ?? _version,
+        buyerId: buyerId ?? _buyerId,
+        buyerName: buyerName ?? _buyerName,
+        styleName: styleName ?? _styleName,
+        catagoryName: catagoryName ?? _catagoryName,
+        createdDate: createdDate ?? _createdDate,
+        createdBy: createdBy ?? _createdBy,
+        materialMaxBudget: materialMaxBudget ?? _materialMaxBudget,
+        totalOrderQty: totalOrderQty ?? _totalOrderQty,
+        totalValue: totalValue ?? _totalValue,
+        totalStyleReferance: totalStyleReferance ?? _totalStyleReferance,
+        totalPreCosting: totalPreCosting ?? _totalPreCosting,
+        isLock: isLock ?? _isLock,
+        finalStatus: finalStatus ?? _finalStatus,
+      );
   num? get id => _id;
   num? get approvalId => _approvalId;
   num? get currentApprover => _currentApprover;
@@ -194,5 +199,4 @@ BuyerOrderDetailsModel copyWith({  num? id,
     map['FinalStatus'] = _finalStatus;
     return map;
   }
-
 }

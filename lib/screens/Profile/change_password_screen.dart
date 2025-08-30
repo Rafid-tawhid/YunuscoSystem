@@ -56,10 +56,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     setState(() => _isLoading = true);
 
     // Simulate API call
-    var hp=context.read<AccountProvider>();
-    var success=await hp.changePassword(DashboardHelpers.currentUser!.loginName!, _currentPasswordController.text.trim(), _confirmPasswordController.text.trim());
-    if(success){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+    var hp = context.read<AccountProvider>();
+    var success = await hp.changePassword(
+        DashboardHelpers.currentUser!.loginName!,
+        _currentPasswordController.text.trim(),
+        _confirmPasswordController.text.trim());
+    if (success) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }
     setState(() => _isLoading = false);
 
@@ -108,7 +112,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:  Text('Change Password'),
+        title: Text('Change Password'),
         centerTitle: true,
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
@@ -126,7 +130,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 label: 'Current Password',
                 hint: 'Enter your current password',
                 obscureText: _obscureCurrentPassword,
-                onToggle: () => setState(() => _obscureCurrentPassword = !_obscureCurrentPassword),
+                onToggle: () => setState(
+                    () => _obscureCurrentPassword = !_obscureCurrentPassword),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter current password';
@@ -146,7 +151,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 label: 'New Password',
                 hint: 'Enter new password',
                 obscureText: _obscureNewPassword,
-                onToggle: () => setState(() => _obscureNewPassword = !_obscureNewPassword),
+                onToggle: () =>
+                    setState(() => _obscureNewPassword = !_obscureNewPassword),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter new password';
@@ -172,7 +178,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 label: 'Confirm Password',
                 hint: 'Confirm your new password',
                 obscureText: _obscureConfirmPassword,
-                onToggle: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                onToggle: () => setState(
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please confirm your password';
@@ -202,26 +209,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                   child: _isLoading
                       ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  )
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        )
                       : const Text(
-                    'Change Password',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                          'Change Password',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
 
               const SizedBox(height: 40),
-
-
             ],
           ),
         ),
@@ -271,7 +276,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Colors.red),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             suffixIcon: IconButton(
               icon: Icon(
                 obscureText ? Icons.visibility_off : Icons.visibility,
@@ -281,7 +287,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           ),
           inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')), // No spaces allowed
+            FilteringTextInputFormatter.deny(
+                RegExp(r'\s')), // No spaces allowed
           ],
         ),
       ],

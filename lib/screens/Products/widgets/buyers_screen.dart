@@ -2,19 +2,18 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/screens/Products/widgets/product_screen_header.dart';
 import 'package:yunusco_group/screens/Products/widgets/shimmer_image.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:flutter/services.dart';
 
 import '../buyer_wise_material_list.dart';
 
-
 class BuyersScreen extends StatefulWidget {
+  const BuyersScreen({super.key});
+
   @override
   _BuyersScreenState createState() => _BuyersScreenState();
 }
@@ -38,9 +37,7 @@ class _BuyersScreenState extends State<BuyersScreen> {
       appBar: AppBar(
         backgroundColor: myColors.primaryColor,
         centerTitle: true,
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         title: Consumer<ProductProvider>(
           builder: (context, provider, _) => Text(
             provider.isSelectCat ? 'Categories' : 'Buyers',
@@ -54,7 +51,7 @@ class _BuyersScreenState extends State<BuyersScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              var provider=context.read<ProductProvider>();
+              var provider = context.read<ProductProvider>();
               showMenu(
                 context: context,
                 position: RelativeRect.fromLTRB(
@@ -69,7 +66,10 @@ class _BuyersScreenState extends State<BuyersScreen> {
                     value: 1,
                     child: Row(
                       children: [
-                        Icon(Icons.check, color: provider.isSelectCat ? Colors.green : Colors.transparent),
+                        Icon(Icons.check,
+                            color: provider.isSelectCat
+                                ? Colors.green
+                                : Colors.transparent),
                         SizedBox(width: 8),
                         Text('Categories'),
                       ],
@@ -79,7 +79,10 @@ class _BuyersScreenState extends State<BuyersScreen> {
                     value: 2,
                     child: Row(
                       children: [
-                        Icon(Icons.check, color: !provider.isSelectCat ? Colors.green : Colors.transparent),
+                        Icon(Icons.check,
+                            color: !provider.isSelectCat
+                                ? Colors.green
+                                : Colors.transparent),
                         SizedBox(width: 8),
                         Text('Buyers'),
                       ],
@@ -120,7 +123,9 @@ class _BuyersScreenState extends State<BuyersScreen> {
                     return _buildLoadingShimmer();
                   }
                   return _buildBuyerGrid(provider);
-                  return provider.isSelectCat? _buildCategoryGrid(provider):_buildBuyerGrid(provider);
+                  return provider.isSelectCat
+                      ? _buildCategoryGrid(provider)
+                      : _buildBuyerGrid(provider);
                 },
               ),
             ),
@@ -260,6 +265,7 @@ class _BuyersScreenState extends State<BuyersScreen> {
       ),
     );
   }
+
   Widget _buildBuyerGrid(ProductProvider provider) {
     // Define a list of colors for the name backgrounds
     final List<Color> nameColors = [
@@ -309,9 +315,13 @@ class _BuyersScreenState extends State<BuyersScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () async {
-          var pp=context.read<ProductProvider>();
-          if(await pp.getBuyerWiseMaterialList(code)){
-            Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerWiseMaterialList(buyerName: name)));
+          var pp = context.read<ProductProvider>();
+          if (await pp.getBuyerWiseMaterialList(code)) {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) =>
+                        BuyerWiseMaterialList(buyerName: name)));
           }
         },
         child: Padding(
@@ -399,8 +409,7 @@ class _BuyersScreenState extends State<BuyersScreen> {
 
   void getAllCategoryAndBuyerInfo() async {
     var pp = context.read<ProductProvider>();
-   // pp.getAllCategoryList();
+    // pp.getAllCategoryList();
     pp.getAllBuyerInfo();
   }
 }
-

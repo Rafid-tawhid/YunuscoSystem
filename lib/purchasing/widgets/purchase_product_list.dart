@@ -5,8 +5,9 @@ import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/requisation_products_model.dart';
 
-
 class ProductSelectionScreen extends StatefulWidget {
+  const ProductSelectionScreen({super.key});
+
   @override
   _ProductSelectionScreenState createState() => _ProductSelectionScreenState();
 }
@@ -24,7 +25,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((v){
+    WidgetsBinding.instance.addPostFrameCallback((v) {
       getAllProducts();
     });
     super.initState();
@@ -45,16 +46,16 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
       appBar: AppBar(
         title: _isSearching
             ? TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'Search products...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
-          ),
-          style: TextStyle(color: Colors.black),
-          onChanged: (value) => setState(() {}),
-        )
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search products...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: TextStyle(color: Colors.black),
+                onChanged: (value) => setState(() {}),
+              )
             : Text('Select Product'),
         actions: [
           IconButton(
@@ -75,8 +76,11 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
             ),
         ],
       ),
-      body: productProvider.isLoading?Center(child: CircularProgressIndicator(),):
-      _buildProductList(products),
+      body: productProvider.isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : _buildProductList(products),
     );
   }
 
@@ -84,9 +88,15 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
     final searchTerm = _searchController.text.toLowerCase();
     final filteredProducts = searchTerm.isEmpty
         ? products
-        : products.where((product) =>
-    product.productName?.toLowerCase().contains(searchTerm) == true ||
-        product.productCategoryName?.toLowerCase().contains(searchTerm) == true).toList();
+        : products
+            .where((product) =>
+                product.productName?.toLowerCase().contains(searchTerm) ==
+                    true ||
+                product.productCategoryName
+                        ?.toLowerCase()
+                        .contains(searchTerm) ==
+                    true)
+            .toList();
 
     if (filteredProducts.isEmpty) {
       return Center(
@@ -110,9 +120,11 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
             children: [
               if (product.productCategoryName != null)
                 Text('Category: ${product.productCategoryName}'),
-              if (product.uomName != null)
-                Text('UOM: ${product.uomName}'),
-              Divider(height: .1,color: myColors.greyTxt,)
+              if (product.uomName != null) Text('UOM: ${product.uomName}'),
+              Divider(
+                height: .1,
+                color: myColors.greyTxt,
+              )
             ],
           ),
           trailing: _selectedProduct?.productId == product.productId

@@ -1,12 +1,13 @@
 class ProductionStrengthModel {
   ProductionStrengthModel({
-      String? departmentName, 
-      String? sectionName, 
-      String? designation, 
-      num? present, 
-      num? absent, 
-      num? strength, 
-      num? absentPercent,}){
+    String? departmentName,
+    String? sectionName,
+    String? designation,
+    num? present,
+    num? absent,
+    num? strength,
+    num? absentPercent,
+  }) {
     _departmentName = departmentName;
     _sectionName = sectionName;
     _designation = designation;
@@ -14,7 +15,7 @@ class ProductionStrengthModel {
     _absent = absent;
     _strength = strength;
     _absentPercent = absentPercent;
-}
+  }
 
   ProductionStrengthModel.fromJson(dynamic json) {
     _departmentName = json['DepartmentName'];
@@ -32,21 +33,24 @@ class ProductionStrengthModel {
   num? _absent;
   num? _strength;
   num? _absentPercent;
-ProductionStrengthModel copyWith({  String? departmentName,
-  String? sectionName,
-  String? designation,
-  num? present,
-  num? absent,
-  num? strength,
-  num? absentPercent,
-}) => ProductionStrengthModel(  departmentName: departmentName ?? _departmentName,
-  sectionName: sectionName ?? _sectionName,
-  designation: designation ?? _designation,
-  present: present ?? _present,
-  absent: absent ?? _absent,
-  strength: strength ?? _strength,
-  absentPercent: absentPercent ?? _absentPercent,
-);
+  ProductionStrengthModel copyWith({
+    String? departmentName,
+    String? sectionName,
+    String? designation,
+    num? present,
+    num? absent,
+    num? strength,
+    num? absentPercent,
+  }) =>
+      ProductionStrengthModel(
+        departmentName: departmentName ?? _departmentName,
+        sectionName: sectionName ?? _sectionName,
+        designation: designation ?? _designation,
+        present: present ?? _present,
+        absent: absent ?? _absent,
+        strength: strength ?? _strength,
+        absentPercent: absentPercent ?? _absentPercent,
+      );
   String? get departmentName => _departmentName;
   String? get sectionName => _sectionName;
   String? get designation => _designation;
@@ -66,5 +70,4 @@ ProductionStrengthModel copyWith({  String? departmentName,
     map['AbsentPercent'] = _absentPercent;
     return map;
   }
-
 }

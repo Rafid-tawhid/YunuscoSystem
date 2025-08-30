@@ -4,10 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/production_dashboard_model.dart';
 import '../../providers/product_provider.dart';
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:pie_chart/pie_chart.dart';
 
 class ProductionDashboard extends StatelessWidget {
   const ProductionDashboard({super.key});
@@ -43,7 +40,6 @@ class ProductionDashboard extends StatelessWidget {
             // Unit Wise Sewing Charts
             _buildUnitWiseCharts(data),
             const SizedBox(height: 80),
-
           ],
         ),
       ),
@@ -121,19 +117,22 @@ class ProductionDashboard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: List.generate(sewingData.length, (index) {
                 return ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: 60), // Minimum width per bar
+                  constraints:
+                      BoxConstraints(minWidth: 60), // Minimum width per bar
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
                         width: 20,
-                        height: (sewingData[index].quantity?.toDouble() ?? 0) * 2,
+                        height:
+                            (sewingData[index].quantity?.toDouble() ?? 0) * 2,
                         color: Colors.blue,
                       ),
                       const SizedBox(height: 4),
                       Container(
                         width: 20,
-                        height: (sewingYData[index].quantity?.toDouble() ?? 0) * 2,
+                        height:
+                            (sewingYData[index].quantity?.toDouble() ?? 0) * 2,
                         color: Colors.green,
                       ),
                       Padding(
@@ -168,11 +167,18 @@ class ProductionDashboard extends StatelessWidget {
     );
   }
 
-  double _calculateMaxY(List<UnitWiseSewing> sewingData, List<UnitWiseSewingY> sewingYData) {
-    double maxSewing = sewingData.fold(0, (max, item) =>
-    item.quantity != null && item.quantity! > max ? item.quantity!.toDouble() : max);
-    double maxSewingY = sewingYData.fold(0, (max, item) =>
-    item.quantity != null && item.quantity! > max ? item.quantity!.toDouble() : max);
+  double _calculateMaxY(
+      List<UnitWiseSewing> sewingData, List<UnitWiseSewingY> sewingYData) {
+    double maxSewing = sewingData.fold(
+        0,
+        (max, item) => item.quantity != null && item.quantity! > max
+            ? item.quantity!.toDouble()
+            : max);
+    double maxSewingY = sewingYData.fold(
+        0,
+        (max, item) => item.quantity != null && item.quantity! > max
+            ? item.quantity!.toDouble()
+            : max);
     return maxSewing > maxSewingY ? maxSewing : maxSewingY;
   }
 
@@ -303,10 +309,16 @@ class ProductionDashboard extends StatelessWidget {
   }
 
   double _calculateMaxLineY(List<MorrisLine> data) {
-    double maxAchieved = data.fold(0, (max, item) =>
-    item.acheiveQty != null && item.acheiveQty! > max ? item.acheiveQty!.toDouble() : max);
-    double maxTarget = data.fold(0, (max, item) =>
-    item.targetQty != null && item.targetQty! > max ? item.targetQty!.toDouble() : max);
+    double maxAchieved = data.fold(
+        0,
+        (max, item) => item.acheiveQty != null && item.acheiveQty! > max
+            ? item.acheiveQty!.toDouble()
+            : max);
+    double maxTarget = data.fold(
+        0,
+        (max, item) => item.targetQty != null && item.targetQty! > max
+            ? item.targetQty!.toDouble()
+            : max);
     return maxAchieved > maxTarget ? maxAchieved : maxTarget;
   }
 
@@ -319,77 +331,79 @@ class ProductionDashboard extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-
         if (data?.sewingProduction != null)
           _buildDataTable(
             'Sewing Production',
             ['Section', 'Lines', 'Target', 'Achieved', '%'],
-            data!.sewingProduction!.map((e) => [
-              e.sections ?? '',
-              e.lineRunning?.toString() ?? '',
-              e.totalTarget?.toString() ?? '',
-              e.achieveQty?.toString() ?? '',
-              '${e.achievePercent?.toStringAsFixed(1)}%',
-            ]).toList(),
+            data!.sewingProduction!
+                .map((e) => [
+                      e.sections ?? '',
+                      e.lineRunning?.toString() ?? '',
+                      e.totalTarget?.toString() ?? '',
+                      e.achieveQty?.toString() ?? '',
+                      '${e.achievePercent?.toStringAsFixed(1)}%',
+                    ])
+                .toList(),
           ),
-
         const SizedBox(height: 16),
-
         if (data?.finishProduction != null)
           _buildDataTable(
             'Finish Production',
             ['Section', 'Tables', 'Target', 'Achieved', '%'],
-            data!.finishProduction!.map((e) => [
-              e.sections ?? '',
-              e.tableRunning?.toString() ?? '',
-              e.totalTarget?.toString() ?? '',
-              e.achieveQty?.toString() ?? '',
-              '${e.achievePercent?.toStringAsFixed(1)}%',
-            ]).toList(),
+            data!.finishProduction!
+                .map((e) => [
+                      e.sections ?? '',
+                      e.tableRunning?.toString() ?? '',
+                      e.totalTarget?.toString() ?? '',
+                      e.achieveQty?.toString() ?? '',
+                      '${e.achievePercent?.toStringAsFixed(1)}%',
+                    ])
+                .toList(),
           ),
       ],
     );
   }
 
-  Widget _buildDataTable(String title, List<String> headers, List<List<String>> rows) {
+  Widget _buildDataTable(
+      String title, List<String> headers, List<List<String>> rows) {
     return Card(
       elevation: 2,
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-        Padding(
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                title,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: headers
+                    .map((header) => DataColumn(
+                          label: Text(
+                            header,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ))
+                    .toList(),
+                rows: rows
+                    .map((row) => DataRow(
+                          cells:
+                              row.map((cell) => DataCell(Text(cell))).toList(),
+                        ))
+                    .toList(),
+              ),
+            )
+          ],
         ),
       ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: headers
-                      .map((header) => DataColumn(
-                    label: Text(
-                      header,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ))
-                      .toList(),
-                  rows: rows
-                      .map((row) => DataRow(
-                    cells: row
-                        .map((cell) => DataCell(Text(cell)))
-                        .toList(),
-                  ))
-                      .toList(),
-                ),
-              )
-        ],
-      ),
-    ),
     );
   }
 }

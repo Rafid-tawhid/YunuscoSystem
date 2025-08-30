@@ -1,13 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:provider/provider.dart';
-import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -17,11 +11,10 @@ import 'generate_pdf.dart';
 
 class PayslipDetailScreen extends StatelessWidget {
   PayslipModel payslip;
-  PayslipDetailScreen({required this.payslip});
+  PayslipDetailScreen({super.key, required this.payslip});
 
   @override
   Widget build(BuildContext context) {
-
     final currencyFormat = NumberFormat.currency(locale: 'en_US', symbol: '\$');
 
     return Scaffold(
@@ -48,18 +41,26 @@ class PayslipDetailScreen extends StatelessWidget {
               title: 'Earnings',
               icon: Icons.attach_money,
               children: [
-                _buildItemRow('Basic Salary', payslip.basicSalary, currencyFormat),
+                _buildItemRow(
+                    'Basic Salary', payslip.basicSalary, currencyFormat),
                 _buildItemRow('House Rent', payslip.houseRent, currencyFormat),
                 _buildItemRow('Conveyance', payslip.conveyance, currencyFormat),
                 _buildItemRow('Medical', payslip.medical, currencyFormat),
-                _buildItemRow('Attendance Bonus', payslip.attendanceBonus, currencyFormat),
-                _buildItemRow('Food Allowance', payslip.foodAllowence, currencyFormat),
+                _buildItemRow('Attendance Bonus', payslip.attendanceBonus,
+                    currencyFormat),
+                _buildItemRow(
+                    'Food Allowance', payslip.foodAllowence, currencyFormat),
                 _buildItemRow('OT Amount', payslip.oTAmount, currencyFormat),
-                _buildItemRow('Holiday Allowance', payslip.holidayAllowance, currencyFormat),
-                _buildItemRow('Other Allowance', payslip.otherAllowence, currencyFormat),
-                _buildItemRow('Other Allowance 2', payslip.otherAllowence2, currencyFormat),
+                _buildItemRow('Holiday Allowance', payslip.holidayAllowance,
+                    currencyFormat),
+                _buildItemRow(
+                    'Other Allowance', payslip.otherAllowence, currencyFormat),
+                _buildItemRow('Other Allowance 2', payslip.otherAllowence2,
+                    currencyFormat),
                 _buildDivider(),
-                _buildItemRow('Gross Salary', payslip.grossSalary, currencyFormat, isTotal: true),
+                _buildItemRow(
+                    'Gross Salary', payslip.grossSalary, currencyFormat,
+                    isTotal: true),
               ],
             ),
 
@@ -68,7 +69,8 @@ class PayslipDetailScreen extends StatelessWidget {
               title: 'Deductions',
               icon: Icons.money_off,
               children: [
-                _buildItemRow('Provident Fund', payslip.providentFund, currencyFormat),
+                _buildItemRow(
+                    'Provident Fund', payslip.providentFund, currencyFormat),
                 _buildItemRow('Loan', payslip.loan, currencyFormat),
                 _buildItemRow('Advance', payslip.advance, currencyFormat),
                 _buildItemRow('Stamp Fee', payslip.stampFees, currencyFormat),
@@ -76,10 +78,16 @@ class PayslipDetailScreen extends StatelessWidget {
                 _buildItemRow('Late Fee', payslip.lateFee, currencyFormat),
                 _buildItemRow('AIT', payslip.ait, currencyFormat),
                 _buildItemRow('TDS', payslip.tds, currencyFormat),
-                if(payslip.otherDeduction!>0)_buildItemRow('Other Deduction', payslip.otherDeduction, currencyFormat),
-                if(payslip.otherDeduction1!>0)_buildItemRow('Other Deduction1', payslip.otherDeduction1, currencyFormat),
+                if (payslip.otherDeduction! > 0)
+                  _buildItemRow('Other Deduction', payslip.otherDeduction,
+                      currencyFormat),
+                if (payslip.otherDeduction1! > 0)
+                  _buildItemRow('Other Deduction1', payslip.otherDeduction1,
+                      currencyFormat),
                 _buildDivider(),
-                _buildItemRow('Total Deductions', payslip.netDeduction, currencyFormat, isTotal: true),
+                _buildItemRow(
+                    'Total Deductions', payslip.netDeduction, currencyFormat,
+                    isTotal: true),
               ],
             ),
 
@@ -91,7 +99,8 @@ class PayslipDetailScreen extends StatelessWidget {
               title: 'Attendance Summary',
               icon: Icons.calendar_today,
               children: [
-                _buildAttendanceRow('Total Working Days', payslip.totalWorkingDays),
+                _buildAttendanceRow(
+                    'Total Working Days', payslip.totalWorkingDays),
                 _buildAttendanceRow('Present Days', payslip.presentDays),
                 _buildAttendanceRow('Absent Days', payslip.absentDays),
                 _buildAttendanceRow('Late Days', payslip.lateDays),
@@ -107,15 +116,22 @@ class PayslipDetailScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => createAndSavePdf(payslip,context),
-        icon: const Icon(Icons.download,color: Colors.white,),
-        label: Text('Download PDF',style: customTextStyle(16, Colors.white, FontWeight.w500),),
+        onPressed: () => createAndSavePdf(payslip, context),
+        icon: const Icon(
+          Icons.download,
+          color: Colors.white,
+        ),
+        label: Text(
+          'Download PDF',
+          style: customTextStyle(16, Colors.white, FontWeight.w500),
+        ),
         backgroundColor: myColors.primaryColor,
       ),
     );
   }
 
-  Widget _buildHeaderSection(PayslipModel payslip, NumberFormat currencyFormat) {
+  Widget _buildHeaderSection(
+      PayslipModel payslip, NumberFormat currencyFormat) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -168,8 +184,13 @@ class PayslipDetailScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildHeaderItem('Joining', DashboardHelpers.convertDateTime(payslip.joiningDate.toString(),pattern: 'd MMM yyyy')),
-              _buildHeaderItem('Payable', currencyFormat.format(payslip.netPeyable)),
+              _buildHeaderItem(
+                  'Joining',
+                  DashboardHelpers.convertDateTime(
+                      payslip.joiningDate.toString(),
+                      pattern: 'd MMM yyyy')),
+              _buildHeaderItem(
+                  'Payable', currencyFormat.format(payslip.netPeyable)),
             ],
           ),
         ],
@@ -234,7 +255,8 @@ class PayslipDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemRow(String label, num? value, NumberFormat currencyFormat, {bool isTotal = false}) {
+  Widget _buildItemRow(String label, num? value, NumberFormat currencyFormat,
+      {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -294,7 +316,8 @@ class PayslipDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNetPaySection(PayslipModel payslip, NumberFormat currencyFormat) {
+  Widget _buildNetPaySection(
+      PayslipModel payslip, NumberFormat currencyFormat) {
     return Container(
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -323,7 +346,9 @@ class PayslipDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              payslip.netPeyable != null ? currencyFormat.format(payslip.netPeyable) : 'N/A',
+              payslip.netPeyable != null
+                  ? currencyFormat.format(payslip.netPeyable)
+                  : 'N/A',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -354,7 +379,8 @@ class PayslipDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentMethod(String method, num? amount, NumberFormat currencyFormat) {
+  Widget _buildPaymentMethod(
+      String method, num? amount, NumberFormat currencyFormat) {
     return Column(
       children: [
         Text(
@@ -383,11 +409,12 @@ class PayslipDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> createAndSavePdf(PayslipModel payslip,BuildContext context) async {
+  Future<void> createAndSavePdf(
+      PayslipModel payslip, BuildContext context) async {
     final pdfFile = await PayslipPDFGenerator.generatePayslipPDF(payslip);
 
     // Save to gallery
-    var saved=  await PayslipPDFGenerator.savePDFToGallery(pdfFile);
+    var saved = await PayslipPDFGenerator.savePDFToGallery(pdfFile);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(saved
@@ -396,17 +423,9 @@ class PayslipDetailScreen extends StatelessWidget {
       ),
     );
 
-
-
     // Optional: Open the PDF for viewing
     await Printing.layoutPdf(
       onLayout: (PdfPageFormat format) async => pdfFile.readAsBytes(),
     );
   }
-
-
-
 }
-
-
-

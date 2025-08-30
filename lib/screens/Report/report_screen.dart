@@ -8,17 +8,18 @@ import 'package:yunusco_group/utils/colors.dart';
 import '../../models/production_strength_model.dart';
 
 class ProductionStrengthScreen extends StatefulWidget {
-  const ProductionStrengthScreen({Key? key}) : super(key: key);
+  const ProductionStrengthScreen({super.key});
 
   @override
-  _ProductionStrengthScreenState createState() => _ProductionStrengthScreenState();
+  _ProductionStrengthScreenState createState() =>
+      _ProductionStrengthScreenState();
 }
 
 class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
   DateTime _selectedDate = DateTime.now();
   int _currentSectionIndex = 0;
   Timer? _sectionTimer;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -36,7 +37,8 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
 
   void _setupSectionTimer() {
     _sectionTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      if (mounted && context.read<InventoryPorvider>().productionStrengthList.isNotEmpty) {
+      if (mounted &&
+          context.read<InventoryPorvider>().productionStrengthList.isNotEmpty) {
         final sections = _getSections();
         if (sections.isNotEmpty) {
           final nextIndex = (_currentSectionIndex + 1) % sections.length;
@@ -67,7 +69,11 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
 
   List<String> _getSections() {
     final ip = context.read<InventoryPorvider>();
-    return ip.productionStrengthList.map((e) => e.sectionName ?? '').toSet().toList()..sort();
+    return ip.productionStrengthList
+        .map((e) => e.sectionName ?? '')
+        .toSet()
+        .toList()
+      ..sort();
   }
 
   @override
@@ -104,7 +110,8 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Text(
                   'Data for ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
 
@@ -126,7 +133,10 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
                       itemBuilder: (context, index) {
                         return _SectionSlide(
                           sectionName: sections[index],
-                          data: pro.productionStrengthList.where((item) => item.sectionName == sections[index]).toList(),
+                          data: pro.productionStrengthList
+                              .where(
+                                  (item) => item.sectionName == sections[index])
+                              .toList(),
                         );
                       },
                     ),
@@ -137,7 +147,8 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
               // Section indicators
               if (sections.length > 1)
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   child: Row(children: [
                     // Left navigation arrow
                     IconButton(
@@ -147,7 +158,8 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
                         backgroundColor: Colors.grey.shade200,
                         shape: CircleBorder(),
                       ),
-                      icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+                      icon: Icon(Icons.arrow_back_ios,
+                          color: Colors.black, size: 20),
                       onPressed: _currentSectionIndex > 0
                           ? () {
                               _pageController.previousPage(
@@ -169,7 +181,9 @@ class _ProductionStrengthScreenState extends State<ProductionStrengthScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _currentSectionIndex == index ? Colors.blue[700] : Colors.grey[300],
+                            color: _currentSectionIndex == index
+                                ? Colors.blue[700]
+                                : Colors.grey[300],
                           ),
                         );
                       }).toList(),
@@ -228,18 +242,21 @@ class _SectionSlide extends StatelessWidget {
   final List<ProductionStrengthModel> data;
 
   const _SectionSlide({
-    Key? key,
     required this.sectionName,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     // Calculate totals
-    final totalPresent = data.fold(0, (sum, item) => sum + (int.parse(item.present.toString())));
-    final totalAbsent = data.fold(0, (sum, item) => sum + (int.parse(item.absent.toString())));
-    final totalStrength = data.fold(0, (sum, item) => sum + (int.parse(item.present.toString())));
-    final overallAbsentPercent = totalStrength > 0 ? (totalAbsent / totalStrength * 100) : 0;
+    final totalPresent =
+        data.fold(0, (sum, item) => sum + (int.parse(item.present.toString())));
+    final totalAbsent =
+        data.fold(0, (sum, item) => sum + (int.parse(item.absent.toString())));
+    final totalStrength =
+        data.fold(0, (sum, item) => sum + (int.parse(item.present.toString())));
+    final overallAbsentPercent =
+        totalStrength > 0 ? (totalAbsent / totalStrength * 100) : 0;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -311,7 +328,9 @@ class _SectionSlide extends StatelessWidget {
                   child: _SummaryCard(
                     title: 'Absent %',
                     value: '${overallAbsentPercent.toStringAsFixed(1)}%',
-                    color: overallAbsentPercent > 10 ? Colors.orange : Colors.green,
+                    color: overallAbsentPercent > 10
+                        ? Colors.orange
+                        : Colors.green,
                   ),
                 ),
               ],
@@ -322,7 +341,8 @@ class _SectionSlide extends StatelessWidget {
 
           // Data table title
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               children: [
                 const Text(
@@ -403,10 +423,14 @@ class _SectionSlide extends StatelessWidget {
                             columnSpacing: 12,
                             columns: const [
                               DataColumn(label: SizedBox.shrink()),
-                              DataColumn(label: SizedBox.shrink(), numeric: true),
-                              DataColumn(label: SizedBox.shrink(), numeric: true),
-                              DataColumn(label: SizedBox.shrink(), numeric: true),
-                              DataColumn(label: SizedBox.shrink(), numeric: true),
+                              DataColumn(
+                                  label: SizedBox.shrink(), numeric: true),
+                              DataColumn(
+                                  label: SizedBox.shrink(), numeric: true),
+                              DataColumn(
+                                  label: SizedBox.shrink(), numeric: true),
+                              DataColumn(
+                                  label: SizedBox.shrink(), numeric: true),
                             ],
                             rows: data.map((item) {
                               return DataRow(
@@ -434,8 +458,12 @@ class _SectionSlide extends StatelessWidget {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: (item.absent ?? 0) > 0 ? Colors.red : Colors.black,
-                                          fontWeight: (item.absent ?? 0) > 0 ? FontWeight.bold : FontWeight.normal,
+                                          color: (item.absent ?? 0) > 0
+                                              ? Colors.red
+                                              : Colors.black,
+                                          fontWeight: (item.absent ?? 0) > 0
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
                                         ),
                                       ),
                                     ),
@@ -454,8 +482,13 @@ class _SectionSlide extends StatelessWidget {
                                         '${item.absentPercent?.toStringAsFixed(1) ?? '0.0'}%',
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: (item.absentPercent ?? 0) > 10 ? Colors.orange : Colors.green,
-                                          fontWeight: (item.absentPercent ?? 0) > 10 ? FontWeight.bold : FontWeight.normal,
+                                          color: (item.absentPercent ?? 0) > 10
+                                              ? Colors.orange
+                                              : Colors.green,
+                                          fontWeight:
+                                              (item.absentPercent ?? 0) > 10
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
                                         ),
                                       ),
                                     ),
@@ -484,11 +517,10 @@ class _SummaryCard extends StatelessWidget {
   final Color color;
 
   const _SummaryCard({
-    Key? key,
     required this.title,
     required this.value,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

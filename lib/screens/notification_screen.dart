@@ -6,6 +6,8 @@ import 'package:yunusco_group/providers/notofication_provider.dart';
 import '../helper_class/dashboard_helpers.dart';
 
 class NotificationsScreen extends StatefulWidget {
+  const NotificationsScreen({super.key});
+
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
@@ -72,7 +74,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     final notification = provider.allNotification[index];
                     return _NotificationListItem(
                       notification: notification,
-                      onTap: () => _showNotificationDetails(context, notification),
+                      onTap: () =>
+                          _showNotificationDetails(context, notification),
                     );
                   },
                 );
@@ -84,16 +87,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  void _showNotificationDetails(BuildContext context, NotificationModel notification) {
+  void _showNotificationDetails(
+      BuildContext context, NotificationModel notification) {
     final remarksController = TextEditingController();
     final detailsSheet = NotificationDetailsSheet(
         notification: notification,
         controller: remarksController,
         onAccept: () {
-          _handleLeaveAction(context, notification, true, remarksController.text);
+          _handleLeaveAction(
+              context, notification, true, remarksController.text);
         },
         onReject: () {
-          _handleLeaveAction(context, notification, false, remarksController.text);
+          _handleLeaveAction(
+              context, notification, false, remarksController.text);
         });
 
     showModalBottomSheet(
@@ -102,7 +108,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       isScrollControlled: true, // This is important
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom, // Adjust for keyboard
+          bottom:
+              MediaQuery.of(context).viewInsets.bottom, // Adjust for keyboard
         ),
         child: SingleChildScrollView(
           child: detailsSheet,
@@ -137,18 +144,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       provider.acceptLeaveApproval(data);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
+        SnackBar(
+            content: Text(isApproved ? 'Leave approved' : 'Leave rejected')),
       );
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to update status: ${e.toString()}')),
         );
       }
-    }
-    finally{
-       _loadNotifications();
+    } finally {
+      _loadNotifications();
       Navigator.pop(context);
     }
   }
@@ -223,7 +229,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('CHIP STATUS ${status}');
+    debugPrint('CHIP STATUS $status');
     final color = _getStatusColor(status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -260,7 +266,12 @@ class NotificationDetailsSheet extends StatelessWidget {
   final VoidCallback? onReject;
   final TextEditingController? controller;
 
-  NotificationDetailsSheet({required this.notification, this.onAccept, this.onReject, this.controller});
+  const NotificationDetailsSheet(
+      {super.key,
+      required this.notification,
+      this.onAccept,
+      this.onReject,
+      this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -281,25 +292,31 @@ class NotificationDetailsSheet extends StatelessWidget {
             children: [
               Text(
                 notification.applaiedForEmployee ?? 'Unknown Employee',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               _StatusChip(status: notification.leaveStatus),
             ],
           ),
           const SizedBox(height: 16),
           _DetailRow(label: 'Applied By', value: notification.appliedByName),
-          _DetailRow(label: 'Applied On', value: _formatDate(notification.leaveCreationDate)),
+          _DetailRow(
+              label: 'Applied On',
+              value: _formatDate(notification.leaveCreationDate)),
           _DetailRow(label: 'Leave Type', value: notification.leaveType),
           _DetailRow(
             label: 'Period',
-            value: '${_formatDate(notification.leaveFromDate)} - ${_formatDate(notification.leaveToDate)}',
+            value:
+                '${_formatDate(notification.leaveFromDate)} - ${_formatDate(notification.leaveToDate)}',
           ),
           _DetailRow(label: 'Duration', value: '${notification.dayCount} days'),
           _DetailRow(
             label: 'Balance',
-            value: 'SL: ${notification.sl}, EL: ${notification.el}, CL :${notification.cl},',
+            value:
+                'SL: ${notification.sl}, EL: ${notification.el}, CL :${notification.cl},',
           ),
-          if (notification.reasons?.isNotEmpty ?? false) _DetailRow(label: 'Reason', value: notification.reasons!),
+          if (notification.reasons?.isNotEmpty ?? false)
+            _DetailRow(label: 'Reason', value: notification.reasons!),
           const SizedBox(height: 24),
           isShowAcceptRejectButton(notification)
               ? Column(
@@ -311,8 +328,11 @@ class NotificationDetailsSheet extends StatelessWidget {
                         controller: controller,
                         decoration: InputDecoration(
                           labelText: 'Remarks (Optional)',
-                          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400, width: .5)),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.grey.shade400, width: .5)),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                         ),
                         maxLines: 2,
                       ),
@@ -329,9 +349,11 @@ class NotificationDetailsSheet extends StatelessWidget {
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green),
                             onPressed: onAccept,
-                            child: const Text('Approve', style: TextStyle(color: Colors.white)),
+                            child: const Text('Approve',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ],
@@ -358,7 +380,9 @@ class NotificationDetailsSheet extends StatelessWidget {
   bool isShowAcceptRejectButton(NotificationModel notification) {
     if (notification.employeeIdCardNo == DashboardHelpers.currentUser!.iDnum) {
       return false;
-    } else if (notification.finalStatus == 1 || notification.finalStatus == 2 || notification.finalStatus == 4) {
+    } else if (notification.finalStatus == 1 ||
+        notification.finalStatus == 2 ||
+        notification.finalStatus == 4) {
       return true;
     } else {
       return false;
@@ -476,7 +500,9 @@ class _DepartmentDropdownState extends State<DepartmentDropdown> {
               padding: EdgeInsets.zero, // Explicit zero padding
               child: Text(
                 DashboardHelpers.truncateString(department['name'], 12),
-                style: Theme.of(context).textTheme.bodyMedium, // Inherits text style
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium, // Inherits text style
               ),
             ),
           );

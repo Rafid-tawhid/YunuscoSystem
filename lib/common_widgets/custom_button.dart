@@ -15,7 +15,7 @@ class CustomElevatedButton extends StatelessWidget {
   final bool isFullWidth;
 
   const CustomElevatedButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
@@ -27,7 +27,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.icon,
     this.elevation,
     this.isFullWidth = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,37 +51,37 @@ class CustomElevatedButton extends StatelessWidget {
         ),
         child: isLoading
             ? SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              textColor ?? Colors.white,
-            ),
-          ),
-        )
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    textColor ?? Colors.white,
+                  ),
+                ),
+              )
             : icon != null
-            ? Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon!,
-            const SizedBox(width: 8),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 16,
-                color: textColor ?? Colors.white,
-              ),
-            ),
-          ],
-        )
-            : Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            color: textColor ?? Colors.white,
-          ),
-        ),
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      icon!,
+                      const SizedBox(width: 8),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: textColor ?? Colors.white,
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: textColor ?? Colors.white,
+                    ),
+                  ),
       ),
     );
   }

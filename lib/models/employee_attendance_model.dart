@@ -1,21 +1,22 @@
 class EmployeeAttendanceModel {
   EmployeeAttendanceModel({
-      num? employeeId, 
-      String? idCardNo, 
-      String? attendancedate, 
-      String? dayDate, 
-      String? officeInTime, 
-      String? inTime, 
-      num? absent, 
-      num? present, 
-      num? late, 
-      String? outTime, 
-      String? officeOutTime, 
-      String? inFlag, 
-      String? outFlag, 
-      num? leave, 
-      String? totalWorkingHours, 
-      String? lateDuration,}){
+    num? employeeId,
+    String? idCardNo,
+    String? attendancedate,
+    String? dayDate,
+    String? officeInTime,
+    String? inTime,
+    num? absent,
+    num? present,
+    num? late,
+    String? outTime,
+    String? officeOutTime,
+    String? inFlag,
+    String? outFlag,
+    num? leave,
+    String? totalWorkingHours,
+    String? lateDuration,
+  }) {
     _employeeId = employeeId;
     _idCardNo = idCardNo;
     _attendancedate = attendancedate;
@@ -32,7 +33,7 @@ class EmployeeAttendanceModel {
     _leave = leave;
     _totalWorkingHours = totalWorkingHours;
     _lateDuration = lateDuration;
-}
+  }
 
   EmployeeAttendanceModel.fromJson(dynamic json) {
     _employeeId = json['EmployeeId'];
@@ -68,39 +69,42 @@ class EmployeeAttendanceModel {
   num? _leave;
   String? _totalWorkingHours;
   String? _lateDuration;
-EmployeeAttendanceModel copyWith({  num? employeeId,
-  String? idCardNo,
-  String? attendancedate,
-  String? dayDate,
-  String? officeInTime,
-  String? inTime,
-  num? absent,
-  num? present,
-  num? late,
-  String? outTime,
-  String? officeOutTime,
-  String? inFlag,
-  String? outFlag,
-  num? leave,
-  String? totalWorkingHours,
-  String? lateDuration,
-}) => EmployeeAttendanceModel(  employeeId: employeeId ?? _employeeId,
-  idCardNo: idCardNo ?? _idCardNo,
-  attendancedate: attendancedate ?? _attendancedate,
-  dayDate: dayDate ?? _dayDate,
-  officeInTime: officeInTime ?? _officeInTime,
-  inTime: inTime ?? _inTime,
-  absent: absent ?? _absent,
-  present: present ?? _present,
-  late: late ?? _late,
-  outTime: outTime ?? _outTime,
-  officeOutTime: officeOutTime ?? _officeOutTime,
-  inFlag: inFlag ?? _inFlag,
-  outFlag: outFlag ?? _outFlag,
-  leave: leave ?? _leave,
-  totalWorkingHours: totalWorkingHours ?? _totalWorkingHours,
-  lateDuration: lateDuration ?? _lateDuration,
-);
+  EmployeeAttendanceModel copyWith({
+    num? employeeId,
+    String? idCardNo,
+    String? attendancedate,
+    String? dayDate,
+    String? officeInTime,
+    String? inTime,
+    num? absent,
+    num? present,
+    num? late,
+    String? outTime,
+    String? officeOutTime,
+    String? inFlag,
+    String? outFlag,
+    num? leave,
+    String? totalWorkingHours,
+    String? lateDuration,
+  }) =>
+      EmployeeAttendanceModel(
+        employeeId: employeeId ?? _employeeId,
+        idCardNo: idCardNo ?? _idCardNo,
+        attendancedate: attendancedate ?? _attendancedate,
+        dayDate: dayDate ?? _dayDate,
+        officeInTime: officeInTime ?? _officeInTime,
+        inTime: inTime ?? _inTime,
+        absent: absent ?? _absent,
+        present: present ?? _present,
+        late: late ?? _late,
+        outTime: outTime ?? _outTime,
+        officeOutTime: officeOutTime ?? _officeOutTime,
+        inFlag: inFlag ?? _inFlag,
+        outFlag: outFlag ?? _outFlag,
+        leave: leave ?? _leave,
+        totalWorkingHours: totalWorkingHours ?? _totalWorkingHours,
+        lateDuration: lateDuration ?? _lateDuration,
+      );
   num? get employeeId => _employeeId;
   String? get idCardNo => _idCardNo;
   String? get attendancedate => _attendancedate;
@@ -138,5 +142,4 @@ EmployeeAttendanceModel copyWith({  num? employeeId,
     map['LateDuration'] = _lateDuration;
     return map;
   }
-
 }
