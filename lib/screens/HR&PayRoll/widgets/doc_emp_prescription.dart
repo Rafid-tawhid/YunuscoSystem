@@ -12,12 +12,10 @@ class DoctorPrescriptionScreen extends StatefulWidget {
   final EmployeeAppointmentInfoModel employee;
   final DocAppoinmentListModel listInfo;
 
-  const DoctorPrescriptionScreen(
-      {super.key, required this.employee, required this.listInfo});
+  const DoctorPrescriptionScreen({super.key, required this.employee, required this.listInfo});
 
   @override
-  State<DoctorPrescriptionScreen> createState() =>
-      _DoctorPrescriptionScreenState();
+  State<DoctorPrescriptionScreen> createState() => _DoctorPrescriptionScreenState();
 }
 
 class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
@@ -53,20 +51,17 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               Align(
                 alignment: Alignment.topRight,
                 child: Chip(
-                    backgroundColor: widget.listInfo.status == 1
-                        ? Colors.orange
-                        : Colors.red,
+                    backgroundColor: widget.listInfo.status == 1 ? Colors.orange : Colors.red,
                     label: Text(
                       widget.listInfo.status == 1 ? 'Emergency' : 'Regular',
                       textAlign: TextAlign.end,
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
                     )),
               ),
               // Employee Information Section
               _buildEmployeeInfoCard(),
               const SizedBox(height: 24),
-
+              //
               // Prescription Form Section
               Align(
                 alignment: Alignment.center,
@@ -99,14 +94,10 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               const SizedBox(height: 16),
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MedicineListScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineListScreen()));
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(
-                      6.0), // Add padding inside the container
+                  padding: const EdgeInsets.all(6.0), // Add padding inside the container
                   decoration: BoxDecoration(
                     border: Border.all(
                       // Add border
@@ -117,12 +108,9 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.medication,
-                          color: Colors.green), // Medicine icon
+                      Icon(Icons.medication, color: Colors.green), // Medicine icon
                       const SizedBox(width: 8), // Add some spacing
-                      const Expanded(
-                          child:
-                              Text('Medicine', style: TextStyle(fontSize: 16))),
+                      const Expanded(child: Text('Medicine', style: TextStyle(fontSize: 16))),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: const Icon(Icons.add, color: Colors.green),
@@ -135,25 +123,21 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               // Medicine Field
 
               Consumer<HrProvider>(
-                builder: (context, pro, _) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      pro.prepareMedicineList.isNotEmpty
-                          ? SizedBox(height: 16)
-                          : SizedBox.shrink(),
-                      ...pro.prepareMedicineList.map((e) => Card(
-                            child: ListTile(
-                              title: Text(e.productName),
-                              subtitle: Text('Qty: ${e.quantity.toString()}'),
-                              trailing: IconButton(
-                                  onPressed: () {
-                                    var hp = context.read<HrProvider>();
-                                    hp.removeMedicine(e);
-                                  },
-                                  icon: Icon(Icons.close)),
-                            ),
-                          )),
-                    ]),
+                builder: (context, pro, _) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  pro.prepareMedicineList.isNotEmpty ? SizedBox(height: 16) : SizedBox.shrink(),
+                  ...pro.prepareMedicineList.map((e) => Card(
+                        child: ListTile(
+                          title: Text(e.productName),
+                          subtitle: Text('Qty: ${e.quantity.toString()}'),
+                          trailing: IconButton(
+                              onPressed: () {
+                                var hp = context.read<HrProvider>();
+                                hp.removeMedicine(e);
+                              },
+                              icon: Icon(Icons.close)),
+                        ),
+                      )),
+                ]),
               ),
               const SizedBox(height: 16),
 
@@ -247,9 +231,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-                alignment: Alignment.bottomRight,
-                child: Text('Serial No: ${widget.listInfo.serialNo}')),
+            Align(alignment: Alignment.bottomRight, child: Text('Serial No: ${widget.listInfo.serialNo}')),
             Text(
               'Patient Information',
               style: TextStyle(
@@ -263,8 +245,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
             _buildInfoRow('ID', widget.employee.idCardNo),
             _buildInfoRow('Department', widget.employee.departmentName),
             _buildInfoRow('Designation', widget.employee.designationName),
-            _buildInfoRow('Age/Gender',
-                '${widget.employee.ageYears} yrs / ${widget.employee.gender}'),
+            _buildInfoRow('Age/Gender', '${widget.employee.ageYears} yrs / ${widget.employee.gender}'),
           ],
         ),
       ),
@@ -323,9 +304,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
       if (await hp.saveGatePassInfo(prescriptionData)) {
         await hp.getAllDocAppointment();
         if (mounted) {
-          DashboardHelpers.showSnakBar(
-              context: context,
-              message: 'Prescription submitted successfully!');
+          DashboardHelpers.showSnakBar(context: context, message: 'Prescription submitted successfully!');
         }
         if (mounted) Navigator.pop(context);
       }
