@@ -44,6 +44,10 @@ class RequisitionDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Row
+            Align(
+              alignment: Alignment.topRight,
+              child: Text(_formatDate(req.requisitionDate)),
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -65,7 +69,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Req #${req.requisitionCode ?? 'N/A'} • ${_formatDate(req.requisitionDate)}',
+                        'Req #${req.requisitionCode ?? 'N/A'} •',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -283,6 +287,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
     );
   }
 
+  //
   Widget _buildDetailRow(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),

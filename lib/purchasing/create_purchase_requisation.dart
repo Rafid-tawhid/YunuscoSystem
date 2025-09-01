@@ -284,20 +284,100 @@ class _CreatePurchaseRequisitionScreenState
 
   Widget _buildItemCard(RequisationProductsModel item) {
     return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        title: Text(item.productName ?? ''),
-        subtitle: Column(
+      color: Colors.white,
+      margin: EdgeInsets.only(bottom: 8),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (item.productName != null) Text(item.productName ?? ''),
-            Text("Qty: ${item.actualReqQty}"),
-            if (item.uomName != null) Text("UOM: ${item.uomName!}"),
+            // Product icon/avatar
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(Icons.inventory_2, color: Colors.blue.shade700),
+            ),
+
+            SizedBox(width: 16),
+
+            // Product details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.productName ?? 'Unnamed Product',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade800,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  SizedBox(height: 6),
+
+                  Row(
+                    children: [
+                      // Quantity badge
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade100,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          "Qty: ${item.actualReqQty}",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(width: 8),
+
+                      // UOM badge (if available)
+                      if (item.uomName != null)
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            "UOM: ${item.uomName!}",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(width: 12),
+
+            // Delete button
+            IconButton(
+              icon: Icon(Icons.delete_outline, color: Colors.red.shade500),
+              onPressed: () => _removeItem(item),
+              splashRadius: 20,
+              tooltip: 'Remove item',
+            ),
           ],
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.delete, color: Colors.red),
-          onPressed: () => _removeItem(item),
         ),
       ),
     );
