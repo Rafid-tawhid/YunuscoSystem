@@ -346,20 +346,6 @@ class RequisitionDetailsScreen extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'approved':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      case 'rejected':
-        return Colors.red;
-      case 'completed':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
 
   String _formatDate(String? dateString) {
     if (dateString == null) return 'N/A';
