@@ -11,21 +11,20 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
-  bool get isAuthenticated =>
-      _user != null; // 📌 Load User from Shared Preferences
+  bool get isAuthenticated => _user != null; // 📌 Load User from Shared Preferences
   Future<void> loadUser() async {
     _user = await DashboardHelpers.getUser();
     notifyListeners();
   }
 
-  List<String> loginModules = []; // 📌 Login API Call
+  List<String> loginModules = [];
+
+  // 📌 Login API Call
   Future<bool> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
-    ApiService apiService =
-        ApiService(); //   "username":"Samin", //       "password":"Abc@#\$02"
-    var response = await apiService.postData(
-        'api/Accounts/GetUserLogin', {"username": email, "password": password});
+    ApiService apiService = ApiService(); //   "username":"Samin", //       "password":"Abc@#\$02"
+    var response = await apiService.postData('api/Accounts/GetUserLogin', {"username": email, "password": password});
     if (response != null) {
       loginModules.clear();
       _user = UserModel.fromJson(response['returnvalue']['login']);
@@ -41,11 +40,10 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } // else {
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
 
   Future<void> logout() async {
     await DashboardHelpers.clearUser();
@@ -62,13 +60,9 @@ class AuthProvider with ChangeNotifier {
   List<Menu> menuList = [];
   Future<void> getMenuList() async {
     final pref = await SharedPreferences.getInstance();
-    final roleStrings = pref.getStringList('roles') ??
-        []; // Convert roles to a Set of ints for faster lookup
+    final roleStrings = pref.getStringList('roles') ?? []; // Convert roles to a Set of ints for faster lookup
     final roleIds = roleStrings.map(int.parse).toSet();
-    menuList = fullModuleList
-        .where((e) => roleIds.contains(e.id))
-        .map((e) => Menu(e.id, e.icon, e.title, false))
-        .toList();
+    menuList = fullModuleList.where((e) => roleIds.contains(e.id)).map((e) => Menu(e.id, e.icon, e.title, false)).toList();
     notifyListeners();
   }
 }

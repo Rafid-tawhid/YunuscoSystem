@@ -48,6 +48,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   String _selectedCategory = 'Smartphones';
 
   // Conditions
+  //
   final List<String> _conditions = [
     'New',
     'Refurbished',
