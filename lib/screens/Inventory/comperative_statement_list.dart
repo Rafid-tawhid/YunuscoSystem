@@ -50,18 +50,29 @@ class _ComperativeStatementListState extends State<ComperativeStatementList> {
           if (provider.filteredRequisitions.isEmpty) {
             return const Center(
               child: Text(
-                'No matching requisitions found',
+                'No matching CS found',
                 style: TextStyle(fontSize: 16),
               ),
             );
           }
 
-          return ListView.builder(
-            itemCount: provider.filteredRequisitions.length,
-            itemBuilder: (context, index) {
-              final requisition = provider.filteredRequisitions[index];
-              return RequisitionCard(requisition: requisition);
-            },
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0,right: 8),
+                child: Text('Total : ${provider.filteredRequisitions.length}'),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: provider.filteredRequisitions.length,
+                  itemBuilder: (context, index) {
+                    final requisition = provider.filteredRequisitions[index];
+                    return RequisitionCard(requisition: requisition);
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
