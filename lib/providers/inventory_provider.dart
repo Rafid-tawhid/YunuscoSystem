@@ -3,6 +3,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/production_strength_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
+import '../models/css_model.dart';
 import '../models/inventory_stock_model.dart';
 
 class InventoryPorvider extends ChangeNotifier {
@@ -10,6 +11,15 @@ class InventoryPorvider extends ChangeNotifier {
 
   final List<InventoryStockModel> _inventoryStockList = [];
   List<InventoryStockModel> get inventoryStockList => _inventoryStockList;
+
+  bool _loading=false;
+  bool  get loading => _loading;
+
+  setLoading(bool)
+  {
+    _loading=bool;
+    notifyListeners();
+  }
 
   //
   Future<bool> getInventoryStockSummery(DateTime date, String type) async {
@@ -55,5 +65,65 @@ class InventoryPorvider extends ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+
+  List<CssModel> _requisitions = [];
+  List<CssModel> _filteredRequisitions = [];
+  String _searchQuery = '';
+  String _filterValue = 'All';
+
+  List<CssModel> get requisitions => _requisitions;
+  List<CssModel> get filteredRequisitions => _filteredRequisitions;
+  String get searchQuery => _searchQuery;
+  String get filterValue => _filterValue;
+
+  Future<void> getAllCs() async{
+    setLoading(true);
+    var data=await apiService.getData('api/inventory/InvCSSList');
+    setLoading(false);
+    if(data!=null){
+      _requisitions.clear();
+      for (var i in data['returnvalue']) {
+        _requisitions.add(CssModel.fromJson(i));
+      }
+      _filteredRequisitions=_requisitions;
+    }
+    notifyListeners();
+    debugPrint('_requisitions ${_requisitions.length}');
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    _applyFilters();
+    notifyListeners();
+  }
+
+  void setFilterValue(String value) {
+    _filterValue = value;
+    _applyFilters();
+    notifyListeners();
+  }
+
+  void _applyFilters() {
+    _filteredRequisitions = _requisitions.where((requisition) {
+      final matchesSearch = requisition.purchaseRequisitionCode
+          !.toLowerCase()
+          .contains(_searchQuery.toLowerCase()) ||
+          requisition.userName!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          requisition.code!.toLowerCase().contains(_searchQuery.toLowerCase());
+
+      final matchesFilter = _filterValue == 'All' ||
+          requisition.purchaseType == _filterValue ||
+          requisition.type == _filterValue;
+
+      return matchesSearch && matchesFilter;
+    }).toList();
+  }
+
+  void addRequisition(CssModel requisition) {
+    _requisitions.add(requisition);
+    _applyFilters();
+    notifyListeners();
   }
 }

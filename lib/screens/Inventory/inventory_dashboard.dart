@@ -3,6 +3,7 @@ import 'package:yunusco_group/screens/Products/garments_requisation_screen.dart'
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
+import 'comperative_statement_list.dart';
 import 'inventory_screen.dart';
 
 class InventoryHomeScreen extends StatelessWidget {
@@ -33,6 +34,15 @@ class InventoryHomeScreen extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (_) => GarmentsRequisitionScreen()),
           );
+        }, // dummy
+      ),
+      DashboardMenuItem(
+        name: 'Comparative\nStatement',
+        icon: Icons.file_copy_outlined,
+        cardColor: const Color(0xFFEEDDF8),
+        iconColor: const Color(0xFFD97FF1),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ComperativeStatementList()));
         }, // dummy
       ),
     ];

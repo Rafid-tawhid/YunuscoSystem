@@ -108,8 +108,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
             const SizedBox(height: 8),
 
             // Applied for employee (if different)
-            if (leave.applaiedForEmployee != null &&
-                leave.applaiedForEmployee != leave.employeeIdCardNo)
+            if (leave.applaiedForEmployee != null && leave.applaiedForEmployee != leave.employeeIdCardNo)
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
@@ -126,16 +125,13 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
             const Divider(height: 20, thickness: 1),
 
             // Leave dates
-            _buildInfoRow('Leave Dates',
-                '${_formatDate(leave.leaveFromDate)} to ${_formatDate(leave.leaveToDate)}'),
+            _buildInfoRow('Leave Dates', '${_formatDate(leave.leaveFromDate)} to ${_formatDate(leave.leaveToDate)}'),
 
             // Leave type and days
-            _buildInfoRow('Leave Type',
-                '${leave.leaveType} (${leave.dayCount?.toStringAsFixed(1) ?? '0'} days)'),
+            _buildInfoRow('Leave Type', '${leave.leaveType} (${leave.dayCount?.toStringAsFixed(1) ?? '0'} days)'),
 
             // Leave balances
-            if (leave.sl != null || leave.el != null || leave.cl != null)
-              _buildLeaveBalances(leave.sl, leave.el, leave.cl),
+            if (leave.sl != null || leave.el != null || leave.cl != null) _buildLeaveBalances(leave.sl, leave.el, leave.cl),
 
             // Reason for leave
             if (leave.reasons != null && leave.reasons!.isNotEmpty)
