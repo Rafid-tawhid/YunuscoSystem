@@ -15,7 +15,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../common_widgets/drawer.dart';
 import '../providers/auth_provider.dart';
 import '../providers/hr_provider.dart';
-import '../purchasing/purchase_requisation_list.dart';
+import 'Purchasing/purchase_requisation_list.dart';
 import 'Accounts/account_menu_screen.dart';
 import 'HR&PayRoll/doc_appointment_requisation.dart';
 import 'HR&PayRoll/hr_main_screen.dart';
@@ -24,6 +24,7 @@ import 'Import/master_lc_list_screen.dart';
 import 'Management/management_dashboard.dart';
 import 'Planning/planning_screen.dart';
 import 'Products/product_home_screen.dart';
+import 'Purchasing/purchasing_dashboard.dart';
 import 'Report/report_screen.dart';
 import 'login_screen.dart';
 import 'Merchandising/merchandisingDashboardcreen.dart';
@@ -221,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => PurchaseRequisitionListScreen()));
+                builder: (context) => PurchasingDashboard()));
         break;
       case 44:
         Navigator.push(

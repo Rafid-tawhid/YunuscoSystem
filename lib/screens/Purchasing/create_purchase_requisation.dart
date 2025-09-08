@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/purchasing/widgets/purchase_product_list.dart';
+import 'package:yunusco_group/screens/Purchasing/widgets/purchase_product_list.dart';
 import 'package:yunusco_group/utils/colors.dart';
-import '../models/requisation_products_model.dart';
+import '../../models/requisation_products_model.dart';
 
 class CreatePurchaseRequisitionScreen extends StatefulWidget {
   const CreatePurchaseRequisitionScreen({super.key});

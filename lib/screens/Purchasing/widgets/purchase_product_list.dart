@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
-
-import '../../models/requisation_products_model.dart';
+import '../../../models/requisation_products_model.dart';
 
 class ProductSelectionScreen extends StatefulWidget {
   const ProductSelectionScreen({super.key});
