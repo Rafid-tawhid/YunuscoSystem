@@ -1,6 +1,12 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import '../../providers/hr_provider.dart';
+import '../../utils/constants.dart';
 
 class SupplierFormScreen extends StatefulWidget {
   const SupplierFormScreen({super.key});
@@ -14,6 +20,7 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _contactPersonController = TextEditingController();
   final TextEditingController _designationController = TextEditingController();
   final TextEditingController _bankController = TextEditingController();
@@ -21,17 +28,12 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
   final TextEditingController _supplierCodeController = TextEditingController();
 
   String _statusValue = 'Local';
-  String _countryValue = 'United States';
+  var _selectedCountryId; // store selected country id
   String _accountTypeValue = 'Brac-1101';
 
-  final List<String> _statusOptions = ['Local','Global'];
-  final List<String> _countryOptions = [
-    'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany',
-    'France', 'Japan', 'China', 'India', 'Brazil', 'Mexico', 'Bangladesh'
-  ];
-  final List<String> _accountTypeOptions = [
-    'Brac-1101', 'Brac-1102', 'Brac-1103'
-  ];
+  final List<String> _statusOptions = ['Local', 'Global'];
+
+  final List<String> _accountTypeOptions = ['Brac-1101', 'Brac-1102', 'Brac-1103'];
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,8 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
               _buildCountryDropdown(),
               const SizedBox(height: 16),
               _buildTextField('Supplier Website', _websiteController, false),
+              const SizedBox(height: 16),
+              _buildTextField('Supplier Email', _emailController, false),
               const SizedBox(height: 16),
               _buildTextField('Supplier Conf. Person', _contactPersonController, true),
               const SizedBox(height: 16),
@@ -149,31 +153,15 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: Colors.grey[400]!),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: DropdownButtonFormField<String>(
-            value: _countryValue,
-            items: _countryOptions.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (newValue) {
-              setState(() {
-                _countryValue = newValue!;
-              });
-            },
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-            ),
-            isExpanded: true,
-          ),
+
+        CountrySearchField(
+          onCountrySelected: (country) {
+           _selectedCountryId={
+             "id":country['id'],
+             "name":country['name'],
+           };
+            print("Selected Country: ${country['name']} ID: $_selectedCountryId");
+          },
         ),
       ],
     );
@@ -226,18 +214,31 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
           if (_formKey.currentState!.validate()) {
             // Form is valid, process the data
             final supplierData = {
-              'Supplier Name': _nameController.text,
-              'Supplier Address': _addressController.text,
-              'Supplier Country': _countryValue,
-              'Supplier Website': _websiteController.text,
-              'Contact Person': _contactPersonController.text,
+              'files': null, // If you have a file, use MultipartFile otherwise null
+              'SupplierName': _nameController.text,
+              'CountryId': _selectedCountryId['id'], // Convert to string
+              'Address': _addressController.text,
+              'Email': _emailController.text, // You'll need to add this controller
+              'Website': _websiteController.text,
+              'Fax': null, // You'll need to add this controller
+              'ContactNumber': _contactPersonController.text, // You'll need to add this controller
+              'CountryName': _selectedCountryId['name'], // You'll need to store country name separately
+              'ContactPerson': _contactPersonController.text,
               'Designation': _designationController.text,
-              'Supplier Bank': _bankController.text,
-              'SWIFT Code': _swiftCodeController.text,
-              'Supplier Code': _supplierCodeController.text,
-              'Status': _statusValue,
-              'Account Type': _accountTypeValue,
+              'SupplierCategoryId': '', // You'll need this field
+              'BusinessType': _accountTypeValue, // You'll need to add this controller
+              'Others': '', // You'll need to add this controller
+              'CodeName': _supplierCodeController.text,
+              'SupplierBank': _bankController.text,
+              'BankAcc': _bankController.text, // You'll need to add this controller
+              'SwiftCode': _swiftCodeController.text,
+              'IsLocal': _statusValue=='Local'?true:false, // Convert boolean to string
+              'AccountCode': _bankController.text, // You'll need to add this controller
+              'SupplierId': '0', // Usually 0 for new creation
             };
+
+            var pp=context.read<ProductProvider>();
+            pp.createSupplier(supplierData);
             debugPrint(supplierData.toString());
             _showSuccessDialog();
           }
@@ -284,6 +285,7 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
     _nameController.dispose();
     _addressController.dispose();
     _websiteController.dispose();
+    _emailController.dispose();
     _contactPersonController.dispose();
     _designationController.dispose();
     _bankController.dispose();
@@ -292,3 +294,66 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
     super.dispose();
   }
 }
+
+
+
+
+class CountrySearchField extends StatefulWidget {
+  // Callback to pass selected country info to parent
+  final void Function(Map<String, dynamic> selectedCountry)? onCountrySelected;
+
+  const CountrySearchField({required this.onCountrySelected, Key? key}) : super(key: key);
+
+  @override
+  _CountrySearchFieldState createState() => _CountrySearchFieldState();
+}
+
+class _CountrySearchFieldState extends State<CountrySearchField> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProductProvider>(
+      builder: (context, provider, _) {
+        return TypeAheadField<Map<String, dynamic>>(
+          builder: (context, controller, focusNode) => TextField(
+            controller: controller,
+            focusNode: focusNode,
+            style: DefaultTextStyle.of(context)
+                .style
+                .copyWith(fontStyle: FontStyle.normal),
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: 'Select Supplier Country',
+            ),
+          ),
+          controller: _controller,
+          suggestionsCallback: (pattern) {
+            return provider.searchStuffList(pattern);
+          },
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion['name']),
+              subtitle: Text("ID: ${suggestion['id']}"),
+            );
+          },
+          onSelected: (suggestion) {
+            setState(() {
+              _controller.text = suggestion['name'];
+            });
+            // ✅ Call the parent callback
+            if (widget.onCountrySelected != null) {
+              widget.onCountrySelected!(suggestion);
+            }
+            FocusScope.of(context).unfocus();
+          },
+        );
+      },
+    );
+  }
+}
+
+
+
+
+

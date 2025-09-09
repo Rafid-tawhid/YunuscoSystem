@@ -244,7 +244,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
               },
               builder: (context, textController, focusNode) {
                 return TextFormField(
-                  controller: _idController, // persistent controller
+                  controller: textController, // persistent controller
                   focusNode: focusNode,
                   validator: (value) =>
                       value == null || value.isEmpty ? 'ID is required' : null,
@@ -254,6 +254,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                   ),
                 );
               },
+              controller: _idController,
               //
               itemBuilder: (context, suggestion) {
                 return ListTile(
@@ -263,7 +264,9 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
               },
               onSelected: (suggestion) {
                 // show ID in the field
-                _idController.text = suggestion["id"];
+                setState(() {
+                  _idController.text = suggestion["id"];
+                });
                 FocusScope.of(context).unfocus(); // close keyboard
               },
             );
