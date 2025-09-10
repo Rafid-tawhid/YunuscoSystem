@@ -1,10 +1,17 @@
+import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import '../../common_widgets/select_image.dart';
 import '../../providers/hr_provider.dart';
 import '../../utils/constants.dart';
 
@@ -22,18 +29,23 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
   final TextEditingController _websiteController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _contactPersonController = TextEditingController();
+  final TextEditingController _contactNumberController = TextEditingController();
   final TextEditingController _designationController = TextEditingController();
   final TextEditingController _bankController = TextEditingController();
   final TextEditingController _swiftCodeController = TextEditingController();
   final TextEditingController _supplierCodeController = TextEditingController();
+  final TextEditingController _othersCodeController = TextEditingController();
 
   String _statusValue = 'Local';
   var _selectedCountryId; // store selected country id
   String _accountTypeValue = 'Brac-1101';
+  PlatformFile? _selectedImage;
 
   final List<String> _statusOptions = ['Local', 'Global'];
 
   final List<String> _accountTypeOptions = ['Brac-1101', 'Brac-1102', 'Brac-1103'];
+  List<String> banks = ['BRAC BANK Ltd.', 'Dutch Bangla Bank Limited', 'HSBC 2', 'HSBC 3', 'HSBC 4', 'Prime Bank Limited', 'South East Bank', 'Standard Chartered Bank Ltd.'];
+  String? selectedBank;
 
   @override
   Widget build(BuildContext context) {
@@ -64,19 +76,62 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
               const SizedBox(height: 16),
               _buildTextField('Supplier Conf. Person', _contactPersonController, true),
               const SizedBox(height: 16),
+              _buildTextField('Supplier Contact No.', _contactNumberController, true),
+              const SizedBox(height: 16),
               _buildTextField('Person\'s Designation', _designationController, false),
               const SizedBox(height: 16),
-              _buildTextField('Supplier Bank', _bankController, true),
+              DropdownButtonFormField<String>(
+                value: selectedBank,
+                decoration: InputDecoration(
+                  labelText: 'Select Bank',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                items: banks.map((String bank) {
+                  return DropdownMenuItem<String>(
+                    value: bank,
+                    child: Text(
+                      bank,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedBank = newValue!;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value == 'Select Bank') {
+                    return 'Please select a bank';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              _buildTextField('Supplier Bank No.', _bankController, true),
               const SizedBox(height: 16),
               _buildTextField('SWIFT Code', _swiftCodeController, false),
               const SizedBox(height: 16),
               _buildTextField('Supplier Code', _supplierCodeController, true),
               const SizedBox(height: 16),
+              _buildTextField('Others', _othersCodeController, true),
+              const SizedBox(height: 16),
               _buildStatusDropdown(),
               const SizedBox(height: 16),
               _buildAccountTypeDropdown(),
+              const SizedBox(height: 16),
+              FilePickerRow(
+                buttonText: 'Upload Document',
+                onFileSelected: (PlatformFile file) {
+                  print('Selected file: ${file.name}');
+                  _selectedImage=file;
+                  // Handle the file
+                },
+              ),
               const SizedBox(height: 24),
               _buildSubmitButton(),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -110,7 +165,7 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Status *',
+          'Supplier type *',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
@@ -153,13 +208,12 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 8),
-
         CountrySearchField(
           onCountrySelected: (country) {
-           _selectedCountryId={
-             "id":country['id'],
-             "name":country['name'],
-           };
+            _selectedCountryId = {
+              "id": country['id'],
+              "name": country['name'],
+            };
             print("Selected Country: ${country['name']} ID: $_selectedCountryId");
           },
         ),
@@ -210,37 +264,73 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
             // Form is valid, process the data
-            final supplierData = {
-              'files': null, // If you have a file, use MultipartFile otherwise null
-              'SupplierName': _nameController.text,
-              'CountryId': _selectedCountryId['id'], // Convert to string
-              'Address': _addressController.text,
-              'Email': _emailController.text, // You'll need to add this controller
-              'Website': _websiteController.text,
-              'Fax': null, // You'll need to add this controller
-              'ContactNumber': _contactPersonController.text, // You'll need to add this controller
-              'CountryName': _selectedCountryId['name'], // You'll need to store country name separately
-              'ContactPerson': _contactPersonController.text,
-              'Designation': _designationController.text,
-              'SupplierCategoryId': '', // You'll need this field
-              'BusinessType': _accountTypeValue, // You'll need to add this controller
-              'Others': '', // You'll need to add this controller
-              'CodeName': _supplierCodeController.text,
-              'SupplierBank': _bankController.text,
-              'BankAcc': _bankController.text, // You'll need to add this controller
-              'SwiftCode': _swiftCodeController.text,
-              'IsLocal': _statusValue=='Local'?true:false, // Convert boolean to string
-              'AccountCode': _bankController.text, // You'll need to add this controller
-              'SupplierId': '0', // Usually 0 for new creation
-            };
 
-            var pp=context.read<ProductProvider>();
-            pp.createSupplier(supplierData);
-            debugPrint(supplierData.toString());
-            _showSuccessDialog();
+            try {
+              var request = http.MultipartRequest(
+                'POST',
+                Uri.parse('https://192.168.15.6:5630/api/inventory/CreateSupplier/'),
+              );
+
+              // Add headers
+              request.headers['Authorization'] = 'Bearer ${AppConstants.token}';
+              // Add fields
+              request.fields['SupplierName'] = _nameController.text;
+              request.fields['CountryId'] = _selectedCountryId['id'].toString();
+              request.fields['Address'] = _addressController.text;
+              request.fields['Email'] = _emailController.text;
+              request.fields['Website'] = _websiteController.text;
+              request.fields['Fax'] = '2323232323'; // Add this controller
+              request.fields['ContactNumber'] = _contactNumberController.text; // Add this controller
+              request.fields['CountryName'] = _selectedCountryId['name'].toString();
+              request.fields['ContactPerson'] = _contactPersonController.text;
+              request.fields['Designation'] = _designationController.text;
+              request.fields['SupplierCategoryId'] = 'None';
+              request.fields['BusinessType'] = _accountTypeValue;
+              request.fields['Others'] = _othersCodeController.text;
+              request.fields['SupplierBank'] = selectedBank ?? '';
+              request.fields['BankAcc'] = _bankController.text; // Add this controller
+              request.fields['SwiftCode'] = _swiftCodeController.text;
+              request.fields['IsLocal'] = (_statusValue == 'Local').toString(); // Convert to string
+              request.fields['AccountCode'] = ''; // Add this controller
+              request.fields['SupplierId'] = _supplierCodeController.text;
+              request.fields['CodeName'] = _supplierCodeController.text;
+
+              if (_selectedImage != null) {
+                // Get file extension to determine content type
+                String extension = _selectedImage!.path!.split('.').last.toLowerCase();
+                String contentType = 'application/octet-stream';
+
+                if (extension == 'jpg' || extension == 'jpeg') {
+                  contentType = 'image/jpeg';
+                } else if (extension == 'png') {
+                  contentType = 'image/png';
+                } else if (extension == 'pdf') {
+                  contentType = 'application/pdf';
+                } else if (extension == 'gif') {
+                  contentType = 'image/gif';
+                }
+
+                // Add the file to the request
+                request.files.add(await http.MultipartFile.fromPath(
+                  'files', // Field name (should match what API expects)
+                  _selectedImage!.path??'',
+                  filename: 'supplier_file.${extension}', // Optional: set filename
+                  contentType: MediaType.parse(contentType), // Optional: set content type
+                ));
+
+                print('Adding file: ${_selectedImage!.path}');
+
+                var response = await request.send();
+                final responseBody = await response.stream.bytesToString();
+                print('Response Status Code: ${response.statusCode}');
+                print('Response Body: $responseBody');
+              }
+            } catch (e) {
+              DashboardHelpers.showAlert(msg: '$e');
+            }
           }
         },
         style: ElevatedButton.styleFrom(
@@ -258,7 +348,6 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
       ),
     );
   }
-
 
   void _showSuccessDialog() {
     showDialog(
@@ -284,6 +373,7 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
   void dispose() {
     // Clean up the controllers when the widget is disposed
     _nameController.dispose();
+    _contactNumberController.dispose();
     _addressController.dispose();
     _websiteController.dispose();
     _emailController.dispose();
@@ -295,9 +385,6 @@ class _SupplierFormScreenState extends State<SupplierFormScreen> {
     super.dispose();
   }
 }
-
-
-
 
 class CountrySearchField extends StatefulWidget {
   // Callback to pass selected country info to parent
@@ -320,9 +407,7 @@ class _CountrySearchFieldState extends State<CountrySearchField> {
           builder: (context, controller, focusNode) => TextField(
             controller: controller,
             focusNode: focusNode,
-            style: DefaultTextStyle.of(context)
-                .style
-                .copyWith(fontStyle: FontStyle.normal),
+            style: DefaultTextStyle.of(context).style.copyWith(fontStyle: FontStyle.normal),
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               hintText: 'Select Supplier Country',
@@ -353,8 +438,3 @@ class _CountrySearchFieldState extends State<CountrySearchField> {
     );
   }
 }
-
-
-
-
-

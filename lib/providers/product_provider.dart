@@ -799,7 +799,7 @@ class  ProductProvider extends ChangeNotifier {
     var data =
         await apiService.postData('api/inventory/CreateSupplier', supplierData);
 
-    debugPrint('DATA ${data}');
+    debugPrint('RESPONSE $data');
   }
 
   // Future<List<Map<String, dynamic>>> searchStuffList(String query) async {
