@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/screens/Products/widgets/date_picker_Card.dart';
 import 'package:yunusco_group/screens/Products/widgets/section_wise_dhu.dart';
+import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/production_dashboard_model.dart';
@@ -20,8 +21,10 @@ class ProductionDashboard extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Production Summary'),
+        title: const Text('Production Summary',),
         centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: myColors.primaryColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
