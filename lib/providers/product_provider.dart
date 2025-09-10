@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/buyer_wise_material_model.dart';
 import 'package:yunusco_group/models/production_dashboard_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
@@ -12,7 +13,7 @@ import '../models/requisation_products_model.dart';
 import '../models/requisition_details_model.dart';
 import '../models/stylewise_efficiency_model.dart';
 
-class  ProductProvider extends ChangeNotifier {
+class ProductProvider extends ChangeNotifier {
   final List<Map<String, dynamic>> countryList = [
     {"id": 1, "code": "COU001", "name": "USA"},
     {"id": 2, "code": "COU002", "name": "Canada"},
@@ -331,8 +332,7 @@ class  ProductProvider extends ChangeNotifier {
   List<dynamic> get allBuyerList => _allBuyerList;
 
   Future<bool> getAllBuyerInfo() async {
-    var data =
-        await apiService.getData('api/Merchandising/AllActiveOrderdBuyer');
+    var data = await apiService.getData('api/Merchandising/AllActiveOrderdBuyer');
     if (data != null) {
       _allBuyerList.clear();
       for (var i in data['returnvalue']['Result']) {
@@ -358,8 +358,7 @@ class  ProductProvider extends ChangeNotifier {
 
   Future<bool> getBuyerWiseMaterialList(String code) async {
     setLoading(true);
-    var data = await apiService
-        .getData('api/Merchandising/MaterialListBuyerWise?buyerId=$code');
+    var data = await apiService.getData('api/Merchandising/MaterialListBuyerWise?buyerId=$code');
     setLoading(false);
     if (data != null) {
       _buyerMaterialList.clear();
@@ -375,14 +374,11 @@ class  ProductProvider extends ChangeNotifier {
   }
 
   final List<Map<String, dynamic>> _productionSummaryList = [];
-  List<Map<String, dynamic>> get productionSummaryList =>
-      _productionSummaryList;
+  List<Map<String, dynamic>> get productionSummaryList => _productionSummaryList;
 
-  Future<bool> getProductionSummary(
-      String month, String year, String section) async {
+  Future<bool> getProductionSummary(String month, String year, String section) async {
     setLoading(true);
-    var data = await apiService.getData(
-        'api/Merchandising/ProductionSummary?section=$section&month=$month&year=$year');
+    var data = await apiService.getData('api/Merchandising/ProductionSummary?section=$section&month=$month&year=$year');
     setLoading(false);
     if (data != null) {
       _productionSummaryList.clear();
@@ -398,19 +394,16 @@ class  ProductProvider extends ChangeNotifier {
   }
 
   ProductionDashboardModel? _productionDashboardModel;
-  ProductionDashboardModel? get productionDashboardModel =>
-      _productionDashboardModel;
+  ProductionDashboardModel? get productionDashboardModel => _productionDashboardModel;
   //dashboard
   Future<bool> getAllProductionDashboard() async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
     var data = await apiService.getData('api/dashboard/ProductionDashBoard');
     EasyLoading.dismiss();
     if (data != null) {
-      _productionDashboardModel =
-          ProductionDashboardModel.fromJson(data['returnvalue']);
+      _productionDashboardModel = ProductionDashboardModel.fromJson(data['returnvalue']);
       notifyListeners();
-      debugPrint(
-          '_allCategoryList ${_productionDashboardModel!.unitWiseSewing!.length}');
+      debugPrint('_allCategoryList ${_productionDashboardModel!.unitWiseSewing!.length}');
       return true;
     } else {
       return false;
@@ -419,22 +412,13 @@ class  ProductProvider extends ChangeNotifier {
 
   final List<ProductionEfficiencyModel> _productionEfficiencyList = [];
 
-  List<ProductionEfficiencyModel> get productionEfficiencyList =>
-      _productionEfficiencyList;
+  List<ProductionEfficiencyModel> get productionEfficiencyList => _productionEfficiencyList;
 
   Future<bool> getProductionEfficiencyReport(String dateTime) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
     setLoading(true);
-    var data =
-        await apiService.postData('api/Merchandising/ProductionEffiReport', {
-      "ProductionDate": dateTime,
-      "BuyerId": 0,
-      "Style": "",
-      "BuyerPO": "",
-      "SectionId": 0,
-      "AchieveEfficiency": 0,
-      "LineId": 0
-    });
+    var data = await apiService
+        .postData('api/Merchandising/ProductionEffiReport', {"ProductionDate": dateTime, "BuyerId": 0, "Style": "", "BuyerPO": "", "SectionId": 0, "AchieveEfficiency": 0, "LineId": 0});
     setLoading(false);
     EasyLoading.dismiss();
     if (data != null) {
@@ -443,8 +427,7 @@ class  ProductProvider extends ChangeNotifier {
         _productionEfficiencyList.add(ProductionEfficiencyModel.fromJson(i));
       }
       notifyListeners();
-      debugPrint(
-          '_productionEfficiencyList ${_productionEfficiencyList.length}');
+      debugPrint('_productionEfficiencyList ${_productionEfficiencyList.length}');
       return true;
     } else {
       return false;
@@ -488,9 +471,7 @@ class  ProductProvider extends ChangeNotifier {
     final uniqueEntries = <int, String>{};
 
     for (final item in _productionEfficiencyList) {
-      if (item.sectionId != null &&
-          item.sectionName != null &&
-          !uniqueEntries.containsKey(item.sectionId)) {
+      if (item.sectionId != null && item.sectionName != null && !uniqueEntries.containsKey(item.sectionId)) {
         uniqueEntries[item.sectionId!.toInt()] = item.sectionName!;
       }
     }
@@ -507,9 +488,7 @@ class  ProductProvider extends ChangeNotifier {
     final uniqueEntries = <int, String>{};
 
     for (final item in _productionEfficiencyList) {
-      if (item.lineId != null &&
-          item.lineName != null &&
-          !uniqueEntries.containsKey(item.lineId)) {
+      if (item.lineId != null && item.lineName != null && !uniqueEntries.containsKey(item.lineId)) {
         uniqueEntries[item.lineId!.toInt()] = item.lineName!;
       }
     }
@@ -540,14 +519,12 @@ class  ProductProvider extends ChangeNotifier {
   }
 
   final List<StylewiseEfficiencyModel> _styleWiseEfficiencyList = [];
-  List<StylewiseEfficiencyModel> get styleWiseEfficiencyList =>
-      _styleWiseEfficiencyList;
+  List<StylewiseEfficiencyModel> get styleWiseEfficiencyList => _styleWiseEfficiencyList;
 
   Future<bool> getStyleWiseEfficiency(String style) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
     setLoading(true);
-    var data = await apiService
-        .getData('api/Merchandising/StyleWiseEffi?styleName=$style');
+    var data = await apiService.getData('api/Merchandising/StyleWiseEffi?styleName=$style');
     setLoading(false);
     EasyLoading.dismiss();
     if (data != null) {
@@ -623,8 +600,7 @@ class  ProductProvider extends ChangeNotifier {
 
   Future<bool> getMasterLcData(String query, int pgNum, int pgSize) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    var data = await apiService.getData(
-        'api/Merchandising/MasterLcListPages?searchText=$query&pageNumber=$pgNum&pageSize=10');
+    var data = await apiService.getData('api/Merchandising/MasterLcListPages?searchText=$query&pageNumber=$pgNum&pageSize=10');
     EasyLoading.dismiss();
     if (data != null) {
       _masterLcList.clear();
@@ -645,16 +621,14 @@ class  ProductProvider extends ChangeNotifier {
 
   Future<bool> getLcDetails(num? masterLCId) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    var data = await apiService
-        .getData('api/Merchandising/GetMasterLCDetails?id=$masterLCId');
+    var data = await apiService.getData('api/Merchandising/GetMasterLCDetails?id=$masterLCId');
     _lcDetailsData = data['returnvalue'];
     EasyLoading.dismiss();
     return data == null ? false : true;
   }
 
   final List<RequisationProductsModel> _requisationProductList = [];
-  List<RequisationProductsModel> get requisationProductList =>
-      _requisationProductList;
+  List<RequisationProductsModel> get requisationProductList => _requisationProductList;
 
   Future<void> getAllRequisationProduct() async {
     setLoading(true);
@@ -673,8 +647,7 @@ class  ProductProvider extends ChangeNotifier {
   Future<bool> submitGeneralRequisation(Map<String, Object> data) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
     setLoading(true);
-    var response = await apiService.postData(
-        'api/Inventory/SavePurchaseRequisition', data);
+    var response = await apiService.postData('api/Inventory/SavePurchaseRequisition', data);
     setLoading(false);
     EasyLoading.dismiss();
     debugPrint('Return Response : ${response.toString()}');
@@ -688,8 +661,7 @@ class  ProductProvider extends ChangeNotifier {
 
   Future<void> getAllRequisitions() async {
     setLoading(true);
-    var data =
-        await apiService.getData('api/Inventory/PurchaseRequisitionList');
+    var data = await apiService.getData('api/Inventory/PurchaseRequisitionList');
     setLoading(false);
     if (data != null) {
       _requisitions.clear();
@@ -705,11 +677,9 @@ class  ProductProvider extends ChangeNotifier {
 
   List<RequisitionDetailsModel> requisationProductDetails = [];
 
-  Future<bool> getRequisationProductDetails(
-      String? purchaseRequisitionCode) async {
+  Future<bool> getRequisationProductDetails(String? purchaseRequisitionCode) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    var data = await apiService.getData(
-        'api/Inventory/SingleGenPurReqMaster&Detail?Code=$purchaseRequisitionCode');
+    var data = await apiService.getData('api/Inventory/SingleGenPurReqMaster&Detail?Code=$purchaseRequisitionCode');
     EasyLoading.dismiss();
     if (data != null) {
       requisationProductDetails.clear();
@@ -718,8 +688,7 @@ class  ProductProvider extends ChangeNotifier {
       }
       notifyListeners();
 
-      debugPrint(
-          'requisationProductDetails ${requisationProductDetails.length}');
+      debugPrint('requisationProductDetails ${requisationProductDetails.length}');
       return true;
     } else {
       return false;
@@ -732,8 +701,7 @@ class  ProductProvider extends ChangeNotifier {
   String _searchQuery = '';
 
   List<ProductionGoodsModel> get requisitionList => _requisitionList;
-  List<ProductionGoodsModel> get filteredRequisitionList =>
-      _filteredRequisitionList;
+  List<ProductionGoodsModel> get filteredRequisitionList => _filteredRequisitionList;
 
   Future<void> fetchRequisitionList({String? fromDate, String? toDate}) async {
     _isLoading = true;
@@ -741,8 +709,7 @@ class  ProductProvider extends ChangeNotifier {
 
     try {
       // Replace with your actual API call
-      final data = await apiService.getData(
-          'api/Inventory/ProductionGoodsRequisition?FromDate=$fromDate&ToDate=$toDate');
+      final data = await apiService.getData('api/Inventory/ProductionGoodsRequisition?FromDate=$fromDate&ToDate=$toDate');
 
       if (data != null) {
         for (var i in data['returnvalue']) {
@@ -778,7 +745,6 @@ class  ProductProvider extends ChangeNotifier {
     }).toList();
   }
 
-
   // final List<Map<String, dynamic>> countryList = [
   //   {"id": 1, "name": "USA"},
   //   {"id": 2, "name": "Canada"},
@@ -790,16 +756,43 @@ class  ProductProvider extends ChangeNotifier {
   Future<List<Map<String, dynamic>>> searchStuffList(String query) async {
     if (query.isEmpty) return countryList;
     final lower = query.toLowerCase();
-    return countryList
-        .where((c) => c['name'].toLowerCase().contains(lower))
-        .toList();
+    return countryList.where((c) => c['name'].toLowerCase().contains(lower)).toList();
   }
 
   Future<void> createSupplier(Map<String, dynamic> supplierData) async {
-    var data =
-        await apiService.postData('api/inventory/CreateSupplier', supplierData);
+    var data = await apiService.postData('api/inventory/CreateSupplier', supplierData);
 
     debugPrint('RESPONSE $data');
+  }
+
+  final List<Map<String, dynamic>> _sectionWiseDhu = [];
+  List<Map<String, dynamic>> get sectionWiseDhu => _sectionWiseDhu;
+
+  final List<Map<String, dynamic>> _lineWiseDHU = [];
+  List<Map<String, dynamic>> get lineWiseDHU => _lineWiseDHU;
+  String _totalDhu='';
+  String get totalDhu=>_totalDhu;
+
+  Future<void> getAllDhuInfo(DateTime dateTime) async {
+    var dateFormat = DashboardHelpers.convertDateTime2(dateTime);
+    debugPrint('dateFormat $dateFormat');
+    var data = await apiService.getData('api/QMS/GetDHU?qmsDate=$dateFormat');
+    if (data != null) {
+      _sectionWiseDhu.clear();
+      _lineWiseDHU.clear();
+      for (var i in data['Data']['SectionWiseDHU']) {
+        _sectionWiseDhu.add(i);
+      }
+      for (var i in data['Data']['LineWiseDHU']) {
+        _lineWiseDHU.add(i);
+      }
+      _totalDhu=data['Data']['TotalDHU']['TotalDHU'].toString();
+
+      debugPrint('_sectionWiseDhu ${_sectionWiseDhu.length}');
+      debugPrint('_lineWiseDHU ${_lineWiseDHU.length}');
+      debugPrint('_totalDhu $_totalDhu');
+    }
+    notifyListeners();
   }
 
   // Future<List<Map<String, dynamic>>> searchStuffList(String query) async {

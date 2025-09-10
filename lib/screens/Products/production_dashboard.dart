@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/screens/Products/widgets/date_picker_Card.dart';
+import 'package:yunusco_group/screens/Products/widgets/section_wise_dhu.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/production_dashboard_model.dart';
 import '../../providers/product_provider.dart';
@@ -26,9 +29,29 @@ class ProductionDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            DatePickerCard(
+              initialDate: DateTime.now(),
+              onDateSelected: (date) async {
+                var pp = context.read<ProductProvider>();
+                await pp.getAllProductionDashboard();
+                pp.getAllDhuInfo(date);
+              },
+              label: 'To Date',
+            ),
             // Summary Cards
             _buildSummaryCards(data?.productionData?.first),
             const SizedBox(height: 24),
+
+
+           if(provider.totalDhu.isNotEmpty) Align(
+              alignment: Alignment.center,
+              child: Text('Total DHU ${provider.totalDhu}',style: customTextStyle(20, Colors.blue, FontWeight.bold),),
+            ),
+            const SizedBox(height: 24),
+            if(provider.sectionWiseDhu.isNotEmpty)SectionDataScreen(sections: provider.sectionWiseDhu,),
+
+           if(provider.lineWiseDHU.isNotEmpty) LineWiseDHU(lines: provider.lineWiseDHU,),
 
             // Production Progress Charts
             _buildProductionCharts(data),

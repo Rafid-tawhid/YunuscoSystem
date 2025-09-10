@@ -26,6 +26,7 @@ class ProductHomeScreen extends StatelessWidget {
         onTap: () async {
           var pp = context.read<ProductProvider>();
           await pp.getAllProductionDashboard();
+          pp.getAllDhuInfo(DateTime.now());
           if (pp.productionDashboardModel != null) {
             Navigator.push(
               context,
