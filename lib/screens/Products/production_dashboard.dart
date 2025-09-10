@@ -386,6 +386,7 @@ class ProductionDashboard extends StatelessWidget {
       ],
     );
   }
+  //
 
   Widget _buildDataTable(
       String title, List<String> headers, List<List<String>> rows) {
