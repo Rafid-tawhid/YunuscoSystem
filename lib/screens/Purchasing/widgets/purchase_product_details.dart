@@ -7,10 +7,12 @@ import '../../../models/requisition_details_model.dart';
 class RequisitionDetailsScreen extends StatelessWidget {
   final List<RequisitionDetailsModel> requisitions;
 
+
   const RequisitionDetailsScreen({super.key, required this.requisitions});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _remarksController = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -20,12 +22,67 @@ class RequisitionDetailsScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: requisitions.length,
+        itemCount: requisitions.length + 1, // Add 1 for the remarks section
+        shrinkWrap: true,
         itemBuilder: (context, index) {
-          final req = requisitions[index];
-          return _buildRequisitionCard(req, context);
+          if (index < requisitions.length) {
+            final req = requisitions[index];
+            return _buildRequisitionCard(req, context);
+          } else {
+            return Column(
+              children: [
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _remarksController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Enter your remarks here...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.all(12),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Reject', style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Accept', style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+              ],
+            );
+          }
         },
-      ),
+      )
     );
   }
 
