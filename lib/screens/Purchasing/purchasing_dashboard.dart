@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/screens/Purchasing/purchase_dashboard.dart';
 import 'package:yunusco_group/screens/Purchasing/purchase_requisation_list.dart';
 
 import '../../common_widgets/dashboard_item_card.dart';
@@ -15,6 +16,15 @@ class PurchasingDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     late List<DashboardMenuItem> menuItems;
     menuItems = [
+      DashboardMenuItem(
+        name: "Purchase\nSummary",
+        icon: Icons.account_tree,
+        cardColor: Colors.blue.shade100,
+        iconColor: Colors.blue,
+        onTap: () {
+          Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseDashboardScreen()));
+        },
+      ),
       DashboardMenuItem(
         name: "Purchase\nRequisitions",
         icon: Icons.account_tree,

@@ -216,7 +216,7 @@ class _PurchaseRequisitionListScreenState
                 context,
                 MaterialPageRoute(
                     builder: (context) => RequisitionDetailsScreen(
-                        requisitions: pp.requisationProductDetails)));
+                        requisitions: pp.requisationProductDetails,reqCode: requisition.purchaseRequisitionId.toString(),)));
           }
         },
         child: Padding(

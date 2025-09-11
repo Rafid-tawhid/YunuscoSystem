@@ -8,6 +8,7 @@ import 'package:yunusco_group/service_class/api_services.dart';
 import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
 import '../models/production_goods_model.dart';
+import '../models/purchase_dashboard_analytics_model.dart';
 import '../models/purchase_requisation_list_model.dart';
 import '../models/requisation_products_model.dart';
 import '../models/requisition_details_model.dart';
@@ -844,6 +845,27 @@ class ProductProvider extends ChangeNotifier {
                 .contains(query.toLowerCase());
       }).toList();
     }
+    notifyListeners();
+  }
+
+  void acceptItem(String code,String? remarks) {
+   apiService.postData('api/Inventory/ApprovePurchaseRequisition', {
+     'remarks':remarks,
+     'requisitionId':code
+   });
+  }
+
+  PurchaseAnalyticsResponse? _purchaseAnalyticsResponse;
+  PurchaseAnalyticsResponse? get purchaseAnalyticsResponse=>_purchaseAnalyticsResponse;
+  Future<void> getAllPurchaseDashboardInfo() async{
+
+    setLoading(true);
+    var data = await apiService.getData('api/Dashboard/PurchaseDashboard');
+    setLoading(false);
+    if (data != null) {
+      _purchaseAnalyticsResponse= PurchaseAnalyticsResponse.fromJson(data['Data']);
+    }
+
     notifyListeners();
   }
 }

@@ -1,14 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:yunusco_group/providers/product_provider.dart';
 
 import '../../../models/requisition_details_model.dart';
 
 class RequisitionDetailsScreen extends StatelessWidget {
   final List<RequisitionDetailsModel> requisitions;
+  final String reqCode;
 
 
-  const RequisitionDetailsScreen({super.key, required this.requisitions});
+  const RequisitionDetailsScreen({super.key, required this.requisitions,required this.reqCode});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,11 @@ class RequisitionDetailsScreen extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          var pp=context.read<ProductProvider>();
+                          pp.acceptItem(reqCode,_remarksController.text.trim());
+
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
