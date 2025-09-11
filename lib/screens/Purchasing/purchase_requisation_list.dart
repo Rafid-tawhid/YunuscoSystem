@@ -8,6 +8,7 @@ import 'package:yunusco_group/utils/colors.dart';
 import '../../models/purchase_requisation_list_model.dart';
 import 'create_purchase_requisation.dart';
 
+
 class PurchaseRequisitionListScreen extends StatefulWidget {
   const PurchaseRequisitionListScreen({super.key});
 
@@ -18,6 +19,9 @@ class PurchaseRequisitionListScreen extends StatefulWidget {
 
 class _PurchaseRequisitionListScreenState
     extends State<PurchaseRequisitionListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+
   @override
   void initState() {
     super.initState();
@@ -28,34 +32,83 @@ class _PurchaseRequisitionListScreenState
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+        // Reset the search filter in provider
+        Provider.of<ProductProvider>(context, listen: false).filterRequisitions('');
+      }
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    Provider.of<ProductProvider>(context, listen: false).filterRequisitions(query);
+  }
+
+  Future<void> _refreshData() async {
+    await Provider.of<ProductProvider>(context, listen: false).getAllRequisitions();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: myColors.primaryColor,
-        title: const Text(
+        title: _isSearching
+            ? TextField(
+          controller: _searchController,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: 'Search requisitions...',
+            hintStyle: TextStyle(color: Colors.white70),
+            border: InputBorder.none,
+          ),
+          onChanged: _onSearchChanged,
+        )
+            : const Text(
           'Purchase Requisitions',
           style: TextStyle(color: Colors.white),
         ),
-        leading: IconButton(
+        leading: _isSearching
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            _toggleSearch();
+            Navigator.pop(context);
+          },
+        )
+            : IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.refresh,
-              color: Colors.white,
+          if (_isSearching)
+            IconButton(
+              icon: const Icon(Icons.clear, color: Colors.white),
+              onPressed: () {
+                _searchController.clear();
+                _onSearchChanged('');
+              },
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.white),
+              onPressed: _toggleSearch,
             ),
-            onPressed: () =>
-                Provider.of<ProductProvider>(context, listen: false)
-                    .getAllRequisitions(),
-          ),
         ],
       ),
       body: Column(
@@ -66,22 +119,22 @@ class _PurchaseRequisitionListScreenState
               padding: const EdgeInsets.only(right: 12.0),
               child: ElevatedButton(
                   style:
-                      ElevatedButton.styleFrom(backgroundColor: myColors.green),
+                  ElevatedButton.styleFrom(backgroundColor: myColors.green),
                   onPressed: () {
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
                             builder: (context) =>
-                                CreatePurchaseRequisitionScreen()));
+                            const CreatePurchaseRequisitionScreen()));
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         'Create',
                         style: TextStyle(color: Colors.white),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.add,
                         color: Colors.white,
                       ),
@@ -93,18 +146,51 @@ class _PurchaseRequisitionListScreenState
             child: Consumer<ProductProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (provider.requisitions.isEmpty) {
-                  return const Center(child: Text('No requisition found.'));
+                  return const Center(child: CircularProgressIndicator());
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: provider.requisitions.length,
-                  itemBuilder: (context, index) {
-                    final requisition = provider.requisitions[index];
-                    return _buildRequisitionCard(requisition);
-                  },
+                final displayRequisitions = _isSearching
+                    ? provider.filteredRequisitions
+                    : provider.requisitions;
+
+                if (displayRequisitions.isEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: _refreshData,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: Center(
+                          child: Text(
+                            _isSearching ? 'No matching requisitions found.' : 'No requisition found.',
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: _refreshData,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: Text('Total : ${displayRequisitions.length}'),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: displayRequisitions.length,
+                          itemBuilder: (context, index) {
+                            final requisition = displayRequisitions[index];
+                            return _buildRequisitionCard(requisition);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
@@ -169,7 +255,7 @@ class _PurchaseRequisitionListScreenState
               _buildInfoRow(
                   Icons.calendar_today,
                   DashboardHelpers.convertDateTime(
-                          requisition.createdDate ?? '') ??
+                      requisition.createdDate ?? '') ??
                       'No Date'),
               if (requisition.remarks?.isNotEmpty == true) ...[
                 const SizedBox(height: 8),
@@ -193,31 +279,6 @@ class _PurchaseRequisitionListScreenState
           Icon(icon, size: 16, color: Colors.grey),
           const SizedBox(width: 8),
           Expanded(child: Text(text)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-            ),
-          ),
         ],
       ),
     );

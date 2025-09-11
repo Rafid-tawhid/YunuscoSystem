@@ -669,9 +669,11 @@ class ProductProvider extends ChangeNotifier {
         _requisitions.add(PurchaseRequisationListModel.fromJson(i));
       }
       _requisitions = _requisitions.reversed.toList();
+      _filteredRequisitions = _requisitions;
     }
-    notifyListeners();
+
     debugPrint('_requisitions ${_requisitions.length}');
+    debugPrint('_filteredRequisitions ${_filteredRequisitions.length}');
     notifyListeners();
   }
 
@@ -812,4 +814,36 @@ class ProductProvider extends ChangeNotifier {
   //
   //   return data;
   // }
+
+
+
+
+
+  List<PurchaseRequisationListModel> _filteredRequisitions = [];
+
+  List<PurchaseRequisationListModel> get filteredRequisitions => _filteredRequisitions;
+
+  // Your existing getAllRequisitions method should populate _allRequisitions
+
+  void filterRequisitions(String query) {
+    if (query.isEmpty) {
+      _filteredRequisitions = _requisitions;
+    } else {
+      _filteredRequisitions = _requisitions.where((requisition) {
+        return (requisition.purchaseRequisitionCode ?? '')
+            .toLowerCase()
+            .contains(query.toLowerCase()) ||
+            (requisition.userName ?? '')
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            (requisition.productType ?? '')
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            (requisition.remarks ?? '')
+                .toLowerCase()
+                .contains(query.toLowerCase());
+      }).toList();
+    }
+    notifyListeners();
+  }
 }
