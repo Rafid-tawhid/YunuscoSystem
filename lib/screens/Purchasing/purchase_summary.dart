@@ -265,7 +265,7 @@ class _PurchaseDashboardScreenState extends State<PurchaseDashboardScreen> {
                           toY: monthlyData.totalPurchase,
                           gradient: LinearGradient(
                             colors: [
-                              isTouched ? Colors.blue[800]! : Colors.blue[400]!,
+                              isTouched ? myColors.primaryColor : Colors.blue[800]!,
                               isTouched ? Colors.blue[600]! : Colors.blue[200]!,
                             ],
                             begin: Alignment.bottomCenter,
@@ -294,7 +294,7 @@ class _PurchaseDashboardScreenState extends State<PurchaseDashboardScreen> {
       crossAxisCount: 2,
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
-      childAspectRatio: 1.5,
+      childAspectRatio: 1.3,
       children: [
         _buildMetricCard(
           'Monthly Avg',
@@ -387,88 +387,82 @@ class _PurchaseDashboardScreenState extends State<PurchaseDashboardScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            Column(
               children: [
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        pieTouchData: PieTouchData(
-                          touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                            setState(() {
-                              _currentPieChartIndex =
-                                  pieTouchResponse?.touchedSection?.touchedSectionIndex ?? -1;
-                            });
-                          },
-                        ),
-                        sections: top5Products
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                          final index = entry.key;
-                          final product = entry.value;
-                          final isTouched = index == _currentPieChartIndex;
-                          final fontSize = isTouched ? 16.0 : 14.0;
-                          final radius = isTouched ? 60.0 : 50.0;
-
-                          return PieChartSectionData(
-                            color: _getChartColor(index),
-                            value: (product.totalPurchase / total) * 100,
-                            title: '${((product.totalPurchase / total) * 100).toStringAsFixed(1)}%',
-                            radius: radius,
-                            titleStyle: TextStyle(
-                              fontSize: fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          );
-                        }).toList(),
+                SizedBox(
+                  height: 200,
+                  child: PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                          setState(() {
+                            _currentPieChartIndex =
+                                pieTouchResponse?.touchedSection?.touchedSectionIndex ?? -1;
+                          });
+                        },
                       ),
+                      sections: top5Products
+                          .asMap()
+                          .entries
+                          .map((entry) {
+                        final index = entry.key;
+                        final product = entry.value;
+                        final isTouched = index == _currentPieChartIndex;
+                        final fontSize = isTouched ? 16.0 : 14.0;
+                        final radius = isTouched ? 60.0 : 50.0;
+
+                        return PieChartSectionData(
+                          color: _getChartColor(index),
+                          value: (product.totalPurchase / total) * 100,
+                          title: '${((product.totalPurchase / total) * 100).toStringAsFixed(1)}%',
+                          radius: radius,
+                          titleStyle: TextStyle(
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: top5Products
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      final index = entry.key;
-                      final product = entry.value;
-                      final isTouched = index == _currentPieChartIndex;
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: top5Products
+                      .asMap()
+                      .entries
+                      .map((entry) {
+                    final index = entry.key;
+                    final product = entry.value;
+                    final isTouched = index == _currentPieChartIndex;
 
-                      return ListTile(
-                        leading: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: _getChartColor(index),
-                            shape: BoxShape.circle,
-                          ),
+                    return ListTile(
+                      leading: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: _getChartColor(index),
+                          shape: BoxShape.circle,
                         ),
-                        title: Text(
-                          product.productName,
-                          style: TextStyle(
-                            fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
-                            fontSize: isTouched ? 14 : 12,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      ),
+                      title: Text(
+                        product.productName,
+                        style: TextStyle(
+                          fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
+                          fontSize: isTouched ? 14 : 12,
                         ),
-                        trailing: Text(
-                          '\$${product.totalPurchase.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[700],
-                          ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Text(
+                        '\$${product.totalPurchase.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
                         ),
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
@@ -555,8 +549,9 @@ class _PurchaseDashboardScreenState extends State<PurchaseDashboardScreen> {
                           toY: supplier.totalPurchase,
                           gradient: LinearGradient(
                             colors: [
-                              Colors.purple[400]!,
-                              Colors.purple[200]!,
+
+                              Colors.blue,
+                              Colors.blue.shade300,
                             ],
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,

@@ -9,6 +9,7 @@ import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
 import '../models/production_goods_model.dart';
 import '../models/purchase_dashboard_analytics_model.dart';
+import '../models/purchase_order_model.dart';
 import '../models/purchase_requisation_list_model.dart';
 import '../models/requisation_products_model.dart';
 import '../models/requisition_details_model.dart';
@@ -865,7 +866,25 @@ class ProductProvider extends ChangeNotifier {
     if (data != null) {
       _purchaseAnalyticsResponse= PurchaseAnalyticsResponse.fromJson(data['Data']);
     }
+    notifyListeners();
+  }
 
+
+  //
+  final List<PurchaseOrderModel> _purchaseList = [];
+  List<PurchaseOrderModel> get purchaseList=>_purchaseList;
+  // List<PurchaseOrderModel> _filteredRequisitionList = [];
+  void getAllPurchaseList() async{
+
+    var data = await apiService.getData('api/Inventory/PurchaseOrderList?pageNumber=1&pageSize=50');
+    if (data != null) {
+      _purchaseList.clear();
+      for (var i in data['Data']['Items']) {
+        _purchaseList.add(PurchaseOrderModel.fromJson(i));
+      }
+
+      debugPrint('_purchaseList ${_purchaseList.length}');
+    }
     notifyListeners();
   }
 }

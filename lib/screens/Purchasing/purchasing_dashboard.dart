@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:yunusco_group/screens/Purchasing/purchase_dashboard.dart';
+import 'package:yunusco_group/screens/Purchasing/purchase_order_list.dart';
+import 'package:yunusco_group/screens/Purchasing/purchase_summary.dart';
 import 'package:yunusco_group/screens/Purchasing/purchase_requisation_list.dart';
 
 import '../../common_widgets/dashboard_item_card.dart';
@@ -18,9 +19,9 @@ class PurchasingDashboard extends StatelessWidget {
     menuItems = [
       DashboardMenuItem(
         name: "Purchase\nSummary",
-        icon: Icons.account_tree,
-        cardColor: Colors.blue.shade100,
-        iconColor: Colors.blue,
+        icon: Icons.summarize_outlined,
+        cardColor: Colors.orange.shade100,
+        iconColor: Colors.orange,
         onTap: () {
           Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseDashboardScreen()));
         },
@@ -42,6 +43,16 @@ class PurchasingDashboard extends StatelessWidget {
         onTap: (){
           //
           Navigator.push(context, CupertinoPageRoute(builder: (context)=>SupplierFormScreen()));
+        },
+      ),
+      DashboardMenuItem(
+        name: "Order\n List",
+        icon: Icons.list,
+        cardColor: Colors.purple.shade100,
+        iconColor: Colors.purple,
+        onTap: (){
+          //
+          Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseOrderList()));
         },
       ),
 
