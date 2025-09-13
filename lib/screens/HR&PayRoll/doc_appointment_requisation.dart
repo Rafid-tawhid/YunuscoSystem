@@ -274,6 +274,27 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         ),
         const SizedBox(height: 16),
 
+
+        // Urgency Dropdown
+        DropdownButtonFormField<int>(
+          decoration: const InputDecoration(
+            labelText: 'Urgency Type',
+            border: OutlineInputBorder(),
+          ),
+          items: _urgencyOptions.entries
+              .map(
+                (entry) => DropdownMenuItem<int>(
+              value: entry.value,
+              child: Text(entry.key),
+            ),
+          )
+              .toList(),
+          value: _urgencyType,
+          onChanged: (value) => setState(() => _urgencyType = value),
+          validator: (_) =>
+          _urgencyType == null ? 'Urgency type is required' : null,
+        ),
+        const SizedBox(height: 16),
         // Remarks Field
         TextFormField(
           controller: _remarksController,
@@ -285,27 +306,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
           validator: (value) =>
               value == null || value.isEmpty ? 'Remarks required' : null,
         ),
-        const SizedBox(height: 16),
 
-        // Urgency Dropdown
-        DropdownButtonFormField<int>(
-          decoration: const InputDecoration(
-            labelText: 'Urgency Type',
-            border: OutlineInputBorder(),
-          ),
-          items: _urgencyOptions.entries
-              .map(
-                (entry) => DropdownMenuItem<int>(
-                  value: entry.value,
-                  child: Text(entry.key),
-                ),
-              )
-              .toList(),
-          value: _urgencyType,
-          onChanged: (value) => setState(() => _urgencyType = value),
-          validator: (_) =>
-              _urgencyType == null ? 'Urgency type is required' : null,
-        ),
         const SizedBox(height: 24),
 
         // Submit Button

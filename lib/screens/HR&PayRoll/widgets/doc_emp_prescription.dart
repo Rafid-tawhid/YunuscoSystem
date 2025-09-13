@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/common_widgets/custom_button.dart';
+import 'package:yunusco_group/common_widgets/custom_dropdown.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -24,6 +25,9 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
   final _instructionController = TextEditingController();
   final _gatePassNotes = TextEditingController();
   bool _needsGatePass = false;
+  bool _bepza = false;
+  List<String> observationList=['None','10 min','15 min','30 min','1 hr'];
+  String observation='None';
 
   @override
   void dispose() {
@@ -38,7 +42,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Dr. Prescription'),
+        title: const Text('Prescription'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -146,7 +150,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                 controller: _instructionController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: 'Dr. Advice',
+                  labelText: 'Advice',
                   border: OutlineInputBorder(),
                   alignLabelWithHint: true,
                   prefixIcon: Icon(Icons.note),
@@ -154,7 +158,38 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
               ),
               // Gate Pass Radio
               const SizedBox(height: 16),
+
+              DropdownButtonFormField<String>(
+                value: observation,
+                decoration: InputDecoration(
+                  labelText: 'Select observation',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                items: observationList.map((String bank) {
+                  return DropdownMenuItem<String>(
+                    value: bank,
+                    child: Text(
+                      bank,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                     observation = newValue!;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value == 'Select Bank') {
+                    return 'Please select a bank';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 12,),
               Card(
+                color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
@@ -183,6 +218,45 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                         onChanged: (value) {
                           setState(() {
                             _needsGatePass = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('No'),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 12,),
+              Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.send, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Refer to BEPZA:',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 16),
+                      Radio<bool>(
+                        value: true,
+                        groupValue: _bepza,
+                        onChanged: (value) {
+                          setState(() {
+                            _bepza = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('Yes'),
+                      const SizedBox(width: 16),
+                      Radio<bool>(
+                        value: false,
+                        groupValue: _bepza,
+                        onChanged: (value) {
+                          setState(() {
+                            _bepza = value ?? false;
                           });
                         },
                       ),

@@ -10,10 +10,6 @@ import 'doc_emp_prescription.dart';
 class AppointmentListScreen extends StatelessWidget {
   const AppointmentListScreen({super.key});
 
-  // final List<DocAppoinmentListModel> appointments;
-  //
-  // const AppointmentListScreen({super.key, required this.appointments});
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -22,7 +18,7 @@ class AppointmentListScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('Dr. Appointments'),
+          title: const Text('Appointments'),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Pending', icon: Icon(Icons.access_time)),
