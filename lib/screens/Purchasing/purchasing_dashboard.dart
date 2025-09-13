@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import 'package:yunusco_group/screens/Purchasing/purchase_order_list.dart';
 import 'package:yunusco_group/screens/Purchasing/purchase_summary.dart';
 import 'package:yunusco_group/screens/Purchasing/purchase_requisation_list.dart';
 
 import '../../common_widgets/dashboard_item_card.dart';
+import '../../providers/product_provider.dart';
 import '../../utils/colors.dart';
 import '../Management/management_screen.dart';
 import 'create_supplier_screen.dart';
@@ -50,9 +53,11 @@ class PurchasingDashboard extends StatelessWidget {
         icon: Icons.list,
         cardColor: Colors.purple.shade100,
         iconColor: Colors.purple,
-        onTap: (){
+        onTap: () async {
           //
-          Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseOrderList()));
+          var pp=context.read<ProductProvider>();
+          await pp.getAllPurchaseList('1','50');
+          Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseOrdersListScreen(purchaseOrders: pp.purchaseList)));
         },
       ),
 

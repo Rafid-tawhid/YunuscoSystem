@@ -873,15 +873,19 @@ class ProductProvider extends ChangeNotifier {
   //
   final List<PurchaseOrderModel> _purchaseList = [];
   List<PurchaseOrderModel> get purchaseList=>_purchaseList;
+  int _countPage=0;
+  int get coutPage=>_countPage;
   // List<PurchaseOrderModel> _filteredRequisitionList = [];
-  void getAllPurchaseList() async{
-
-    var data = await apiService.getData('api/Inventory/PurchaseOrderList?pageNumber=1&pageSize=50');
+  Future<void> getAllPurchaseList(String pageNo,String size) async{
+    setLoading(true);
+    var data = await apiService.getData('api/Inventory/PurchaseOrderList?pageNumber=$pageNo&pageSize=$size');
+    setLoading(false);
     if (data != null) {
       _purchaseList.clear();
       for (var i in data['Data']['Items']) {
         _purchaseList.add(PurchaseOrderModel.fromJson(i));
       }
+      _countPage= data['Data']['TotalCount'];
 
       debugPrint('_purchaseList ${_purchaseList.length}');
     }
