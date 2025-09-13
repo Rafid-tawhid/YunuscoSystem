@@ -157,8 +157,9 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                 ),
               ),
               // Gate Pass Radio
-              const SizedBox(height: 16),
 
+
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: observation,
                 decoration: InputDecoration(
@@ -186,6 +187,45 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16,),
+              Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.send, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Refer to BEPZA:',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 16),
+                      Radio<bool>(
+                        value: true,
+                        groupValue: _bepza,
+                        onChanged: (value) {
+                          setState(() {
+                            _bepza = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('Yes'),
+                      const SizedBox(width: 16),
+                      Radio<bool>(
+                        value: false,
+                        groupValue: _bepza,
+                        onChanged: (value) {
+                          setState(() {
+                            _bepza = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('No'),
+                    ],
+                  ),
+                ),
               ),
               SizedBox(height: 12,),
               Card(
@@ -226,45 +266,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 12,),
-              Card(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.send, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Refer to BEPZA:',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 16),
-                      Radio<bool>(
-                        value: true,
-                        groupValue: _bepza,
-                        onChanged: (value) {
-                          setState(() {
-                            _bepza = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text('Yes'),
-                      const SizedBox(width: 16),
-                      Radio<bool>(
-                        value: false,
-                        groupValue: _bepza,
-                        onChanged: (value) {
-                          setState(() {
-                            _bepza = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text('No'),
-                    ],
-                  ),
-                ),
-              ),
+
               const SizedBox(height: 16),
               //gate pass notes
               if (_needsGatePass)
