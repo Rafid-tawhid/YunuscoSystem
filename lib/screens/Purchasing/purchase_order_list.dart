@@ -118,7 +118,7 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
             child: widget.purchaseOrders.isEmpty
                 ? _buildEmptyState()
                 : Consumer<ProductProvider>(
-                  builder: (context,pro,_)=>pro.isLoading?Center(child: Container(
+                  builder: (context,pro,_)=>pro.isLoading?Center(child: SizedBox(
                       height: 40,
                       width: 40,
                       child: CircularProgressIndicator())):ListView.builder(
