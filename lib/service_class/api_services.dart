@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
@@ -498,6 +499,34 @@ class ApiService {
       return null;
     } finally {
       EasyLoading.dismiss();
+    }
+  }
+
+
+  Future<dynamic> getDataNew(String endpoint) async {
+    try {
+      final response = await client
+          .get(Uri.parse('$baseUrl$endpoint'))
+          .timeout(const Duration(seconds: 5)); // Add timeout
+
+      debugPrint('getDataNew ${response}');
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body
+            .replaceAll('â', '’')
+            .replaceAll('â', '“')
+            .replaceAll('â', '”')
+            .replaceAll('â¦', '…'));
+        return jsonData;
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } on TimeoutException {
+      throw Exception('Request timeout. Please try again.');
+    } on SocketException {
+      throw Exception('No internet connection. Please check your network.');
+    } catch (e) {
+      throw Exception('Network error: $e');
     }
   }
 }

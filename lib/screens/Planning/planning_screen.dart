@@ -19,8 +19,8 @@ class PlanningScreen extends ConsumerWidget {
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context, ref, selectedDate),
       body: planningAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        loading: () => _buildLoadingState(),
+        error: (error, stack) => _buildErrorState(error, () => _retry(ref, selectedDate)),
         data: (list) => _buildContent(list, searchQuery),
       ),
     );
@@ -209,6 +209,48 @@ class PlanningScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text('Loading planning data...'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error, VoidCallback onRetry) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              error.toString(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16, color: Colors.red),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(backgroundColor: myColors.primaryColor),
+              child: const Text('Retry',style: TextStyle(color: Colors.white),),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _retry(WidgetRef ref, DateTime selectedDate) {
+    ref.invalidate(planningProvider(selectedDate));
   }
 }
 
