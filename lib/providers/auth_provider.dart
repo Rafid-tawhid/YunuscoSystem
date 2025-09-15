@@ -11,6 +11,7 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
+
   bool get isAuthenticated => _user != null; // 📌 Load User from Shared Preferences
   Future<void> loadUser() async {
     _user = await DashboardHelpers.getUser();
@@ -65,4 +66,6 @@ class AuthProvider with ChangeNotifier {
     menuList = fullModuleList.where((e) => roleIds.contains(e.id)).map((e) => Menu(e.id, e.icon, e.title, false)).toList();
     notifyListeners();
   }
+
+
 }

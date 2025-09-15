@@ -227,7 +227,7 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 12,),
+              const SizedBox(height: 8,),
               Card(
                 color: Colors.white,
                 child: Padding(
@@ -375,7 +375,9 @@ class _DoctorPrescriptionScreenState extends State<DoctorPrescriptionScreen> {
         "prescriptionDate": DashboardHelpers.convertDateTime2(DateTime.now()),
         'gatePassStatus': _needsGatePass,
         "NotifyAccessType": 4,
-        "PrescriptionDetails": medicins
+        "PrescriptionDetails": medicins,
+        "Observation": observation,
+        "BepzaReferance": _bepza
       };
       if (await hp.saveGatePassInfo(prescriptionData)) {
         await hp.getAllDocAppointment();

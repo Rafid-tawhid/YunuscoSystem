@@ -1,27 +1,57 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:yunusco_group/service_class/api_services.dart';
+//
+// import '../models/line_setup_model.dart';
+//
+// class PlanningProvider extends ChangeNotifier {
+//   ApiService apiService = ApiService();
+//
+//   final List<LineSetupModel> _allPlanningList = [];
+//   List<LineSetupModel> get allPlanningList => _allPlanningList;
+//
+//   Future<bool> getAllPlanningList(String date) async {
+//     var data = await apiService
+//         .getData('api/Manufacturing/TargetLineSetup?date=$date');
+//     if (data != null) {
+//       _allPlanningList.clear();
+//       for (var i in data['returnvalue']) {
+//         _allPlanningList.add(LineSetupModel.fromJson(i));
+//       }
+//       notifyListeners();
+//       debugPrint('_allPlanningList ${_allPlanningList.length}');
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+// }
+
+
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
-
+import '../helper_class/dashboard_helpers.dart';
 import '../models/line_setup_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PlanningProvider extends ChangeNotifier {
-  ApiService apiService = ApiService();
+// providers.dart
 
-  final List<LineSetupModel> _allPlanningList = [];
-  List<LineSetupModel> get allPlanningList => _allPlanningList;
+// StateProvider for selected date
+final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
-  Future<bool> getAllPlanningList(String date) async {
-    var data = await apiService
-        .getData('api/Manufacturing/TargetLineSetup?date=$date');
-    if (data != null) {
-      _allPlanningList.clear();
-      for (var i in data['returnvalue']) {
-        _allPlanningList.add(LineSetupModel.fromJson(i));
-      }
-      notifyListeners();
-      debugPrint('_allPlanningList ${_allPlanningList.length}');
-      return true;
-    } else {
-      return false;
-    }
+// StateProvider for search query
+final searchQueryProvider = StateProvider<String>((ref) => "");
+
+// Planning provider
+final planningProvider = FutureProvider.autoDispose.family<List<LineSetupModel>, DateTime>((ref, date) async {
+  final formattedDate = DashboardHelpers.convertDateTime2(date);
+  final response = await ApiService().getData('api/Manufacturing/TargetLineSetup?date=$formattedDate');
+
+  if (response == null) {
+    throw Exception('Failed to load data');
   }
-}
+
+  final List<dynamic> data = response['returnvalue'];
+  return data.map((item) => LineSetupModel.fromJson(item)).toList();
+});
+
+

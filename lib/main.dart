@@ -17,6 +17,8 @@ import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/service_class/notofication_helper.dart';
 
 import 'launcher_screen.dart';
+import 'package:provider/provider.dart' as legacy; // alias for provider package
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -36,17 +38,26 @@ void main() async {
 
 //
   HttpOverrides.global = MyHttpOverrides();
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => AuthProvider()),
-    ChangeNotifierProvider(create: (_) => MerchandisingProvider()),
-    ChangeNotifierProvider(create: (_) => ManagementProvider()),
-    ChangeNotifierProvider(create: (_) => ProductProvider()),
-    ChangeNotifierProvider(create: (_) => InventoryPorvider()),
-    ChangeNotifierProvider(create: (_) => PlanningProvider()),
-    ChangeNotifierProvider(create: (_) => HrProvider()),
-    ChangeNotifierProvider(create: (_) => NotificationProvider()),
-    ChangeNotifierProvider(create: (_) => AccountProvider()),
-  ], child: MyApp()));
+
+    runApp(
+      legacy.MultiProvider(
+        providers: [
+          legacy.ChangeNotifierProvider(create: (_) => AuthProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => MerchandisingProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => ManagementProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => ProductProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => InventoryPorvider()),
+          // legacy.ChangeNotifierProvider(create: (_) => PlanningProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => HrProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => NotificationProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => AccountProvider()),
+        ],
+        child: ProviderScope(
+          child: MyApp(),
+        ),
+      ),
+    );
+
 }
 
 class MyApp extends StatelessWidget {

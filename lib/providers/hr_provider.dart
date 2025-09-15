@@ -19,6 +19,7 @@ import '../models/medicine_model.dart';
 import '../models/prescription_medicine.dart';
 import '../models/self_leave_info.dart';
 import '../models/vehicle_model.dart';
+import '../service_class/api_services.dart';
 
 class HrProvider extends ChangeNotifier {
   ApiService apiService = ApiService();

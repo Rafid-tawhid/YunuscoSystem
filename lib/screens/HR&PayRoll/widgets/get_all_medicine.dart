@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/common_widgets/custom_button.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/medicine_model.dart';
 import '../../../models/prescription_medicine.dart';
 
@@ -62,8 +63,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       decoration: const InputDecoration(
         hintText: 'Search medicines...',
         border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.white)
       ),
-      style: const TextStyle(fontSize: 18),
+      style: const TextStyle(fontSize: 18,color: Colors.white),
     );
   }
 
@@ -78,6 +80,8 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
             ? _buildSearchField()
             : const Text('Medicines', style: TextStyle(fontSize: 18)),
         centerTitle: true,
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           AnimatedSwitcher(
@@ -144,7 +148,7 @@ class _MedicineListItem extends StatelessWidget {
             Text('Base: ${medicine.baseName ?? 'N/A'}'),
           ],
         ),
-        trailing: Text('#${medicine.productId?.toString() ?? ''}'),
+        // trailing: Text('#${medicine.productId?.toString() ?? ''}'),
         onTap: () async {
           final result =
               await showMedicineDetailsBottomSheet(context, medicine);

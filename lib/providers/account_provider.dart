@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 
+import '../models/access_type_model.dart';
 import '../models/pf_main_model.dart';
 import '../service_class/api_services.dart';
 
@@ -55,12 +56,7 @@ class AccountProvider extends ChangeNotifier {
   }
 
   Future<bool> changePassword(String name, String oldPass, newPass) async {
-    var response = await apiService.patchData('api/User/UpdatePassword', {
-      "LoginName": name,
-      "OldPassword": oldPass,
-      "NewPassword": newPass,
-      "RetypePassword": newPass
-    });
+    var response = await apiService.patchData('api/User/UpdatePassword', {"LoginName": name, "OldPassword": oldPass, "NewPassword": newPass, "RetypePassword": newPass});
     return response == null ? false : true;
   }
 
@@ -68,8 +64,7 @@ class AccountProvider extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> fetchPfAmount() async {
     try {
-      final data = await apiService
-          .getData('api/HR/PFStatus/${DashboardHelpers.currentUser!.userId}');
+      final data = await apiService.getData('api/HR/PFStatus/${DashboardHelpers.currentUser!.userId}');
       if (data != null) {
         personalPfInfo = data['Results'][0];
         return personalPfInfo;
@@ -80,5 +75,37 @@ class AccountProvider extends ChangeNotifier {
       debugPrint('Something wrong $e');
       return null;
     }
+  }
+
+  List<AccessTypeModel> _accessList = [];
+  List<AccessTypeModel> get accessList => _accessList;
+  Future<void> getAccessType() async {
+    var data = await apiService.getData('api/User/UserAccessTypes');
+    if (data != null) {
+      _accessList.clear();
+      for (var i in data['Results']) {
+        _accessList.add(AccessTypeModel.fromJson(i));
+      }
+    }
+    debugPrint('_accessList ${_accessList.length}');
+    notifyListeners();
+  }
+
+  Future<dynamic> saveUserRole(String id, String? selectedUserRole, AccessTypeModel? selectedAccessType) async {
+
+   return apiService.postData('api/User/SaveUAccessRoles', {
+        "UserId" : id,
+        "Role" : selectedUserRole,
+        "AccessTypeId" : selectedAccessType!.accessTypeId
+    });
+  }
+
+  Future<bool> saveUserAccess(String accType) async {
+
+    var data =await apiService.postFormData('api/User/SaveUAccessType',{
+      'accessType':accType
+    });
+
+    return data!=null?true:false;
   }
 }

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as client;
 import 'package:http_interceptor/http/intercepted_client.dart';
+import '../helper_class/dashboard_helpers.dart';
 import '../utils/constants.dart';
 import 'interceptor_class.dart'; // Optional for error message display
 
@@ -52,7 +54,7 @@ class ApiService {
     try {
       // Perform the GET request
       final response =
-          await client.get(Uri.parse(endpoint)).timeout(Duration(seconds: 10));
+      await client.get(Uri.parse(endpoint)).timeout(Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200) {
@@ -85,13 +87,13 @@ class ApiService {
 
       final response = await client
           .post(
-            Uri.parse('${AppConstants.baseUrl}$endpoint/'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
-            },
-            body: jsonEncode(body),
-          )
+        Uri.parse('${AppConstants.baseUrl}$endpoint/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+        },
+        body: jsonEncode(body),
+      )
           .timeout(Duration(seconds: 10));
 
       // Handle response based on status code
@@ -125,13 +127,13 @@ class ApiService {
 
       final response = await client
           .patch(
-            Uri.parse('${AppConstants.baseUrl}$endpoint/'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
-            },
-            body: jsonEncode(body),
-          )
+        Uri.parse('${AppConstants.baseUrl}$endpoint/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+        },
+        body: jsonEncode(body),
+      )
           .timeout(Duration(seconds: 10));
 
       // Handle response based on status code
@@ -165,13 +167,13 @@ class ApiService {
 
       final response = await client
           .post(
-            Uri.parse(endpoint),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ${AppConstants.token}', // Optional
-            },
-            body: jsonEncode(body),
-          )
+        Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AppConstants.token}', // Optional
+        },
+        body: jsonEncode(body),
+      )
           .timeout(Duration(seconds: 10));
 
       // Handle response based on status code
@@ -260,6 +262,79 @@ class ApiService {
       return null;
     }
   }
+
+
+  Future<Map<String, dynamic>?> postFormData(String endpoint, Map<String, dynamic> body) async {
+    debugPrint('SEND URL: ${AppConstants.baseUrl + endpoint}');
+    debugPrint('SEND DATA: ${json.encode(body)}');
+
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse(AppConstants.baseUrl + endpoint),
+      );
+
+      // Add headers
+      request.headers['Authorization'] = 'Bearer ${AppConstants.token}';
+      request.headers['Accept'] = 'application/json';
+
+      // Add fields
+      body.forEach((key, value) {
+        if (value != null) {
+          request.fields[key] = value.toString();
+        }
+      });
+
+      // Send the request and get response
+      final response = await request.send();
+      final responseString = await response.stream.bytesToString();
+      final statusCode = response.statusCode;
+
+      debugPrint('Response Status Code: $statusCode');
+      debugPrint('Response Body: $responseString');
+
+      // Parse response
+      final responseJson = json.decode(responseString) as Map<String, dynamic>;
+
+      if (statusCode >= 200 && statusCode < 300) {
+        // Success - return the response body
+        return responseJson;
+      } else {
+        // Server returned error - extract error message from common field names
+        final errorMessage = responseJson['message'] ??
+            responseJson['error'] ??
+            responseJson['detail'] ??
+            'Request failed with status $statusCode';
+
+        debugPrint('Server Error: $errorMessage');
+
+        // Use your existing alert system instead of undefined _handleError
+        DashboardHelpers.showAlert(msg: errorMessage);
+        return null;
+      }
+    } on SocketException catch (e) {
+      // Handle network connectivity issues
+      debugPrint('Network Error: $e');
+      DashboardHelpers.showAlert(msg: 'Network error: Please check your internet connection');
+      return null;
+    } on http.ClientException catch (e) {
+      // Handle client exceptions (network issues)
+      debugPrint('Client Exception: $e');
+      DashboardHelpers.showAlert(msg: 'Network error: ${e.message}');
+      return null;
+    } on FormatException catch (e) {
+      // Handle JSON parsing errors
+      debugPrint('JSON Format Error: $e');
+      DashboardHelpers.showAlert(msg: 'Data format error: Invalid server response');
+      return null;
+    } catch (e) {
+      // Handle all other exceptions
+      debugPrint('Unexpected Error: $e');
+      DashboardHelpers.showAlert(msg: 'Unexpected error: ${e.toString()}');
+      return null;
+    }
+  }
+
 
   // Error handling based on status code
   void _handleError(int statusCode, String responseBody) {
@@ -361,6 +436,7 @@ class ApiService {
     }
   }
 
+
   Future<dynamic> uploadImageWithData({
     required String url,
     required File? imageFile,
@@ -414,7 +490,8 @@ class ApiService {
         _handleError(response.statusCode, responseBody);
         return null;
       }
-    } catch (e) {
+    }
+    catch (e) {
       debugPrint('Upload error: $e');
       EasyLoading.dismiss();
       Fluttertoast.showToast(msg: 'Upload failed: ${e.toString()}');
