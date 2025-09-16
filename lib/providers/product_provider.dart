@@ -679,6 +679,16 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  updateReqListAfterAcceptOrRej(String reqCode){
+    int index= _filteredRequisitions.indexWhere((e)=>e.purchaseRequisitionCode==reqCode);
+    if (index != -1) {
+      // Get the current value and flip it
+
+      _filteredRequisitions[index] = _filteredRequisitions[index].copyWith(isComplete: true);
+      notifyListeners();
+    }
+  }
+
   List<RequisitionDetailsModel> requisationProductDetails = [];
 
   Future<bool> getRequisationProductDetails(String? purchaseRequisitionCode) async {
@@ -849,13 +859,17 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void acceptItem(String code,String? remarks,bool isAccept) {
-   apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {
+  Future<bool> acceptItem(PurchaseRequisationListModel code,String? remarks,bool isAccept) async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+   var data=await apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {
      'remarks':remarks,
-     'requisitionId':code,
-     'isApprove':true,
+     'requisitionId':code.purchaseRequisitionCode,
+     'isApprove':isAccept,
    });
 
+   EasyLoading.dismiss();
+
+   return data!=null?true:false;
   }
 
   PurchaseAnalyticsResponse? _purchaseAnalyticsResponse;

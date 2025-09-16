@@ -216,7 +216,7 @@ class _PurchaseRequisitionListScreenState
                 context,
                 MaterialPageRoute(
                     builder: (context) => RequisitionDetailsScreen(
-                        requisitions: pp.requisationProductDetails,reqCode: requisition.purchaseRequisitionId.toString(),)));
+                        requisitions: pp.requisationProductDetails,reqModel: requisition)));
           }
         },
         child: Padding(
@@ -236,12 +236,12 @@ class _PurchaseRequisitionListScreenState
                   ),
                   Chip(
                     label: Text(
-                      requisition.isComplete == true ? 'Completed' : 'Pending',
+                      requisition.isComplete == true ? 'Completed' :requisition.isComplete==false?'Rejected': 'Pending',
                       style: const TextStyle(color: Colors.white),
                     ),
                     backgroundColor: requisition.isComplete == true
-                        ? Colors.green
-                        : Colors.orange,
+                        ? Colors.green :requisition.isComplete == false?Colors.red:
+                        Colors.orange,
                   ),
                 ],
               ),

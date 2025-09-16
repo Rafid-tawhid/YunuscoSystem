@@ -4,14 +4,16 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 
+import '../../../models/purchase_requisation_list_model.dart';
 import '../../../models/requisition_details_model.dart';
+import '../purchase_requisation_list.dart';
 
 class RequisitionDetailsScreen extends StatelessWidget {
   final List<RequisitionDetailsModel> requisitions;
-  final String reqCode;
+  final PurchaseRequisationListModel reqModel;
 
 
-  const RequisitionDetailsScreen({super.key, required this.requisitions,required this.reqCode});
+  const RequisitionDetailsScreen({super.key, required this.requisitions,required this.reqModel});
 
   @override
   Widget build(BuildContext context) {
@@ -32,61 +34,76 @@ class RequisitionDetailsScreen extends StatelessWidget {
             final req = requisitions[index];
             return _buildRequisitionCard(req, context);
           } else {
-            return Column(
-              children: [
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _remarksController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: 'Enter your remarks here...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.all(12),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
+            if(reqModel.isComplete==null)
+              {
+                return  Column(
                   children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _remarksController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your remarks here...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text('Reject', style: TextStyle(fontSize: 16)),
+                        contentPadding: const EdgeInsets.all(12),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          var pp=context.read<ProductProvider>();
-                          pp.acceptItem(reqCode,_remarksController.text.trim(),true);
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              var pp=context.read<ProductProvider>();
+                              var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),false);
+                              if(data){
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text('Reject', style: TextStyle(fontSize: 16)),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
 
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                              var pp=context.read<ProductProvider>();
+                              var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),true);
+                              if(data){
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text('Accept', style: TextStyle(fontSize: 16)),
                           ),
                         ),
-                        child: const Text('Accept', style: TextStyle(fontSize: 16)),
-                      ),
+                      ],
                     ),
+                    const SizedBox(height: 30),
                   ],
-                ),
-                const SizedBox(height: 30),
-              ],
-            );
+                );
+              }
+           else {
+            return SizedBox.shrink();
+            }
           }
         },
       )
