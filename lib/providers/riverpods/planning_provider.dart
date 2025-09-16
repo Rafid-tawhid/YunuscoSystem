@@ -30,8 +30,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
-import '../helper_class/dashboard_helpers.dart';
-import '../models/line_setup_model.dart';
+import '../../helper_class/dashboard_helpers.dart';
+import '../../models/line_setup_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // providers.dart
@@ -43,8 +43,8 @@ final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 // StateProvider for search query
 final searchQueryProvider = StateProvider<String>((ref) => "");
 
-final planningProvider = FutureProvider.autoDispose.family<List<LineSetupModel>, DateTime>((ref, date) async {
-
+// Remove autoDispose to prevent multiple API calls
+final planningProvider = FutureProvider.family<List<LineSetupModel>, DateTime>((ref, date) async {
   try {
     final formattedDate = DashboardHelpers.convertDateTime2(date);
     final response = await ApiService().getDataNew('api/Manufacturing/TargetLineSetup?date=$formattedDate');
@@ -58,11 +58,6 @@ final planningProvider = FutureProvider.autoDispose.family<List<LineSetupModel>,
     }
 
     final List<dynamic> data = response['returnvalue'];
-
-    if (data.isEmpty) {
-      return []; // Return empty list instead of throwing error
-    }
-
     return data.map((item) => LineSetupModel.fromJson(item)).toList();
   } catch (e) {
     throw Exception('Failed to load data: $e');

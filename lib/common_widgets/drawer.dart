@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
+import '../providers/riverpods/testing.dart';
 import '../screens/Profile/user_access_type.dart';
 import '../screens/login_screen.dart';
 import '../utils/google_drive.dart';
@@ -48,8 +49,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    DashboardHelpers.currentUser!.designation ??
-                        'sarah.johnson@example.com',
+                    DashboardHelpers.currentUser!.designation ?? 'sarah.johnson@example.com',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.8),
                       fontSize: 14,
@@ -72,10 +72,7 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ProductCatalogScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProductCatalogScreen()));
               //  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen()));
               //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
             },
@@ -89,15 +86,15 @@ class MyDrawer extends StatelessWidget {
 
               /// Navigate to this screen from another widget
               /// //DashboardHelpers.currentUser!.loginName=='38389'
-              if(true){
+              if (true) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UserFormScreen(),
+                  //  builder: (context) => UserFormScreen(),
+                    builder: (context) => PurchaseScreen2(),
                   ),
                 );
               }
-
             },
           ),
           const Divider(),
@@ -106,8 +103,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () async {
               await context.read<AuthProvider>().logout();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
             },
           ),
         ],

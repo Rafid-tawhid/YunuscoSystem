@@ -496,4 +496,24 @@ class ApiService {
   }
 
 
+  Future<dynamic> getData3(String endpoint) async {
+    try {
+      debugPrint('API CALLING ${endpoint}');
+      final response = await http.get(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {'Content-Type': 'application/json','Authorization': 'Bearer ${{AppConstants.token}}',},
+      ).timeout(const Duration(seconds: 30));
+      debugPrint('Response ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to load data: HTTP ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+
 }

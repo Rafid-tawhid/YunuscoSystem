@@ -39,9 +39,7 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter purchase orders based on search and filter criteria
 
-    var pp=context.read<ProductProvider>();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

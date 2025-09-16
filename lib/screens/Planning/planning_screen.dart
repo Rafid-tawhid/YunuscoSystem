@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/line_setup_model.dart';
-import '../../providers/planning_provider.dart';
+import '../../providers/riverpods/planning_provider.dart';
 
 class PlanningScreen extends ConsumerWidget {
   const PlanningScreen({super.key});

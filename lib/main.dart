@@ -12,7 +12,7 @@ import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
-import 'package:yunusco_group/providers/planning_provider.dart';
+import 'package:yunusco_group/providers/riverpods/planning_provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/service_class/notofication_helper.dart';
 
