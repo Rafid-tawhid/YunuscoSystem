@@ -68,7 +68,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           var pp=context.read<ProductProvider>();
-                          pp.acceptItem(reqCode,_remarksController.text.trim());
+                          pp.acceptItem(reqCode,_remarksController.text.trim(),true);
 
                         },
                         style: ElevatedButton.styleFrom(

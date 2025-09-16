@@ -849,11 +849,13 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void acceptItem(String code,String? remarks) {
-   apiService.postData('api/Inventory/ApprovePurchaseRequisition', {
+  void acceptItem(String code,String? remarks,bool isAccept) {
+   apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {
      'remarks':remarks,
-     'requisitionId':code
+     'requisitionId':code,
+     'isApprove':true,
    });
+
   }
 
   PurchaseAnalyticsResponse? _purchaseAnalyticsResponse;

@@ -88,7 +88,8 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
 
               /// Navigate to this screen from another widget
-              if(DashboardHelpers.currentUser!.loginName=='38389'){
+              /// //DashboardHelpers.currentUser!.loginName=='38389'
+              if(true){
                 Navigator.push(
                   context,
                   MaterialPageRoute(

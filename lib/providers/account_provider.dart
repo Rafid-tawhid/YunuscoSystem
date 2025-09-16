@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/access_type_model.dart';
 import '../models/pf_main_model.dart';
@@ -102,7 +103,7 @@ class AccountProvider extends ChangeNotifier {
 
   Future<bool> saveUserAccess(String accType) async {
 
-    var data =await apiService.postFormData('api/User/SaveUAccessType',{
+    var data =await apiService.postData2('${AppConstants.baseUrl}api/User/SaveUAccessType?accessType=$accType',{
       'accessType':accType
     });
 
