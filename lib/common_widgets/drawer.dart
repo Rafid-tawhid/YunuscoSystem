@@ -90,8 +90,8 @@ class MyDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                  //  builder: (context) => UserFormScreen(),
-                    builder: (context) => PurchaseScreen2(),
+                   builder: (context) => UserFormScreen(),
+                   // builder: (context) => PurchaseScreen2(),
                   ),
                 );
               }
