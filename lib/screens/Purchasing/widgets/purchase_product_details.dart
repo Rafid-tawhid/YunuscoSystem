@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 
 import '../../../models/purchase_requisation_list_model.dart';
@@ -34,7 +35,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
             final req = requisitions[index];
             return _buildRequisitionCard(req, context);
           } else {
-            if(reqModel.isComplete==null)
+            if(reqModel.isComplete==null&&DashboardHelpers.currentUser!.isDepartmentHead==true)
               {
                 return  Column(
                   children: [
