@@ -518,6 +518,7 @@ class HrProvider extends ChangeNotifier {
         filterList.add({
           "name": e.fullName,
           "id": e.idCardNo,
+          "userId":e.userId
         });
       }
     }

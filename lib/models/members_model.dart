@@ -6,7 +6,8 @@ class MembersModel {
     String? departmentName,
     num? gradeId,
     String? ddlItemName,
-    bool isSelected = false, // Added with default value
+    num? userId, // New field added here
+    bool isSelected = false,
   }) {
     _idCardNo = idCardNo;
     _fullName = fullName;
@@ -14,7 +15,8 @@ class MembersModel {
     _departmentName = departmentName;
     _gradeId = gradeId;
     _ddlItemName = ddlItemName;
-    _isSelected = isSelected; // Initialize new field
+    _userId = userId; // Initialize new field
+    _isSelected = isSelected;
   }
 
   MembersModel.fromJson(dynamic json) {
@@ -24,7 +26,8 @@ class MembersModel {
     _departmentName = json['DepartmentName'];
     _gradeId = json['GradeId'];
     _ddlItemName = json['DdlItemName'];
-    _isSelected = false; // Default value when creating from JSON
+    _userId = json['UserId']; // New field from JSON
+    _isSelected = false;
   }
 
   set isSelected(bool value) {
@@ -37,7 +40,8 @@ class MembersModel {
   String? _departmentName;
   num? _gradeId;
   String? _ddlItemName;
-  bool _isSelected = false; // Field declaration with default
+  num? _userId; // New private field declaration
+  bool _isSelected = false;
 
   MembersModel copyWith({
     String? idCardNo,
@@ -46,7 +50,8 @@ class MembersModel {
     String? departmentName,
     num? gradeId,
     String? ddlItemName,
-    bool? isSelected, // Added to copyWith
+    num? userId, // Added to copyWith
+    bool? isSelected,
   }) =>
       MembersModel(
         idCardNo: idCardNo ?? _idCardNo,
@@ -55,7 +60,8 @@ class MembersModel {
         departmentName: departmentName ?? _departmentName,
         gradeId: gradeId ?? _gradeId,
         ddlItemName: ddlItemName ?? _ddlItemName,
-        isSelected: isSelected ?? _isSelected, // Include in copy
+        userId: userId ?? _userId, // Include in copy
+        isSelected: isSelected ?? _isSelected,
       );
 
   // Getters
@@ -65,7 +71,8 @@ class MembersModel {
   String? get departmentName => _departmentName;
   num? get gradeId => _gradeId;
   String? get ddlItemName => _ddlItemName;
-  bool get isSelected => _isSelected; // New getter
+  num? get userId => _userId; // New getter
+  bool get isSelected => _isSelected;
 
   // Convenience method to toggle selection
   MembersModel toggleSelection() => copyWith(isSelected: !_isSelected);
@@ -78,12 +85,13 @@ class MembersModel {
     map['DepartmentName'] = _departmentName;
     map['GradeId'] = _gradeId;
     map['DdlItemName'] = _ddlItemName;
+    map['UserId'] = _userId; // New field added to JSON
     // Note: isSelected is typically not serialized to JSON
     return map;
   }
 
   @override
   String toString() {
-    return 'MembersModel{_idCardNo: $_idCardNo, _fullName: $_fullName, _designationName: $_designationName, _departmentName: $_departmentName, _gradeId: $_gradeId, _ddlItemName: $_ddlItemName, _isSelected: $_isSelected}';
+    return 'MembersModel{_idCardNo: $_idCardNo, _fullName: $_fullName, _designationName: $_designationName, _departmentName: $_departmentName, _gradeId: $_gradeId, _ddlItemName: $_ddlItemName, _userId: $_userId, _isSelected: $_isSelected}';
   }
 }

@@ -21,6 +21,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
   // Controllers and values
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userAccessTypeController = TextEditingController();
+  final  FocusNode _focusNode=FocusNode();
   String? _selectedUserRole;
   AccessTypeModel? _selectedAccessType; // Changed variable name for clarity
 
@@ -82,122 +83,124 @@ class _UserFormScreenState extends State<UserFormScreen> {
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // User ID Text Field
-              Row(
-                children: [
-                  Expanded(child: Text('')),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      onPressed: () {
-                        setState(() {
-                          showRole = !showRole;
-                        });
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            showRole ? 'Role' : 'Access Type',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          )
-                        ],
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              showRole
-                  ? BuildRoleForm()
-                  : Column(
-                      children: [
-                        TextFormField(
-                          controller: _userAccessTypeController,
-                          decoration: InputDecoration(
-                            labelText: 'Access Type',
-                            hintText: 'Enter Access Type',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            prefixIcon: const Icon(Icons.person),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a access type';
-                            }
-                            if (value.length < 3) {
-                              return 'Access type must be at least 3 characters';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Row(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // User ID Text Field
+                Row(
+                  children: [
+                    Expanded(child: Text('')),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        onPressed: () {
+                          setState(() {
+                            showRole = !showRole;
+                          });
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  var ap = context.read<AccountProvider>();
-                                  var resp = await ap.saveUserAccess(_userAccessTypeController.text.trim());
-                                  if (resp) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: Colors.green,
-                                        content: Text(
-                                          'Access Type Created',
-                                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            Text(
+                              showRole ? 'Role' : 'Access Type',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            )
+                          ],
+                        )),
+                  ],
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                showRole
+                    ? BuildRoleForm()
+                    : Column(
+                        children: [
+                          TextFormField(
+                            controller: _userAccessTypeController,
+                            decoration: InputDecoration(
+                              labelText: 'Access Type',
+                              hintText: 'Enter Access Type',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              prefixIcon: const Icon(Icons.person),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a access type';
+                              }
+                              if (value.length < 3) {
+                                return 'Access type must be at least 3 characters';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    var ap = context.read<AccountProvider>();
+                                    var resp = await ap.saveUserAccess(_userAccessTypeController.text.trim());
+                                    if (resp) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          backgroundColor: Colors.green,
+                                          content: Text(
+                                            'Access Type Created',
+                                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                          ),
+                                          duration: const Duration(seconds: 3),
                                         ),
-                                        duration: const Duration(seconds: 3),
-                                      ),
-                                    );
-                                  }
-                                  _userAccessTypeController.clear();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: myColors.primaryColor,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
+                                      );
+                                    }
+                                    _userAccessTypeController.clear();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: myColors.primaryColor,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'SAVE',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                child: const Text(
-                                  'SAVE',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Consumer<AccountProvider>(
-                            builder: (context, pro, _) => Column(
-                                  children: pro.accessList
-                                      .map((e) => ListTile(
-                                            title: Text(e.accessTypeName ?? ''),
-                                            subtitle: Text('Created by : ${e.createdBy}'),
-                                            trailing: IconButton(
-                                                onPressed: () {
-                                                  _showDeleteDialog(pro.accessList.indexOf(e), e.accessTypeName ?? '');
-                                                },
-                                                icon: Icon(Icons.delete)),
-                                          ))
-                                      .toList(),
-                                ))
-                      ],
-                    )
-            ],
+                            ],
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Consumer<AccountProvider>(
+                              builder: (context, pro, _) => Column(
+                                    children: pro.accessList
+                                        .map((e) => ListTile(
+                                              title: Text(e.accessTypeName ?? ''),
+                                              subtitle: Text('Created by : ${e.createdBy}'),
+                                              trailing: IconButton(
+                                                  onPressed: () {
+                                                    _showDeleteDialog(pro.accessList.indexOf(e), e,true);
+                                                  },
+                                                  icon: Icon(Icons.delete)),
+                                            ))
+                                        .toList(),
+                                  ))
+                        ],
+                      )
+              ],
+            ),
           ),
         ),
       ),
@@ -236,7 +239,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
               onSelected: (suggestion) {
                 // show ID in the field
                 setState(() {
-                  _userIdController.text = suggestion["id"];
+                  _userIdController.text = suggestion["userId"].toString();
                 });
                 FocusScope.of(context).unfocus(); // close keyboard
               },
@@ -341,6 +344,21 @@ class _UserFormScreenState extends State<UserFormScreen> {
             ),
           ],
         ),
+        const SizedBox(height: 20,),
+        Consumer<AccountProvider>(
+            builder: (context, pro, _) => Column(
+              children: pro.userRoleAccess
+                  .map((e) => ListTile(
+                title: Text(e.userId.toString()),
+                subtitle: Text('Role: ${e.accessTypeId}'),
+                trailing: IconButton(
+                    onPressed: () {
+                      _showDeleteDialog(pro.userRoleAccess.indexOf(e), e,false);
+                    },
+                    icon: Icon(Icons.delete)),
+              ))
+                  .toList(),
+            ))
       ],
     );
   }
@@ -348,6 +366,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
   void getAccessType() async {
     final provider = context.read<AccountProvider>();
     await provider.getAccessType();
+    await provider.getUsersWithAccessType();
 
     // Optional: Set a default value if needed
     if (mounted && provider.accessList.isNotEmpty) {
@@ -363,14 +382,24 @@ class _UserFormScreenState extends State<UserFormScreen> {
     }
   }
 
-  void _showDeleteDialog(int index, String name) {
+  void _showDeleteDialog(int index, dynamic model,bool isRole) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return DeleteConfirmationDialog(
-          itemName: name,
+          itemName: isRole?model.accessTypeName : model.roll??'',
           onConfirm: () {
-            Navigator.of(context).pop();
+            var ap=context.read<AccountProvider>();
+           if(isRole){
+
+             ap.deleteAccessType(model);
+             Navigator.of(context).pop();
+
+           }
+           else {
+             ap.deleteUserType(model);
+             Navigator.of(context).pop();
+           }
           },
         );
       },

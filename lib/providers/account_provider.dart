@@ -4,6 +4,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/access_type_model.dart';
 import '../models/pf_main_model.dart';
+import '../models/user_access_type.dart';
 import '../service_class/api_services.dart';
 
 class AccountProvider extends ChangeNotifier {
@@ -92,6 +93,21 @@ class AccountProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<UserAccessType> _userRoleAccess=[];
+  List<UserAccessType> get userRoleAccess => _userRoleAccess;
+
+  Future<void> getUsersWithAccessType() async {
+    var data = await apiService.getData('api/User/UserRoleAccess');
+    if (data != null) {
+      _userRoleAccess.clear();
+      for (var i in data['Results']['Result']) {
+        _userRoleAccess.add(UserAccessType.fromJson(i));
+      }
+    }
+    debugPrint('_userRoleAccess ${_userRoleAccess.length}');
+    notifyListeners();
+  }
+
   Future<dynamic> saveUserRole(String id, String? selectedUserRole, AccessTypeModel? selectedAccessType) async {
 
    return apiService.postData('api/User/SaveUAccessRoles', {
@@ -107,6 +123,26 @@ class AccountProvider extends ChangeNotifier {
       'accessType':accType
     });
 
+    return data!=null?true:false;
+  }
+
+  Future<bool> deleteAccessType(AccessTypeModel model) async{
+
+    var data=await apiService.deleteData('${AppConstants.baseUrl}api/user/DeleteAccessType?accessTypeId=${model.accessTypeId}');
+    if(data!=null){
+      accessList.remove(model);
+    }
+    notifyListeners();
+    return data!=null?true:false;
+  }
+
+  Future<bool> deleteUserType(UserAccessType model) async{
+    //DeleteUserAccessRole?userId=2&accessTypeId=7
+    var data=await apiService.deleteData('${AppConstants.baseUrl}api/user/DeleteUserAccessRole?userId=${model.userId}&accessTypeId=${model.accessTypeId}');
+    if(data!=null){
+      userRoleAccess.remove(model);
+    }
+    notifyListeners();
     return data!=null?true:false;
   }
 }

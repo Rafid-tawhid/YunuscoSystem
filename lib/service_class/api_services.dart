@@ -382,13 +382,13 @@ class ApiService {
     }
   }
 
-  Future<dynamic> deleteData(String endpoint) async {
+  Future<dynamic> deleteData(String url) async {
     try {
       // Perform the DELETE request
-      debugPrint('URL: ${AppConstants.baseUrl}$endpoint');
+      debugPrint('URL: ${url}');
 
       final response = await client.delete(
-        Uri.parse('${{AppConstants.baseUrl}}$endpoint'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
