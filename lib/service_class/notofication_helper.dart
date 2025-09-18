@@ -15,6 +15,7 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../screens/HR&PayRoll/doc_appointment_requisation.dart';
 import '../screens/HR&PayRoll/requested_car_list.dart';
+import '../screens/Purchasing/purchase_requisation_list.dart';
 import '../screens/login_screen.dart';
 import 'api_services.dart';
 
@@ -264,7 +265,13 @@ class NotificationServices {
       //
       Navigator.push(context,
           CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
-    } else {
+    }
+    if (data['type'] == "PurchaseRequisition") {
+      //
+      Navigator.push(context,
+          CupertinoPageRoute(builder: (context) => PurchaseRequisitionListScreen()));
+    }
+    else {
       Navigator.push(context,
           CupertinoPageRoute(builder: (context) => NotificationsScreen()));
     }

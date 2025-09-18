@@ -863,7 +863,7 @@ class ProductProvider extends ChangeNotifier {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
    var data=await apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {
      'remarks':remarks,
-     'requisitionId':code.purchaseRequisitionCode,
+     'requisitionId':code.purchaseRequisitionId,
      'isApprove':isAccept,
    });
 
