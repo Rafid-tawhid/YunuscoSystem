@@ -871,7 +871,7 @@ class ProductProvider extends ChangeNotifier {
 
    return data!=null?true:false;
   }
-
+  //
   PurchaseAnalyticsResponse? _purchaseAnalyticsResponse;
   PurchaseAnalyticsResponse? get purchaseAnalyticsResponse=>_purchaseAnalyticsResponse;
   Future<void> getAllPurchaseDashboardInfo() async{
