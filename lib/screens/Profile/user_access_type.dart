@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/access_type_model.dart';
+import 'package:yunusco_group/models/user_access_type.dart';
 import 'package:yunusco_group/providers/account_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../../providers/hr_provider.dart';
 
 class UserFormScreen extends StatefulWidget {
@@ -15,59 +17,32 @@ class UserFormScreen extends StatefulWidget {
 }
 
 class _UserFormScreenState extends State<UserFormScreen> {
-  // Form key for validation
   final _formKey = GlobalKey<FormState>();
-
-  // Controllers and values
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userAccessTypeController = TextEditingController();
-  final  FocusNode _focusNode=FocusNode();
+  final FocusNode _focusNode = FocusNode();
   String? _selectedUserRole;
-  AccessTypeModel? _selectedAccessType; // Changed variable name for clarity
-
-  // Dropdown options
+  AccessTypeModel? _selectedAccessType;
   final List<String> _userRoles = ['Admin', 'Self'];
-  bool showRole = true;
+  bool _showRoleForm = true;
 
   @override
   void initState() {
     super.initState();
-    getAccessType();
-    getAllStuffMemberList();
+    _initializeData();
   }
 
   @override
   void dispose() {
     _userIdController.dispose();
+    _userAccessTypeController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      var ap = context.read<AccountProvider>();
-      var response;
-      if (ap.accessList.isNotEmpty && _selectedAccessType != null) {
-        response = await ap.saveUserRole(_userIdController.text, _selectedUserRole, _selectedAccessType);
-      }
-      // Form is valid, process the data
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text(
-            response['message'].toString(),
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-
-      // You can now use the selected values:
-      print('User ID: ${_userIdController.text}');
-      print('User Role: $_selectedUserRole');
-      print('Access Type ID: ${_selectedAccessType?.accessTypeId}');
-      print('Access Type Name: ${_selectedAccessType?.accessTypeName}');
-      _userIdController.clear();
-    }
+  Future<void> _initializeData() async {
+    getAccessType();
+    await getAllStuffMemberList();
   }
 
   @override
@@ -78,6 +53,12 @@ class _UserFormScreenState extends State<UserFormScreen> {
         title: const Text('User Access'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(onPressed: () async {
+            getAccessType();
+            await getAllStuffMemberList();
+          }, icon: Icon(Icons.refresh))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -87,118 +68,9 @@ class _UserFormScreenState extends State<UserFormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // User ID Text Field
-                Row(
-                  children: [
-                    Expanded(child: Text('')),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                        onPressed: () {
-                          setState(() {
-                            showRole = !showRole;
-                          });
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              showRole ? 'Role' : 'Access Type',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            )
-                          ],
-                        )),
-                  ],
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                showRole
-                    ? BuildRoleForm()
-                    : Column(
-                        children: [
-                          TextFormField(
-                            controller: _userAccessTypeController,
-                            decoration: InputDecoration(
-                              labelText: 'Access Type',
-                              hintText: 'Enter Access Type',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              prefixIcon: const Icon(Icons.person),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a access type';
-                              }
-                              if (value.length < 3) {
-                                return 'Access type must be at least 3 characters';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    var ap = context.read<AccountProvider>();
-                                    var resp = await ap.saveUserAccess(_userAccessTypeController.text.trim());
-                                    if (resp) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          backgroundColor: Colors.green,
-                                          content: Text(
-                                            'Access Type Created',
-                                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                                          ),
-                                          duration: const Duration(seconds: 3),
-                                        ),
-                                      );
-                                    }
-                                    _userAccessTypeController.clear();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: myColors.primaryColor,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'SAVE',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Consumer<AccountProvider>(
-                              builder: (context, pro, _) => Column(
-                                    children: pro.accessList
-                                        .map((e) => ListTile(
-                                              title: Text(e.accessTypeName ?? ''),
-                                              subtitle: Text('Created by : ${e.createdBy}'),
-                                              trailing: IconButton(
-                                                  onPressed: () {
-                                                    _showDeleteDialog(pro.accessList.indexOf(e), e,true);
-                                                  },
-                                                  icon: Icon(Icons.delete)),
-                                            ))
-                                        .toList(),
-                                  ))
-                        ],
-                      )
+                _buildToggleButton(),
+                const SizedBox(height: 12),
+                _showRoleForm ? _buildRoleForm() : _buildAccessTypeForm(),
               ],
             ),
           ),
@@ -207,199 +79,342 @@ class _UserFormScreenState extends State<UserFormScreen> {
     );
   }
 
-  Column BuildRoleForm() {
-    return Column(
+  // ========== UI COMPONENTS ==========
+
+  Widget _buildToggleButton() {
+    return Row(
       children: [
-        Consumer<HrProvider>(
-          builder: (context, pro, _) {
-            return TypeAheadField<Map<String, dynamic>>(
-              suggestionsCallback: (search) {
-                return pro.searchStuffList(search);
-              },
-              builder: (context, textController, focusNode) {
-                return TextFormField(
-                  controller: textController, // persistent controller
-                  focusNode: focusNode,
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'ID is required' : null,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Search Member',
-                  ),
-                );
-              },
-              controller: _userIdController,
-              //
-              itemBuilder: (context, suggestion) {
-                return ListTile(
-                  title: Text(suggestion["name"]),
-                  subtitle: Text("ID: ${suggestion["id"]}"),
-                );
-              },
-              onSelected: (suggestion) {
-                // show ID in the field
-                setState(() {
-                  _userIdController.text = suggestion["userId"].toString();
-                });
-                FocusScope.of(context).unfocus(); // close keyboard
-              },
-            );
-          },
-        ),
-
-        const SizedBox(height: 20),
-
-        // User Role Dropdown
-        DropdownButtonFormField<String>(
-          value: _selectedUserRole,
-          decoration: InputDecoration(
-            labelText: 'User Role',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            prefixIcon: const Icon(Icons.assignment_ind),
+        const Expanded(child: SizedBox()),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          onPressed: () => setState(() => _showRoleForm = !_showRoleForm),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _showRoleForm ? 'Role' : 'Access Type',
+                style: const TextStyle(color: Colors.white),
+              ),
+              const Icon(Icons.add, color: Colors.white),
+            ],
           ),
-          hint: const Text('Select user role'),
-          items: _userRoles.map((String role) {
-            return DropdownMenuItem<String>(
-              value: role,
-              child: Text(role),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedUserRole = newValue;
-            });
-          },
-          validator: (value) {
-            if (value == null) {
-              return 'Please select a user role';
-            }
-            return null;
-          },
         ),
-
-        const SizedBox(height: 20),
-
-        // Access Type Dropdown
-        Consumer<AccountProvider>(
-          builder: (context, provider, _) {
-            // Show loading if data is not loaded yet
-            if (provider.accessList.isEmpty) {
-              return Container(height: 60, width: 60, child: const CircularProgressIndicator());
-            }
-
-            return DropdownButtonFormField<AccessTypeModel>(
-              value: _selectedAccessType,
-              decoration: InputDecoration(
-                labelText: 'Access Type',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                prefixIcon: const Icon(Icons.security),
-              ),
-              hint: const Text('Select access type'),
-              items: provider.accessList.map((AccessTypeModel access) {
-                return DropdownMenuItem<AccessTypeModel>(
-                  value: access, // Use the current access item
-                  child: Text(access.accessTypeName ?? 'Unknown'),
-                );
-              }).toList(),
-              onChanged: (AccessTypeModel? newValue) {
-                setState(() {
-                  _selectedAccessType = newValue;
-                });
-              },
-              validator: (value) {
-                if (value == null) {
-                  return 'Please select an access type';
-                }
-                return null;
-              },
-            );
-          },
-        ),
-
-        const SizedBox(height: 30),
-
-        // Submit Button
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: myColors.primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: const Text(
-                  'SAVE',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20,),
-        Consumer<AccountProvider>(
-            builder: (context, pro, _) => Column(
-              children: pro.userRoleAccess
-                  .map((e) => ListTile(
-                title: Text(e.userId.toString()),
-                subtitle: Text('Role: ${e.accessTypeId}'),
-                trailing: IconButton(
-                    onPressed: () {
-                      _showDeleteDialog(pro.userRoleAccess.indexOf(e), e,false);
-                    },
-                    icon: Icon(Icons.delete)),
-              ))
-                  .toList(),
-            ))
       ],
     );
   }
 
+  Widget _buildRoleForm() {
+    return Column(
+      children: [
+        _buildUserSearchField(),
+        const SizedBox(height: 20),
+        _buildUserRoleDropdown(),
+        const SizedBox(height: 20),
+        _buildAccessTypeDropdown(),
+        const SizedBox(height: 30),
+        _buildSaveButton(
+          onPressed: _submitRoleForm,
+          text: 'SAVE',
+        ),
+        const SizedBox(height: 20),
+        _buildUserRoleAccessList(),
+      ],
+    );
+  }
+
+  Widget _buildAccessTypeForm() {
+    return Column(
+      children: [
+        _buildAccessTypeTextField(),
+        const SizedBox(height: 12),
+        _buildSaveButton(
+          onPressed: _saveAccessType,
+          text: 'SAVE ACCESS TYPE',
+        ),
+        const SizedBox(height: 12),
+        _buildAccessTypeList(),
+      ],
+    );
+  }
+
+  Widget _buildUserSearchField() {
+    return Consumer<HrProvider>(
+      builder: (context, hrProvider, _) {
+        return TypeAheadField<Map<String, dynamic>>(
+          suggestionsCallback: (search) => hrProvider.searchStuffList(search),
+          builder: (context, textController, focusNode) {
+            return TextFormField(
+              controller: textController,
+              focusNode: focusNode,
+              validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Search Member',
+              ),
+            );
+          },
+          controller: _userIdController,
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion["name"]),
+              subtitle: Text("ID: ${suggestion["id"]}"),
+            );
+          },
+          onSelected: (suggestion) {
+            setState(() => _userIdController.text = suggestion["userId"].toString());
+            FocusScope.of(context).unfocus();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildUserRoleDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedUserRole,
+      decoration: InputDecoration(
+        labelText: 'User Role',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        prefixIcon: const Icon(Icons.assignment_ind),
+      ),
+      hint: const Text('Select user role'),
+      items: _userRoles.map((String role) {
+        return DropdownMenuItem<String>(
+          value: role,
+          child: Text(role),
+        );
+      }).toList(),
+      onChanged: (String? newValue) => setState(() => _selectedUserRole = newValue),
+      validator: (value) => value == null ? 'Please select a user role' : null,
+    );
+  }
+
+  Widget _buildAccessTypeDropdown() {
+    return Consumer<AccountProvider>(
+      builder: (context, accountProvider, _) {
+        if (accountProvider.accessList.isEmpty) {
+          return const SizedBox(
+            height: 60,
+            width: 60,
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        return DropdownButtonFormField<AccessTypeModel>(
+          value: _selectedAccessType,
+          decoration: InputDecoration(
+            labelText: 'Access Type',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+            prefixIcon: const Icon(Icons.security),
+          ),
+          hint: const Text('Select access type'),
+          items: accountProvider.accessList.map((AccessTypeModel access) {
+            return DropdownMenuItem<AccessTypeModel>(
+              value: access,
+              child: Text(access.accessTypeName ?? 'Unknown'),
+            );
+          }).toList(),
+          onChanged: (AccessTypeModel? newValue) => setState(() => _selectedAccessType = newValue),
+          validator: (value) => value == null ? 'Please select an access type' : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildAccessTypeTextField() {
+    return TextFormField(
+      controller: _userAccessTypeController,
+      decoration: InputDecoration(
+        labelText: 'Access Type',
+        hintText: 'Enter Access Type',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        prefixIcon: const Icon(Icons.person),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'Please enter a access type';
+        if (value.length < 3) return 'Access type must be at least 3 characters';
+        return null;
+      },
+    );
+  }
+
+  Widget _buildSaveButton({required VoidCallback onPressed, required String text}) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: myColors.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            ),
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildUserRoleAccessList() {
+    return Consumer2<AccountProvider, HrProvider>(
+      builder: (context, accountProvider, hrProvider, _) {
+        final list = accountProvider.userRoleAccess;
+        if (list.isEmpty) return const Center(child: Text('No user role access found'));
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            final userAccess = list[index];
+
+            final matches = hrProvider.member_list.where(
+                  (e) => e.userId == userAccess.userId,
+            );
+            final member = matches.isNotEmpty ? matches.first : null;
+
+            final displayName = member?.fullName ?? userAccess.userId.toString();
+
+            return ListTile(
+              title: Text(displayName),
+              subtitle: Text('Role: ${userAccess.role}'),
+              trailing: IconButton(
+                onPressed: () => _showDeleteDialog(index, userAccess, false),
+                icon: const Icon(Icons.delete),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+
+  Widget _buildAccessTypeList() {
+    return Consumer<AccountProvider>(
+      builder: (context, accountProvider, _) => Column(
+        children: accountProvider.accessList
+            .map((accessType) => ListTile(
+          title: Text(accessType.accessTypeName ?? ''),
+          subtitle: Text('Created by : ${accessType.createdBy}'),
+          trailing: IconButton(
+            onPressed: () => _showDeleteDialog(
+              accountProvider.accessList.indexOf(accessType),
+              accessType,
+              true,
+            ),
+            icon: const Icon(Icons.delete),
+          ),
+        ))
+            .toList(),
+      ),
+    );
+  }
+
+  // ========== BUSINESS LOGIC ==========
+
+  Future<void> _submitRoleForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final accountProvider = context.read<AccountProvider>();
+    var response;
+
+    if (accountProvider.accessList.isNotEmpty && _selectedAccessType != null) {
+      response = await accountProvider.saveUserRole(
+        _userIdController.text,
+        _selectedUserRole,
+        _selectedAccessType,
+      );
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        content: Text(
+          response['Message'].toString(),
+          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+
+    // Add to provider list
+    accountProvider.userRoleAccess.add(UserAccessType(
+      userId: num.parse(_userIdController.text),
+      role: _selectedUserRole,
+      accessTypeId: _selectedAccessType?.accessTypeId,
+      accessType: _selectedAccessType?.accessTypeName,
+    ));
+    accountProvider.updateRoleList();
+  }
+
+  Future<void> _saveAccessType() async {
+    final accountProvider = context.read<AccountProvider>();
+    final response = await accountProvider.saveUserAccess(_userAccessTypeController.text.trim());
+
+    if (response['Success']??false) {
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            response['Message'].toString(),
+            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          duration: Duration(seconds: 3),
+        ),
+      );
+
+      // Add to provider list
+      accountProvider.accessList.add(AccessTypeModel(
+        accessTypeName: _userAccessTypeController.text,
+        createdBy: DashboardHelpers.currentUser!.userId.toString(),
+      ));
+      accountProvider.updateRoleList();
+      _userAccessTypeController.clear();
+    }
+
+
+
+  }
+
   void getAccessType() async {
-    final provider = context.read<AccountProvider>();
-    await provider.getAccessType();
-    await provider.getUsersWithAccessType();
+    final accountProvider = context.read<AccountProvider>();
+    await accountProvider.getAccessType();
+    await accountProvider.getUsersWithAccessType();
 
-    // Optional: Set a default value if needed
-    if (mounted && provider.accessList.isNotEmpty) {
-      setState(() {
-        _selectedAccessType = provider.accessList.first;
-      });
+    if (mounted && accountProvider.accessList.isNotEmpty) {
+      setState(() => _selectedAccessType = accountProvider.accessList.first);
     }
   }
+
   Future<void> getAllStuffMemberList() async {
-    var hp = context.read<HrProvider>();
-    if (hp.member_list.isEmpty) {
-      hp.getAllStuffList();
+    final hrProvider = context.read<HrProvider>();
+    if (hrProvider.member_list.isEmpty) {
+      hrProvider.getAllStuffList();
     }
   }
 
-  void _showDeleteDialog(int index, dynamic model,bool isRole) {
+  void _showDeleteDialog(int index, dynamic model, bool isAccessType) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return DeleteConfirmationDialog(
-          itemName: isRole?model.accessTypeName : model.roll??'',
+          itemName: isAccessType ? model.accessTypeName : model.userId.toString(),
           onConfirm: () {
-            var ap=context.read<AccountProvider>();
-           if(isRole){
-
-             ap.deleteAccessType(model);
-             Navigator.of(context).pop();
-
-           }
-           else {
-             ap.deleteUserType(model);
-             Navigator.of(context).pop();
-           }
+            final accountProvider = context.read<AccountProvider>();
+            if (isAccessType) {
+              accountProvider.deleteAccessType(model);
+            } else {
+              accountProvider.deleteUserType(model);
+            }
+            Navigator.of(context).pop();
           },
         );
       },
@@ -427,7 +442,6 @@ class DeleteConfirmationDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Warning icon
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -440,37 +454,21 @@ class DeleteConfirmationDialog extends StatelessWidget {
                 color: Colors.red.shade700,
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Title
             const Text(
               'Delete Item',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 12),
-
-            // Message
             Text(
               'Are you sure you want to delete "$itemName"? This action cannot be undone.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
             ),
-
             const SizedBox(height: 24),
-
-            // Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Cancel button
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.of(context).pop(),
@@ -482,10 +480,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
                     child: const Text('Cancel'),
                   ),
                 ),
-
                 const SizedBox(width: 16),
-
-                // Delete button
                 Expanded(
                   child: ElevatedButton(
                     onPressed: onConfirm,

@@ -117,13 +117,13 @@ class AccountProvider extends ChangeNotifier {
     });
   }
 
-  Future<bool> saveUserAccess(String accType) async {
+  Future<dynamic> saveUserAccess(String accType) async {
 
     var data =await apiService.postData2('${AppConstants.baseUrl}api/User/SaveUAccessType?accessType=$accType',{
       'accessType':accType
     });
 
-    return data!=null?true:false;
+    return data;
   }
 
   Future<bool> deleteAccessType(AccessTypeModel model) async{
@@ -144,5 +144,11 @@ class AccountProvider extends ChangeNotifier {
     }
     notifyListeners();
     return data!=null?true:false;
+  }
+
+  void updateRoleList() {
+    _userRoleAccess;
+    _accessList;
+    notifyListeners();
   }
 }

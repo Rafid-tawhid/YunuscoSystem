@@ -80,13 +80,13 @@ class MyDrawer extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.settings, color: Colors.black54),
-            title: const Text('Production'),
+            title: const Text('Access'),
             onTap: () {
               Navigator.pop(context);
 
               /// Navigate to this screen from another widget
-              /// //DashboardHelpers.currentUser!.loginName=='38389'
-              if (true) {
+              /// //
+              if (DashboardHelpers.currentUser!.loginName=='38389') {
                 Navigator.push(
                   context,
                   MaterialPageRoute(

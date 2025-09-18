@@ -61,10 +61,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         //clear field
         _remarksController.clear();
         if (mounted) {
-          DashboardHelpers.showSnakBar(
-              context: context,
-              message: 'Doctor Appointment Success!',
-              bgColor: myColors.green);
+          DashboardHelpers.showSnakBar(context: context, message: 'Doctor Appointment Success!', bgColor: myColors.green);
         }
         if (mounted) Navigator.pop(context);
       }
@@ -96,13 +93,11 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                     builder: (context, pro, _) => ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.zero, // Set minimum size to zero
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           backgroundColor: Colors.green.shade800,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(6), // ← Adjust this value
+                            borderRadius: BorderRadius.circular(6), // ← Adjust this value
                           ),
                         ),
                         onPressed: () {
@@ -120,92 +115,71 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                   child: Column(
                     children: [
                       Consumer<HrProvider>(
-                        builder: (context, pro, _) =>
-                            pro.showForm ? DocReqForm() : SizedBox.shrink(),
+                        builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
                       ),
                       // ID Card Number Field
                       Consumer<HrProvider>(
                         builder: (context, pro, _) {
                           return pro.showForm
                               ? SizedBox.shrink()
-                              : ListView.builder(
-                                  padding: const EdgeInsets.all(8),
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: pro.docAppointmentList.length,
-                                  itemBuilder: (context, index) {
-                                    final appointment =
-                                        pro.docAppointmentList[index];
-                                    return Stack(
-                                      children: [
-                                        Card(
-                                          color: Colors.white,
-                                          child: ListTile(
-                                            title: Text(
-                                              'Serial: ${appointment.serialNo ?? 'N/A'}',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold),
+                              : pro.docAppointmentList.isEmpty
+                                  ? Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                                    child: Center(
+                                        child: Text('No request yet'),
+                                      ),
+                                  )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.all(8),
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: pro.docAppointmentList.length,
+                                      itemBuilder: (context, index) {
+                                        final appointment = pro.docAppointmentList[index];
+                                        return Stack(
+                                          children: [
+                                            Card(
+                                              color: Colors.white,
+                                              child: ListTile(
+                                                title: Text(
+                                                  'Serial: ${appointment.serialNo ?? 'N/A'}',
+                                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                                ),
+                                                subtitle: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text('ID: ${appointment.idCardNo ?? 'N/A'}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+                                                    Text('Date: ${DashboardHelpers.convertDateTime(appointment.createdDate ?? '')}'),
+                                                    if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
+                                                  ],
+                                                ),
+                                                onTap: () async {
+                                                  if (appointment.status == 2) {
+                                                    var hp = context.read<HrProvider>();
+                                                    var data = await hp.gatePassDetailsInfo(appointment);
+                                                    if (data != null) {
+                                                      showAppointmentBottomSheet(
+                                                        context: context,
+                                                        appointment: appointment, // Your DocAppoinmentListModel instance
+                                                        medicineName: data['FullName'] ?? "No Name",
+                                                        doctorAdvice: data['Advice'] ?? "None",
+                                                        medicineTime: data["PrescriptionDate"],
+                                                        leaveNotes: data['Remarks'] ?? "None",
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                              ),
                                             ),
-                                            subtitle: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                    'ID: ${appointment.idCardNo ?? 'N/A'}',
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.w600)),
-                                                Text(
-                                                    'Date: ${DashboardHelpers.convertDateTime(appointment.createdDate ?? '')}'),
-                                                if (appointment
-                                                        .remarks?.isNotEmpty ??
-                                                    false)
-                                                  Text(
-                                                      'Remarks: ${appointment.remarks}'),
-                                              ],
-                                            ),
-                                            onTap: () async {
-                                              if (appointment.status == 2) {
-                                                var hp =
-                                                    context.read<HrProvider>();
-                                                var data = await hp
-                                                    .gatePassDetailsInfo(
-                                                        appointment);
-                                                if (data != null) {
-                                                  showAppointmentBottomSheet(
-                                                    context: context,
-                                                    appointment:
-                                                        appointment, // Your DocAppoinmentListModel instance
-                                                    medicineName:
-                                                        data['FullName'] ??
-                                                            "No Name",
-                                                    doctorAdvice:
-                                                        data['Advice'] ??
-                                                            "None",
-                                                    medicineTime: data[
-                                                        "PrescriptionDate"],
-                                                    leaveNotes:
-                                                        data['Remarks'] ??
-                                                            "None",
-                                                  );
-                                                }
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 4,
-                                          right: 4,
-                                          child: _buildUrgencyChip(
-                                              appointment.urgencyType!.toInt(),
-                                              appointment.gatePassStatus),
-                                        )
-                                      ],
+                                            Positioned(
+                                              top: 4,
+                                              right: 4,
+                                              child: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
+                                            )
+                                          ],
+                                        );
+                                      },
                                     );
-                                  },
-                                );
                         },
                       ),
                     ],
@@ -246,8 +220,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                 return TextFormField(
                   controller: textController, // persistent controller
                   focusNode: focusNode,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'ID is required' : null,
+                  validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Search Member',
@@ -274,7 +247,6 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
         ),
         const SizedBox(height: 16),
 
-
         // Urgency Dropdown
         DropdownButtonFormField<int>(
           decoration: const InputDecoration(
@@ -284,15 +256,14 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
           items: _urgencyOptions.entries
               .map(
                 (entry) => DropdownMenuItem<int>(
-              value: entry.value,
-              child: Text(entry.key),
-            ),
-          )
+                  value: entry.value,
+                  child: Text(entry.key),
+                ),
+              )
               .toList(),
           value: _urgencyType,
           onChanged: (value) => setState(() => _urgencyType = value),
-          validator: (_) =>
-          _urgencyType == null ? 'Urgency type is required' : null,
+          validator: (_) => _urgencyType == null ? 'Urgency type is required' : null,
         ),
         const SizedBox(height: 16),
         // Remarks Field
@@ -303,8 +274,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
             border: OutlineInputBorder(),
           ),
           maxLines: 2,
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Remarks required' : null,
+          validator: (value) => value == null || value.isEmpty ? 'Remarks required' : null,
         ),
 
         const SizedBox(height: 24),
