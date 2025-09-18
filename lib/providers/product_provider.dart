@@ -519,6 +519,7 @@ class ProductProvider extends ChangeNotifier {
             ))
         .toList();
   }
+  //
 
   final List<StylewiseEfficiencyModel> _styleWiseEfficiencyList = [];
   List<StylewiseEfficiencyModel> get styleWiseEfficiencyList => _styleWiseEfficiencyList;
