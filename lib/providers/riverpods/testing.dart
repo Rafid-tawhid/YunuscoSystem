@@ -11,3 +11,9 @@ final usersProvider = FutureProvider<List<User>>((ref) async {
   final repository = ref.read(userRepositoryProvider);
   return await repository.getUsers();
 });
+
+
+final userDetailsProvider = FutureProvider.family<User, int>((ref, userId) async {
+  final repository = ref.read(userRepositoryProvider);
+  return await repository.getUserDetails(userId);
+});
