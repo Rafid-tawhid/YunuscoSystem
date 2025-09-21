@@ -57,7 +57,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
       };
 
       var hp = context.read<HrProvider>();
-      if (await hp.saveDocAppoinment(requestData)) {
+      if (await hp.saveDocAppointment(requestData)) {
         //clear field
         _remarksController.clear();
         if (mounted) {
