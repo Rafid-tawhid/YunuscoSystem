@@ -9,17 +9,14 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../models/purchase_requisation_list_model.dart';
 import 'create_purchase_requisation.dart';
 
-
 class PurchaseRequisitionListScreen extends StatefulWidget {
   const PurchaseRequisitionListScreen({super.key});
 
   @override
-  State<PurchaseRequisitionListScreen> createState() =>
-      _PurchaseRequisitionListScreenState();
+  State<PurchaseRequisitionListScreen> createState() => _PurchaseRequisitionListScreenState();
 }
 
-class _PurchaseRequisitionListScreenState
-    extends State<PurchaseRequisitionListScreen> {
+class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
 
@@ -65,37 +62,37 @@ class _PurchaseRequisitionListScreenState
         backgroundColor: myColors.primaryColor,
         title: _isSearching
             ? TextField(
-          controller: _searchController,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Search requisitions...',
-            hintStyle: TextStyle(color: Colors.white70),
-            border: InputBorder.none,
-          ),
-          onChanged: _onSearchChanged,
-        )
+                controller: _searchController,
+                autofocus: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  hintText: 'Search requisitions...',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                ),
+                onChanged: _onSearchChanged,
+              )
             : const Text(
-          'Purchase Requisitions',
-          style: TextStyle(color: Colors.white),
-        ),
+                'Purchase Requisitions',
+                style: TextStyle(color: Colors.white),
+              ),
         leading: _isSearching
             ? IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            _toggleSearch();
-            Navigator.pop(context);
-          },
-        )
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  _toggleSearch();
+                  Navigator.pop(context);
+                },
+              )
             : IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-        ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+              ),
         actions: [
           if (_isSearching)
             IconButton(
@@ -119,14 +116,9 @@ class _PurchaseRequisitionListScreenState
             child: Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: ElevatedButton(
-                  style:
-                  ElevatedButton.styleFrom(backgroundColor: myColors.green),
+                  style: ElevatedButton.styleFrom(backgroundColor: myColors.green),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                            const CreatePurchaseRequisitionScreen()));
+                    Navigator.push(context, CupertinoPageRoute(builder: (context) => const CreatePurchaseRequisitionScreen()));
                   },
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
@@ -150,9 +142,7 @@ class _PurchaseRequisitionListScreenState
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final displayRequisitions = _isSearching
-                    ? provider.filteredRequisitions
-                    : provider.requisitions;
+                final displayRequisitions = _isSearching ? provider.filteredRequisitions : provider.requisitions;
 
                 if (displayRequisitions.isEmpty) {
                   return RefreshIndicator(
@@ -210,14 +200,9 @@ class _PurchaseRequisitionListScreenState
         onTap: () async {
           // Navigate to detail screen
           var pp = context.read<ProductProvider>();
-          var res = await pp.getRequisationProductDetails(
-              requisition.purchaseRequisitionCode);
+          var res = await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
           if (res) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => RequisitionDetailsScreen(
-                        requisitions: pp.requisationProductDetails,reqModel: requisition)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitions: pp.requisationProductDetails, reqModel: requisition)));
           }
         },
         child: Padding(
@@ -236,7 +221,8 @@ class _PurchaseRequisitionListScreenState
                     ),
                   ),
                   Chip(
-                    label: Text(requisition.mgntComment??'Pending',
+                    label: Text(
+                      requisition.mgntComment ?? 'Pending',
                       style: const TextStyle(color: Colors.white),
                     ),
                     backgroundColor: getBgColor(requisition.mgntComment),
@@ -245,19 +231,10 @@ class _PurchaseRequisitionListScreenState
               ),
               const SizedBox(height: 8),
               _buildInfoRow(Icons.person, requisition.userName ?? 'Unknown'),
-              if (requisition.department != null)
-                _buildInfoRow(Icons.business,
-                    requisition.department?.toString() ?? 'No Department'),
-              _buildInfoRow(
-                  Icons.category, requisition.productType ?? 'No Product Type'),
-              _buildInfoRow(
-                  Icons.calendar_today,
-                  DashboardHelpers.convertDateTime(
-                      requisition.createdDate ?? '') ??
-                      'No Date'),
-              _buildInfoRow(
-                  Icons.info_outline,
-                 requisition.productType??''),
+              if (requisition.department != null) _buildInfoRow(Icons.business, requisition.department?.toString() ?? 'No Department'),
+              _buildInfoRow(Icons.category, requisition.productType ?? 'No Product Type'),
+              _buildInfoRow(Icons.calendar_today, DashboardHelpers.convertDateTime(requisition.createdDate ?? '') ?? 'No Date'),
+              _buildInfoRow(Icons.info_outline, requisition.productType ?? ''),
               if (requisition.remarks?.isNotEmpty == true) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -284,27 +261,21 @@ class _PurchaseRequisitionListScreenState
       ),
     );
   }
+}
 
-  getBgColor(String? mgntComment) {
-    if(PurchaseStatus.deptHeadRejected==mgntComment)
-      {
-        return Colors.redAccent;
-      }
-    if(PurchaseStatus.managementRejected==mgntComment)
-    {
-      return Colors.red;
-    }
-    if(PurchaseStatus.deptHeadApproved==mgntComment)
-    {
-      return Colors.green.shade400;
-    }
-    if(PurchaseStatus.managementApproved==mgntComment)
-    {
-      return Colors.green;
-    }
-    else
-      {
-        return Colors.orange;
-      }
+getBgColor(String? mgntComment) {
+  if (PurchaseStatus.deptHeadRejected == mgntComment) {
+    return Colors.redAccent;
+  }
+  if (PurchaseStatus.managementRejected == mgntComment) {
+    return Colors.red;
+  }
+  if (PurchaseStatus.deptHeadApproved == mgntComment) {
+    return Colors.green.shade400;
+  }
+  if (PurchaseStatus.managementApproved == mgntComment) {
+    return Colors.green;
+  } else {
+    return Colors.orange;
   }
 }

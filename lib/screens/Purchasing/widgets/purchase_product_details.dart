@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../../models/purchase_requisation_list_model.dart';
 import '../../../models/requisition_details_model.dart';
@@ -33,13 +34,14 @@ class RequisitionDetailsScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           if (index < requisitions.length) {
             final req = requisitions[index];
-            return _buildRequisitionCard(req, context);
+            return _buildRequisitionCard(req,reqModel,context,);
           } else {
             if(reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
               {
                 return  Column(
                   children: [
                     const SizedBox(height: 16),
+
                     TextField(
                       controller: _remarksController,
                       maxLines: 3,
@@ -112,7 +114,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildRequisitionCard(
-      RequisitionDetailsModel req, BuildContext context) {
+      RequisitionDetailsModel req,PurchaseRequisationListModel model, BuildContext context) {
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -126,10 +128,20 @@ class RequisitionDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Row
-            Align(
-              alignment: Alignment.topRight,
-              child: Text(_formatDate(req.requisitionDate)),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(_formatDate(req.requisitionDate),style: customTextStyle(14, Colors.black, FontWeight.bold),),
+                Chip(
+                  label: Text(model.mgntComment??'Pending',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: getBgColor(model.mgntComment),
+                ),
+              ],
             ),
+
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -209,9 +221,10 @@ class RequisitionDetailsScreen extends StatelessWidget {
     return Container(
       width: 60,
       height: 60,
+
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.grey[200],
+        color: getBgColor(reqModel.mgntComment),
       ),
       child: req.imagePathString != null
           ? ClipRRect(
@@ -223,7 +236,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
                 errorWidget: (context, url, error) =>
-                    const Icon(Icons.inventory, size: 30),
+                    const Icon(Icons.inventory, size: 30,color: Colors.white,),
               ),
             )
           : const Center(
@@ -236,6 +249,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         _buildDetailRow('Employee', req.employeeName),
         _buildDetailRow('Department', req.department),
         _buildDetailRow('Section', req.section),
