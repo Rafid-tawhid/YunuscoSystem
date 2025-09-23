@@ -4,6 +4,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/buyer_wise_material_model.dart';
 import 'package:yunusco_group/models/production_dashboard_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
@@ -680,8 +681,8 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  updateReqListAfterAcceptOrRej(String reqCode){
-    int index= _filteredRequisitions.indexWhere((e)=>e.purchaseRequisitionCode==reqCode);
+  updateReqListAfterAcceptOrRej(String reqCode) {
+    int index = _filteredRequisitions.indexWhere((e) => e.purchaseRequisitionCode == reqCode);
     if (index != -1) {
       // Get the current value and flip it
 
@@ -785,8 +786,8 @@ class ProductProvider extends ChangeNotifier {
 
   final List<Map<String, dynamic>> _lineWiseDHU = [];
   List<Map<String, dynamic>> get lineWiseDHU => _lineWiseDHU;
-  String _totalDhu='';
-  String get totalDhu=>_totalDhu;
+  String _totalDhu = '';
+  String get totalDhu => _totalDhu;
 
   Future<void> getAllDhuInfo(DateTime dateTime) async {
     var dateFormat = DashboardHelpers.convertDateTime2(dateTime);
@@ -801,7 +802,7 @@ class ProductProvider extends ChangeNotifier {
       for (var i in data['Data']['LineWiseDHU']) {
         _lineWiseDHU.add(i);
       }
-      _totalDhu=data['Data']['TotalDHU']['TotalDHU'].toString();
+      _totalDhu = data['Data']['TotalDHU']['TotalDHU'].toString();
 
       debugPrint('_sectionWiseDhu ${_sectionWiseDhu.length}');
       debugPrint('_lineWiseDHU ${_lineWiseDHU.length}');
@@ -828,10 +829,6 @@ class ProductProvider extends ChangeNotifier {
   //   return data;
   // }
 
-
-
-
-
   List<PurchaseRequisationListModel> _filteredRequisitions = [];
 
   List<PurchaseRequisationListModel> get filteredRequisitions => _filteredRequisitions;
@@ -843,57 +840,44 @@ class ProductProvider extends ChangeNotifier {
       _filteredRequisitions = _requisitions;
     } else {
       _filteredRequisitions = _requisitions.where((requisition) {
-        return (requisition.purchaseRequisitionCode ?? '')
-            .toLowerCase()
-            .contains(query.toLowerCase()) ||
-            (requisition.userName ?? '')
-                .toLowerCase()
-                .contains(query.toLowerCase()) ||
-            (requisition.productType ?? '')
-                .toLowerCase()
-                .contains(query.toLowerCase()) ||
-            (requisition.remarks ?? '')
-                .toLowerCase()
-                .contains(query.toLowerCase());
+        return (requisition.purchaseRequisitionCode ?? '').toLowerCase().contains(query.toLowerCase()) ||
+            (requisition.userName ?? '').toLowerCase().contains(query.toLowerCase()) ||
+            (requisition.productType ?? '').toLowerCase().contains(query.toLowerCase()) ||
+            (requisition.remarks ?? '').toLowerCase().contains(query.toLowerCase());
       }).toList();
     }
     notifyListeners();
   }
 
-  Future<bool> acceptItem(PurchaseRequisationListModel code,String? remarks,bool isAccept) async {
+  Future<bool> acceptItem(PurchaseRequisationListModel code, String? remarks, bool isAccept) async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-   var data=await apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {
-     'remarks':remarks,
-     'requisitionId':code.purchaseRequisitionId,
-     'isApprove':isAccept,
-   });
+    var data =
+        await apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {'remarks': remarks, 'requisitionId': code.purchaseRequisitionId, 'isApprove': isAccept, 'status': getStatus(isAccept)});
 
-   EasyLoading.dismiss();
+    EasyLoading.dismiss();
 
-   return data!=null?true:false;
+    return data != null ? true : false;
   }
 
   PurchaseAnalyticsResponse? _purchaseAnalyticsResponse;
-  PurchaseAnalyticsResponse? get purchaseAnalyticsResponse=>_purchaseAnalyticsResponse;
-  Future<void> getAllPurchaseDashboardInfo() async{
-
+  PurchaseAnalyticsResponse? get purchaseAnalyticsResponse => _purchaseAnalyticsResponse;
+  Future<void> getAllPurchaseDashboardInfo() async {
     setLoading(true);
     var data = await apiService.getData('api/Dashboard/PurchaseDashboard');
     setLoading(false);
     if (data != null) {
-      _purchaseAnalyticsResponse= PurchaseAnalyticsResponse.fromJson(data['Data']);
+      _purchaseAnalyticsResponse = PurchaseAnalyticsResponse.fromJson(data['Data']);
     }
     notifyListeners();
   }
 
-
   //
   final List<PurchaseOrderModel> _purchaseList = [];
-  List<PurchaseOrderModel> get purchaseList=>_purchaseList;
-  int _countPage=0;
-  int get coutPage=>_countPage;
+  List<PurchaseOrderModel> get purchaseList => _purchaseList;
+  int _countPage = 0;
+  int get coutPage => _countPage;
   // List<PurchaseOrderModel> _filteredRequisitionList = [];
-  Future<void> getAllPurchaseList(String pageNo,String size) async{
+  Future<void> getAllPurchaseList(String pageNo, String size) async {
     setLoading(true);
     var data = await apiService.getData('api/Inventory/PurchaseOrderList?pageNumber=$pageNo&pageSize=$size');
     setLoading(false);
@@ -902,10 +886,27 @@ class ProductProvider extends ChangeNotifier {
       for (var i in data['Data']['Items']) {
         _purchaseList.add(PurchaseOrderModel.fromJson(i));
       }
-      _countPage= data['Data']['TotalCount'];
+      _countPage = data['Data']['TotalCount'];
 
       debugPrint('_purchaseList ${_purchaseList.length}');
     }
     notifyListeners();
+  }
+
+  String getStatus(bool isAccept) {
+    if (isAccept) {
+      if (DashboardHelpers.currentUser!.isDepartmentHead == true) {
+        return PurchaseStatus.deptHeadApproved;
+      } else {
+        return PurchaseStatus.deptHeadRejected;
+      }
+    }
+    else {
+      if (DashboardHelpers.currentUser!.department == 'Management') {
+        return PurchaseStatus.managementRejected;
+      } else {
+        return PurchaseStatus.deptHeadRejected;
+      }
+    }
   }
 }

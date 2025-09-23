@@ -82,5 +82,9 @@ List<Menu> fullModuleList = [
 
 
 
-
-
+class PurchaseStatus {
+  static String deptHeadApproved='DeptHeadApproved';
+  static String deptHeadRejected='DeptHeadRejected';
+  static String managementApproved='ManagementApproved';
+  static String managementRejected='ManagementRejected';
+}

@@ -236,7 +236,7 @@ class _PurchaseRequisitionListScreenState
                   ),
                   Chip(
                     label: Text(
-                      requisition.isComplete == true ? 'Completed' :requisition.isComplete==false?'Rejected': 'Pending',
+                      requisition.isComplete == true ? 'Completed' :requisition.mgntComment??'Pending',
                       style: const TextStyle(color: Colors.white),
                     ),
                     backgroundColor: requisition.isComplete == true
@@ -257,6 +257,9 @@ class _PurchaseRequisitionListScreenState
                   DashboardHelpers.convertDateTime(
                       requisition.createdDate ?? '') ??
                       'No Date'),
+              _buildInfoRow(
+                  Icons.info_outline,
+                 requisition.productType??''),
               if (requisition.remarks?.isNotEmpty == true) ...[
                 const SizedBox(height: 8),
                 Text(

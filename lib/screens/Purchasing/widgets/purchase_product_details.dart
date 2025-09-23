@@ -35,7 +35,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
             final req = requisitions[index];
             return _buildRequisitionCard(req, context);
           } else {
-            if(reqModel.isComplete==null&&DashboardHelpers.currentUser!.isDepartmentHead==true)
+            if(reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
               {
                 return  Column(
                   children: [

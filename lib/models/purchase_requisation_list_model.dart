@@ -1,16 +1,16 @@
 class PurchaseRequisationListModel {
   PurchaseRequisationListModel({
-    num? purchaseRequisitionId,
-    String? purchaseRequisitionCode,
-    dynamic department,
-    String? userName,
-    num? createdBy,
-    String? createdDate,
-    String? productType,
-    dynamic approvalFieldCode,
-    String? remarks,
-    dynamic isComplete,
-  }) {
+      num? purchaseRequisitionId, 
+      String? purchaseRequisitionCode, 
+      dynamic department, 
+      String? userName, 
+      num? createdBy, 
+      String? createdDate, 
+      String? productType, 
+      dynamic approvalFieldCode, 
+      String? remarks, 
+      dynamic isComplete, 
+      String? mgntComment,}){
     _purchaseRequisitionId = purchaseRequisitionId;
     _purchaseRequisitionCode = purchaseRequisitionCode;
     _department = department;
@@ -21,7 +21,8 @@ class PurchaseRequisationListModel {
     _approvalFieldCode = approvalFieldCode;
     _remarks = remarks;
     _isComplete = isComplete;
-  }
+    _mgntComment = mgntComment;
+}
 
   PurchaseRequisationListModel.fromJson(dynamic json) {
     _purchaseRequisitionId = json['PurchaseRequisitionId'];
@@ -34,6 +35,7 @@ class PurchaseRequisationListModel {
     _approvalFieldCode = json['ApprovalFieldCode'];
     _remarks = json['Remarks'];
     _isComplete = json['IsComplete'];
+    _mgntComment = json['MgntComment'];
   }
   num? _purchaseRequisitionId;
   String? _purchaseRequisitionCode;
@@ -45,31 +47,30 @@ class PurchaseRequisationListModel {
   dynamic _approvalFieldCode;
   String? _remarks;
   dynamic _isComplete;
-  PurchaseRequisationListModel copyWith({
-    num? purchaseRequisitionId,
-    String? purchaseRequisitionCode,
-    dynamic department,
-    String? userName,
-    num? createdBy,
-    String? createdDate,
-    String? productType,
-    dynamic approvalFieldCode,
-    String? remarks,
-    dynamic isComplete,
-  }) =>
-      PurchaseRequisationListModel(
-        purchaseRequisitionId: purchaseRequisitionId ?? _purchaseRequisitionId,
-        purchaseRequisitionCode:
-            purchaseRequisitionCode ?? _purchaseRequisitionCode,
-        department: department ?? _department,
-        userName: userName ?? _userName,
-        createdBy: createdBy ?? _createdBy,
-        createdDate: createdDate ?? _createdDate,
-        productType: productType ?? _productType,
-        approvalFieldCode: approvalFieldCode ?? _approvalFieldCode,
-        remarks: remarks ?? _remarks,
-        isComplete: isComplete ?? _isComplete,
-      );
+  String? _mgntComment;
+PurchaseRequisationListModel copyWith({  num? purchaseRequisitionId,
+  String? purchaseRequisitionCode,
+  dynamic department,
+  String? userName,
+  num? createdBy,
+  String? createdDate,
+  String? productType,
+  dynamic approvalFieldCode,
+  String? remarks,
+  dynamic isComplete,
+  String? mgntComment,
+}) => PurchaseRequisationListModel(  purchaseRequisitionId: purchaseRequisitionId ?? _purchaseRequisitionId,
+  purchaseRequisitionCode: purchaseRequisitionCode ?? _purchaseRequisitionCode,
+  department: department ?? _department,
+  userName: userName ?? _userName,
+  createdBy: createdBy ?? _createdBy,
+  createdDate: createdDate ?? _createdDate,
+  productType: productType ?? _productType,
+  approvalFieldCode: approvalFieldCode ?? _approvalFieldCode,
+  remarks: remarks ?? _remarks,
+  isComplete: isComplete ?? _isComplete,
+  mgntComment: mgntComment ?? _mgntComment,
+);
   num? get purchaseRequisitionId => _purchaseRequisitionId;
   String? get purchaseRequisitionCode => _purchaseRequisitionCode;
   dynamic get department => _department;
@@ -80,6 +81,7 @@ class PurchaseRequisationListModel {
   dynamic get approvalFieldCode => _approvalFieldCode;
   String? get remarks => _remarks;
   dynamic get isComplete => _isComplete;
+  String? get mgntComment => _mgntComment;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -93,6 +95,8 @@ class PurchaseRequisationListModel {
     map['ApprovalFieldCode'] = _approvalFieldCode;
     map['Remarks'] = _remarks;
     map['IsComplete'] = _isComplete;
+    map['MgntComment'] = _mgntComment;
     return map;
   }
+
 }
