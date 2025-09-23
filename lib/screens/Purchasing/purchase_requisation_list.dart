@@ -5,6 +5,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Purchasing/widgets/purchase_product_details.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 import '../../models/purchase_requisation_list_model.dart';
 import 'create_purchase_requisation.dart';
 
@@ -235,13 +236,10 @@ class _PurchaseRequisitionListScreenState
                     ),
                   ),
                   Chip(
-                    label: Text(
-                      requisition.isComplete == true ? 'Completed' :requisition.mgntComment??'Pending',
+                    label: Text(requisition.mgntComment??'Pending',
                       style: const TextStyle(color: Colors.white),
                     ),
-                    backgroundColor: requisition.isComplete == true
-                        ? Colors.green :requisition.isComplete == false?Colors.red:
-                        Colors.orange,
+                    backgroundColor: getBgColor(requisition.mgntComment),
                   ),
                 ],
               ),
@@ -285,5 +283,28 @@ class _PurchaseRequisitionListScreenState
         ],
       ),
     );
+  }
+
+  getBgColor(String? mgntComment) {
+    if(PurchaseStatus.deptHeadRejected==mgntComment)
+      {
+        return Colors.redAccent;
+      }
+    if(PurchaseStatus.managementRejected==mgntComment)
+    {
+      return Colors.red;
+    }
+    if(PurchaseStatus.deptHeadApproved==mgntComment)
+    {
+      return Colors.green.shade400;
+    }
+    if(PurchaseStatus.managementApproved==mgntComment)
+    {
+      return Colors.green;
+    }
+    else
+      {
+        return Colors.orange;
+      }
   }
 }
