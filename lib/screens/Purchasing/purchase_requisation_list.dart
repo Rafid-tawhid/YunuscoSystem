@@ -205,45 +205,67 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
             Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitions: pp.requisationProductDetails, reqModel: requisition)));
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    requisition.purchaseRequisitionCode ?? 'No Code',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        requisition.purchaseRequisitionCode ?? 'No Code',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                    ],
                   ),
-                  Chip(
-                    label: Text(
-                      requisition.mgntComment ?? 'Pending',
-                      style: const TextStyle(color: Colors.white),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(Icons.person, requisition.userName ?? 'Unknown'),
+                  if (requisition.department != null) _buildInfoRow(Icons.business, requisition.department?.toString() ?? 'No Department'),
+                  _buildInfoRow(Icons.category, requisition.productType ?? 'No Product Type'),
+                  _buildInfoRow(Icons.calendar_today, DashboardHelpers.convertDateTime(requisition.createdDate ?? '') ?? 'No Date'),
+                  _buildInfoRow(Icons.info_outline, requisition.productType ?? ''),
+                  if (requisition.remarks?.isNotEmpty == true) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Remarks: ${requisition.remarks}',
+                      style: const TextStyle(fontStyle: FontStyle.italic),
                     ),
-                    backgroundColor: getBgColor(requisition.mgntComment),
-                  ),
+                  ],
                 ],
               ),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.person, requisition.userName ?? 'Unknown'),
-              if (requisition.department != null) _buildInfoRow(Icons.business, requisition.department?.toString() ?? 'No Department'),
-              _buildInfoRow(Icons.category, requisition.productType ?? 'No Product Type'),
-              _buildInfoRow(Icons.calendar_today, DashboardHelpers.convertDateTime(requisition.createdDate ?? '') ?? 'No Date'),
-              _buildInfoRow(Icons.info_outline, requisition.productType ?? ''),
-              if (requisition.remarks?.isNotEmpty == true) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Remarks: ${requisition.remarks}',
-                  style: const TextStyle(fontStyle: FontStyle.italic),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: getBgColor(requisition.mgntComment),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(12.0),
+                    topRight: Radius.circular(12.0),
+                  ),
                 ),
-              ],
-            ],
-          ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Text(
+                  requisition.isComplete == true
+                      ? PurchaseStatus.managementApproved
+                      : requisition.mgntComment ?? 'Pending',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
