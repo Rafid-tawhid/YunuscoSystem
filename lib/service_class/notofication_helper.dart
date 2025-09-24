@@ -258,22 +258,23 @@ class NotificationServices {
 
     if (data['type'] == "VehicleRequest") {
       //
-      Navigator.push(context,
+      Navigator.pushReplacement(context,
           CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()));
     }
     if (data['type'] == "MedicalLeave") {
       //
-      Navigator.push(context,
+      Navigator.pushReplacement(context,
           CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
     }
     if (data['type'] == "PurchaseRequisition") {
       //
-      Navigator.push(context,
+      Navigator.pushReplacement(context,
           CupertinoPageRoute(builder: (context) => PurchaseRequisitionListScreen()));
     }
     else {
-      Navigator.push(context,
+      Navigator.pushReplacement(context,
           CupertinoPageRoute(builder: (context) => NotificationsScreen()));
     }
   }
 }
+//
