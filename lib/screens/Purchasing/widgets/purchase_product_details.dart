@@ -41,7 +41,6 @@ class RequisitionDetailsScreen extends StatelessWidget {
                 return  Column(
                   children: [
                     const SizedBox(height: 16),
-
                     TextField(
                       controller: _remarksController,
                       maxLines: 3,

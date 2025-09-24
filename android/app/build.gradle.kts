@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.system.yunusco_group"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -33,7 +33,7 @@ android {
     defaultConfig {
         applicationId = "com.system.yunusco_group"
         minSdk = 23
-        targetSdk = 35
+        targetSdk = 36
         // Use properties from flutter.properties or default values
         versionCode = (findProperty("flutter.versionCode") as? String)?.toIntOrNull() ?: 1
         versionName = findProperty("flutter.versionName") as? String ?: "1.0.0"
