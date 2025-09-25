@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/providers/purchase_provider.dart';
 import 'package:yunusco_group/screens/Purchasing/widgets/purchase_product_list.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../models/requisation_products_model.dart';
@@ -443,21 +444,28 @@ class _CreatePurchaseRequisitionScreenState
       );
       return;
     }
+    var uniqueId="YBDL${DateTime.now().toIso8601String()}";
 
     final data = {
       "requisitionMaster": {
         "productType": _selectedDivision!['id'],
         "remarks": _remarksController.text,
-        "division": _selectedDivision!['id'] == 'G' ? 1 : 2
+        "approval":"pending",
+        "reqId":uniqueId,
+        "userId":DashboardHelpers.currentUser!.userId.toString(),
+        //"division": _selectedDivision!['id'] == 'G' ? 1 : 2
+        "division": DashboardHelpers.currentUser!.department
       },
       "requisitionDetails": items
           .map((item) => {
-                "productId": item.productId,
+                "productId": item.productId.toString(),
                 "productDescription": item.productDescription,
-                "unitId": item.uomId,
-                "actualReqQty": item.actualReqQty,
-                "totalReqQty": item.totalReqQty,
-                "consumeDays": item.consumeDays,
+                "unitId": item.uomId.toString(),
+                "reqId":uniqueId.toString(),
+                "productName":item.productName,
+                "actualReqQty": item.actualReqQty.toString(),
+                "totalReqQty": item.totalReqQty.toString(),
+                "consumeDays": item.consumeDays.toString(),
                 "note": item.note,
                 "brand": item.brand,
                 "requiredDate": item.requiredDate
@@ -466,8 +474,10 @@ class _CreatePurchaseRequisitionScreenState
     };
 
     var pp = context.read<ProductProvider>();
-    var result = await pp.submitGeneralRequisation(data);
-    if (result) {
+    var pps = context.read<PurchaseProvider>();
+   // var result = await pp.submitGeneralRequisation(data); //save in erp
+    var result = await pps.saveRequisition(requisitionData: data);
+    if (result['success']) {
       DashboardHelpers.showAlert(msg: 'Requisition submitted successfully!');
       Navigator.pop(context);
     }

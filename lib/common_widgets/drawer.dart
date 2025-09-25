@@ -4,6 +4,7 @@ import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/riverpods/testing.dart';
 import '../screens/Profile/user_access_type.dart';
+import '../screens/Purchasing/new_req_list_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/testing/testing_Screen.dart';
 import '../utils/google_drive.dart';
@@ -64,7 +65,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Home'),
             onTap: () {
                //Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-               Navigator.push(context, MaterialPageRoute(builder: (context)=>UserListScreen()));
+               Navigator.push(context, MaterialPageRoute(builder: (context)=>NewRequisitionListScreen()));
               // Navigate to home (already here)
             },
           ),

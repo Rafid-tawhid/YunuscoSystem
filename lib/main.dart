@@ -12,6 +12,7 @@ import 'package:yunusco_group/providers/inventory_provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/providers/merchandising_provider.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
+import 'package:yunusco_group/providers/purchase_provider.dart';
 import 'package:yunusco_group/providers/riverpods/planning_provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/service_class/notofication_helper.dart';
@@ -51,6 +52,7 @@ void main() async {
           legacy.ChangeNotifierProvider(create: (_) => HrProvider()),
           legacy.ChangeNotifierProvider(create: (_) => NotificationProvider()),
           legacy.ChangeNotifierProvider(create: (_) => AccountProvider()),
+          legacy.ChangeNotifierProvider(create: (_) => PurchaseProvider()),
         ],
         child: ProviderScope(
           child: MyApp(),
