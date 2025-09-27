@@ -77,71 +77,281 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
 
   void _exportSelectedData() {
     final selectedData = _filteredStatements.map((stmt) => stmt.toSelectedJson()).toList();
+    final grandTotal = _filteredStatements.fold(0.0, (sum, stmt) => sum + stmt.selectedTotal);
 
-    // Show selected data summary
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Selected Suppliers Summary'),
-        content: Container(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(Icons.checklist, color: myColors.primaryColor, size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Selected Suppliers Summary',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+
+              Divider(height: 1),
+
+              // Summary cards
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    _buildSummaryCard('Products', selectedData.length.toString(), Icons.inventory),
+                    SizedBox(width: 10),
+                    _buildSummaryCard('Total', '${grandTotal.toStringAsFixed(2)} BDT', Icons.attach_money),
+                  ],
+                ),
+              ),
+
+              // List title
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      'Selected Items',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                    ),
+                    Spacer(),
+                    Text(
+                      'CS: $_selectedCode',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              // Products list
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: selectedData.length,
+                  itemBuilder: (context, index) {
+                    final data = selectedData[index];
+                    return _buildProductItem(data, index);
+                  },
+                ),
+              ),
+
+              // Footer with action buttons
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  border: Border(top: BorderSide(color: Colors.grey[300]!)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Grand Total: ${grandTotal.toStringAsFixed(2)} BDT',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // Add your action here (save, submit, etc.)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Selected data processed successfully!')),
+                        );
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.check_circle),
+                      label: Text('Confirm Selection'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(String title, String value, IconData icon) {
+    return Expanded(
+      child: Card(
+        color: Colors.blue[50],
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Icon(icon, size: 20, color: myColors.primaryColor),
+              SizedBox(height: 4),
+              Text(title, style: TextStyle(fontSize: 10, color: Colors.grey)),
+              SizedBox(height: 2),
+              Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductItem(Map<String, dynamic> data, int index) {
+    return Card(
+      color: Colors.white,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      elevation: 1,
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with product info
+            Row(
               children: [
-                Text('Comparative Statement: $_selectedCode',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                SizedBox(height: 10),
-                Text('Total Products: ${selectedData.length}'),
-                SizedBox(height: 10),
-                Divider(),
-                SizedBox(height: 10),
-
-                // Show selected suppliers for each product
-                ...selectedData.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final data = entry.value;
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 12),
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(4),
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: myColors.primaryColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: myColors.primaryColor),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${index + 1}. ${data['ProductName']}',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text('Qty: ${data['CsQty']} ${data['UomName']}'),
-                        Text('Selected Supplier: ${data['SelectedSupplierName']}'),
-                        Text('Rate: ${data['CurrencyName']} ${data['SelectedRate']}'),
-                        Text('Total: ${data['CurrencyName']} ${data['SelectedTotal']}'),
-                        Text('Warranty: ${data['WarrantyFirst']}'),
-                      ],
-                    ),
-                  );
-                }).toList(),
-
-                SizedBox(height: 10),
-                Divider(),
-                SizedBox(height: 10),
-
-                // Total summary
-                Text(
-                  'Grand Total: ${selectedData.first['CurrencyName']} ${_filteredStatements.fold(0.0, (sum, stmt) => sum + stmt.selectedTotal).toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    data['ProductName'] ?? '',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
-          ),
+
+            SizedBox(height: 8),
+
+            // Details in two columns
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left column - Basic info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildDetailRow('Qty', '${data['CsQty']} ${data['UomName']}'),
+                      _buildDetailRow('Category', data['ProductCategoryName'] ?? ''),
+                      _buildDetailRow('Supplier', data['SelectedSupplierName'] ?? ''),
+                    ],
+                  ),
+                ),
+
+                // Right column - Financial info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _buildDetailRow('Rate', '${data['CurrencyName']} ${(data['SelectedRate'] ?? 0).toStringAsFixed(2)}'),
+                      _buildDetailRow('Total', '${data['CurrencyName']} ${(data['SelectedTotal'] ?? 0).toStringAsFixed(2)}'),
+                      _buildDetailRow('Warranty', data['WarrantyFirst'] ?? 'N/A'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            // Additional info if available
+            if ((data['CreditPeriod'] ?? '').isNotEmpty || (data['PayMode'] ?? '').isNotEmpty)
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    if ((data['CreditPeriod'] ?? '').isNotEmpty)
+                      Expanded(
+                        child: Text(
+                          'Credit: ${data['CreditPeriod']}',
+                          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                        ),
+                      ),
+                    if ((data['PayMode'] ?? '').isNotEmpty)
+                      Expanded(
+                        child: Text(
+                          'Payment: ${data['PayMode']}',
+                          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1),
+      child: Row(
+        children: [
+          Text('$label: ', style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(fontSize: 10),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -171,7 +381,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(Icons.download),
+            icon: Icon(Icons.save),
             onPressed: _exportSelectedData,
             tooltip: 'Export Selected Data',
           ),
@@ -197,6 +407,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
             Padding(
               padding: EdgeInsets.all(16),
               child: Card(
+                color: Colors.white,
                 child: Padding(
                   padding: EdgeInsets.all(12),
                   child: Row(
@@ -234,7 +445,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
             ),
 
           // Summary Card
-          _buildSummaryCard(),
+          _buildSummaryCard2(),
 
           // Products List
           Expanded(
@@ -254,13 +465,14 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildSummaryCard2() {
     final statements = _filteredStatements;
     final totalProducts = statements.length;
     final totalValue = statements.fold(0.0, (sum, stmt) => sum + stmt.selectedTotal);
     final selectedSuppliers = statements.map((stmt) => stmt.selectedSupplier?['name'] ?? '').toSet();
 
     return Card(
+
       margin: EdgeInsets.all(8),
       color: Colors.blue[50],
       child: Padding(
@@ -276,7 +488,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
               ],
             ),
             SizedBox(height: 8),
-            if (selectedSuppliers.length > 0)
+            if (selectedSuppliers.isNotEmpty)
               Text(
                 'Suppliers: ${selectedSuppliers.where((s) => s.isNotEmpty).join(', ')}',
                 style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
@@ -299,7 +511,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
   }
 }
 
-class ComparativeStatementCard extends StatelessWidget {
+class ComparativeStatementCard extends StatefulWidget {
   final ComparativeStatement statement;
   final Function(int, String) onSupplierSelected;
 
@@ -310,23 +522,31 @@ class ComparativeStatementCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ComparativeStatementCardState createState() => _ComparativeStatementCardState();
+}
+
+class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    final availableSuppliers = statement.availableSuppliers;
-    final selectedSupplier = statement.selectedSupplier;
+    final availableSuppliers = widget.statement.availableSuppliers;
+    final selectedSupplier = widget.statement.selectedSupplier;
 
     return Card(
       margin: EdgeInsets.all(8),
       elevation: 4,
+      color: Colors.white,
       child: ExpansionTile(
         leading: CircleAvatar(
           backgroundColor: Colors.green,
           child: Text(
-            statement.productId.toString().substring(statement.productId.toString().length - 2),
+            widget.statement.productId.toString().substring(widget.statement.productId.toString().length - 2),
             style: TextStyle(color: Colors.white, fontSize: 10),
           ),
         ),
         title: Text(
-          statement.productName,
+          widget.statement.productName,
           style: TextStyle(fontWeight: FontWeight.bold),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -334,16 +554,36 @@ class ComparativeStatementCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Category: ${statement.productCategoryName}'),
-            Text('Qty: ${statement.csQty} ${statement.uomName}'),
+            Text('Category: ${widget.statement.productCategoryName}'),
+            Text('Qty: ${widget.statement.csQty} ${widget.statement.uomName}'),
             if (selectedSupplier != null)
-              Text('Selected: ${selectedSupplier['name']} - ${statement.currencyName} ${selectedSupplier['rate']}'),
+              Text('Selected: ${selectedSupplier['name']} - ${widget.statement.currencyName} ${selectedSupplier['rate']}'),
           ],
         ),
-        trailing: Chip(
-          label: Text('${availableSuppliers.length} Options', style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.blue,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Chip(
+              label: Text('${availableSuppliers.length} Options', style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.blue,
+            ),
+            SizedBox(width: 8),
+            AnimatedRotation(
+              duration: Duration(milliseconds: 300),
+              turns: _isExpanded ? 0.5 : 0,
+              child: Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.grey[600],
+                size: 24,
+              ),
+            ),
+          ],
         ),
+        onExpansionChanged: (expanded) {
+          setState(() {
+            _isExpanded = expanded;
+          });
+        },
         children: [
           Padding(
             padding: EdgeInsets.all(16),
@@ -351,14 +591,14 @@ class ComparativeStatementCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Product Information
-                _buildInfoRow('Product ID', statement.productId.toString()),
-                _buildInfoRow('Category', statement.productCategoryName),
-                _buildInfoRow('Type', statement.typeName),
-                _buildInfoRow('UOM', statement.uomName),
-                _buildInfoRow('Required Qty', '${statement.csQty} ${statement.uomName}'),
-                _buildInfoRow('Current Stock', statement.cStock.toString()),
-                if (statement.lastPurDate.isNotEmpty)
-                  _buildInfoRow('Last Purchase', '${statement.lastPurQty} @ ${statement.lastPurRate} on ${statement.lastPurDate}'),
+                _buildInfoRow('Product ID', widget.statement.productId.toString()),
+                _buildInfoRow('Category', widget.statement.productCategoryName),
+                _buildInfoRow('Type', widget.statement.typeName),
+                _buildInfoRow('UOM', widget.statement.uomName),
+                _buildInfoRow('Required Qty', '${widget.statement.csQty} ${widget.statement.uomName}'),
+                _buildInfoRow('Current Stock', widget.statement.cStock.toString()),
+                if (widget.statement.lastPurDate.isNotEmpty)
+                  _buildInfoRow('Last Purchase', '${widget.statement.lastPurQty} @ ${widget.statement.lastPurRate} on ${widget.statement.lastPurDate}'),
 
                 SizedBox(height: 16),
                 Divider(),
@@ -371,7 +611,7 @@ class ComparativeStatementCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
 
-                ...availableSuppliers.map((supplier) => _buildSupplierOption(supplier, statement)),
+                ...availableSuppliers.map((supplier) => _buildSupplierOption(supplier, widget.statement)),
               ],
             ),
           ),
@@ -411,7 +651,7 @@ class ComparativeStatementCard extends StatelessWidget {
           value: supplier['position'],
           groupValue: statement.selectedSupplierPosition,
           onChanged: (value) {
-            onSupplierSelected(statement.productId, value!);
+            widget.onSupplierSelected(statement.productId, value!);
           },
         ),
         title: Text(
@@ -434,7 +674,7 @@ class ComparativeStatementCard extends StatelessWidget {
             ? Icon(Icons.check_circle, color: Colors.green)
             : null,
         onTap: () {
-          onSupplierSelected(statement.productId, supplier['position']);
+          widget.onSupplierSelected(statement.productId, supplier['position']);
         },
       ),
     );
