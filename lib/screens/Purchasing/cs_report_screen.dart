@@ -258,7 +258,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       ],
     );
   }
-
+  //
   Widget _buildSupplierRow(SupplierQuote supplier) {
     bool isBestPrice = _isBestPrice(supplier.rate, supplier.total);
 
