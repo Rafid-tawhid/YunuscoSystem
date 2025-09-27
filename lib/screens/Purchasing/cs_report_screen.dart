@@ -241,9 +241,11 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
             SizedBox(height: 12),
 
             // Suppliers Comparison
-            Text('Supplier Quotes:', style: TextStyle(fontWeight: FontWeight.w600)),
+            Text('Select Supplier:', style: TextStyle(fontWeight: FontWeight.w600)),
             SizedBox(height: 8),
-            ...item.suppliers.map((supplier) => _buildSupplierRow(supplier)).toList(),
+            ...item.suppliers.asMap().entries.map((entry) =>
+                _buildSupplierRow(item, entry.value, entry.key)
+            ).toList(),
           ],
         ),
       ),
@@ -259,70 +261,163 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
     );
   }
   //
-  Widget _buildSupplierRow(SupplierQuote supplier) {
-    bool isBestPrice = _isBestPrice(supplier.rate, supplier.total);
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: isBestPrice ? Colors.green[50] : Colors.grey[50],
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: isBestPrice ? Colors.green : Colors.grey.shade300,
-          width: isBestPrice ? 1.5 : 1,
+  Widget _buildSupplierRow(PurchaseItem item, SupplierQuote supplier, int supplierIndex) {
+    bool isSelected = item.selectedSupplierIndex == supplierIndex;
+
+    return InkWell(
+      child: Container(
+        margin: EdgeInsets.only(bottom: 8),
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue[50] : Colors.grey[50],
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: isSelected ? Colors.blue : Colors.grey.shade300,
+            width: isSelected ? 2.0 : 1,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          children: [
+            // First Row: Checkbox, Supplier Name, and Selection Badge
+            Row(
               children: [
-                Text(
-                  supplier.name.isEmpty ? 'Supplier' : supplier.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: isBestPrice ? Colors.green[800] : Colors.grey[800],
+                Checkbox(
+                  value: isSelected,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      item.selectedSupplierIndex = value == true ? supplierIndex : null;
+                    });
+                  },
+                  activeColor: Colors.blue[800],
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    supplier.name.isEmpty ? 'Supplier ${supplierIndex + 1}' : supplier.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.blue[800] : Colors.grey[800],
+                    ),
                   ),
                 ),
-                if (supplier.name.isNotEmpty)
-                  Text(
-                    'Rate: ${supplier.rate.toStringAsFixed(2)} BDT',
-                    style: TextStyle(fontSize: 12),
+                if (isSelected)
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'SELECTED',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'Total:',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-              Text(
-                '${supplier.total.toStringAsFixed(2)} BDT',
+
+            SizedBox(height: 8),
+
+            // Second Row: Quantity, Rate, and Total
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Quantity and Rate
+                Row(
+                  children: [
+                    _buildInfoChip('Qty: ${item.csQty}', Colors.grey[100]!, Colors.grey[700]!),
+                    SizedBox(width: 8),
+                    _buildInfoChip('Rate: ${supplier.rate.toStringAsFixed(2)} BDT',
+                        Colors.orange[50]!, Colors.orange[800]!),
+                  ],
+                ),
+
+                // Total Amount
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${supplier.total.toStringAsFixed(2)} BDT',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.blue[800] : Colors.green[700],
+                      ),
+                    ),
+                    Text(
+                      'Total',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // Calculation breakdown
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.only(top: 4),
+              child: Text(
+                'Calculation: ${item.csQty} × ${supplier.rate.toStringAsFixed(2)} = ${supplier.total.toStringAsFixed(2)} BDT',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isBestPrice ? Colors.green[800] : Colors.blue[800],
+                  fontSize: 10,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,),
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ],
-          ),
-        ],
+
+
+            if (isSelected && item.selectedSupplierIndex == item._findLowestPriceSupplierIndex())
+              Container(
+                margin: EdgeInsets.only(top: 4),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '✓ Lowest Price Available',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.green[800],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  bool _isBestPrice(double rate, double total) {
-    // Simple logic to highlight best price (lowest total)
-    // You can enhance this based on your business logic
-    return total > 0 && rate == statementData.items.expand((item) => item.suppliers.map((s) => s.rate))
-        .where((rate) => rate > 0)
-        .reduce((min, current) => current < min ? current : min);
+// Helper widget for info chips
+  Widget _buildInfoChip(String text, Color backgroundColor, Color textColor) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
+      ),
+    );
   }
+
+
 
   Widget _buildSummaryCard() {
     Map<String, double> supplierTotals = {};
@@ -492,6 +587,7 @@ class PurchaseItem {
   final String lastPurchaseDate;
   final double csQty;
   final List<SupplierQuote> suppliers;
+  int? selectedSupplierIndex;
 
   PurchaseItem({
     required this.sl,
@@ -504,17 +600,40 @@ class PurchaseItem {
     required this.lastPurchaseDate,
     required this.csQty,
     required this.suppliers,
-  });
+    this.selectedSupplierIndex,
+  }) {
+    // Auto-select the supplier with lowest total price
+    selectedSupplierIndex = _findLowestPriceSupplierIndex();
+  }
+
+  int? _findLowestPriceSupplierIndex() {
+    if (suppliers.isEmpty) return null;
+
+    int lowestIndex = 0;
+    double lowestTotal = double.maxFinite;
+
+    for (int i = 0; i < suppliers.length; i++) {
+      if (suppliers[i].total > 0 && suppliers[i].total < lowestTotal) {
+        lowestTotal = suppliers[i].total;
+        lowestIndex = i;
+      }
+    }
+
+    // Only select if we found a valid supplier with price > 0
+    return lowestTotal < double.maxFinite ? lowestIndex : null;
+  }
 }
 
 class SupplierQuote {
   final String name;
   final double rate;
   final double total;
+  bool isSelected;
 
   SupplierQuote({
     required this.name,
     required this.rate,
     required this.total,
+    this.isSelected = false,
   });
 }
