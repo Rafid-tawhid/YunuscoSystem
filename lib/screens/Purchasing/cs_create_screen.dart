@@ -185,9 +185,13 @@ class _SupplyChainFormScreenState extends State<SupplyChainFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Product Information',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      Row(
+                        children: [
+                          Text(
+                            'Product Information',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 8),
                       Text('Item Name: ${widget.productDetail.productDescription}'),

@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../../models/purchase_requisation_list_model.dart';
 import '../../../models/requisition_details_model.dart';
+import '../cs_report_screen.dart';
 import '../purchase_requisation_list.dart';
 
 class RequisitionDetailsScreen extends StatelessWidget {
@@ -27,87 +30,107 @@ class RequisitionDetailsScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: requisitions.length + 1, // Add 1 for the remarks section
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          if (index < requisitions.length) {
-            final req = requisitions[index];
-            return _buildRequisitionCard(req,reqModel,context,);
-          } else {
-            if(reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
-              {
-                return  Column(
-                  children: [
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _remarksController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your remarks here...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.all(12),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              var pp=context.read<ProductProvider>();
-                              var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),false);
-                              if(data){
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: myColors.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6), // radius
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>ComparativeStatementScreen()));
+                }, child: Text('CS',style: customTextStyle(14, Colors.white, FontWeight.bold),)),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: requisitions.length + 1, // Add 1 for the remarks section
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                if (index < requisitions.length) {
+                  final req = requisitions[index];
+                  return _buildRequisitionCard(req,reqModel,context,);
+                } else {
+                  if(reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
+                    {
+                      return  Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _remarksController,
+                            maxLines: 3,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your remarks here...',
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
+                              contentPadding: const EdgeInsets.all(12),
                             ),
-                            child: const Text('Reject', style: TextStyle(fontSize: 16)),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-
-                              var pp=context.read<ProductProvider>();
-                              var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),true);
-                              if(data){
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    var pp=context.read<ProductProvider>();
+                                    var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),false);
+                                    if(data){
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text('Reject', style: TextStyle(fontSize: 16)),
+                                ),
                               ),
-                            ),
-                            child: const Text('Accept', style: TextStyle(fontSize: 16)),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+            
+                                    var pp=context.read<ProductProvider>();
+                                    var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),true);
+                                    if(data){
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text('Accept', style: TextStyle(fontSize: 16)),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                );
-              }
-           else {
-            return SizedBox.shrink();
-            }
-          }
-        },
+                          const SizedBox(height: 30),
+                        ],
+                      );
+                    }
+                 else {
+                  return SizedBox.shrink();
+                  }
+                }
+              },
+            ),
+          ),
+        ],
       )
     );
   }
