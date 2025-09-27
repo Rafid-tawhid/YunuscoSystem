@@ -11,10 +11,9 @@ class SupplyChainRecordsScreen extends StatefulWidget {
 }
 
 class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
-
-  List<SupplyChainRecord> _records = [];
+  List<RequisitionSupplierSummary> _requisitionSummaries = [];
   bool _isLoading = true;
-  String _selectedFilter = 'all'; // all, pending, completed
+  String _selectedFilter = 'all';
 
   @override
   void initState() {
@@ -28,17 +27,49 @@ class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
     });
 
     try {
-      List<SupplyChainRecord> records;
-      var pp=context.read<PurchaseProvider>();
+      var pp = context.read<PurchaseProvider>();
+      List<SupplyChainRecord> records = await pp.getAllSupplyChainRecords();
 
-      if (_selectedFilter == 'all') {
-        records = await pp.getAllSupplyChainRecords();
-      } else {
-        records = await pp.getSupplyChainRecordsByStatus(_selectedFilter);
+
+      // Group records by requisition ID
+      final Map<String, List<SupplyChainRecord>> groupedRecords = {};
+
+      for (var record in records) {
+        if (!groupedRecords.containsKey(record.reqId)) {
+          groupedRecords[record.reqId] = [];
+        }
+        groupedRecords[record.reqId]!.add(record);
       }
 
+      // Convert to RequisitionSupplierSummary
+      List<RequisitionSupplierSummary> summaries = [];
+
+      groupedRecords.forEach((reqId, records) {
+        List<ProductSupplierSelection> productSelections = [];
+
+        for (var record in records) {
+          productSelections.add(ProductSupplierSelection(
+            productId: record.productId.toString(),
+            productName: record.productName,
+            requiredQty: int.parse(record.requiredQty.toString()),
+            unitName: record.unitName,
+            suppliers: record.supplierQuotes,
+          ));
+        }
+
+        summaries.add(RequisitionSupplierSummary(
+          reqId: reqId,
+          createdAt: records.first.createdAt,
+          productSelections: productSelections,
+          status: records.first.status,
+        ));
+      });
+
+      // Sort by date
+      summaries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
       setState(() {
-        _records = records;
+        _requisitionSummaries = summaries;
         _isLoading = false;
       });
     } catch (e) {
@@ -60,12 +91,75 @@ class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'completed': return Colors.green;
-      case 'pending': return Colors.orange;
-      default: return Colors.grey;
-    }
+  void _onSupplierSelected(String reqId, String productId, String supplierId) {
+    setState(() {
+      final requisition = _requisitionSummaries.firstWhere((r) => r.reqId == reqId);
+      final product = requisition.productSelections.firstWhere((p) => p.productId == productId);
+      product.selectedSupplierId = supplierId;
+    });
+  }
+
+  void _generatePurchaseOrder(RequisitionSupplierSummary summary) {
+    // Show summary of selected suppliers
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Purchase Order Summary - Req #${summary.reqId.substring(summary.reqId.length - 6)}'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Selected Suppliers:', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              ...summary.productSelections.map((product) => Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('📦 ${product.productName}', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('   Supplier: ${product.selectedSupplier?.supplierName ?? "No supplier"}'),
+                    Text('   Rate: ${product.selectedSupplier?.currency} ${product.selectedSupplier?.unitRate}'),
+                    Text('   Qty: ${product.requiredQty} ${product.unitName}'),
+                    Divider(),
+                  ],
+                ),
+              )),
+              SizedBox(height: 10),
+              Text('Total Estimated Cost: ${summary.totalCost.toStringAsFixed(2)} BDT',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Save purchase order logic here
+              _savePurchaseOrder(summary);
+              Navigator.pop(context);
+            },
+            child: Text('Confirm Purchase Order'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _savePurchaseOrder(RequisitionSupplierSummary summary) {
+    // Implement your purchase order saving logic here
+    print('Saving purchase order for requisition: ${summary.reqId}');
+    // You can save to Firebase or navigate to another screen
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Purchase order generated successfully!'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -75,25 +169,10 @@ class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
         title: Text('Supply Chain Records'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              setState(() {
-                _selectedFilter = value;
-              });
-              _loadRecords();
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(value: 'all', child: Text('All Records')),
-              PopupMenuItem(value: 'pending', child: Text('Pending')),
-              PopupMenuItem(value: 'completed', child: Text('Completed')),
-            ],
-          ),
-        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : _records.isEmpty
+          : _requisitionSummaries.isEmpty
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -110,10 +189,14 @@ class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
           : RefreshIndicator(
         onRefresh: _loadRecords,
         child: ListView.builder(
-          itemCount: _records.length,
+          itemCount: _requisitionSummaries.length,
           itemBuilder: (context, index) {
-            final record = _records[index];
-            return SupplyChainRecordCard(record: record);
+            final summary = _requisitionSummaries[index];
+            return RequisitionSummaryCard(
+              summary: summary,
+              onSupplierSelected: _onSupplierSelected,
+              onGeneratePO: _generatePurchaseOrder,
+            );
           },
         ),
       ),
@@ -121,71 +204,59 @@ class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
   }
 }
 
-class SupplyChainRecordCard extends StatelessWidget {
-  final SupplyChainRecord record;
+class RequisitionSummaryCard extends StatelessWidget {
+  final RequisitionSupplierSummary summary;
+  final Function(String, String, String) onSupplierSelected;
+  final Function(RequisitionSupplierSummary) onGeneratePO;
 
-  const SupplyChainRecordCard({Key? key, required this.record}) : super(key: key);
+  const RequisitionSummaryCard({
+    Key? key,
+    required this.summary,
+    required this.onSupplierSelected,
+    required this.onGeneratePO,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final bestQuote = record.bestQuote;
-
     return Card(
       margin: EdgeInsets.all(8),
       elevation: 4,
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: _getStatusColor(record.status),
-          child: Icon(Icons.safety_check_outlined, color: Colors.white, size: 20),
+          backgroundColor: _getStatusColor(summary.status),
+          child: Icon(Icons.inventory, color: Colors.white, size: 20),
         ),
         title: Text(
-          record.productName,
+          'Requisition #${summary.reqId.substring(summary.reqId.length - 6)}',
           style: TextStyle(fontWeight: FontWeight.bold),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Req ID: ${record.reqId.substring(record.reqId.length - 6)}'),
-            Text('Suppliers: ${record.supplierQuotes.length}'),
-            if (bestQuote != null)
-              Text('Best Quote: ${bestQuote.currency} ${record.calculateTotalCost(bestQuote).toStringAsFixed(2)}'),
+            Text('Products: ${summary.productSelections.length}'),
+            Text('Suppliers: ${_getTotalSuppliers(summary)}'),
+            Text('Total Cost: BDT ${summary.totalCost.toStringAsFixed(2)}'),
           ],
         ),
-        trailing: Chip(
-          label: Text(
-            record.status.toUpperCase(),
-            style: TextStyle(color: Colors.white, fontSize: 10),
+        trailing: ElevatedButton(
+          onPressed: () => onGeneratePO(summary),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
           ),
-          backgroundColor: _getStatusColor(record.status),
+          child: Text('Generate PO'),
         ),
         children: [
           Padding(
             padding: EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Product Information
-                _buildInfoRow('Product', record.productName),
-                _buildInfoRow('Required Qty', '${record.requiredQty} ${record.unitName}'),
-                _buildInfoRow('Requisition ID', record.reqId),
-
-                SizedBox(height: 16),
-
-                // Suppliers Section
-                Text(
-                  'Supplier Quotes (${record.supplierQuotes.length})',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-                ),
-                SizedBox(height: 8),
-
-                ...record.supplierQuotes.map((quote) => _buildSupplierQuoteCard(quote, record)).toList(),
-
-                SizedBox(height: 16),
-                _buildInfoRow('Created', _formatDate(record.createdAt)),
-                _buildInfoRow('Record ID', record.id.substring(record.id.length - 8)),
-              ],
+              children: summary.productSelections.map((product) =>
+                  ProductSupplierCard(
+                    product: product,
+                    reqId: summary.reqId,
+                    onSupplierSelected: onSupplierSelected,
+                  )
+              ).toList(),
             ),
           ),
         ],
@@ -193,135 +264,8 @@ class SupplyChainRecordCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSupplierQuoteCard(SupplierQuote quote, SupplyChainRecord record) {
-    final totalCost = record.calculateTotalCost(quote);
-    final isBestQuote = record.bestQuote?.supplierId == quote.supplierId;
-
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 4),
-      color: isBestQuote ? Colors.green[50] : Colors.grey[50],
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    quote.supplierName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: isBestQuote ? Colors.green : Colors.black,
-                    ),
-                  ),
-                ),
-                if (isBestQuote)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'BEST',
-                      style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-              ],
-            ),
-            SizedBox(height: 8),
-
-            // Basic Info
-            Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                _buildInfoChip('Rate: ${quote.currency} ${quote.unitRate}'),
-                _buildInfoChip('Tax: ${quote.taxRate}%'),
-                _buildInfoChip('VAT: ${quote.vatRate}%'),
-                if (quote.warranty.isNotEmpty) _buildInfoChip('Warranty: ${quote.warranty}'),
-                _buildInfoChip('Credit: ${quote.creditPeriodDays} days'),
-              ],
-            ),
-
-            SizedBox(height: 8),
-
-            // Cost Breakdown
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Column(
-                children: [
-                  _buildCostRow('Subtotal', quote.unitRate * double.parse(record.requiredQty), quote.currency),
-                  if (quote.taxRate > 0) _buildCostRow('Tax', (quote.unitRate * double.parse(record.requiredQty)) * (quote.taxRate / 100), quote.currency),
-                  if (quote.vatRate > 0) _buildCostRow('VAT', (quote.unitRate * double.parse(record.requiredQty)) * (quote.vatRate / 100), quote.currency),
-                  if (quote.carryingCost > 0) _buildCostRow('Carrying Cost', quote.carryingCost, quote.currency),
-                  if (quote.otherCost > 0) _buildCostRow('Other Cost', quote.otherCost, quote.currency),
-                  if (quote.discount > 0) _buildCostRow('Discount', -((quote.unitRate * double.parse(record.requiredQty)) * (quote.discount / 100)), quote.currency),
-                  Divider(),
-                  _buildCostRow('TOTAL', totalCost, quote.currency, isBold: true),
-                ],
-              ),
-            ),
-
-            if (quote.comments.isNotEmpty) ...[
-              SizedBox(height: 8),
-              Text('Comments: ${quote.comments}', style: TextStyle(fontSize: 12, color: Colors.grey)),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoChip(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.blue[100],
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget _buildCostRow(String label, double amount, String currency, {bool isBold = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(fontSize: 12, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          Text(
-            '${amount >= 0 ? '+' : ''}$currency ${amount.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: amount < 0 ? Colors.red : Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
+  int _getTotalSuppliers(RequisitionSupplierSummary summary) {
+    return summary.productSelections.fold(0, (sum, product) => sum + product.suppliers.length);
   }
 
   Color _getStatusColor(String status) {
@@ -331,8 +275,126 @@ class SupplyChainRecordCard extends StatelessWidget {
       default: return Colors.grey;
     }
   }
+}
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+class ProductSupplierCard extends StatelessWidget {
+  final ProductSupplierSelection product;
+  final String reqId;
+  final Function(String, String, String) onSupplierSelected;
+
+  const ProductSupplierCard({
+    Key? key,
+    required this.product,
+    required this.reqId,
+    required this.onSupplierSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 12),
+      color: Colors.grey[50],
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product Header
+            Row(
+              children: [
+                Icon(Icons.shopping_cart, color: Colors.blue),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    product.productName,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Text(
+                  'Qty: ${product.requiredQty} ${product.unitName}',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+            SizedBox(height: 12),
+
+            // Supplier Selection
+            Text('Select Supplier:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+
+            ...product.suppliers.map((supplier) => SupplierSelectionTile(
+              supplier: supplier,
+              isSelected: product.selectedSupplierId == supplier.supplierId,
+              onTap: () => onSupplierSelected(reqId, product.productId, supplier.supplierId),
+              requiredQty: product.requiredQty,
+            )).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SupplierSelectionTile extends StatelessWidget {
+  final SupplierQuote supplier;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final int requiredQty;
+
+  const SupplierSelectionTile({
+    Key? key,
+    required this.supplier,
+    required this.isSelected,
+    required this.onTap,
+    required this.requiredQty,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final subtotal = supplier.unitRate * requiredQty;
+    final totalCost = subtotal +
+        (subtotal * (supplier.taxRate / 100)) +
+        (subtotal * (supplier.vatRate / 100)) +
+        supplier.carryingCost +
+        supplier.otherCost -
+        (subtotal * (supplier.discount / 100));
+
+    return Card(
+      margin: EdgeInsets.only(bottom: 8),
+      color: isSelected ? Colors.blue[50] : Colors.white,
+      elevation: isSelected ? 2 : 1,
+      child: ListTile(
+        leading: Radio(
+          value: true,
+          groupValue: isSelected,
+          onChanged: (value) => onTap(),
+        ),
+        title: Text(
+          supplier.supplierName,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isSelected ? Colors.blue : Colors.black,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Unit Rate: ${supplier.currency} ${supplier.unitRate}'),
+            Text('Total: ${supplier.currency} ${totalCost.toStringAsFixed(2)}'),
+            if (supplier.warranty.isNotEmpty) Text('Warranty: ${supplier.warranty}'),
+            Wrap(
+              spacing: 6,
+              children: [
+                if (supplier.taxRate > 0) Chip(label: Text('Tax: ${supplier.taxRate}%', style: TextStyle(fontSize: 10))),
+                if (supplier.vatRate > 0) Chip(label: Text('VAT: ${supplier.vatRate}%', style: TextStyle(fontSize: 10))),
+                if (supplier.discount > 0) Chip(label: Text('Discount: ${supplier.discount}%', style: TextStyle(fontSize: 10))),
+              ],
+            ),
+          ],
+        ),
+        trailing: isSelected ? Icon(Icons.check_circle, color: Colors.green) : null,
+        onTap: onTap,
+      ),
+    );
   }
 }

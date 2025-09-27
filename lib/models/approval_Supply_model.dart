@@ -1,6 +1,68 @@
 // supply_chain_model.dart
 import 'package:yunusco_group/models/puchaseMasterModelFirebase.dart';
 
+
+// Add to your approval_Supply_model.dart
+class ProductSupplierSelection {
+  final String productId;
+  final String productName;
+  final int requiredQty;
+  final String unitName;
+  final List<SupplierQuote> suppliers;
+  String selectedSupplierId;
+
+  ProductSupplierSelection({
+    required this.productId,
+    required this.productName,
+    required this.requiredQty,
+    required this.unitName,
+    required this.suppliers,
+    this.selectedSupplierId = '',
+  }) {
+    // Auto-select first supplier if available
+    if (selectedSupplierId.isEmpty && suppliers.isNotEmpty) {
+      selectedSupplierId = suppliers.first.supplierId;
+    }
+  }
+
+  SupplierQuote? get selectedSupplier {
+    return suppliers.firstWhere(
+          (supplier) => supplier.supplierId == selectedSupplierId,
+      orElse: () => suppliers.isNotEmpty ? suppliers.first : SupplierQuote(
+        supplierId: '',
+        supplierName: 'No Supplier',
+        unitRate: 0,
+      ),
+    );
+  }
+}
+
+class RequisitionSupplierSummary {
+  final String reqId;
+  final DateTime createdAt;
+  final List<ProductSupplierSelection> productSelections;
+  final String status;
+
+  RequisitionSupplierSummary({
+    required this.reqId,
+    required this.createdAt,
+    required this.productSelections,
+    this.status = 'pending',
+  });
+
+  double get totalCost {
+    return productSelections.fold(0.0, (sum, product) {
+      final supplier = product.selectedSupplier;
+      final subtotal = supplier!.unitRate * product.requiredQty;
+      final taxAmount = subtotal * (supplier.taxRate / 100);
+      final vatAmount = subtotal * (supplier.vatRate / 100);
+      final discountAmount = subtotal * (supplier.discount / 100);
+      return sum + subtotal + taxAmount + vatAmount +
+          supplier.carryingCost + supplier.otherCost - discountAmount;
+    });
+  }
+}
+
 class ApprovedRequisition {
   final String reqId;
   final PuchaseMasterModelFirebase master;

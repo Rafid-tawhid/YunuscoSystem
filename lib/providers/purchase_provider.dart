@@ -289,4 +289,31 @@ class PurchaseProvider extends ChangeNotifier {
   }
 
 
+
+  Future<List<SupplierQuote>> getSupplierQuotesByReqIdAndProduct(String reqId,String productId) async {
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('supply_chain_records')
+          .where('reqId', isEqualTo: reqId)
+          .where('productId', isEqualTo: productId)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        return []; // No records found
+      }
+
+      final record = SupplyChainRecord.fromMap(snapshot.docs.first.data());
+      var data= record.supplierQuotes;
+
+      debugPrint('DATA ${data.length}');
+      return data;
+
+    } catch (e) {
+      print('Error getting supplier quotes: $e');
+      throw Exception('Error fetching supplier quotes: $e');
+    }
+  }
+
+
 }

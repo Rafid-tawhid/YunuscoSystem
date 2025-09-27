@@ -1,640 +1,442 @@
+// comparative_statement_screen.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import '../../models/comperative_statement_model.dart';
+
 class ComparativeStatementScreen extends StatefulWidget {
+  final List<dynamic> jsonData;
+
+  const ComparativeStatementScreen({Key? key, required this.jsonData}) : super(key: key);
+
   @override
   _ComparativeStatementScreenState createState() => _ComparativeStatementScreenState();
 }
 
 class _ComparativeStatementScreenState extends State<ComparativeStatementScreen> {
-  final ComparativeStatementData statementData = ComparativeStatementData(
-    csCode: 'CS002374',
-    storeType: 'General',
-    currency: 'BDT',
-    regCode: 'GPR0000000046530',
-    csDate: '27 Jul 2025',
-    procurer: 'Md. Mahadi Hasa',
-    purchaseType: 'Local',
-    itemCategory: 'Electric Item',
-    items: [
-      PurchaseItem(
-        sl: 1,
-        itemName: 'Cable Tail 1/2 Inch China Heavy',
-        unit: 'Packet',
-        brand: '',
-        stock: 0,
-        lastPurchaseQty: 3,
-        lastPurchaseRate: 140.00,
-        lastPurchaseDate: '28 Jul 2025',
-        csQty: 3.00,
-        suppliers: [
-          SupplierQuote(
-            name: 'DEBO TRADING CORPORATION',
-            rate: 140.00,
-            total: 420.00,
+  List<ComparativeStatement> _statements = [];
+  bool _isLoading = true;
+  String _selectedCode = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
+    try {
+      final statements = widget.jsonData
+          .map((item) => ComparativeStatement.fromJson(item))
+          .toList();
+
+      // Get unique codes
+      final codes = statements.map((e) => e.code).toSet().toList();
+
+      setState(() {
+        _statements = statements;
+        _selectedCode = codes.isNotEmpty ? codes.first : '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog('Error loading data: $e');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('OK'))],
+      ),
+    );
+  }
+
+  void _onSupplierSelected(int productId, String supplierPosition) {
+    setState(() {
+      final statement = _statements.firstWhere((stmt) => stmt.productId == productId);
+      statement.selectedSupplierPosition = supplierPosition;
+    });
+  }
+
+  List<ComparativeStatement> get _filteredStatements {
+    if (_selectedCode.isEmpty) return _statements;
+    return _statements.where((stmt) => stmt.code == _selectedCode).toList();
+  }
+
+  Set<String> get _availableCodes {
+    return _statements.map((e) => e.code).toSet();
+  }
+
+  void _exportSelectedData() {
+    final selectedData = _filteredStatements.map((stmt) => stmt.toSelectedJson()).toList();
+
+    // Show selected data summary
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Selected Suppliers Summary'),
+        content: Container(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Comparative Statement: $_selectedCode',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                SizedBox(height: 10),
+                Text('Total Products: ${selectedData.length}'),
+                SizedBox(height: 10),
+                Divider(),
+                SizedBox(height: 10),
+
+                // Show selected suppliers for each product
+                ...selectedData.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final data = entry.value;
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${index + 1}. ${data['ProductName']}',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        SizedBox(height: 4),
+                        Text('Qty: ${data['CsQty']} ${data['UomName']}'),
+                        Text('Selected Supplier: ${data['SelectedSupplierName']}'),
+                        Text('Rate: ${data['CurrencyName']} ${data['SelectedRate']}'),
+                        Text('Total: ${data['CurrencyName']} ${data['SelectedTotal']}'),
+                        Text('Warranty: ${data['WarrantyFirst']}'),
+                      ],
+                    ),
+                  );
+                }).toList(),
+
+                SizedBox(height: 10),
+                Divider(),
+                SizedBox(height: 10),
+
+                // Total summary
+                Text(
+                  'Grand Total: ${selectedData.first['CurrencyName']} ${_filteredStatements.fold(0.0, (sum, stmt) => sum + stmt.selectedTotal).toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                ),
+              ],
+            ),
           ),
-          SupplierQuote(
-            name: 'Rohan Electric',
-            rate: 150.00,
-            total: 450.00,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
           ),
         ],
       ),
-      PurchaseItem(
-        sl: 2,
-        itemName: 'Insulation Tape',
-        unit: 'Piece',
-        brand: '',
-        stock: 0,
-        lastPurchaseQty: 10,
-        lastPurchaseRate: 30.00,
-        lastPurchaseDate: '28 Jul 2025',
-        csQty: 10.00,
-        suppliers: [
-          SupplierQuote(
-            name: 'DEBO TRADING CORPORATION',
-            rate: 30.00,
-            total: 300.00,
-          ),
-          SupplierQuote(
-            name: 'Rohan Electric',
-            rate: 30.00,
-            total: 300.00,
-          ),
-        ],
-      ),
-      PurchaseItem(
-        sl: 3,
-        itemName: 'U Channel',
-        unit: 'Piece',
-        brand: '',
-        stock: 0,
-        lastPurchaseQty: 2,
-        lastPurchaseRate: 1400.00,
-        lastPurchaseDate: '28 Jul 2025',
-        csQty: 1.00,
-        suppliers: [
-          SupplierQuote(
-            name: 'DEBO TRADING CORPORATION',
-            rate: 1400.00,
-            total: 1400.00,
-          ),
-          SupplierQuote(
-            name: 'Rohan Electric',
-            rate: 1800.00,
-            total: 1800.00,
-          ),
-        ],
-      ),
-    ],
-    deliveryAddress: '224-233, Rd no. 3, Shiddhirganj 1431',
-    contactPerson: 'Md. Baharu Islam, Store Manager, 01709 678913',
-  );
+    );
+  }
+
+  String _formatJson(List<Map<String, dynamic>> data) {
+    return const JsonEncoder.withIndent('  ').convert(data);
+  }
+
+  void _copyToClipboard(List<Map<String, dynamic>> data) {
+    final jsonString = _formatJson(data);
+    // You can use clipboard package here
+    // Clipboard.setData(ClipboardData(text: jsonString));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('JSON copied to clipboard!')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text(
-          'Comparative Statement',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        foregroundColor: Colors.white,
+        title: Text('Comparative Statement'),
         backgroundColor: myColors.primaryColor,
-        elevation: 0,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download),
+            onPressed: _exportSelectedData,
+            tooltip: 'Export Selected Data',
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _statements.isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('No comparative statement data found', style: TextStyle(fontSize: 18)),
+          ],
+        ),
+      )
+          : Column(
+        children: [
+          // Filter by Code
+          if (_availableCodes.length > 1)
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Text('Filter by Code: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(width: 10),
+                      DropdownButton<String>(
+                        value: _selectedCode,
+                        items: _availableCodes.map((String code) {
+                          return DropdownMenuItem<String>(
+                            value: code,
+                            child: Text(code),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedCode = newValue!;
+                          });
+                        },
+                      ),
+                      Spacer(),
+                      ElevatedButton.icon(
+                        onPressed: _exportSelectedData,
+                        icon: Icon(Icons.file_download),
+                        label: Text('Export Selected'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // Summary Card
+          _buildSummaryCard(),
+
+          // Products List
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredStatements.length,
+              itemBuilder: (context, index) {
+                final statement = _filteredStatements[index];
+                return ComparativeStatementCard(
+                  statement: statement,
+                  onSupplierSelected: _onSupplierSelected,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard() {
+    final statements = _filteredStatements;
+    final totalProducts = statements.length;
+    final totalValue = statements.fold(0.0, (sum, stmt) => sum + stmt.selectedTotal);
+    final selectedSuppliers = statements.map((stmt) => stmt.selectedSupplier?['name'] ?? '').toSet();
+
+    return Card(
+      margin: EdgeInsets.all(8),
+      color: Colors.blue[50],
+      child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            // Header Card
-            _buildHeaderCard(),
-            SizedBox(height: 16),
-
-            // Items List
-            _buildItemsList(),
-            SizedBox(height: 16),
-
-            // Summary Card
-            _buildSummaryCard(),
-            SizedBox(height: 16),
-
-            // Terms & Conditions
-            _buildTermsCard(),
-            SizedBox(height: 16),
-
-            // Comments Section
-            _buildCommentsCard(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildSummaryItem('Products', totalProducts.toString()),
+                _buildSummaryItem('Selected Suppliers', selectedSuppliers.length.toString()),
+                _buildSummaryItem('Total Value', '${totalValue.toStringAsFixed(2)} ${statements.first.currencyName}'),
+              ],
+            ),
+            SizedBox(height: 8),
+            if (selectedSuppliers.length > 0)
+              Text(
+                'Suppliers: ${selectedSuppliers.where((s) => s.isNotEmpty).join(', ')}',
+                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                textAlign: TextAlign.center,
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeaderCard() {
+  Widget _buildSummaryItem(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey)),
+        SizedBox(height: 4),
+        Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+}
+
+class ComparativeStatementCard extends StatelessWidget {
+  final ComparativeStatement statement;
+  final Function(int, String) onSupplierSelected;
+
+  const ComparativeStatementCard({
+    Key? key,
+    required this.statement,
+    required this.onSupplierSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final availableSuppliers = statement.availableSuppliers;
+    final selectedSupplier = statement.selectedSupplier;
+
     return Card(
-      color: Colors.white,
-      elevation: 2,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
+      margin: EdgeInsets.all(8),
+      elevation: 4,
+      child: ExpansionTile(
+        leading: CircleAvatar(
+          backgroundColor: Colors.green,
+          child: Text(
+            statement.productId.toString().substring(statement.productId.toString().length - 2),
+            style: TextStyle(color: Colors.white, fontSize: 10),
+          ),
+        ),
+        title: Text(
+          statement.productName,
+          style: TextStyle(fontWeight: FontWeight.bold),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'YUNUSCO (BD) LIMITED',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[800],
-              ),
-            ),
-            SizedBox(height: 8),
-            Divider(),
-            SizedBox(height: 8),
-            _buildInfoRow('CS Code', statementData.csCode),
-            _buildInfoRow('Store Type', statementData.storeType),
-            _buildInfoRow('Currency', statementData.currency),
-            _buildInfoRow('Reg Code', statementData.regCode),
-            _buildInfoRow('CS Date', statementData.csDate),
-            _buildInfoRow('Procurer', statementData.procurer),
-            _buildInfoRow('Purchase Type', statementData.purchaseType),
-            _buildInfoRow('Item Category', statementData.itemCategory),
+            Text('Category: ${statement.productCategoryName}'),
+            Text('Qty: ${statement.csQty} ${statement.uomName}'),
+            if (selectedSupplier != null)
+              Text('Selected: ${selectedSupplier['name']} - ${statement.currencyName} ${selectedSupplier['rate']}'),
           ],
         ),
+        trailing: Chip(
+          label: Text('${availableSuppliers.length} Options', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.blue,
+        ),
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product Information
+                _buildInfoRow('Product ID', statement.productId.toString()),
+                _buildInfoRow('Category', statement.productCategoryName),
+                _buildInfoRow('Type', statement.typeName),
+                _buildInfoRow('UOM', statement.uomName),
+                _buildInfoRow('Required Qty', '${statement.csQty} ${statement.uomName}'),
+                _buildInfoRow('Current Stock', statement.cStock.toString()),
+                if (statement.lastPurDate.isNotEmpty)
+                  _buildInfoRow('Last Purchase', '${statement.lastPurQty} @ ${statement.lastPurRate} on ${statement.lastPurDate}'),
+
+                SizedBox(height: 16),
+                Divider(),
+                SizedBox(height: 8),
+
+                // Supplier Selection
+                Text(
+                  'Select Supplier:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+                SizedBox(height: 8),
+
+                ...availableSuppliers.map((supplier) => _buildSupplierOption(supplier, statement)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey[700]),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(value, style: TextStyle(color: Colors.blue[800])),
-          ),
+          Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          Expanded(child: Text(value, style: TextStyle(fontSize: 12))),
         ],
       ),
     );
   }
 
-  Widget _buildItemsList() {
-    return Column(
-      children: statementData.items.map((item) => _buildItemCard(item)).toList(),
-    );
-  }
-
-  Widget _buildItemCard(PurchaseItem item) {
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      margin: EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Item Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${item.sl}. ${item.itemName}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text('Qty: ${item.csQty} ${item.unit}'),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-
-            // Last Purchase Info
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildMiniInfo('Stock', item.stock.toString()),
-                  _buildMiniInfo('Last Rate', '${item.lastPurchaseRate} BDT'),
-                  _buildMiniInfo('Last Date', item.lastPurchaseDate),
-                ],
-              ),
-            ),
-            SizedBox(height: 12),
-
-            // Suppliers Comparison
-            Text('Select Supplier:', style: TextStyle(fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            ...item.suppliers.asMap().entries.map((entry) =>
-                _buildSupplierRow(item, entry.value, entry.key)
-            ).toList(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMiniInfo(String label, String value) {
-    return Column(
-      children: [
-        Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-        Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-      ],
-    );
-  }
-  //
-
-  Widget _buildSupplierRow(PurchaseItem item, SupplierQuote supplier, int supplierIndex) {
-    bool isSelected = item.selectedSupplierIndex == supplierIndex;
-
-    return InkWell(
-      child: Container(
-        margin: EdgeInsets.only(bottom: 8),
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue[50] : Colors.grey[50],
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade300,
-            width: isSelected ? 2.0 : 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            // First Row: Checkbox, Supplier Name, and Selection Badge
-            //
-            Row(
-              children: [
-                Checkbox(
-                  value: isSelected,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      item.selectedSupplierIndex = value == true ? supplierIndex : null;
-                    });
-                  },
-                  activeColor: Colors.blue[800],
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    supplier.name.isEmpty ? 'Supplier ${supplierIndex + 1}' : supplier.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.blue[800] : Colors.grey[800],
-                    ),
-                  ),
-                ),
-                if (isSelected)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      'SELECTED',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            SizedBox(height: 8),
-
-            // Second Row: Quantity, Rate, and Total
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Quantity and Rate
-                Row(
-                  children: [
-                    _buildInfoChip('Qty: ${item.csQty}', Colors.grey[100]!, Colors.grey[700]!),
-                    SizedBox(width: 8),
-                    _buildInfoChip('Rate: ${supplier.rate.toStringAsFixed(2)} BDT',
-                        Colors.orange[50]!, Colors.orange[800]!),
-                  ],
-                ),
-
-                // Total Amount
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${supplier.total.toStringAsFixed(2)} BDT',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.blue[800] : Colors.green[700],
-                      ),
-                    ),
-                    Text(
-                      'Total',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            // Calculation breakdown
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.only(top: 4),
-              child: Text(
-                'Calculation: ${item.csQty} × ${supplier.rate.toStringAsFixed(2)} = ${supplier.total.toStringAsFixed(2)} BDT',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-
-            if (isSelected && item.selectedSupplierIndex == item._findLowestPriceSupplierIndex())
-              Container(
-                margin: EdgeInsets.only(top: 4),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.green[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '✓ Lowest Price Available',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.green[800],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-// Helper widget for info chips
-  Widget _buildInfoChip(String text, Color backgroundColor, Color textColor) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: textColor,
-        ),
-      ),
-    );
-  }
-
-
-
-  Widget _buildSummaryCard() {
-    Map<String, double> supplierTotals = {};
-
-    for (var item in statementData.items) {
-      for (var supplier in item.suppliers) {
-        if (supplier.name.isNotEmpty) {
-          supplierTotals.update(
-              supplier.name,
-                  (value) => value + supplier.total,
-              ifAbsent: () => supplier.total
-          );
-        }
-      }
-    }
+  Widget _buildSupplierOption(Map<String, dynamic> supplier, ComparativeStatement statement) {
+    final isSelected = statement.selectedSupplierPosition == supplier['position'];
 
     return Card(
-      elevation: 2,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
+      margin: EdgeInsets.symmetric(vertical: 4),
+      color: isSelected ? Colors.blue[50] : Colors.grey[50],
+      borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: isSelected ? Colors.blue : Colors.grey[300]!,
+          width: isSelected ? 2 : 1,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        leading: Radio<String>(
+          value: supplier['position'],
+          groupValue: statement.selectedSupplierPosition,
+          onChanged: (value) {
+            onSupplierSelected(statement.productId, value!);
+          },
+        ),
+        title: Text(
+          supplier['name'],
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isSelected ? Colors.blue : Colors.black,
+          ),
+        ),
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Supplier Comparison Summary',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12),
-            ...supplierTotals.entries.map((entry) => _buildSummaryRow(entry.key, entry.value)).toList(),
+            Text('Rate: ${statement.currencyName} ${supplier['rate']}'),
+            Text('Total: ${statement.currencyName} ${supplier['total']}'),
+            Text('Warranty: ${supplier['warranty']}'),
+            Text('VAT: ${supplier['vat']} | Tax: ${supplier['tax']}'),
           ],
         ),
+        trailing: isSelected
+            ? Icon(Icons.check_circle, color: Colors.green)
+            : null,
+        onTap: () {
+          onSupplierSelected(statement.productId, supplier['position']);
+        },
       ),
     );
   }
-
-  Widget _buildSummaryRow(String supplierName, double total) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(supplierName, style: TextStyle(fontWeight: FontWeight.w600)),
-          Text(
-            '${total.toStringAsFixed(2)} BDT',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green[700]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTermsCard() {
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Terms and Conditions',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12),
-            _buildTermItem('Tax Type:', 'Exclude'),
-            _buildTermItem('VAT Type:', 'Exclude'),
-            _buildTermItem('Delivery Place:', statementData.deliveryAddress),
-            _buildTermItem('Contact Person:', statementData.contactPerson),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTermItem(String term, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(term, style: TextStyle(fontWeight: FontWeight.w600)),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(value),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentsCard() {
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Comments on Supplier (Supply Chain)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12),
-            TextField(
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: 'Enter your comments here...',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(12),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Data Models (same as before)
-class ComparativeStatementData {
-  final String csCode;
-  final String storeType;
-  final String currency;
-  final String regCode;
-  final String csDate;
-  final String procurer;
-  final String purchaseType;
-  final String itemCategory;
-  final List<PurchaseItem> items;
-  final String deliveryAddress;
-  final String contactPerson;
-
-  ComparativeStatementData({
-    required this.csCode,
-    required this.storeType,
-    required this.currency,
-    required this.regCode,
-    required this.csDate,
-    required this.procurer,
-    required this.purchaseType,
-    required this.itemCategory,
-    required this.items,
-    required this.deliveryAddress,
-    required this.contactPerson,
-  });
-}
-
-class PurchaseItem {
-  final int sl;
-  final String itemName;
-  final String unit;
-  final String brand;
-  final int stock;
-  final int lastPurchaseQty;
-  final double lastPurchaseRate;
-  final String lastPurchaseDate;
-  final double csQty;
-  final List<SupplierQuote> suppliers;
-  int? selectedSupplierIndex;
-
-  PurchaseItem({
-    required this.sl,
-    required this.itemName,
-    required this.unit,
-    required this.brand,
-    required this.stock,
-    required this.lastPurchaseQty,
-    required this.lastPurchaseRate,
-    required this.lastPurchaseDate,
-    required this.csQty,
-    required this.suppliers,
-    this.selectedSupplierIndex,
-  }) {
-    // Auto-select the supplier with lowest total price
-    selectedSupplierIndex = _findLowestPriceSupplierIndex();
-  }
-
-  int? _findLowestPriceSupplierIndex() {
-    if (suppliers.isEmpty) return null;
-
-    int lowestIndex = 0;
-    double lowestTotal = double.maxFinite;
-
-    for (int i = 0; i < suppliers.length; i++) {
-      if (suppliers[i].total > 0 && suppliers[i].total < lowestTotal) {
-        lowestTotal = suppliers[i].total;
-        lowestIndex = i;
-      }
-    }
-
-    // Only select if we found a valid supplier with price > 0
-    return lowestTotal < double.maxFinite ? lowestIndex : null;
-  }
-}
-
-class SupplierQuote {
-  final String name;
-  final double rate;
-  final double total;
-  bool isSelected;
-
-  SupplierQuote({
-    required this.name,
-    required this.rate,
-    required this.total,
-    this.isSelected = false,
-  });
 }

@@ -119,17 +119,8 @@ class _SupplyChainFormScreenState extends State<SupplyChainFormScreen> {
     try {
       var pp=context.read<PurchaseProvider>();
       // Check if record already exists
-      final exists = await pp.checkExistingSupplyRecord(
-        widget.requisition.reqId,
-        widget.productDetail.productId,
-      );
 
-      if (exists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Supply chain record already exists for this product')),
-        );
-        return;
-      }
+
 
       final record = SupplyChainRecord(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -154,6 +145,24 @@ class _SupplyChainFormScreenState extends State<SupplyChainFormScreen> {
         SnackBar(content: Text('Error saving record: $e')),
       );
     }
+  }
+
+  @override
+  void initState() {
+    getSupplierQuotesByReqIdAndProduct(
+      productId: widget.productDetail.productId,
+      reqId: widget.productDetail.reqId
+    );
+    super.initState();
+  }
+
+  // Add this method to your purchase_provider.dart
+   getSupplierQuotesByReqIdAndProduct({
+    required String reqId,
+    required String productId
+  }) async {
+    var pp=context.read<PurchaseProvider>();
+    pp.getSupplierQuotesByReqIdAndProduct(reqId, productId);
   }
 
   @override
