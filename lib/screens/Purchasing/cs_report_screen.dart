@@ -280,6 +280,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
         child: Column(
           children: [
             // First Row: Checkbox, Supplier Name, and Selection Badge
+            //
             Row(
               children: [
                 Checkbox(
