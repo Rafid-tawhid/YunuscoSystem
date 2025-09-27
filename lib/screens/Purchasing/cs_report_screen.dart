@@ -192,13 +192,15 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                     ElevatedButton.icon(
                       onPressed: () {
                         // Add your action here (save, submit, etc.)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Selected data processed successfully!')),
-                        );
-                        Navigator.pop(context);
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   SnackBar(content: Text('Selected data processed successfully!')),
+                        // );
+                        //Navigator.pop(context);
+                        _showRequisitionConfirmationDialog(context);
+
                       },
                       icon: Icon(Icons.check_circle),
-                      label: Text('Confirm Selection'),
+                      label: Text('Authorization'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -213,6 +215,72 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       ),
     );
   }
+
+
+  void _showRequisitionConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Column(
+          children: [
+            Icon(
+              Icons.task_alt,
+              color: myColors.primaryColor,
+              size: 48,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Confirm Requisition',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800],
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to confirm this requisition?',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _processRequisition();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: myColors.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text('Confirm',style: TextStyle(color: Colors.white),),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _processRequisition() {
+    // Your confirmation logic here
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Requisition confirmed successfully!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
 
   Widget _buildSummaryCard(String title, String value, IconData icon) {
     return Expanded(
