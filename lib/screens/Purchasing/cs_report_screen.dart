@@ -264,7 +264,8 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text('Confirm',style: TextStyle(color: Colors.white),),
+            child: Text('Confirm',style: TextStyle(color: Colors.white
+            ),),
           ),
         ],
       ),
@@ -296,6 +297,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
               SizedBox(height: 2),
               Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ],
+
           ),
         ),
       ),
@@ -471,46 +473,46 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
           : Column(
         children: [
           // Filter by Code
-          if (_availableCodes.length > 1)
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Card(
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      Text('Filter by Code: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                      SizedBox(width: 10),
-                      DropdownButton<String>(
-                        value: _selectedCode,
-                        items: _availableCodes.map((String code) {
-                          return DropdownMenuItem<String>(
-                            value: code,
-                            child: Text(code),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedCode = newValue!;
-                          });
-                        },
-                      ),
-                      Spacer(),
-                      ElevatedButton.icon(
-                        onPressed: _exportSelectedData,
-                        icon: Icon(Icons.file_download),
-                        label: Text('Export Selected'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          // if (_availableCodes.length > 1)
+          //   Padding(
+          //     padding: EdgeInsets.all(16),
+          //     child: Card(
+          //       color: Colors.white,
+          //       child: Padding(
+          //         padding: EdgeInsets.all(12),
+          //         child: Row(
+          //           children: [
+          //             Text('Filter by Code: ', style: TextStyle(fontWeight: FontWeight.bold)),
+          //             SizedBox(width: 10),
+          //             DropdownButton<String>(
+          //               value: _selectedCode,
+          //               items: _availableCodes.map((String code) {
+          //                 return DropdownMenuItem<String>(
+          //                   value: code,
+          //                   child: Text(code),
+          //                 );
+          //               }).toList(),
+          //               onChanged: (String? newValue) {
+          //                 setState(() {
+          //                   _selectedCode = newValue!;
+          //                 });
+          //               },
+          //             ),
+          //             Spacer(),
+          //             ElevatedButton.icon(
+          //               onPressed: _exportSelectedData,
+          //               icon: Icon(Icons.file_download),
+          //               label: Text('Export Selected'),
+          //               style: ElevatedButton.styleFrom(
+          //                 backgroundColor: Colors.green,
+          //                 foregroundColor: Colors.white,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
 
           // Summary Card
           _buildSummaryCard2(),
@@ -609,7 +611,7 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
         leading: CircleAvatar(
           backgroundColor: Colors.green,
           child: Text(
-            widget.statement.productId.toString().substring(widget.statement.productId.toString().length - 2),
+            'Y',
             style: TextStyle(color: Colors.white, fontSize: 10),
           ),
         ),
@@ -659,12 +661,14 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Product Information
-                _buildInfoRow('Product ID', widget.statement.productId.toString()),
-                _buildInfoRow('Category', widget.statement.productCategoryName),
-                _buildInfoRow('Type', widget.statement.typeName),
-                _buildInfoRow('UOM', widget.statement.uomName),
-                _buildInfoRow('Required Qty', '${widget.statement.csQty} ${widget.statement.uomName}'),
+                // _buildInfoRow('Product ID', widget.statement.productId.toString()),
+                // _buildInfoRow('Category', widget.statement.productCategoryName),
+                // _buildInfoRow('Type', widget.statement.typeName),
+                // _buildInfoRow('UOM', widget.statement.uomName),
+                // Text(widget.statement.toSelectedJson().toString()),
+
                 _buildInfoRow('Current Stock', widget.statement.cStock.toString()),
+                _buildInfoRow('Vat',getVat(widget.statement.selectedSupplierPosition,widget.statement)??''),
                 if (widget.statement.lastPurDate.isNotEmpty)
                   _buildInfoRow('Last Purchase', '${widget.statement.lastPurQty} @ ${widget.statement.lastPurRate} on ${widget.statement.lastPurDate}'),
 
@@ -746,5 +750,20 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
         },
       ),
     );
+  }
+
+  String? getVat(String selectedSupplierPosition, ComparativeStatement statement) {
+    if(selectedSupplierPosition=='First'){
+      return statement.vatPFirst.toString();
+    }
+    if(selectedSupplierPosition=='Second'){
+      return statement.vatPSecond.toString();
+    }
+    if(selectedSupplierPosition=='Third'){
+      return statement.vatPSecond.toString();
+    }
+    if(selectedSupplierPosition=='Four'){
+      return statement.vatPFour.toString();
+    }
   }
 }
