@@ -11,22 +11,25 @@ class AppConstants {
   // static const String
   static final  baseUrl = "http://202.74.243.118:8090/"; //real public
 
-  static const String apiKey = "AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY";
+ // static const String apiKey = "AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY";
   static String token = ''; // 📱 Screen Dimensions
   static const int screenWidth = 428;
   static const int screenHeight = 926;
   static const int screenRegWidth = 428;
   static const int screenRegHeight = 841; // 📝 Text Styles
+
   static TextStyle title = GoogleFonts.inter(
     fontSize: 16,
     color: Colors.black,
     fontWeight: FontWeight.w700,
   );
+
   static TextStyle sub_title = GoogleFonts.inter(
     fontSize: 14,
     color: Colors.black,
     fontWeight: FontWeight.w500,
   );
+
   static TextStyle body = GoogleFonts.inter(
     fontSize: 14,
     color: Colors.black,
