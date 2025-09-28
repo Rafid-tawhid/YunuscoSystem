@@ -41,8 +41,7 @@ class GatePassDetailsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    const Icon(Icons.medical_services,
-                        size: 50, color: Colors.red),
+                    const Icon(Icons.medical_services, size: 50, color: Colors.red),
                     const SizedBox(height: 10),
                     const Text(
                       'MEDICAL GATE PASS',
@@ -73,8 +72,7 @@ class GatePassDetailsScreen extends StatelessWidget {
               children: [
                 _buildDetailRow('Employee ID', gatePassData['employeeId']),
                 _buildDetailRow('Approved By', gatePassData['approvedBy']),
-                _buildDetailRow(
-                    'Issued At', gatePassData['generatedAt'].toString() ?? ''),
+                _buildDetailRow('Issued At', gatePassData['generatedAt'].toString() ?? ''),
               ],
             ),
 
@@ -82,32 +80,20 @@ class GatePassDetailsScreen extends StatelessWidget {
             _buildSectionCard(
               title: 'PASS VALIDITY',
               children: [
-                _buildDetailRow('Valid Until',
-                    DashboardHelpers.convertDateTime2(DateTime.now())),
+                _buildDetailRow('Valid Until', DashboardHelpers.convertDateTime2(DateTime.now())),
                 _buildDetailRow('Status', gatePassData['status']),
-                _buildDetailRow(
-                    'Used', gatePassData['used'] == true ? 'Yes' : 'No'),
+                _buildDetailRow('Used', gatePassData['used'] == true ? 'Yes' : 'No'),
               ],
             ),
 
             // Medical Information
-            if (gatePassData['prescription'] != null ||
-                gatePassData['medicine'] != null ||
-                gatePassData['instructions'] != null)
+            if (gatePassData['prescription'] != null || gatePassData['medicine'] != null || gatePassData['instructions'] != null)
               _buildSectionCard(
                 title: 'MEDICAL DETAILS',
                 children: [
-                  if (gatePassData['prescription'] != null)
-                    _buildDetailRow(
-                        'Prescription', gatePassData['prescription'],
-                        isMultiLine: true),
-                  if (gatePassData['medicine'] != null)
-                    _buildDetailRow('Medicine', gatePassData['medicine'],
-                        isMultiLine: true),
-                  if (gatePassData['instructions'] != null)
-                    _buildDetailRow(
-                        'Instructions', gatePassData['instructions'],
-                        isMultiLine: true),
+                  if (gatePassData['prescription'] != null) _buildDetailRow('Prescription', gatePassData['prescription'], isMultiLine: true),
+                  if (gatePassData['medicine'] != null) _buildDetailRow('Medicine', gatePassData['medicine'], isMultiLine: true),
+                  if (gatePassData['instructions'] != null) _buildDetailRow('Instructions', gatePassData['instructions'], isMultiLine: true),
                 ],
               ),
 
@@ -116,8 +102,7 @@ class GatePassDetailsScreen extends StatelessWidget {
               _buildSectionCard(
                 title: 'GATE PASS REASON',
                 children: [
-                  _buildDetailRow('Reason', gatePassData['gatePassReason'],
-                      isMultiLine: true),
+                  _buildDetailRow('Reason', gatePassData['gatePassReason'], isMultiLine: true),
                 ],
               ),
 
@@ -137,8 +122,7 @@ class GatePassDetailsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> generateAndSavePdf(
-      Map<String, dynamic> data, BuildContext context) async {
+  Future<void> generateAndSavePdf(Map<String, dynamic> data, BuildContext context) async {
     try {
       // Create a sanitized copy of the data
       final sanitizedData = Map<String, dynamic>.from(data);
@@ -175,9 +159,7 @@ class GatePassDetailsScreen extends StatelessWidget {
               children: [
                 pw.Header(
                   level: 0,
-                  child: pw.Text('Gate Pass',
-                      style: pw.TextStyle(
-                          fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                  child: pw.Text('Gate Pass', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
                 ),
                 pw.SizedBox(height: 20),
                 pw.Center(
@@ -188,23 +170,18 @@ class GatePassDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 pw.SizedBox(height: 30),
-                pw.Text('Pass Details:',
-                    style: pw.TextStyle(
-                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.Text('Pass Details:', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 10),
-                _buildPdfDetailRow(
-                    'Employee ID:', data['employeeId']?.toString() ?? 'N/A'),
+                _buildPdfDetailRow('Employee ID:', data['employeeId']?.toString() ?? 'N/A'),
                 // _buildPdfDetailRow('Employee Name:', data['employeeName']?.toString() ?? 'N/A'),
-                _buildPdfDetailRow(
-                    'Passcode:', data['gatePassCode']?.toString() ?? 'N/A'),
+                _buildPdfDetailRow('Passcode:', data['gatePassCode']?.toString() ?? 'N/A'),
                 _buildPdfDetailRow(
                   'Valid Until:',
                   DashboardHelpers.convertDateTime2(DateTime.now()),
                 ),
                 pw.SizedBox(height: 20),
                 pw.Text('Issued by: ${data['approvedBy'] ?? 'System'}'),
-                pw.Text(
-                    'Issued on: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}'),
+                pw.Text('Issued on: ${DateFormat('MMM dd, yyyy').format(DateTime.now())}'),
               ],
             );
           },
@@ -213,8 +190,7 @@ class GatePassDetailsScreen extends StatelessWidget {
 
       // Save PDF to device
       final directory = await getApplicationDocumentsDirectory();
-      final file =
-          File('${directory.path}/gate_pass_${data['employeeId']}.pdf');
+      final file = File('${directory.path}/gate_pass_${data['employeeId']}.pdf');
       await file.writeAsBytes(await pdf.save());
 
       // Show success message
@@ -314,13 +290,11 @@ class GatePassDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String? value,
-      {bool isMultiLine = false}) {
+  Widget _buildDetailRow(String label, String? value, {bool isMultiLine = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        crossAxisAlignment:
-            isMultiLine ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+        crossAxisAlignment: isMultiLine ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
           SizedBox(
             width: 120,

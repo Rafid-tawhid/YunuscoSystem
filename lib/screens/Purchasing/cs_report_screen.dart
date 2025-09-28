@@ -3,7 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/utils/colors.dart';
-
+import 'package:path_provider/path_provider.dart';
+import '../../helper_class/pdf_service.dart';
 import '../../models/comperative_statement_model.dart';
 
 class ComparativeStatementScreen extends StatefulWidget {
@@ -196,7 +197,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                         //   SnackBar(content: Text('Selected data processed successfully!')),
                         // );
                         //Navigator.pop(context);
-                        _showRequisitionConfirmationDialog(context);
+                        _showRequisitionConfirmationDialog(context,selectedData);
 
                       },
                       icon: Icon(Icons.check_circle),
@@ -217,7 +218,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
   }
 
 
-  void _showRequisitionConfirmationDialog(BuildContext context) {
+  void _showRequisitionConfirmationDialog(BuildContext context,List<Map<String,dynamic>> selectedData) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -256,7 +257,18 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _processRequisition();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PdfPreviewScreen(
+                    selectedData: selectedData,
+                    code: 'CS: $_selectedCode',
+                    grandTotal: selectedData.fold(0, (sum, item) => sum + (item['SelectedTotal'] ?? 0)),
+                  ),
+                ),
+              );
+
+              //_processRequisition();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: myColors.primaryColor,
@@ -579,6 +591,8 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       ],
     );
   }
+
+
 }
 
 class ComparativeStatementCard extends StatefulWidget {
@@ -751,6 +765,10 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
       ),
     );
   }
+
+
+
+
 
   String? getVat(String selectedSupplierPosition, ComparativeStatement statement) {
     if(selectedSupplierPosition=='First'){
