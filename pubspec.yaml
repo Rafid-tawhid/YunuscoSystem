@@ -99,6 +99,9 @@ dev_dependencies:
   flutter_typeahead: ^5.2.0
   dropdown_button2: ^2.3.9
   open_file: ^3.5.10
+  crop_your_image: ^2.0.0
+  google_mlkit_text_recognition: ^0.15.0  # for extracting text (OCR)
+
 
 
 
