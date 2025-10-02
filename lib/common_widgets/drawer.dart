@@ -66,7 +66,8 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Home'),
             onTap: () {
                //Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-               Navigator.push(context, MaterialPageRoute(builder: (context)=>SimpleNIDScreen()));
+               // Navigator.push(context, MaterialPageRoute(builder: (context)=>SimpleNIDScreen()));
+               Navigator.push(context, MaterialPageRoute(builder: (context)=>TextExtractionScreen()));
               // Navigator.push(context, MaterialPageRoute(builder: (context)=>NewRequisitionListScreen()));
               // Navigate to home (already here)
             },
