@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
+import 'package:yunusco_group/screens/Management/widgets/kaizan_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_departments.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_lines.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_sections.dart';
@@ -116,6 +117,15 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.grey,
         onTap: () {
           print('Divisions tapped');
+        },
+      ),
+      DashboardMenuItem(
+        name: "Kaizan",
+        icon: Icons.cabin,
+        cardColor: Colors.deepOrangeAccent.shade100,
+        iconColor: Colors.deepOrange,
+        onTap: () {
+       Navigator.push(context, MaterialPageRoute(builder: (context)=>KaizanCountScreen()));
         },
       ),
     ];
