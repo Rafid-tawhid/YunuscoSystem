@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:image/image.dart' as img;
 
 class SimpleNIDScreen extends StatefulWidget {
   @override
@@ -19,7 +18,6 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
   Uint8List? _backImage;
 
   bool _isLoading = false;
-  String _extractedText = '';
 
   // Text editing controllers for NID data
   final TextEditingController _nameController = TextEditingController();
@@ -39,13 +37,6 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
         title: Text('NID Verification'),
         backgroundColor: Colors.blue[700],
         foregroundColor: Colors.white,
-        actions: [
-          // Debug button to see raw OCR output
-          IconButton(
-            icon: Icon(Icons.bug_report),
-            onPressed: _debugOCR,
-          ),
-        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -72,19 +63,6 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
 
             SizedBox(height: 24),
 
-            // Debug OCR Button
-            if (_frontImage != null)
-              ElevatedButton(
-                onPressed: _debugOCR,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text('DEBUG OCR OUTPUT'),
-              ),
-
-            SizedBox(height: 16),
-
             // NID Information Form
             if (_frontImage != null || _backImage != null)
               _buildNIDForm(),
@@ -102,33 +80,6 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
                 child: Text(
                   'EXTRACT INFORMATION',
                   style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
-
-            SizedBox(height: 16),
-
-            // Extracted Text (for debugging)
-            if (_extractedText.isNotEmpty)
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Debug Information:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(_extractedText, style: TextStyle(fontSize: 12)),
-                  ],
                 ),
               ),
           ],
@@ -299,106 +250,38 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
     }
   }
 
-  Future<void> _debugOCR() async {
-    if (_frontImage == null) {
-      _showError('Please upload front side first');
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final text = await extractNidInfo(_frontImage!);
-      print("=== RAW OCR OUTPUT ===");
-      print(text);
-      print("=== END RAW OUTPUT ===");
-
-      // Show in dialog for easy viewing
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Raw OCR Output'),
-          content: SingleChildScrollView(
-            child: Text(text.isEmpty ? 'No text detected' : text),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      _showError('Debug failed: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   Future<void> _extractAllInformation() async {
     if (_frontImage == null) {
       _showError('Please upload front side of NID');
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _extractedText = '';
-    });
+    setState(() => _isLoading = true);
 
     try {
-      // Extract from front image
+      // Extract text from front image
       final frontText = await extractNidInfo(_frontImage!);
-      final frontData = _parseBangladeshNIDInformation(frontText, isFront: true);
-      _updateFormFields(frontData);
-      _analyzeExtraction(frontText, frontData, true);
+      debugPrint('🔹 FRONT OCR TEXT:\n$frontText');
 
-      // Extract from back image if available
+      final frontData = _parseBangladeshNIDInformation(frontText, isFront: true);
+
+      // Extract text from back image if available
+      Map<String, String> backData = {};
       if (_backImage != null) {
         final backText = await extractNidInfo(_backImage!);
-        final backData = _parseBangladeshNIDInformation(backText, isFront: false);
-        _updateFormFields(backData);
-        _analyzeExtraction(backText, backData, false);
+        debugPrint('🔹 BACK OCR TEXT:\n$backText');
+        backData = _parseBangladeshNIDInformation(backText, isFront: false);
       }
 
-      setState(() {
-        _extractedText = 'Front side extracted: ${frontText.length} characters\n'
-            'Back side extracted: ${_backImage != null ? 'Yes' : 'No'}\n'
-            'Data has been auto-filled in the form above.';
-      });
+      // Merge and update
+      final combined = {...frontData, ...backData};
+      _updateFormFields(combined);
 
+      _showSuccess('Information extracted successfully!');
     } catch (e) {
       _showError('Failed to extract information: $e');
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  // Image preprocessing for better OCR
-  Future<Uint8List> _preprocessImage(Uint8List imageBytes) async {
-    try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return imageBytes;
-
-      // Convert to grayscale
-      var processed = img.grayscale(image);
-      // Increase contrast
-      processed = img.adjustColor(processed, contrast: 1.5);
-      // Sharpen image
-      // Increase brightness if needed
-      processed = img.adjustColor(processed, brightness: 1.1);
-
-      return Uint8List.fromList(img.encodeJpg(processed, quality: 95));
-    } catch (e) {
-      print("Image preprocessing failed: $e");
-      return imageBytes;
+      setState(() => _isLoading = false);
     }
   }
 
@@ -406,32 +289,18 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
     try {
       final tempDir = await getTemporaryDirectory();
       final tempFile = File('${tempDir.path}/nid_scan_${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-      // Preprocess image for better OCR
-      final processedImage = await _preprocessImage(imageBytes);
-      await tempFile.writeAsBytes(processedImage);
+      await tempFile.writeAsBytes(imageBytes);
 
       final inputImage = InputImage.fromFilePath(tempFile.path);
-
-      String bestResult = '';
-      int bestWordCount = 0;
-
-      // Try multiple approaches
       final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
       final recognizedText = await textRecognizer.processImage(inputImage);
 
-      final wordCount = recognizedText.text.split(RegExp(r'\s+')).where((word) => word.length > 2).length;
 
-      if (wordCount > bestWordCount) {
-        bestResult = recognizedText.text;
-        bestWordCount = wordCount;
-      }
-
+      debugPrint('Hello World ${recognizedText}');
       await textRecognizer.close();
       await tempFile.delete();
 
-      print("OCR extracted $bestWordCount words");
-      return bestResult;
+      return recognizedText.text;
     } catch (e) {
       print("Error extracting NID info: $e");
       return '';
@@ -441,122 +310,98 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
   Map<String, String> _parseBangladeshNIDInformation(String fullText, {required bool isFront}) {
     final data = <String, String>{};
 
-    if (fullText.isEmpty) return data;
+    // Normalize text
+    fullText = fullText.replaceAll(RegExp(r'\s+'), ' ').trim();
+    fullText = fullText.replaceAll(RegExp(r'[:]+'), ':'); // normalize colon use
+    debugPrint('🧩 Raw OCR Text:\n$fullText');
 
-    // Enhanced text normalization
-    fullText = fullText
-        .replaceAll('\r', '')
-        .replaceAll('|', 'I')
-        .replaceAllMapped(RegExp(r' {2,}'), (m) => ' ')
-        .replaceAllMapped(RegExp(r'\n+'), (m) => '\n')
-        .toUpperCase();
+    // --- Name ---
+    _extractWithPattern(data, fullText, 'name', [
+      RegExp(r'Name[:\s]*([A-Z\s\.]+)', caseSensitive: false),
+      RegExp(r'\b([A-Z][A-Z\s\.]{2,})\b'),
+    ]);
 
-    if (isFront) {
-      // --- FRONT SIDE PATTERNS ---
+    // --- NID Number ---
+    _extractWithPattern(data, fullText, 'nid_number', [
+      RegExp(r'ID\s*NO[:\s]*(\d{10,17})'),
+      RegExp(r'NID[:\s]*(\d{10,17})'),
+      RegExp(r'\b(\d{10,17})\b'),
+    ]);
 
-      // Name patterns
-      _extractWithPattern(data, fullText, 'name', [
-        RegExp(r'NAME[:\s]*([A-Z\s]{10,50})'),
-        RegExp(r'([A-Z]{2,20}\s+[A-Z]{2,20}\s+[A-Z]{2,20})'),
-        RegExp(r'([A-Z]{2,20}\s+[A-Z]{2,20})'),
-      ]);
+    // --- Date of Birth ---
+    _extractWithPattern(data, fullText, 'date_of_birth', [
+      RegExp(r'(?:Date\s*of\s*Birth|DOB)[:\s]*(\d{2}[-/\.]\d{2}[-/\.]\d{4})', caseSensitive: false),
+      RegExp(r'\b(\d{2}[-/\.]\d{2}[-/\.]\d{4})\b'),
+    ]);
 
-      // NID Number patterns
-      _extractWithPattern(data, fullText, 'NID No.', [
-        RegExp(r'(\d{10,17})'),
-        RegExp(r'NID[:\s]*NO[:\s]*(\d{10,17})'),
-        RegExp(r'NATIONAL[:\s]*ID[:\s]*(\d{10,17})'),
-      ]);
+    // --- Father Name ---
+    _extractWithPattern(data, fullText, 'father_name', [
+      RegExp(r"Father['’]s\s*Name[:\s]*([A-Z\s\.]+)", caseSensitive: false),
+      RegExp(r"Father\s*Name[:\s]*([A-Z\s\.]+)", caseSensitive: false),
+    ]);
 
-      // Date of Birth patterns
-      _extractWithPattern(data, fullText, 'Date of Birth', [
-        RegExp(r'DATE[:\s]*OF[:\s]*BIRTH[:\s]*(\d{1,2}[-/]\d{1,2}[-/]\d{4})'),
-        RegExp(r'DOB[:\s]*(\d{1,2}[-/]\d{1,2}[-/]\d{4})'),
-        RegExp(r'(\d{1,2}[-/]\d{1,2}[-/]\d{4})'),
-      ]);
+    // --- Mother Name ---
+    _extractWithPattern(data, fullText, 'mother_name', [
+      RegExp(r"Mother['’]s\s*Name[:\s]*([A-Z\s\.]+)", caseSensitive: false),
+      RegExp(r"Mother\s*Name[:\s]*([A-Z\s\.]+)", caseSensitive: false),
+    ]);
 
-      // Father's Name patterns
-      _extractWithPattern(data, fullText, 'father', [
-        RegExp(r"FATHER[']?S[:\s]*NAME[:\s]*([A-Z\s]{10,50})"),
-        RegExp(r"FATHER[:\s]*([A-Z\s]{10,50})"),
-      ]);
+    // --- Address (back side usually) ---
+    _extractWithPattern(data, fullText, 'address', [
+      RegExp(r'Address[:\s]*(.*?)(?=\s*(Father|Mother|Date|NID|$))', caseSensitive: false),
+      RegExp(r'Present\s*Address[:\s]*(.*?)(?=\s*(Permanent|Father|Mother|$))', caseSensitive: false),
+    ]);
 
-      // Mother's Name patterns
-      _extractWithPattern(data, fullText, 'mother', [
-        RegExp(r"MOTHER[']?S[:\s]*NAME[:\s]*([A-Z\s]{10,50})"),
-        RegExp(r"MOTHER[:\s]*([A-Z\s]{10,50})"),
-      ]);
+    // --- Place of Birth ---
+    _extractWithPattern(data, fullText, 'birth_place', [
+      RegExp(r'Place\s*of\s*Birth[:\s]*(.*?)(?=\s*(Date|Father|Mother|$))', caseSensitive: false),
+    ]);
 
-    } else {
-      // --- BACK SIDE PATTERNS ---
+    // --- Issue Date (only on back) ---
+    _extractWithPattern(data, fullText, 'issue_date', [
+      RegExp(r'Issue\s*Date[:\s]*(\d{2}[-/\.]\d{2}[-/\.]\d{4})', caseSensitive: false),
+    ]);
 
-      // Address patterns
-      _extractWithPattern(data, fullText, 'address', [
-        RegExp(r'ADDRESS[:\s]*([A-Z0-9\s,.-]{10,100})'),
-        RegExp(r'VILLAGE[:\s]*([A-Z0-9\s,.-]{10,100})'),
-      ]);
-
-      // Place of Birth patterns
-      _extractWithPattern(data, fullText, 'birth_place', [
-        RegExp(r'PLACE[:\s]*OF[:\s]*BIRTH[:\s]*([A-Z\s,.-]{10,50})'),
-        RegExp(r'BIRTH[:\s]*PLACE[:\s]*([A-Z\s,.-]{10,50})'),
-      ]);
-
-      // Issue Date patterns
-      _extractWithPattern(data, fullText, 'issue_date', [
-        RegExp(r'ISSUE[:\s]*DATE[:\s]*(\d{1,2}[-/]\d{1,2}[-/]\d{4})'),
-        RegExp(r'DATE[:\s]*OF[:\s]*ISSUE[:\s]*(\d{1,2}[-/]\d{1,2}[-/]\d{4})'),
-      ]);
-    }
-
+    debugPrint('✅ Extracted data: $data');
     return data;
   }
 
-  void _extractWithPattern(Map<String, String> data, String text, String field, List<RegExp> patterns) {
+
+
+  void _extractWithPattern(
+      Map<String, String> data,
+      String text,
+      String key,
+      List<RegExp> patterns,
+      ) {
     for (final pattern in patterns) {
-      final matches = pattern.allMatches(text);
-      for (final match in matches) {
-        final value = (match.group(1) ?? match.group(0) ?? '').trim();
-        if (value.isNotEmpty && value.length > 3 && !data.containsKey(field)) {
-          data[field] = value;
-          print("✅ Found $field: $value");
+      final match = pattern.firstMatch(text);
+      if (match != null && match.groupCount >= 1) {
+        final value = match.group(1)?.trim();
+        if (value != null && value.isNotEmpty) {
+          data[key] = value;
           break;
         }
       }
-      if (data.containsKey(field)) break;
     }
   }
 
-  void _analyzeExtraction(String fullText, Map<String, String> extractedData, bool isFront) {
-    print("=== ${isFront ? 'FRONT' : 'BACK'} SIDE ANALYSIS ===");
-    print("Text length: ${fullText.length}");
-    print("Extracted: $extractedData");
 
-    final expectedFields = isFront ?
-    ['name', 'NID No.', 'Date of Birth', 'father', 'mother'] :
-    ['address', 'birth_place', 'issue_date'];
-
-    for (final field in expectedFields) {
-      if (!extractedData.containsKey(field)) {
-        print("❌ MISSING: $field");
-      }
-    }
-    print("=== END ANALYSIS ===");
-  }
 
   void _updateFormFields(Map<String, String> data) {
-    print('FINAL EXTRACTED DATA: $data');
     setState(() {
       _nameController.text = data['name'] ?? _nameController.text;
-      _nidNumberController.text = data['NID No.'] ?? _nidNumberController.text;
-      _dateOfBirthController.text = data['Date of Birth'] ?? _dateOfBirthController.text;
-      _fatherNameController.text = data['father'] ?? _fatherNameController.text;
-      _motherNameController.text = data['mother'] ?? _motherNameController.text;
+      _nidNumberController.text = data['nid_number'] ?? _nidNumberController.text;
+      _dateOfBirthController.text = data['date_of_birth'] ?? _dateOfBirthController.text;
+      _fatherNameController.text = data['father_name'] ?? _fatherNameController.text;
+      _motherNameController.text = data['mother_name'] ?? _motherNameController.text;
       _addressController.text = data['address'] ?? _addressController.text;
       _placeOfBirthController.text = data['birth_place'] ?? _placeOfBirthController.text;
       _issueDateController.text = data['issue_date'] ?? _issueDateController.text;
     });
   }
+
+
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -567,9 +412,17 @@ class _SimpleNIDScreenState extends State<SimpleNIDScreen> {
     );
   }
 
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   @override
   void dispose() {
-    // Dispose all controllers
     _nameController.dispose();
     _nidNumberController.dispose();
     _dateOfBirthController.dispose();
