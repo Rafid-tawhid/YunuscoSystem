@@ -79,7 +79,7 @@ List<Menu> fullModuleList = [
   Menu(45, 'assets/images/prodbold.png', 'Production', false), // ID matched
   Menu(46, 'assets/images/report.png', 'Reports',
       false), // ID matched (assuming you add report.png)
-  Menu(52, 'assets/images/report.png', 'Medical',
+  Menu(52, 'assets/images/medical.png', 'Medical',
       false), // ID matched (assuming you add report.png)
 ];
 
