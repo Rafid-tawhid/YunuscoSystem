@@ -32,7 +32,7 @@ android {
 
     defaultConfig {
         applicationId = "com.system.yunusco_group"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = 36
         // Use properties from flutter.properties or default values
         versionCode = (findProperty("flutter.versionCode") as? String)?.toIntOrNull() ?: 1

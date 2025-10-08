@@ -6,6 +6,7 @@ import 'package:yunusco_group/screens/HR&PayRoll/vehicle_requisition_screen.dart
 import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../common_widgets/dashboard_item_card.dart';
+import '../Accounts/pf_info_screen.dart';
 import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
 import '../Profile/my_pay_slip_screen.dart';
@@ -180,6 +181,17 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         cardColor: cardColors[5], // Using cyan from index 5
         iconColor: iconColors[6], // Using indigo from index 6
         onTap: () => goToScreen(8),
+      ),
+
+      DashboardMenuItem(
+        name: 'Provident Fund',
+        icon: Icons.wallet,
+        cardColor: Colors.orange.shade100,
+        iconColor: Colors.orangeAccent.shade700,
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => PfInfoScreen()));
+        },
       ),
     ];
   }

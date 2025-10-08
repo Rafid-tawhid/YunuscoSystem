@@ -10,6 +10,7 @@ import 'package:yunusco_group/screens/Management/widgets/show_sections.dart';
 import 'package:yunusco_group/screens/Management/widgets/unit_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../common_widgets/dashboard_item_card.dart';
+import 'announcement_screen.dart';
 import 'management_screen.dart';
 
 class ManagementDashboardScreen extends StatefulWidget {
@@ -45,8 +46,8 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
       DashboardMenuItem(
         name: "Production\nSummary",
         icon: Icons.business,
-        cardColor: Colors.blue.shade100,
-        iconColor: Colors.blue,
+        cardColor: Colors.blue.shade50,
+        iconColor: Colors.blue.shade700,
         onTap: () => Navigator.push(
           context,
           CupertinoPageRoute(
@@ -56,56 +57,56 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
       DashboardMenuItem(
         name: "Departments",
         icon: Icons.business,
-        cardColor: Colors.green.shade100,
-        iconColor: Colors.green,
+        cardColor: Colors.green.shade50,
+        iconColor: Colors.green.shade700,
         onTap: dropdownInfo?.departments?.isNotEmpty == true
             ? () => Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
-                )
+          context,
+          CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
+        )
             : () {},
       ),
       DashboardMenuItem(
         name: "Sections",
         icon: Icons.view_list,
-        cardColor: Colors.orange.shade100,
-        iconColor: Colors.orange,
+        cardColor: Colors.orange.shade50,
+        iconColor: Colors.orange.shade700,
         onTap: dropdownInfo?.sections?.isNotEmpty == true
             ? () => Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => SectionScreen()),
-                )
+          context,
+          CupertinoPageRoute(builder: (context) => SectionScreen()),
+        )
             : () {},
       ),
       DashboardMenuItem(
         name: "Lines",
         icon: Icons.line_style,
-        cardColor: Colors.purple.shade100,
-        iconColor: Colors.purple,
+        cardColor: Colors.purple.shade50,
+        iconColor: Colors.purple.shade700,
         onTap: dropdownInfo?.lines?.isNotEmpty == true
             ? () => Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => LineScreen()),
-                )
+          context,
+          CupertinoPageRoute(builder: (context) => LineScreen()),
+        )
             : () {},
       ),
       DashboardMenuItem(
         name: "Units",
         icon: Icons.location_city,
-        cardColor: Colors.red.shade100,
-        iconColor: Colors.red,
+        cardColor: Colors.red.shade50,
+        iconColor: Colors.red.shade700,
         onTap: dropdownInfo?.units?.isNotEmpty == true
             ? () => Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => UnitScreen()),
-                )
+          context,
+          CupertinoPageRoute(builder: (context) => UnitScreen()),
+        )
             : () {},
       ),
       DashboardMenuItem(
         name: "Designations",
         icon: Icons.work,
-        cardColor: Colors.grey.shade300,
-        iconColor: Colors.grey,
+        cardColor: Colors.grey.shade100,
+        iconColor: Colors.grey.shade700,
         onTap: () {
           print('Designations tapped');
         },
@@ -113,8 +114,8 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
       DashboardMenuItem(
         name: "Divisions",
         icon: Icons.category,
-        cardColor: Colors.grey.shade300,
-        iconColor: Colors.grey,
+        cardColor: Colors.grey.shade100,
+        iconColor: Colors.grey.shade700,
         onTap: () {
           print('Divisions tapped');
         },
@@ -122,10 +123,19 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
       DashboardMenuItem(
         name: "Kaizan",
         icon: Icons.cabin,
-        cardColor: Colors.deepOrangeAccent.shade100,
-        iconColor: Colors.deepOrange,
+        cardColor: Colors.deepOrange.shade50,
+        iconColor: Colors.deepOrange.shade700,
         onTap: () {
-       Navigator.push(context, MaterialPageRoute(builder: (context)=>KaizanCountScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>KaizanCountScreen()));
+        },
+      ),
+      DashboardMenuItem(
+        name: "Announcement",
+        icon: Icons.add_business_outlined,
+        cardColor: Colors.blue.shade50,
+        iconColor: Colors.blue.shade700,
+        onTap: () {
+          Navigator.push(context, CupertinoPageRoute(builder: (context)=>AnnouncementScreen()));
         },
       ),
     ];
