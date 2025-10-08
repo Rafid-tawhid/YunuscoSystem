@@ -5,6 +5,7 @@ class AnnouncementModel {
    String id;
   final String userId;
   final String userName;
+  final String designation;
   final String content;
   final DateTime timestamp;
   final List<String> likes;
@@ -16,6 +17,7 @@ class AnnouncementModel {
     required this.id,
     required this.userId,
     required this.userName,
+    required this.designation,
     required this.content,
     required this.timestamp,
     required this.likes,
@@ -29,6 +31,7 @@ class AnnouncementModel {
     return AnnouncementModel(
       id: doc.id,
       userId: data['userId'] ?? '',
+      designation: data['designation'] ?? '',
       userName: data['userName'] ?? '',
       content: data['content'] ?? '',
       timestamp: (data['timestamp'] as Timestamp).toDate(),

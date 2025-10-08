@@ -18,6 +18,7 @@ class FirebaseService {
       id: '',
       userId: (user.userId??0).toString(),
       userName: user.userName ?? user.userRoleName!.split('@')[0],
+      designation:user.designation??'None',
       content: content,
       timestamp: DateTime.now(),
       likes: [],

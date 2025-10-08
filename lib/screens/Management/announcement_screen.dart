@@ -1,6 +1,7 @@
 // screens/news_feed_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/announcement_model.dart';
 import 'package:yunusco_group/screens/Management/widgets/comment_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/create_post_screen.dart';
@@ -124,6 +125,7 @@ class PostCard extends ConsumerWidget {
                           fontSize: 16,
                         ),
                       ),
+                      Text(post.designation??''),
                       Text(
                         _formatTimeAgo(post.timestamp),
                         style: TextStyle(
