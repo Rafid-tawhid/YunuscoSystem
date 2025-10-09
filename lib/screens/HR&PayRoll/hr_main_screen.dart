@@ -13,6 +13,7 @@ import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
 import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
+import 'it_ticketing_system.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
   const HrMainMenuScreen({super.key});
@@ -191,6 +192,17 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => PfInfoScreen()));
+        },
+      ),
+
+      DashboardMenuItem(
+        name: 'IT Ticket',
+        icon: Icons.wallet,
+        cardColor: Colors.green.shade100,
+        iconColor: Colors.greenAccent.shade700,
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateTicketScreen()));
         },
       ),
     ];
