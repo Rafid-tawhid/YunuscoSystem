@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yunusco_group/common_widgets/custom_button.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/ticket_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
+import '../../common_widgets/multiple_image_picker.dart';
 
 class CreateTicketScreen extends StatefulWidget {
   @override
@@ -39,9 +45,11 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
     'Engineering Department'
   ];
   final List<String> _priorities = ['Low', 'Medium', 'High'];
+  List<File> productImages = [];
 
   Future<void> _submitTicket() async {
     if (_formKey.currentState!.validate()) {
+      EasyLoading.show();
       try {
         String token = _uuid.v4().substring(0, 8).toUpperCase();
 
@@ -66,9 +74,10 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
 
           SnackBar(content: Text('Ticket submitted successfully! Token: $token',style: TextStyle(color: Colors.white),),backgroundColor: myColors.green,),
         );
-
         _clearForm();
+        EasyLoading.dismiss();
       } catch (e) {
+        EasyLoading.dismiss();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error submitting ticket: $e')),
         );
@@ -93,6 +102,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: Text('Create Ticket'),
         backgroundColor: myColors.primaryColor,foregroundColor: Colors.white,
         actions: [
@@ -123,13 +133,18 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                 _buildTextField('Email Address *', _emailController, Icons.email, true, keyboardType: TextInputType.emailAddress),
                 SizedBox(height: 16),
                 _buildPriorityDropdown(),
+
+                SizedBox(height: 16,),
+                ImagePickerWidget(
+                  onImagesChanged: (images) {
+                    productImages = images;
+                  },
+                ),
                 SizedBox(height: 30),
-                ElevatedButton(
+                CustomElevatedButton(
                   onPressed: _submitTicket,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50),
-                  ),
-                  child: Text('Submit Ticket', style: TextStyle(fontSize: 16)),
+                  text: 'Submit Ticket',
+
                 ),
               ],
             ),
