@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import 'it_ticket_diagonisis_screen.dart';
+
+
 class TicketsScreen extends StatefulWidget {
   @override
   _TicketsScreenState createState() => _TicketsScreenState();
@@ -46,147 +49,169 @@ class _TicketsScreenState extends State<TicketsScreen> {
             itemBuilder: (context, index) {
               var ticket = snapshot.data!.docs[index];
               var data = ticket.data() as Map<String, dynamic>;
+              String ticketId = ticket.id; // Get the document ID
 
-              return Card(
-                color: Colors.white,
-                margin: const EdgeInsets.only(bottom: 12),
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header section with token and status
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Token: ${data['token']}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.blueGrey,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Chip(
-                            label: Text(
-                              (data['status'] ?? 'pending').toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            backgroundColor: _getStatusColor(data['status']),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ],
+              return GestureDetector(
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TicketDetailsScreen(
+                        ticketId: ticketId,
+                        ticketData: data,
                       ),
-
-                      const SizedBox(height: 16),
-
-                      // Main content in two columns for better space utilization
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left column - User details
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildInfoRow('User ID', data['uId'] ?? 'N/A'),
-                                const SizedBox(height: 6),
-                                _buildInfoRow('Name', data['name'] ?? 'N/A'),
-                                const SizedBox(height: 6),
-                                _buildInfoRow('Email', data['email'] ?? 'N/A'),
-                                const SizedBox(height: 6),
-                                _buildInfoRow('Mobile', data['mobile'] ?? 'N/A'),
-                              ],
+                    ),
+                  );
+                },
+                child: Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header section with token and status
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Token: ${data['token']}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.blueGrey,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-
-                          const SizedBox(width: 16),
-
-                          // Right column - Ticket details
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildInfoRow('Department', data['department'] ?? 'N/A'),
-                                const SizedBox(height: 6),
-                                _buildInfoRow('Subject', data['subject'] ?? 'N/A'),
-                                const SizedBox(height: 6),
-                                _buildInfoRow('Types', data['types'] ?? 'N/A'),
-                                const SizedBox(height: 6),
-                                _buildPriorityRow(data['priority'] ?? 'N/A'),
-                              ],
+                            const SizedBox(width: 8),
+                            Chip(
+                              label: Text(
+                                (data['status'] ?? 'pending').toUpperCase(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              backgroundColor: _getStatusColor(data['status']),
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
 
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Message section
-                      if (data['message'] != null && data['message'].toString().isNotEmpty)
-                        Column(
+                        // Main content in two columns for better space utilization
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Message:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blueGrey,
+                            // Left column - User details
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildInfoRow('User ID', data['uId'] ?? 'N/A'),
+                                  const SizedBox(height: 6),
+                                  _buildInfoRow('Name', data['name'] ?? 'N/A'),
+                                  const SizedBox(height: 6),
+                                  _buildInfoRow('Email', data['email'] ?? 'N/A'),
+                                  const SizedBox(height: 6),
+                                  _buildInfoRow('Mobile', data['mobile'] ?? 'N/A'),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[50],
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey[200]!),
-                              ),
-                              child: Text(
-                                data['message']!,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  height: 1.4,
-                                ),
+
+                            const SizedBox(width: 16),
+
+                            // Right column - Ticket details
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildInfoRow('Department', data['department'] ?? 'N/A'),
+                                  const SizedBox(height: 6),
+                                  _buildInfoRow('Subject', data['subject'] ?? 'N/A'),
+                                  const SizedBox(height: 6),
+                                  _buildInfoRow('Types', data['types'] ?? 'N/A'),
+                                  const SizedBox(height: 6),
+                                  _buildPriorityRow(data['priority'] ?? 'N/A'),
+                                  // const SizedBox(height: 6),
+                                  // ImagePreviewWidget(
+                                  //   imageUrls: [
+                                  //     'https://res.cloudinary.com/dbi5dzmhz/images/f_auto,q_auto/v1729382683/Safemode/hardware-3509898_1920-min/hardware-3509898_1920-min.jpg?_i=AA',
+                                  //     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyvl5Iks--rDz8uG2oKPs1FiB8KvloRnznFA&s',
+                                  //     'https://techadvice.ie/wp-content/uploads/2021/04/service-428540_640.jpg',
+                                  //   ],
+                                  // ),
+                                ],
                               ),
                             ),
                           ],
                         ),
 
-                      const SizedBox(height: 12),
+                        const SizedBox(height: 16),
 
-                      // Footer with creation date
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(top: 8),
-                        decoration: BoxDecoration(
-                            border: Border(
-                          top: BorderSide(color: Colors.grey[300]!, width: 1),
-                        )),
-                        child: Text(
-                          'Created: ${_formatTimestamp(data['createdAt'])}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                            fontStyle: FontStyle.italic,
+                        // Message section
+                        if (data['message'] != null && data['message'].toString().isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Message:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blueGrey,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey[200]!),
+                                ),
+                                child: Text(
+                                  data['message']!,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.right,
+
+                        const SizedBox(height: 12),
+
+                        // Footer with creation date
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(top: 8),
+                          decoration: BoxDecoration(
+                              border: Border(
+                            top: BorderSide(color: Colors.grey[300]!, width: 1),
+                          )),
+                          child: Text(
+                            'Created: ${_formatTimestamp(data['createdAt'])}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              fontStyle: FontStyle.italic,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );

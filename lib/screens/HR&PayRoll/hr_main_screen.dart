@@ -13,7 +13,7 @@ import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
 import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
-import 'it_ticketing_system.dart';
+import 'it_ticketing_generate_screen.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
   const HrMainMenuScreen({super.key});
