@@ -42,13 +42,21 @@ class RequisitionDetailsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6), // radius
                   ),
                 ),
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ComparativeStatementScreen(jsonData: yourJsonList),
-                    ),
-                  );
+                onPressed: () async {
+                  var pp=context.read<ProductProvider>();
+
+
+                  if(await pp.getSingleCSInfoByCode('CS000047'))
+                    {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ComparativeStatementScreen(jsonData: pp.csRequisationList),
+                        ),
+                      );
+                    }
+
+
                 }, child: Text('CS',style: customTextStyle(14, Colors.white, FontWeight.bold),)),
           ),
           Expanded(

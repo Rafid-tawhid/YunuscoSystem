@@ -6,6 +6,7 @@ import 'package:yunusco_group/models/production_dashboard_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../models/cs_requisation_model.dart';
 import '../models/master_lc_model.dart';
 import '../models/production_efficiency_model.dart';
 import '../models/production_goods_model.dart';
@@ -907,6 +908,31 @@ class ProductProvider extends ChangeNotifier {
       } else {
         return PurchaseStatus.deptHeadRejected;
       }
+    }
+  }
+
+  List<CsRequisationModel> _csRequisationList=[];
+  List<CsRequisationModel> get  csRequisationList=>_csRequisationList;
+
+
+  Future<bool> getSingleCSInfoByCode(String? purchaseRequisitionCode) async{
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    var data = await apiService
+        .postData('api/inventory/GetReqWithCS', {
+          "ABC":purchaseRequisitionCode
+    });
+    EasyLoading.dismiss();
+
+    if (data != null) {
+      _csRequisationList.clear();
+      for (var i in data['returnvalue']) {
+        _csRequisationList.add(CsRequisationModel.fromJson(i));
+      }
+      notifyListeners();
+      debugPrint('_csRequisationList ${_csRequisationList.length}');
+      return true;
+    } else {
+      return false;
     }
   }
 }

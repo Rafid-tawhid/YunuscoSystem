@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/screens/Profile/change_password_screen.dart';
 import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/riverpods/testing.dart';
@@ -66,9 +67,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Home'),
             onTap: () {
                //Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>NidExtractorScreen()));
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>TextExtractionScreen()));
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>NewRequisitionListScreen()));
+
               // Navigate to home (already here)
             },
           ),
@@ -78,7 +77,7 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProductCatalogScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
               //  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePasswordScreen()));
               //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
             },

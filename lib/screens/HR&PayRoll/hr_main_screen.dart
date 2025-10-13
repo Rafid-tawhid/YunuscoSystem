@@ -7,6 +7,7 @@ import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../common_widgets/dashboard_item_card.dart';
 import '../Accounts/pf_info_screen.dart';
+import '../Profile/capture_nid_info.dart';
 import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
 import '../Profile/my_pay_slip_screen.dart';
@@ -203,6 +204,18 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CreateTicketScreen()));
+        },
+      ),
+
+      DashboardMenuItem(
+        name: 'NID Extractor',
+        icon: Icons.add_card_outlined,
+        cardColor: Colors.white,
+        iconColor: Colors.purple.shade700,
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => NidExtractorScreen()));
+
         },
       ),
     ];

@@ -102,6 +102,8 @@ dev_dependencies:
   crop_your_image: ^2.0.0
 #  tesseract_ocr: ^0.5.0
   google_mlkit_text_recognition: ^0.15.0
+  signature: ^6.3.0
+  photo_manager: ^3.7.1
 
 
 

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:yunusco_group/screens/Profile/signature_Screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -35,26 +36,52 @@ class _NidExtractorScreenState extends State<NidExtractorScreen> {
   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
 
   Future<void> pickImage(bool isFront) async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
+    // Show dialog to choose image source
+    final source = await showDialog<ImageSource>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: const Text('Select Image Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.blue),
+                title: const Text('Camera'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: Colors.green),
+                title: const Text('Gallery'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source == null) return; // User cancelled the dialog
+
+    final picked = await picker.pickImage(source: source);
     if (picked != null) {
       // Navigate to crop screen
       final croppedImage = await Navigator.push<Uint8List?>(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              ImageCropScreen(
-                imageFile: File(picked.path),
-                aspectRatio: 16 / 9, // You can adjust this ratio
-              ),
+          builder: (context) => ImageCropScreen(
+            imageFile: File(picked.path),
+            aspectRatio: 16 / 9, // Adjust as needed
+          ),
         ),
       );
 
       if (croppedImage != null) {
         // Save cropped image to a temporary file
         final tempDir = await getTemporaryDirectory();
-        final croppedFile = File('${tempDir.path}/cropped_${DateTime
-            .now()
-            .millisecondsSinceEpoch}.jpg');
+        final croppedFile = File(
+            '${tempDir.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg');
         await croppedFile.writeAsBytes(croppedImage);
 
         setState(() {
@@ -65,8 +92,8 @@ class _NidExtractorScreenState extends State<NidExtractorScreen> {
           }
         });
 
-        // Auto-extract when image is selected
-        Future.delayed(Duration(milliseconds: 500), () {
+        // Auto-extract after short delay
+        Future.delayed(const Duration(milliseconds: 500), () {
           if (isFront) {
             extractFrontData();
           } else {
@@ -83,7 +110,9 @@ class _NidExtractorScreenState extends State<NidExtractorScreen> {
           }
         });
       }
-    }}
+    }
+  }
+
 
 
   Future<void> extractFrontData() async {
@@ -435,9 +464,11 @@ class _NidExtractorScreenState extends State<NidExtractorScreen> {
         title: const Text('NID Info Extractor'),
         actions: [
           IconButton(
-            icon: Icon(Icons.clear_all),
-            onPressed: clearAllFields,
-            tooltip: 'Clear All',
+            icon: Icon(Icons.sign_language_sharp),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SignatureScreen()));
+            },
+            tooltip: 'Take Sign',
           ),
         ],
       ),
