@@ -17,28 +17,30 @@ class ComparativeStatementScreen extends StatefulWidget {
 }
 
 class _ComparativeStatementScreenState extends State<ComparativeStatementScreen> {
-  List<ComparativeStatement> _statements = [];
+  List<ComparativeStatementNew> _statements = [];
   bool _isLoading = true;
   String _selectedCode = '';
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    Future.microtask((){
+      _loadData();
+    });
   }
 
   void _loadData() {
     try {
       final statements = widget.jsonData
-          .map((item) => ComparativeStatement.fromJson(item))
+          .map((item) => ComparativeStatementNew.fromJson(item))
           .toList();
 
-      // Get unique codes
-      final codes = statements.map((e) => e.code).toSet().toList();
+      // Group by product name and create product groups
+      final productGroups = _groupByProduct(statements);
 
       setState(() {
-        _statements = statements;
-        _selectedCode = codes.isNotEmpty ? codes.first : '';
+        _statements = productGroups;
+        _selectedCode = statements.isNotEmpty ? statements.first.code : '';
         _isLoading = false;
       });
     } catch (e) {
@@ -47,6 +49,68 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       });
       _showErrorDialog('Error loading data: $e');
     }
+  }
+
+  List<ComparativeStatementNew> _groupByProduct(List<ComparativeStatementNew> statements) {
+    final Map<String, List<ComparativeStatementNew>> grouped = {};
+
+    for (var statement in statements) {
+      if (!grouped.containsKey(statement.productName)) {
+        grouped[statement.productName] = [];
+      }
+      grouped[statement.productName]!.add(statement);
+    }
+
+    return grouped.entries.map((entry) {
+      // Use the first item as base and add all suppliers
+      final base = entry.value.first;
+      return ComparativeStatementNew(
+        code: base.code,
+        productName: base.productName,
+        currencyName: base.currencyName,
+        creditPeriod: base.creditPeriod,
+        payMode: base.payMode,
+        purchaseRequisitionCode: base.purchaseRequisitionCode,
+        csDate: base.csDate,
+        userName: base.userName,
+        purchaseType: base.purchaseType,
+        productCategoryName: base.productCategoryName,
+        uomName: base.uomName,
+        brandName: base.brandName,
+        storeType: base.storeType,
+        lastPurQty: base.lastPurQty,
+        lastPurRate: base.lastPurRate,
+        lastPurDate: base.lastPurDate,
+        csQty: base.csQty,
+        suppliers: entry.value.map((stmt) => SupplierData(
+          name: stmt.suppliers.first.name, // Access the supplier name from the first supplier
+          rate: stmt.suppliers.first.rate,
+          csg: stmt.suppliers.first.csg,
+          discount: stmt.suppliers.first.discount,
+          tax: stmt.suppliers.first.tax,
+          vat: stmt.suppliers.first.vat,
+          caringCost: stmt.suppliers.first.caringCost,
+          inTax: stmt.suppliers.first.inTax,
+          inVat: stmt.suppliers.first.inVat,
+          oldRate: stmt.suppliers.first.oldRate,
+          adiRate: stmt.suppliers.first.adiRate,
+          fcRate: stmt.suppliers.first.fcRate,
+          mgRate: stmt.suppliers.first.mgRate,
+          comment: stmt.suppliers.first.comment,
+          adComment: stmt.suppliers.first.adComment,
+          fcComment: stmt.suppliers.first.fcComment,
+          mgComment: stmt.suppliers.first.mgComment,
+          mtf: stmt.suppliers.first.mtf,
+          mgt: stmt.suppliers.first.mgt,
+          v: stmt.suppliers.first.v,
+          t: stmt.suppliers.first.t,
+          gateCost: stmt.suppliers.first.gateCost,
+          warranty: stmt.suppliers.first.warranty,
+          taxP: stmt.suppliers.first.taxP,
+          vatP: stmt.suppliers.first.vatP,
+        )).toList(),
+      );
+    }).toList();
   }
 
   void _showErrorDialog(String message) {
@@ -60,14 +124,14 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
     );
   }
 
-  void _onSupplierSelected(int productId, String supplierPosition) {
+  void _onSupplierSelected(String productName, String supplierName) {
     setState(() {
-      final statement = _statements.firstWhere((stmt) => stmt.productId == productId);
-      statement.selectedSupplierPosition = supplierPosition;
+      final statement = _statements.firstWhere((stmt) => stmt.productName == productName);
+      statement.selectedSupplierName = supplierName;
     });
   }
 
-  List<ComparativeStatement> get _filteredStatements {
+  List<ComparativeStatementNew> get _filteredStatements {
     if (_selectedCode.isEmpty) return _statements;
     return _statements.where((stmt) => stmt.code == _selectedCode).toList();
   }
@@ -138,7 +202,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                   children: [
                     _buildSummaryCard('Products', selectedData.length.toString(), Icons.inventory),
                     SizedBox(width: 10),
-                    _buildSummaryCard('Total', '${grandTotal.toStringAsFixed(2)} BDT', Icons.attach_money),
+                    _buildSummaryCard('Total', '${grandTotal.toStringAsFixed(2)} ${_statements.first.currencyName}', Icons.attach_money),
                   ],
                 ),
               ),
@@ -186,19 +250,13 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                   children: [
                     Expanded(
                       child: Text(
-                        'Grand Total: ${grandTotal.toStringAsFixed(2)} BDT',
+                        'Grand Total: ${grandTotal.toStringAsFixed(2)} ${_statements.first.currencyName}',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
                       ),
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
-                        // Add your action here (save, submit, etc.)
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   SnackBar(content: Text('Selected data processed successfully!')),
-                        // );
-                        //Navigator.pop(context);
-                        _showRequisitionConfirmationDialog(context,selectedData);
-
+                        _showRequisitionConfirmationDialog(context, selectedData);
                       },
                       icon: Icon(Icons.check_circle),
                       label: Text('Authorization'),
@@ -217,8 +275,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
     );
   }
 
-
-  void _showRequisitionConfirmationDialog(BuildContext context,List<Map<String,dynamic>> selectedData) {
+  void _showRequisitionConfirmationDialog(BuildContext context, List<Map<String,dynamic>> selectedData) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -263,12 +320,10 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                   builder: (_) => PdfPreviewScreen(
                     selectedData: selectedData,
                     code: 'CS: $_selectedCode',
-                    grandTotal: selectedData.fold(0, (sum, item) => sum + (item['SelectedTotal'] ?? 0)),
+                    grandTotal: selectedData.fold(0.0, (sum, item) => sum + (item['SelectedTotal'] ?? 0)),
                   ),
                 ),
               );
-
-              //_processRequisition();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: myColors.primaryColor,
@@ -276,24 +331,12 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text('Confirm',style: TextStyle(color: Colors.white
-            ),),
+            child: Text('Confirm', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
-
-  void _processRequisition() {
-    // Your confirmation logic here
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Requisition confirmed successfully!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
 
   Widget _buildSummaryCard(String title, String value, IconData icon) {
     return Expanded(
@@ -309,7 +352,6 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
               SizedBox(height: 2),
               Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ],
-
           ),
         ),
       ),
@@ -380,7 +422,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
                     children: [
                       _buildDetailRow('Rate', '${data['CurrencyName']} ${(data['SelectedRate'] ?? 0).toStringAsFixed(2)}'),
                       _buildDetailRow('Total', '${data['CurrencyName']} ${(data['SelectedTotal'] ?? 0).toStringAsFixed(2)}'),
-                      _buildDetailRow('Warranty', data['WarrantyFirst'] ?? 'N/A'),
+                      _buildDetailRow('Warranty', data['Warranty'] ?? 'N/A'),
                     ],
                   ),
                 ),
@@ -440,20 +482,6 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
     );
   }
 
-  String _formatJson(List<Map<String, dynamic>> data) {
-    return const JsonEncoder.withIndent('  ').convert(data);
-  }
-
-  void _copyToClipboard(List<Map<String, dynamic>> data) {
-    final jsonString = _formatJson(data);
-    // You can use clipboard package here
-    // Clipboard.setData(ClipboardData(text: jsonString));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('JSON copied to clipboard!')),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -484,48 +512,6 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       )
           : Column(
         children: [
-          // Filter by Code
-          // if (_availableCodes.length > 1)
-          //   Padding(
-          //     padding: EdgeInsets.all(16),
-          //     child: Card(
-          //       color: Colors.white,
-          //       child: Padding(
-          //         padding: EdgeInsets.all(12),
-          //         child: Row(
-          //           children: [
-          //             Text('Filter by Code: ', style: TextStyle(fontWeight: FontWeight.bold)),
-          //             SizedBox(width: 10),
-          //             DropdownButton<String>(
-          //               value: _selectedCode,
-          //               items: _availableCodes.map((String code) {
-          //                 return DropdownMenuItem<String>(
-          //                   value: code,
-          //                   child: Text(code),
-          //                 );
-          //               }).toList(),
-          //               onChanged: (String? newValue) {
-          //                 setState(() {
-          //                   _selectedCode = newValue!;
-          //                 });
-          //               },
-          //             ),
-          //             Spacer(),
-          //             ElevatedButton.icon(
-          //               onPressed: _exportSelectedData,
-          //               icon: Icon(Icons.file_download),
-          //               label: Text('Export Selected'),
-          //               style: ElevatedButton.styleFrom(
-          //                 backgroundColor: Colors.green,
-          //                 foregroundColor: Colors.white,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-
           // Summary Card
           _buildSummaryCard2(),
 
@@ -535,7 +521,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
               itemCount: _filteredStatements.length,
               itemBuilder: (context, index) {
                 final statement = _filteredStatements[index];
-                return ComparativeStatementCard(
+                return ComparativeStatementCardNew(
                   statement: statement,
                   onSupplierSelected: _onSupplierSelected,
                 );
@@ -551,10 +537,9 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
     final statements = _filteredStatements;
     final totalProducts = statements.length;
     final totalValue = statements.fold(0.0, (sum, stmt) => sum + stmt.selectedTotal);
-    final selectedSuppliers = statements.map((stmt) => stmt.selectedSupplier?['name'] ?? '').toSet();
+    final selectedSuppliers = statements.map((stmt) => stmt.selectedSupplierName ?? '').where((name) => name.isNotEmpty).toSet();
 
     return Card(
-
       margin: EdgeInsets.all(8),
       color: Colors.blue[50],
       child: Padding(
@@ -572,7 +557,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
             SizedBox(height: 8),
             if (selectedSuppliers.isNotEmpty)
               Text(
-                'Suppliers: ${selectedSuppliers.where((s) => s.isNotEmpty).join(', ')}',
+                'Suppliers: ${selectedSuppliers.join(', ')}',
                 style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
                 textAlign: TextAlign.center,
               ),
@@ -591,30 +576,28 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       ],
     );
   }
-
-
 }
 
-class ComparativeStatementCard extends StatefulWidget {
-  final ComparativeStatement statement;
-  final Function(int, String) onSupplierSelected;
+class ComparativeStatementCardNew extends StatefulWidget {
+  final ComparativeStatementNew statement;
+  final Function(String, String) onSupplierSelected;
 
-  const ComparativeStatementCard({
+  const ComparativeStatementCardNew({
     Key? key,
     required this.statement,
     required this.onSupplierSelected,
   }) : super(key: key);
 
   @override
-  _ComparativeStatementCardState createState() => _ComparativeStatementCardState();
+  _ComparativeStatementCardNewState createState() => _ComparativeStatementCardNewState();
 }
 
-class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
+class _ComparativeStatementCardNewState extends State<ComparativeStatementCardNew> {
   bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    final availableSuppliers = widget.statement.availableSuppliers;
+    final availableSuppliers = widget.statement.suppliers;
     final selectedSupplier = widget.statement.selectedSupplier;
 
     return Card(
@@ -641,7 +624,7 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
             Text('Category: ${widget.statement.productCategoryName}'),
             Text('Qty: ${widget.statement.csQty} ${widget.statement.uomName}'),
             if (selectedSupplier != null)
-              Text('Selected: ${selectedSupplier['name']} - ${widget.statement.currencyName} ${selectedSupplier['rate']}'),
+              Text('Selected: ${selectedSupplier.name} - ${widget.statement.currencyName} ${selectedSupplier.rate}'),
           ],
         ),
         trailing: Row(
@@ -675,16 +658,11 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Product Information
-                // _buildInfoRow('Product ID', widget.statement.productId.toString()),
-                // _buildInfoRow('Category', widget.statement.productCategoryName),
-                // _buildInfoRow('Type', widget.statement.typeName),
-                // _buildInfoRow('UOM', widget.statement.uomName),
-                // Text(widget.statement.toSelectedJson().toString()),
-
-                _buildInfoRow('Current Stock', widget.statement.cStock.toString()),
-                _buildInfoRow('Vat',getVat(widget.statement.selectedSupplierPosition,widget.statement)??''),
-                if (widget.statement.lastPurDate.isNotEmpty)
-                  _buildInfoRow('Last Purchase', '${widget.statement.lastPurQty} @ ${widget.statement.lastPurRate} on ${widget.statement.lastPurDate}'),
+                _buildInfoRow('Current Stock', widget.statement.lastPurQty),
+                _buildInfoRow('Last Purchase Rate', '${widget.statement.currencyName} ${widget.statement.lastPurRate}'),
+                _buildInfoRow('Last Purchase Date', widget.statement.lastPurDate),
+                _buildInfoRow('VAT Type', 'None'),
+                _buildInfoRow('Tax Type', 'None'),
 
                 SizedBox(height: 16),
                 Divider(),
@@ -718,8 +696,9 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
     );
   }
 
-  Widget _buildSupplierOption(Map<String, dynamic> supplier, ComparativeStatement statement) {
-    final isSelected = statement.selectedSupplierPosition == supplier['position'];
+  Widget _buildSupplierOption(SupplierData supplier, ComparativeStatementNew statement) {
+    final isSelected = statement.selectedSupplierName == supplier.name;
+    final total = (double.tryParse(supplier.rate) ?? 0) * (double.tryParse(statement.csQty) ?? 0);
 
     return Card(
       margin: EdgeInsets.symmetric(vertical: 4),
@@ -734,14 +713,14 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
       ),
       child: ListTile(
         leading: Radio<String>(
-          value: supplier['position'],
-          groupValue: statement.selectedSupplierPosition,
+          value: supplier.name,
+          groupValue: statement.selectedSupplierName,
           onChanged: (value) {
-            widget.onSupplierSelected(statement.productId, value!);
+            widget.onSupplierSelected(statement.productName, value!);
           },
         ),
         title: Text(
-          supplier['name'],
+          supplier.name,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isSelected ? Colors.blue : Colors.black,
@@ -750,38 +729,19 @@ class _ComparativeStatementCardState extends State<ComparativeStatementCard> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Rate: ${statement.currencyName} ${supplier['rate']}'),
-            Text('Total: ${statement.currencyName} ${supplier['total']}'),
-            Text('Warranty: ${supplier['warranty']}'),
-            Text('VAT: ${supplier['vat']} | Tax: ${supplier['tax']}'),
+            Text('Rate: ${statement.currencyName} ${supplier.rate}'),
+            Text('Total: ${statement.currencyName} ${total.toStringAsFixed(2)}'),
+            Text('Warranty: ${supplier.warranty}'),
+            Text('VAT: ${supplier.vat} | Tax: ${supplier.tax}'),
           ],
         ),
         trailing: isSelected
             ? Icon(Icons.check_circle, color: Colors.green)
             : null,
         onTap: () {
-          widget.onSupplierSelected(statement.productId, supplier['position']);
+          widget.onSupplierSelected(statement.productName, supplier.name);
         },
       ),
     );
-  }
-
-
-
-
-
-  String? getVat(String selectedSupplierPosition, ComparativeStatement statement) {
-    if(selectedSupplierPosition=='First'){
-      return statement.vatPFirst.toString();
-    }
-    if(selectedSupplierPosition=='Second'){
-      return statement.vatPSecond.toString();
-    }
-    if(selectedSupplierPosition=='Third'){
-      return statement.vatPSecond.toString();
-    }
-    if(selectedSupplierPosition=='Four'){
-      return statement.vatPFour.toString();
-    }
   }
 }

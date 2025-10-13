@@ -5,11 +5,11 @@ import '../screens/home_page.dart';
 class AppConstants {
   // 🔗 API Base URLs
   //Testing
- // static const String baseUrl = "https://192.168.15.6:5630/";
+  static const String baseUrl = "https://192.168.15.6:5630/";
   // demo
   //static const String baseUrl = "http://192.168.15.6:8090/";
   // static const String
-  static final  baseUrl = "http://202.74.243.118:8090/"; //real public
+ // static final  baseUrl = "http://202.74.243.118:8090/"; //real public
 
  // static const String apiKey = "AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY";
   static String token = ''; // 📱 Screen Dimensions
