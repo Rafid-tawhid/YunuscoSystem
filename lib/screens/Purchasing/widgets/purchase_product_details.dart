@@ -44,14 +44,14 @@ class RequisitionDetailsScreen extends StatelessWidget {
                 ),
                 onPressed: () async {
                   var pp=context.read<ProductProvider>();
-
-
-                  if(await pp.getSingleCSInfoByCode('CS000047'))
+                 // debugPrint('reqModel ${reqModel.purchaseRequisitionId}');
+                  if(await pp.getSingleCSInfoByCode('CS000046'))
                     {
+                      List<Map<String,dynamic>> data=pp.csRequisationList.map((e)=>e.toJson()).toList();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ComparativeStatementScreen(jsonData: pp.csRequisationList),
+                          builder: (context) => ComparativeStatementScreen(jsonData: data),
                         ),
                       );
                     }

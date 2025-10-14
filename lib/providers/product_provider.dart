@@ -918,8 +918,8 @@ class ProductProvider extends ChangeNotifier {
   Future<bool> getSingleCSInfoByCode(String? purchaseRequisitionCode) async{
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
     var data = await apiService
-        .postData('api/inventory/GetReqWithCS', {
-          "ABC":purchaseRequisitionCode
+        .postFormData('api/inventory/GetReqWithCS', {
+          "CSCode":purchaseRequisitionCode
     });
     EasyLoading.dismiss();
 

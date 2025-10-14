@@ -8,7 +8,7 @@ import '../../helper_class/pdf_service.dart';
 import '../../models/comperative_statement_model.dart';
 
 class ComparativeStatementScreen extends StatefulWidget {
-  final List<dynamic> jsonData;
+  final List<Map<String,dynamic>> jsonData;
 
   const ComparativeStatementScreen({Key? key, required this.jsonData}) : super(key: key);
 
@@ -34,7 +34,6 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       final statements = widget.jsonData
           .map((item) => ComparativeStatementNew.fromJson(item))
           .toList();
-
       // Group by product name and create product groups
       final productGroups = _groupByProduct(statements);
 
@@ -47,6 +46,7 @@ class _ComparativeStatementScreenState extends State<ComparativeStatementScreen>
       setState(() {
         _isLoading = false;
       });
+     // debugPrint('Error loading data: $e');
       _showErrorDialog('Error loading data: $e');
     }
   }
