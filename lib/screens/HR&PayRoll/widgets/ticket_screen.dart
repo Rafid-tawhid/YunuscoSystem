@@ -4,8 +4,6 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/token_model.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
-
-import 'appointment_time.dart';
 import 'appointment_timer_dialoge.dart';
 import 'it_ticket_diagonisis_screen.dart';
 
