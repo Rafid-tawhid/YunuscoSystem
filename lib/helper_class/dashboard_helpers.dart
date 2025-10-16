@@ -16,6 +16,8 @@ import '../screens/login_screen.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:intl/date_time_patterns.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class DashboardHelpers {
@@ -84,6 +86,11 @@ class DashboardHelpers {
     } catch (e) {
       return null;
     }
+  }
+
+  static String formatTimestamp(Timestamp timestamp) {
+    final dateTime = timestamp.toDate();
+    return DateFormat('MMM dd, yyyy - hh:mm a').format(dateTime);
   }
 
   static Future<String?> selectExpiryDate(BuildContext context) async {

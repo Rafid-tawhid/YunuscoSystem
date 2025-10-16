@@ -1,16 +1,20 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yunusco_group/models/token_model.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/common_widgets/multiple_images_preview_widgets.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../../common_widgets/multiple_image_picker.dart';
 import '../../../helper_class/dashboard_helpers.dart';
+import '../hr_main_screen.dart';
 
 class TicketDetailsScreen extends StatefulWidget {
   final String ticketId;
-  final Map<String, dynamic> ticketData;
+  final TokenModel ticketData;
 
   const TicketDetailsScreen({
     Key? key,
@@ -28,21 +32,22 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
   final TextEditingController _stepsController = TextEditingController();
   final TextEditingController _commentsController = TextEditingController();
   List<File> _diagnosisImages = [];
-  String _selectedStatus = 'pending';
-  String _selectedPriority = 'medium';
+  String _selectedStatus=ItTicketStatus.completed;
+
 
   @override
   void initState() {
     super.initState();
-    _selectedStatus = widget.ticketData['status'] ?? 'pending';
-    _selectedPriority = widget.ticketData['priority'] ?? 'medium';
   }
 
   void _updateTicket() async {
     try {
-      await _firestore.collection('tickets').doc(widget.ticketId).update({
+
+      var docRef=await _firestore.collection('diagnosis').doc();
+      await docRef.set({
+        'id':docRef.id,
+        'tokenId':widget.ticketData.token,
         'status': _selectedStatus,
-        'priority': _selectedPriority,
         'diagnosis': _diagnosisController.text,
         'stepsTaken': _stepsController.text,
         'technicianComments': _commentsController.text,
@@ -52,9 +57,17 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
         'technicianName': DashboardHelpers.currentUser!.userName,
       });
 
+      await _firestore.collection('tickets').doc(widget.ticketId).update(
+          {
+            'status':_selectedStatus,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ticket updated successfully')),
       );
+      Navigator.pushReplacement(context,CupertinoPageRoute(builder: (context)=>HrMainMenuScreen()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error updating ticket: $e')),
@@ -68,7 +81,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Ticket Details - ${widget.ticketData['token']}',
+          'Ticket Details - ${widget.ticketData.token}',
           style: TextStyle(color: Colors.white),
         ),
         foregroundColor: Colors.white,
@@ -92,6 +105,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
 
             // Ticket Information
             _buildTicketInfo(),
+
 
             SizedBox(height: 24),
 
@@ -276,10 +290,10 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildInfoItem('Token', widget.ticketData['token']),
-                      _buildInfoItem('User ID', widget.ticketData['uId']),
-                      _buildInfoItem('Name', widget.ticketData['name']),
-                      _buildInfoItem('Email', widget.ticketData['email']),
+                      _buildInfoItem('Token', widget.ticketData.token??'',),
+                      _buildInfoItem('User ID','${widget.ticketData.uId}'),
+                      _buildInfoItem('Name', widget.ticketData.name??''),
+                      _buildInfoItem('Email', widget.ticketData.email??''),
                     ],
                   ),
                 ),
@@ -288,10 +302,10 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildInfoItem('Department', widget.ticketData['department']),
-                      _buildInfoItem('Subject', widget.ticketData['subject']),
-                      _buildInfoItem('Types', widget.ticketData['types']),
-                      _buildInfoItem('Created', _formatTimestamp(widget.ticketData['createdAt'])),
+                      _buildInfoItem('Department', widget.ticketData.department.toString()),
+                      _buildInfoItem('Subject', widget.ticketData.subject.toString()),
+                      _buildInfoItem('Types', widget.ticketData.types.toString()),
+                      _buildInfoItem('Created', _formatTimestamp(widget.ticketData.createdAt)),
                     ],
                   ),
                 ),
@@ -307,7 +321,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedStatus,
                     decoration: InputDecoration(labelText: 'Status'),
-                    items: ['pending', 'in progress', 'resolved']
+                    items: [ItTicketStatus.inProgress,ItTicketStatus.completed]
                         .map((status) => DropdownMenuItem(
                       value: status,
                       child: Text(status.toUpperCase()),
@@ -321,23 +335,6 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                   ),
                 ),
                 SizedBox(width: 16),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedPriority,
-                    decoration: InputDecoration(labelText: 'Priority'),
-                    items: ['Low', 'Medium', 'High']
-                        .map((priority) => DropdownMenuItem(
-                      value: priority,
-                      child: Text(priority.toUpperCase()),
-                    ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedPriority = value!;
-                      });
-                    },
-                  ),
-                ),
               ],
             ),
           ],
@@ -445,7 +442,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                   backgroundColor: myColors.primaryColor,
                 ),
                 child: Text(
-                  'UPDATE TICKET',
+                  'SAVE',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
@@ -456,7 +453,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
     );
   }
 
-  Widget _buildInfoItem(String label, dynamic value) {
+  Widget _buildInfoItem(String label, String value) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8),
       child: Row(
@@ -468,7 +465,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
           ),
           Expanded(
             child: Text(
-              value?.toString() ?? 'N/A',
+              value,
               style: TextStyle(color: Colors.grey[700]),
             ),
           ),

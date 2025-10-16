@@ -8,6 +8,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/ticket_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../common_widgets/multiple_image_picker.dart';
 
@@ -64,7 +65,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
           'name': _nameController.text,
           'email': _emailController.text,
           'priority': _selectedPriority,
-          'status': 'pending',
+          'status': ItTicketStatus.pending,
           'createdAt': FieldValue.serverTimestamp(),
         };
 

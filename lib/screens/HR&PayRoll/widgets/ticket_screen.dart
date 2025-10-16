@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/token_model.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
+import 'appointment_time.dart';
+import 'appointment_timer_dialoge.dart';
 import 'it_ticket_diagonisis_screen.dart';
 
 
@@ -49,19 +53,14 @@ class _TicketsScreenState extends State<TicketsScreen> {
             itemBuilder: (context, index) {
               var ticket = snapshot.data!.docs[index];
               var data = ticket.data() as Map<String, dynamic>;
-              String ticketId = ticket.id; // Get the document ID
+              TokenModel model = TokenModel.fromJson(data);
+              String ticketId = ticket.id;
 
               return GestureDetector(
                 onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TicketDetailsScreen(
-                        ticketId: ticketId,
-                        ticketData: data,
-                      ),
-                    ),
-                  );
+                  if(DashboardHelpers.currentUser!.department=='17'){
+                    showAppointmentDialog(ticket);
+                  }
                 },
                 child: Card(
                   color: Colors.white,
@@ -91,23 +90,62 @@ class _TicketsScreenState extends State<TicketsScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Chip(
-                              label: Text(
-                                (data['status'] ?? 'pending').toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                            InkWell(
+                              onTap: (){
+                                if(data['status']==ItTicketStatus.appointmentTime&&DashboardHelpers.currentUser!.department=='17'){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TicketDetailsScreen(
+                                        ticketId: ticketId,
+                                        ticketData: model,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                              },
+                              child: Chip(
+                                label: Row(
+                                  children: [
+                                    Text(
+                                      (data['status'] ?? 'Pending').toUpperCase(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                   SizedBox(width: 6,),
+                                   if(data['appointment']!=null) Icon(Icons.arrow_forward_rounded,color: Colors.white,)
+                                  ],
                                 ),
+                                backgroundColor: _getStatusColor(data['status']),
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
-                              backgroundColor: _getStatusColor(data['status']),
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 16),
-
+                        //formatTimestamp
+                        (data['appointment'] != null)
+                            ? Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50, // Light blue background
+                            border: Border.all(color: Colors.blue.shade200), // Border
+                            borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                          ),
+                          child: Text(
+                            DashboardHelpers.formatTimestamp(data['appointment']),
+                            style: TextStyle(
+                              color: Colors.blue.shade800, // Dark blue text
+                              fontWeight: FontWeight.w600, // Bold text
+                            ),
+                          ),
+                        )
+                            : const SizedBox.shrink(),
+                        SizedBox(height: 8,),
                         // Main content in two columns for better space utilization
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,6 +258,47 @@ class _TicketsScreenState extends State<TicketsScreen> {
         },
       ),
     );
+
+
+
+  }
+
+  void showAppointmentDialog(QueryDocumentSnapshot ticket) {
+
+     QueryDocumentSnapshot documentSnapshot = ticket;
+    TokenModel model = TokenModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+
+    showDialog(
+      context: context,
+      builder: (context) => AppointmentDialog(
+        title: 'Book Appointment',
+        onConfirm: (dateTime, note) {
+          debugPrint('Appointment set for: $dateTime');
+          debugPrint('Note: $note');
+          if(model.token!=null){
+            debugPrint(model.token??'');
+            _firestore.collection('tickets').doc(model.token??'').update({
+              'appointment':dateTime,
+              'note':note,
+              'status':ItTicketStatus.appointmentTime
+            });
+          }
+
+
+
+          // Save to database or perform other actions
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Appointment booked successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+        onCancel: () {
+          print('Appointment booking cancelled');
+        },
+      ),
+    );
   }
 
   // Helper widget for consistent info rows
@@ -296,14 +375,14 @@ class _TicketsScreenState extends State<TicketsScreen> {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'pending':
+      case ItTicketStatus.pending:
         return Colors.orange;
-      case 'resolved':
+      case ItTicketStatus.completed:
         return Colors.green;
-      case 'in progress':
+      case ItTicketStatus.appointmentTime:
         return Colors.blue;
       default:
-        return Colors.grey;
+        return Colors.blueAccent;
     }
   }
 

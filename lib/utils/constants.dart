@@ -91,3 +91,11 @@ class PurchaseStatus {
   static String managementApproved='ManagementApproved';
   static String managementRejected='ManagementRejected';
 }
+
+class ItTicketStatus {
+  static const String pending='Pending';
+  static const String appointmentTime='Waiting';
+  static const String inProgress='InProgress';
+  static const String completed='Completed';
+}
+

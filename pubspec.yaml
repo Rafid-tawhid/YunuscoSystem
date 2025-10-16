@@ -74,8 +74,8 @@ dev_dependencies:
   fl_chart: ^0.70.2
   pie_chart: ^5.4.0
   flutter_launcher_icons: ^0.13.1
-  firebase_core: ^4.0.0
-  firebase_messaging: ^16.0.0
+  firebase_core: ^4.2.0
+  firebase_messaging: ^16.0.3
   app_settings: ^6.1.1
   flutter_local_notifications: ^17.2.2
   simple_month_year_picker: ^1.1.0
