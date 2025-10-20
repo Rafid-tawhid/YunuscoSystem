@@ -31,6 +31,7 @@ class AppConstants {
   );
 
   //
+  //
   static TextStyle body = GoogleFonts.inter(
     fontSize: 14,
     color: Colors.black,
