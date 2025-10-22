@@ -972,4 +972,17 @@ class DashboardHelpers {
   }
 
 
+  static DateTime parseDateOrNow(String? dateStr) {
+    try {
+      if (dateStr == null || dateStr.isEmpty) {
+        return DateTime.now();
+      }
+      return DateTime.parse(dateStr);
+    } catch (e) {
+      return DateTime.now();
+    }
+  }
+
+
+
 }

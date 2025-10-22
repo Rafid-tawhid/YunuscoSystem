@@ -475,7 +475,7 @@ class ApiService {
     }
   }
 
-  Future<dynamic> getDataNew(String endpoint) async {
+  Future<dynamic> getDataWithReturn(String endpoint) async {
     try {
       final response = await client.get(Uri.parse('$baseUrl$endpoint')).timeout(const Duration(seconds: 5)); // Add timeout
 
@@ -495,13 +495,53 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> postDataWithReturn(String endpoint, dynamic body) async {
+    try {
+      final uri = Uri.parse('${AppConstants.baseUrl}$endpoint/');
+
+      final response = await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${AppConstants.token}',
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final jsonData = jsonDecode(decodedBody);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Data received success: $jsonData');
+        jsonData['success'] = true;
+        return jsonData;
+      } else {
+        print('❌ Server responded with error: $jsonData');
+        return {
+          'success': false,
+          'message': jsonData['message'] ?? 'Unknown server error',
+        };
+      }
+    } on TimeoutException {
+      throw Exception('Request timeout. Please try again.');
+    } on SocketException {
+      throw Exception('No internet connection. Please check your network.');
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
 
   Future<dynamic> getData3(String endpoint) async {
     try {
-      debugPrint('API CALLING ${endpoint}');
+      debugPrint('API CALLING $endpoint');
       final response = await http.get(
         Uri.parse('$baseUrl$endpoint'),
-        headers: {'Content-Type': 'application/json','Authorization': 'Bearer ${{AppConstants.token}}',},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${{AppConstants.token}}',
+        },
       ).timeout(const Duration(seconds: 30));
       debugPrint('Response ${response.body}');
 
@@ -514,6 +554,4 @@ class ApiService {
       throw Exception('Network error: $e');
     }
   }
-
-
 }
