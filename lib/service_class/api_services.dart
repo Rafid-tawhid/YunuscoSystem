@@ -495,41 +495,75 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> postDataWithReturn(String endpoint, dynamic body) async {
-    try {
-      final uri = Uri.parse('${AppConstants.baseUrl}$endpoint/');
 
+
+  Future<Map<String, dynamic>> postDataWithReturn(String endpoint, dynamic body) async {
+    String decodedBody = ''; // Declare it outside the try block
+
+    try {
+      print('🚀 Starting API call to: $endpoint');
+      print('📦 Request body: $body');
+
+      final uri = Uri.parse('${AppConstants.baseUrl}$endpoint/');
+      print('🔗 Full URL: $uri');
+
+      print('⏳ Making POST request...');
       final response = await client
           .post(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ${AppConstants.token}',
-            },
-            body: jsonEncode(body),
-          )
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AppConstants.token}',
+        },
+        body: jsonEncode(body),
+      )
           .timeout(const Duration(seconds: 10));
 
-      final decodedBody = utf8.decode(response.bodyBytes);
+      print('✅ Request completed. Status code: ${response.statusCode}');
+
+      decodedBody = utf8.decode(response.bodyBytes); // Assign to the outer variable
+      print('📄 Raw response body: $decodedBody');
+
       final jsonData = jsonDecode(decodedBody);
+      print('🔍 Parsed JSON: $jsonData');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ Data received success: $jsonData');
+        print('🎉 Success: API call successful');
         jsonData['success'] = true;
         return jsonData;
       } else {
-        print('❌ Server responded with error: $jsonData');
+        print('❌ Server error: Status code ${response.statusCode}');
         return {
           'success': false,
           'message': jsonData['message'] ?? 'Unknown server error',
+          'statusCode': response.statusCode,
         };
       }
-    } on TimeoutException {
-      throw Exception('Request timeout. Please try again.');
-    } on SocketException {
-      throw Exception('No internet connection. Please check your network.');
+    } on TimeoutException catch (e) {
+      print('⏰ TimeoutException: $e');
+      return {
+        'success': false,
+        'message': 'Request timeout. Please try again.',
+      };
+    } on SocketException catch (e) {
+      print('📡 SocketException: $e');
+      return {
+        'success': false,
+        'message': 'No internet connection. Please check your network.',
+      };
+    } on FormatException catch (e) {
+      print('🔤 FormatException: $e');
+      print('📄 Raw response that caused FormatException: $decodedBody');
+      return {
+        'success': false,
+        'message': decodedBody, // Now you can access decodedBody here
+      };
     } catch (e) {
-      throw Exception('Network error: $e');
+      print('💥 Unexpected error: $e');
+      return {
+        'success': false,
+        'message': 'Unexpected error: $e',
+      };
     }
   }
 
