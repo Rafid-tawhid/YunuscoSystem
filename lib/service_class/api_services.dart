@@ -402,7 +402,7 @@ class ApiService {
         return jsonData; // Return success flag
       } else {
         // Handle non-200 responses
-        _handleError(response.statusCode, response.body);
+       // _handleError(response.statusCode, response.body);
         return null;
       }
     } catch (e) {

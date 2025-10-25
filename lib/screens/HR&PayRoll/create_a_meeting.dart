@@ -1,10 +1,10 @@
-// lib/screens/create_meeting_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
-import 'package:yunusco_group/models/board_room_booking_model.dart';
+import 'package:yunusco_group/models/JobCardDropdownModel.dart';
+import 'package:yunusco_group/providers/riverpods/meeting_provider.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
-import '../../providers/riverpods/meeting_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
 import '../../providers/riverpods/purchase_order_riverpod.dart';
 
 class CreateMeetingScreen extends ConsumerStatefulWidget {
@@ -17,7 +17,6 @@ class CreateMeetingScreen extends ConsumerStatefulWidget {
 class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _departmentController = TextEditingController();
   final TextEditingController _attendeesController = TextEditingController();
   final TextEditingController _agendaController = TextEditingController();
   final TextEditingController _actionItemsController = TextEditingController();
@@ -30,7 +29,6 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    _departmentController.dispose();
     _attendeesController.dispose();
     _agendaController.dispose();
     _actionItemsController.dispose();
@@ -102,12 +100,14 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
       _isSubmitting = true;
     });
 
+    final dept=ref.read(selectedDeptProvider);
+
     final meeting = {
       "MeetingTitle": _titleController.text.trim(),
       "OrganizerName": DashboardHelpers.currentUser!.userName,
       "OrganizerUserId": DashboardHelpers.currentUser!.iDnum,
       "OrganizerEmail": "hello@gmail.com",
-      "Department": DashboardHelpers.currentUser!.department,
+      "Department": dept!.name,
       "StartTime": convertDateTime(_startTime.toString()),
       "EndTime": convertDateTime(_endTime.toString()),
       "Attendees": _attendeesController.text.trim(),
@@ -162,16 +162,23 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    final deptAsync = ref.watch(allDeptList);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Create New Meeting',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF2C5530),
+        backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -245,18 +252,20 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
                 const SizedBox(height: 16),
 
                 // Department
-                _buildTextField(
-                  controller: _departmentController,
-                  label: 'Department *',
-                  hintText: 'Enter department',
-                  icon: Icons.business,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter department';
-                    }
-                    return null;
-                  },
-                ),
+                // _buildTextField(
+                //   controller: _departmentController,
+                //   label: 'Department *',
+                //   hintText: 'Enter department',
+                //   icon: Icons.business,
+                //   validator: (value) {
+                //     if (value == null || value.isEmpty) {
+                //       return 'Please enter department';
+                //     }
+                //     return null;
+                //   },
+                // ),
+
+                _buildDepartmentDropdown(deptAsync, ref),
                 const SizedBox(height: 16),
 
                 // Date & Time Section
@@ -502,4 +511,31 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
       return now.toIso8601String().split('.').first;
     }
   }
+
+
+    Widget _buildDepartmentDropdown(AsyncValue<List<Departments>> deptAsync, WidgetRef ref) {
+      return deptAsync.when(
+        loading: () => const CircularProgressIndicator(),
+        error: (error, stack) => Text('Error: $error'),
+        data: (departments) {
+          return DropdownButtonFormField<Departments>(
+            value: ref.read(selectedDeptProvider),
+            decoration: const InputDecoration(
+              labelText: 'Select Department',
+              border: OutlineInputBorder(),
+            ),
+            items: departments.map((dept) {
+              return DropdownMenuItem<Departments>(
+                value: dept,
+                child: Text(dept.name ?? 'Unknown'),
+              );
+            }).toList(),
+            onChanged: (Departments? newValue) {
+              ref.read(selectedDeptProvider.notifier).state = newValue;
+            },
+          );
+        },
+      );
+    }
+
 }
