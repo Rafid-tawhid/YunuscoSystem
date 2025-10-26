@@ -1,5 +1,8 @@
 // Top-level build file where you add configuration options common to all sub-projects/modules.
 buildscript {
+    extra.apply {
+        set("kotlinVersion", "2.1.0")  // Update Kotlin version
+    }
     repositories {
         google()  // Ensure Google's Maven repo is included
         mavenCentral()

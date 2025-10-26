@@ -74,7 +74,12 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0")  // Update Kotlin
+    implementation("androidx.appcompat:appcompat:1.6.1")  // Add AppCompat
+    implementation("com.google.android.material:material:1.10.0")  // Add Material
+    // ... other dependencies
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
 }
 
 flutter {
