@@ -25,7 +25,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
     super.initState();
     // Load data when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductProvider>(context, listen: false).getAllRequisitions();
+      Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(pageNo: 1);
     });
   }
 
@@ -51,7 +51,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
   }
 
   Future<void> _refreshData() async {
-    await Provider.of<ProductProvider>(context, listen: false).getAllRequisitions();
+    await Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(pageNo: 1);
   }
 
   @override
