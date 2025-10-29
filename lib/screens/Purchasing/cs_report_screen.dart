@@ -134,7 +134,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
       ),
     );
   }
-
+  //
   void _confirmSelection(List<CsRequisationModel> selectedItems) {
     // Handle confirmation logic
     print('Confirmed ${selectedItems.length} items');
