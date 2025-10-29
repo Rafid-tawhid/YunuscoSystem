@@ -14,6 +14,8 @@ import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
 import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
+import 'it_ticketing_webview.dart';
+import 'meeting_screen_new.dart';
 import 'it_ticketing_generate_screen.dart';
 
 class HrMainMenuScreen extends StatefulWidget {
@@ -110,7 +112,8 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         Navigator.push(context, CupertinoPageRoute(builder: (context) => EmployeePaySlip()));
         break;
       case 7:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => BoardRoomBookingScreen()));
+        //Navigator.push(context, CupertinoPageRoute(builder: (context) => BoardRoomBookingScreen()));
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => MeetingsScreen()));
         break;
       case 8:
         Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
@@ -203,7 +206,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         iconColor: Colors.greenAccent.shade700,
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CreateTicketScreen()));
+              context, MaterialPageRoute(builder: (context) => UrlLauncherScreen()));
         },
       ),
 

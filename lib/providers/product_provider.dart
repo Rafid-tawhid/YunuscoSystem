@@ -670,7 +670,7 @@ class ProductProvider extends ChangeNotifier {
     setLoading(false);
     if (data != null) {
       _requisitions.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['returnvalue']['Data']) {
         _requisitions.add(PurchaseRequisationListModel.fromJson(i));
       }
       _requisitions = _requisitions.reversed.toList();
@@ -851,9 +851,11 @@ class ProductProvider extends ChangeNotifier {
   }
 
   Future<bool> acceptItem(PurchaseRequisationListModel code, String? remarks, bool isAccept) async {
+
+    debugPrint('THIS IS CALLING ... ');
+    debugPrint('Dept IS CALLING ... ${DashboardHelpers.currentUser!.department}');
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    var data =
-        await apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {'remarks': remarks, 'requisitionId': code.purchaseRequisitionId, 'isApprove': isAccept, 'status': getStatus(isAccept)});
+    var data = await apiService.patchData('api/Inventory/AprvOrRejPurchaseReq', {'remarks': remarks, 'requisitionId': code.purchaseRequisitionId, 'isApprove': isAccept, 'status': getStatus(isAccept)});
 
     EasyLoading.dismiss();
 
@@ -895,21 +897,28 @@ class ProductProvider extends ChangeNotifier {
   }
 
   String getStatus(bool isAccept) {
-    if (isAccept) {
-      if (DashboardHelpers.currentUser!.isDepartmentHead == true) {
-        return PurchaseStatus.deptHeadApproved;
+
+    if (DashboardHelpers.currentUser!.department == '15') //Management
+    {
+      if (isAccept) {
+        return PurchaseStatus.managementApproved;
       } else {
-        return PurchaseStatus.deptHeadRejected;
-      }
-    }
-    else {
-      if (DashboardHelpers.currentUser!.department == 'Management') {
         return PurchaseStatus.managementRejected;
+      }
+    } else {
+      if (isAccept) {
+        if (DashboardHelpers.currentUser!.isDepartmentHead == true) {
+          return PurchaseStatus.deptHeadApproved;
+        } else {
+          return PurchaseStatus.deptHeadRejected;
+        }
       } else {
+        // Add a default return when not accepted and not in management
         return PurchaseStatus.deptHeadRejected;
       }
     }
   }
+
 
   List<CsRequisationModel> _csRequisationList=[];
   List<CsRequisationModel> get  csRequisationList=>_csRequisationList;

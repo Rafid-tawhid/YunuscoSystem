@@ -47,7 +47,7 @@ final searchQueryProvider = StateProvider<String>((ref) => "");
 final planningProvider = FutureProvider.family<List<LineSetupModel>, DateTime>((ref, date) async {
   try {
     final formattedDate = DashboardHelpers.convertDateTime2(date);
-    final response = await ApiService().getDataNew('api/Manufacturing/TargetLineSetup?date=$formattedDate');
+    final response = await ApiService().getDataWithReturn('api/Manufacturing/TargetLineSetup?date=$formattedDate');
 
     if (response == null) {
       throw Exception('No response from server');
