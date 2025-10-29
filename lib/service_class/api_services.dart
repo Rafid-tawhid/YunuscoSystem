@@ -25,7 +25,7 @@ class ApiService {
   Future<dynamic> getData(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$baseUrl$endpoint')).timeout(Duration(seconds: 10));
+      final response = await client.get(Uri.parse('$baseUrl$endpoint')).timeout(Duration(seconds: 30));
       // Handle response based on status code
       if (response.statusCode == 200) {
         // Parse the response body

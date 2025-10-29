@@ -7,27 +7,43 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
-
 import '../../../models/purchase_requisation_list_model.dart';
 import '../../../models/requisition_details_model.dart';
 import '../cs_report_screen.dart';
 import '../purchase_requisation_list.dart';
+import 'accepted_requisation_number.dart';
 
-class RequisitionDetailsScreen extends StatelessWidget {
-  final List<RequisitionDetailsModel> requisitions;
+
+class RequisitionDetailsScreen extends StatefulWidget {
+  final List<RequisitionDetailsModel> requisitionsList;
   final PurchaseRequisationListModel reqModel;
 
 
-  const RequisitionDetailsScreen({super.key, required this.requisitions,required this.reqModel});
+  const RequisitionDetailsScreen({super.key, required this.requisitionsList,required this.reqModel});
 
+  @override
+  State<RequisitionDetailsScreen> createState() => _RequisitionDetailsScreenState();
+}
+
+class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
+  late List<RequisitionDetailsModel> requisitions;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    requisitions = widget.requisitionsList;
+  }
   @override
   Widget build(BuildContext context) {
     final TextEditingController _remarksController = TextEditingController();
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Requisition Details'),
         centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: myColors.primaryColor,
         elevation: 0,
       ),
       body: Column(
@@ -44,16 +60,22 @@ class RequisitionDetailsScreen extends StatelessWidget {
                 ),
                 onPressed: () async {
                   var pp=context.read<ProductProvider>();
-                 // debugPrint('reqModel ${reqModel.purchaseRequisitionId}');
-                  if(await pp.getSingleCSInfoByCode('CS000046'))
+                  //CS000046
+                  //CS002423
+                  if(await pp.getSingleCSInfoByCode('CS002423'))
                     {
-                      List<Map<String,dynamic>> data=pp.csRequisationList.map((e)=>e.toJson()).toList();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ComparativeStatementScreen(jsonData: data),
-                        ),
-                      );
+                      if(pp.csRequisationList.isNotEmpty){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SupplierSelectionScreen(requisitions: pp.csRequisationList),
+                          ),
+                        );
+                      }
+                      else {
+                        DashboardHelpers.showAlert(msg: 'No CS Found ');
+                      }
+
                     }
 
 
@@ -67,9 +89,9 @@ class RequisitionDetailsScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 if (index < requisitions.length) {
                   final req = requisitions[index];
-                  return _buildRequisitionCard(req,reqModel,context,);
+                  return _buildRequisitionCard(req,widget.reqModel,context,index);
                 } else {
-                  if(reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
+                  if(widget.reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
                     {
                       return  Column(
                         children: [
@@ -92,7 +114,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     var pp=context.read<ProductProvider>();
-                                    var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),false);
+                                    var data=await pp.acceptItem(widget.reqModel,_remarksController.text.trim(),false);
                                     if(data){
                                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
                                     }
@@ -112,9 +134,9 @@ class RequisitionDetailsScreen extends StatelessWidget {
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () async {
-            
+
                                     var pp=context.read<ProductProvider>();
-                                    var data=await pp.acceptItem(reqModel,_remarksController.text.trim(),true);
+                                    var data=await pp.acceptItem(widget.reqModel,_remarksController.text.trim(),true);
                                     if(data){
                                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
                                     }
@@ -149,7 +171,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildRequisitionCard(
-      RequisitionDetailsModel req,PurchaseRequisationListModel model, BuildContext context) {
+      RequisitionDetailsModel req,PurchaseRequisationListModel model, BuildContext context,int index) {
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -235,7 +257,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Quantity Summary
-            _buildQuantitySummary(req),
+            _buildQuantitySummary(req,context,index),
 
             const SizedBox(height: 16),
 
@@ -259,7 +281,7 @@ class RequisitionDetailsScreen extends StatelessWidget {
 
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: getBgColor(reqModel.mgntComment),
+        color: getBgColor(widget.reqModel.mgntComment),
       ),
       child: req.imagePathString != null
           ? ClipRRect(
@@ -284,21 +306,19 @@ class RequisitionDetailsScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         _buildDetailRow('Employee', req.employeeName),
         _buildDetailRow('Department', req.department),
         _buildDetailRow('Section', req.section),
-        _buildDetailRow(
-            'Product Description', req.productDescription?.toString()),
-        _buildDetailRow('Unit', '${req.unit} (${req.unitId})'),
+        _buildDetailRow('Product Description', req.productDescription?.toString()),
+        _buildDetailRow('Unit', '${req.unit}'),
         _buildDetailRow('Required By', _formatDate(req.requiredDate)),
-        _buildDetailRow('Approved By', req.approvedBy),
-        _buildDetailRow('Approval Type', req.approvalType),
+        // _buildDetailRow('Approved By', req.approvedBy),
+        // _buildDetailRow('Approval Type', req.approvalType),
       ],
     );
   }
 
-  Widget _buildQuantitySummary(RequisitionDetailsModel req) {
+  Widget _buildQuantitySummary(RequisitionDetailsModel req,BuildContext context,int index) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -309,7 +329,29 @@ class RequisitionDetailsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildQuantityPill('Requested', req.actualReqQty, Colors.orange),
-          _buildQuantityPill('Approved', req.approvedQty, Colors.green),
+          InkWell(
+              onTap: (){
+                showDialog(
+                  context: context,
+                  builder: (context) => EnhancedRequisitionDialog(
+                    requestedNumber: req.actualReqQty??1,
+                    requisitionId: req.product??'',
+                    onConfirm: (num p1) {
+                      req.copyWith(approvedQty: p1);
+
+                    }, // Your requested number here
+                  ),
+                ).then((acceptedNumber) {
+                  if (acceptedNumber != null) {
+                    print('Accepted: $acceptedNumber');
+                    // Process the accepted number
+                    setState(() {
+                      requisitions[index] = requisitions[index].copyWith(approvedQty: acceptedNumber);
+                    });
+                  }
+                });
+              },
+              child: _buildQuantityPill('Approved', req.approvedQty, Colors.green)),
           _buildQuantityPill(
               'In Stock',
               req.iNHandQty,
@@ -477,7 +519,6 @@ class RequisitionDetailsScreen extends StatelessWidget {
     );
   }
 
-
   String _formatDate(String? dateString) {
     if (dateString == null) return 'N/A';
     try {
@@ -489,139 +530,3 @@ class RequisitionDetailsScreen extends StatelessWidget {
   }
 }
 
-
-List<Map<String,dynamic>> yourJsonList=[
-    {
-      "Code": "CS002433",
-      "ProductName": "Cement",
-      "CurrencyName": "BDT",
-      "CreditPeriod": "",
-      "PayMode": "A/C payee cheque",
-      "PurchaseRequisitionCode": "GPR0000000047043",
-      "CSDate": "12 Oct 2025",
-      "UserName": "Md. Inzamul Huq",
-      "PurchaseType": "Local",
-      "ProductCategoryName": "Building/Civil",
-      "UomName": "Bag",
-      "BrandName": null,
-      "StoreType": "General",
-      "LastPurQty": "20.00000",
-      "LastPurRate": "580.00000",
-      "LastPurDate": "30 Sep 2025",
-      "CsQty": "200.0000",
-      "SupplierName": "Bashundhara Ready Mix & Construction Ltd.",
-      "Rate": "510.00000",
-      "CSG": "102000.000000",
-      "Discount": "0.000000",
-      "Tax": "Supplier",
-      "Vat": "Yunusco",
-      "CaringCost": "0",
-      "InTax": "Exclude",
-      "InVat": "Exclude",
-      "OldRate": "0.00000",
-      "AdiRate": "0.00000",
-      "FcRate": "0.00000",
-      "MgRate": "0.00000",
-      "Comment": "",
-      "AdComment": "",
-      "FcComment": "",
-      "MgComment": "",
-      "MTF": "102000.000000000",
-      "MGT": "102000.000000000",
-      "V": "0.000000",
-      "T": "0.000000",
-      "GateCost": "0",
-      "Warranty": "N/A",
-      "TaxP": "0.00",
-      "VatP": "0.00"
-    },
-    {
-      "Code": "CS002433",
-      "ProductName": "Cement",
-      "CurrencyName": "BDT",
-      "CreditPeriod": "",
-      "PayMode": "A/C payee cheque",
-      "PurchaseRequisitionCode": "GPR0000000047043",
-      "CSDate": "12 Oct 2025",
-      "UserName": "Md. Inzamul Huq",
-      "PurchaseType": "Local",
-      "ProductCategoryName": "Building/Civil",
-      "UomName": "Bag",
-      "BrandName": null,
-      "StoreType": "General",
-      "LastPurQty": "20.00000",
-      "LastPurRate": "580.00000",
-      "LastPurDate": "30 Sep 2025",
-      "CsQty": "200.0000",
-      "SupplierName": "LafargeHolcim Bangladesh PLC",
-      "Rate": "515.00000",
-      "CSG": "103000.000000",
-      "Discount": "0.000000",
-      "Tax": "Supplier",
-      "Vat": "Yunusco",
-      "CaringCost": "0",
-      "InTax": "Exclude",
-      "InVat": "Exclude",
-      "OldRate": "0.00000",
-      "AdiRate": "0.00000",
-      "FcRate": "0.00000",
-      "MgRate": "0.00000",
-      "Comment": "",
-      "AdComment": "",
-      "FcComment": "",
-      "MgComment": "",
-      "MTF": "103000.000000000",
-      "MGT": "103000.000000000",
-      "V": "0.000000",
-      "T": "0.000000",
-      "GateCost": "0",
-      "Warranty": "N/A",
-      "TaxP": "0.00",
-      "VatP": "0.00"
-    },
-    {
-      "Code": "CS002433",
-      "ProductName": "Cement",
-      "CurrencyName": "BDT",
-      "CreditPeriod": "",
-      "PayMode": "A/C payee cheque",
-      "PurchaseRequisitionCode": "GPR0000000047043",
-      "CSDate": "12 Oct 2025",
-      "UserName": "Md. Inzamul Huq",
-      "PurchaseType": "Local",
-      "ProductCategoryName": "Building/Civil",
-      "UomName": "Bag",
-      "BrandName": null,
-      "StoreType": "General",
-      "LastPurQty": "20.00000",
-      "LastPurRate": "580.00000",
-      "LastPurDate": "30 Sep 2025",
-      "CsQty": "200.0000",
-      "SupplierName": "Shah Cement Industries Ltd",
-      "Rate": "515.00000",
-      "CSG": "103000.000000",
-      "Discount": "0.000000",
-      "Tax": "Supplier",
-      "Vat": "Yunusco",
-      "CaringCost": "0",
-      "InTax": "Exclude",
-      "InVat": "Exclude",
-      "OldRate": "0.00000",
-      "AdiRate": "0.00000",
-      "FcRate": "0.00000",
-      "MgRate": "0.00000",
-      "Comment": "",
-      "AdComment": "",
-      "FcComment": "",
-      "MgComment": "",
-      "MTF": "103000.000000000",
-      "MGT": "103000.000000000",
-      "V": "0.000000",
-      "T": "0.000000",
-      "GateCost": "0",
-      "Warranty": "N/A",
-      "TaxP": "0.00",
-      "VatP": "0.00"
-    }
-
-];

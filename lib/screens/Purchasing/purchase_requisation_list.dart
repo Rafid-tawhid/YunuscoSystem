@@ -203,7 +203,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
           var pp = context.read<ProductProvider>();
           var res = await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
           if (res) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitions: pp.requisationProductDetails, reqModel: requisition)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitionsList: pp.requisationProductDetails, reqModel: requisition)));
           }
         },
         child: Stack(
