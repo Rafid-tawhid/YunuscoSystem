@@ -19,21 +19,38 @@ class PurchaseRequisitionListScreen extends StatefulWidget {
 class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _isFetchingMore = false;
+
 
   @override
   void initState() {
     super.initState();
-    // Load data when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(pageNo: 1);
+      Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(pageNo: _currentPage);
+    });
+
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+          !_isFetchingMore) {
+        _isFetchingMore = true;
+        _currentPage++;
+        await Provider.of<ProductProvider>(context, listen: false)
+            .getAllRequisitions(pageNo: _currentPage);
+        _isFetchingMore = false;
+      }
     });
   }
 
+
   @override
   void dispose() {
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
+
 
   void _toggleSearch() {
     setState(() {
@@ -173,6 +190,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
                       ),
                       Expanded(
                         child: ListView.builder(
+                          controller: _scrollController,
                           padding: const EdgeInsets.all(16),
                           itemCount: displayRequisitions.length,
                           itemBuilder: (context, index) {

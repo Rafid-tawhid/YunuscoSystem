@@ -666,21 +666,45 @@ class ProductProvider extends ChangeNotifier {
 
   Future<void> getAllRequisitions({required int pageNo}) async {
     setLoading(true);
-    var data = await apiService.getData('api/Inventory/PurchaseRequisitionList?pageNumber=$pageNo&pageSize=20');
+    var data = await apiService.getData(
+      'api/Inventory/PurchaseRequisitionList?pageNumber=$pageNo&pageSize=100',
+    );
     setLoading(false);
-    if (data != null) {
-      _requisitions.clear();
+
+    if (data != null && data['returnvalue']?['Data'] != null) {
+      List<PurchaseRequisationListModel> fetchedList = [];
+
       for (var i in data['returnvalue']['Data']) {
-        _requisitions.add(PurchaseRequisationListModel.fromJson(i));
+        fetchedList.add(PurchaseRequisationListModel.fromJson(i));
       }
-      _requisitions = _requisitions.reversed.toList();
-      _filteredRequisitions = _requisitions;
+
+      // 🧠 For page 1: clear existing list. Otherwise, append.
+      if (pageNo == 1) {
+        _requisitions.clear();
+      }
+
+      // 🧩 Avoid duplicates when appending
+      for (var item in fetchedList) {
+        bool alreadyExists = _requisitions.any(
+              (e) => e.purchaseRequisitionCode == item.purchaseRequisitionCode,
+        );
+        if (!alreadyExists) {
+          _requisitions.add(item);
+        }
+      }
+
+      // Optional: sort if needed (remove .reversed)
+      // _requisitions = _requisitions.reversed.toList();
+
+      // Update filtered list (for UI)
+      _filteredRequisitions = List.from(_requisitions);
     }
 
-    debugPrint('_requisitions ${_requisitions.length}');
-    debugPrint('_filteredRequisitions ${_filteredRequisitions.length}');
+    debugPrint('_requisitions count: ${_requisitions.length}');
+    debugPrint('_filteredRequisitions count: ${_filteredRequisitions.length}');
     notifyListeners();
   }
+
 
   updateReqListAfterAcceptOrRej(String reqCode) {
     int index = _filteredRequisitions.indexWhere((e) => e.purchaseRequisitionCode == reqCode);
