@@ -20,6 +20,7 @@ class AppConstants {
   static const int screenRegWidth = 428;
   static const int screenRegHeight = 841; // 📝 Text Styles
 
+  //
   static TextStyle title = GoogleFonts.inter(
     fontSize: 16,
     color: Colors.black,
