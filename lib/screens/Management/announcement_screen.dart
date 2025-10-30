@@ -17,6 +17,7 @@ class AnnouncementScreen extends ConsumerWidget {
     final postsAsync = ref.watch(postsStreamProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Company News Feed'),
         backgroundColor: myColors.primaryColor,
@@ -96,6 +97,7 @@ class PostCard extends ConsumerWidget {
     final deleteNotifier = ref.watch(deletePostProvider(post.id).notifier);
 
     return Card(
+      color: Colors.white,
       margin: EdgeInsets.only(bottom: 16),
       elevation: 2,
       child: Padding(

@@ -276,8 +276,8 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
 
   Widget _buildProductImage(RequisitionDetailsModel req) {
     return Container(
-      width: 60,
-      height: 60,
+      width: 80,
+      height: 80,
 
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -287,7 +287,7 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
           ? ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: CachedNetworkImage(
-                imageUrl: req.imagePathString!,
+                imageUrl: '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const Center(
                   child: CircularProgressIndicator(strokeWidth: 2),

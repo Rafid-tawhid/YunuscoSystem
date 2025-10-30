@@ -38,7 +38,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
     // Group by product name
     for (var req in widget.requisitions) {
       if (!grouped.containsKey(req.productName)) {
-        grouped[req.productName??''] = [];
+        grouped[req.productName ?? ''] = [];
       }
       grouped[req.productName]!.add(req);
     }
@@ -63,9 +63,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
     final selectedItems = _getSelectedItems();
 
     if (selectedItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select at least one supplier'))
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select at least one supplier')));
       return;
     }
 
@@ -73,15 +71,10 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
   }
 
   List<CsRequisationModel> _getSelectedItems() {
-    return _productGroups
-        .where((group) => _selectedSuppliers.containsKey(group.productName))
-        .map((group) {
+    return _productGroups.where((group) => _selectedSuppliers.containsKey(group.productName)).map((group) {
       final selectedSupplierName = _selectedSuppliers[group.productName]!;
-      return group.suppliers.firstWhere(
-              (supplier) => supplier.supplierName == selectedSupplierName
-      );
-    })
-        .toList();
+      return group.suppliers.firstWhere((supplier) => supplier.supplierName == selectedSupplierName);
+    }).toList();
   }
 
   void _showSummaryBottomSheet(List<CsRequisationModel> selectedItems) {
@@ -97,27 +90,25 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Selected Suppliers Summary',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
-            ),
+            Text('Selected Suppliers Summary', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
 
             // Selected items list
-            ...selectedItems.map((item) => ListTile(
-              leading: Icon(Icons.check_circle, color: Colors.green),
-              title: Text(item.productName ?? ''),
-              subtitle: Text('${item.supplierName} - $currency ${item.rate}'),
-              trailing: Text('${currency} ${((item.rate ?? 0) * (item.csQty ?? 0)).toStringAsFixed(2)}'),
-            )).toList(),
+            ...selectedItems
+                .map((item) => ListTile(
+                      leading: Icon(Icons.check_circle, color: Colors.green),
+                      title: Text(item.productName ?? ''),
+                      subtitle: Text('${item.supplierName} - $currency ${item.rate}'),
+                      trailing: Text('${currency} ${((item.rate ?? 0) * (item.csQty ?? 0)).toStringAsFixed(2)}'),
+                    ))
+                .toList(),
 
             Divider(),
 
             // Total
             ListTile(
               title: Text('Grand Total', style: TextStyle(fontWeight: FontWeight.bold)),
-              trailing: Text('$currency ${totalValue.toStringAsFixed(2)}',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)
-              ),
+              trailing: Text('$currency ${totalValue.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
             ),
 
             SizedBox(height: 16),
@@ -127,19 +118,27 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
                 Navigator.pop(context);
                 _confirmSelection(selectedItems);
               },
-              child: Text('Confirm Selection',style: TextStyle(color: Colors.white),),
+              child: Text(
+                'Confirm Selection',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
   //
   void _confirmSelection(List<CsRequisationModel> selectedItems) {
     // Handle confirmation logic
-    print('Confirmed ${selectedItems.length} items');
+    selectedItems.forEach((e){
+      debugPrint('index ${e.productId} : ${e.code}');
+    });
     // Navigate to next screen or save data
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -208,14 +207,10 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
                 SizedBox(height: 8),
 
                 // Supplier selection
-                Text('Select Supplier:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue)
-                ),
+                Text('Select Supplier:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue)),
                 SizedBox(height: 8),
 
-                ...productGroup.suppliers.map((supplier) =>
-                    _buildSupplierOption(supplier, productGroup.productName)
-                ).toList(),
+                ...productGroup.suppliers.map((supplier) => _buildSupplierOption(supplier, productGroup.productName)).toList(),
               ],
             ),
           ),
