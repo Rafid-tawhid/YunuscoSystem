@@ -13,55 +13,40 @@ import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
+import '../common_widgets/blank_screen_notification.dart';
 import '../screens/HR&PayRoll/doc_appointment_requisation.dart';
 import '../screens/HR&PayRoll/requested_car_list.dart';
 import '../screens/Purchasing/purchase_requisation_list.dart';
 import '../screens/login_screen.dart';
 import 'api_services.dart';
 
+
+
 class NavigationService {
   static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState>();
 }
 
 class NotificationServices {
-  // static Future<AccessToken> getFirebaseBearerToken() async {
-  //   final accountCredentials = ServiceAccountCredentials.fromJson(
-  //       json.decode(await rootBundle.loadString('images/utils/server_key.json')));
-  //
-  //   final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-  //
-  //   final client = await clientViaServiceAccount(accountCredentials, scopes);
-  //
-  //   final token = await client.credentials.accessToken;
-  //   client.close();
-  //
-  //   return token;
-  // }
-
   static Future<void> setupPushNotifications(BuildContext context) async {
     try {
       final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
-      // 1. Request permission (platform-aware)
       NotificationSettings settings = await firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
-        provisional:
-            true, // iOS-only: Allow sending notifications without explicit permission
+        provisional: true,
       );
 
       debugPrint(
           'Notification permission status: ${settings.authorizationStatus}');
 
-      // 2. Handle permission denied or limited (e.g., iOS "provisional")
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
         await _openAppSettingsOrShowRationale(context);
         return;
       }
 
-      // 3. Get and handle FCM token
       String? token = await firebaseMessaging.getToken();
       if (token == null) {
         debugPrint('Failed to get FCM token');
@@ -69,73 +54,63 @@ class NotificationServices {
       }
 
       debugPrint("FCM Token: $token");
-      await _sendTokenToServer(token, context); // Send to your backend
+      await _sendTokenToServer(token, context);
 
-      // 4. Handle token refresh (e.g., on app restore or reinstall)
       firebaseMessaging.onTokenRefresh.listen((newToken) {
         debugPrint("FCM Token refreshed: $newToken");
         _sendTokenToServer(newToken, context);
       });
 
-      // 5. Set up foreground/background message handlers
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
       FirebaseMessaging.onMessageOpenedApp
           .listen(_handleBackgroundMessageClick);
 
-      // 6. Configure for iOS/macOS
       if (Platform.isIOS || Platform.isMacOS) {
         await firebaseMessaging.setForegroundNotificationPresentationOptions(
-          alert: true, // Show heads-up notification
-          badge: true, // Update app badge
-          sound: true, // Play sound
+          alert: true,
+          badge: true,
+          sound: true,
         );
       }
 
-      // 7. Handle initial notification (app opened from terminated state)
       RemoteMessage? initialMessage =
-          await firebaseMessaging.getInitialMessage();
+      await firebaseMessaging.getInitialMessage();
       if (initialMessage != null) {
         _handleNotificationClick(initialMessage);
       }
     } catch (e, stackTrace) {
       debugPrint('Error setting up push notifications: $e\n$stackTrace');
-      // Optional: Log error to analytics (e.g., Sentry, Firebase Crashlytics)
     }
   }
 
-// --- Helper Methods ---
-
   static Future<void> _openAppSettingsOrShowRationale(
       BuildContext context) async {
-    // Show a dialog explaining why permissions are needed
     bool? shouldOpenSettings = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Notifications Disabled'),
-        content: Text(
+        title: const Text('Notifications Disabled'),
+        content: const Text(
           'Enable notifications in Settings to receive important updates.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Open Settings'),
+            child: const Text('Open Settings'),
           ),
         ],
       ),
     );
 
     if (shouldOpenSettings == true) {
-      await AppSettings.openAppSettings(); // Using the `app_settings` package
+      await AppSettings.openAppSettings();
     }
   }
 
   static Future<void> _sendTokenToServer(String token, BuildContext ctx) async {
-    // Implement your API call here
-
     ApiService apiService = ApiService();
     var res = await apiService.postData('api/user/CheckDeviceToken', {
       "roleId": DashboardHelpers.currentUser!.roleId,
@@ -145,41 +120,39 @@ class NotificationServices {
     if (res != null) {
       debugPrint('Sending token to server successfully.....');
     } else {
-      // change july 31
-      // remove all exists credential
       SharedPreferences pref = await SharedPreferences.getInstance();
       pref.remove('token');
       AppConstants.token = '';
       Navigator.pushReplacement(
-          ctx, MaterialPageRoute(builder: (ctx) => LoginScreen()));
+          ctx, MaterialPageRoute(builder: (ctx) => const LoginScreen()));
     }
   }
-  //
 
   static void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('Foreground message Title: ${message.notification?.title}');
     debugPrint('Notification Data: ${message.data}');
 
-    //count increase
     final context = NavigationService.navigatorKey.currentContext;
-    var np = context!.read<NotificationProvider>();
-    np.addCount();
-    _showNotification(message); // Your existing notification display logic
+    if (context != null) {
+      var np = context.read<NotificationProvider>();
+      np.addCount();
+    }
+
+    _showNotification(message);
   }
 
   static void _handleBackgroundMessageClick(RemoteMessage message) {
     debugPrint('App opened from background: ${message.data}');
-    _handleNotificationClick(message); // Navigate to a specific screen
+    _handleNotificationClick(message);
   }
 
   static Future<void> initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@drawable/ic_launcher');
+    AndroidInitializationSettings('@drawable/ic_launcher');
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
+    const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: DarwinInitializationSettings(),
     );
@@ -200,18 +173,25 @@ class NotificationServices {
 
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
   }
 
-  //
+  // ✅ Updated: Include title & body in payload
   static Future<void> _showNotification(RemoteMessage message) async {
     final notification = message.notification;
     final android = message.notification?.android;
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
     if (notification != null) {
+      // Add notification details into payload along with existing data
+      final payloadData = {
+        ...message.data,
+        'notification_title': notification.title,
+        'notification_body': notification.body,
+      };
+
       await flutterLocalNotificationsPlugin.show(
         notification.hashCode,
         notification.title,
@@ -221,60 +201,81 @@ class NotificationServices {
             'high_importance_channel',
             'High Importance Notifications',
             channelDescription:
-                'This channel is used for important notifications.',
+            'This channel is used for important notifications.',
             icon: android?.smallIcon ?? '@drawable/ic_launcher',
             importance: Importance.max,
             priority: Priority.high,
           ),
-          iOS: DarwinNotificationDetails(
+          iOS: const DarwinNotificationDetails(
             presentAlert: true,
             presentBadge: true,
             presentSound: true,
           ),
         ),
-        payload: jsonEncode(message.data),
+        payload: jsonEncode(payloadData),
       );
     }
   }
 
   static void _handleNotificationClick(RemoteMessage message) {
     debugPrint("Notification clicked with data: ${message.data}");
-    // Extract navigation route from payload or use default
-    _navigateToRoute(message.data);
+    final Map<String, dynamic> combinedData = {
+      ...message.data,
+      'notification_title': message.notification?.title,
+      'notification_body': message.notification?.body,
+    };
+    _navigateToRouteFromNotification(combinedData);
   }
 
   static void _handleNotificationClickFromTap(String? payload) {
     if (payload != null) {
       final data = jsonDecode(payload) as Map<String, dynamic>;
       debugPrint("Notification clicked with payload: $data");
-      _navigateToRoute(data);
+      _navigateToRouteFromNotification(data);
     }
   }
 
-  static void _navigateToRoute(Map<String, dynamic> data) {
-    // Use navigatorKey from your MaterialApp
+  static void _navigateToRouteFromNotification(Map<String, dynamic> data) {
+    debugPrint('This Is The Notification Navigation Data');
+    debugPrint('-----------------------------------------');
+    debugPrint('Data: $data');
+
     final context = NavigationService.navigatorKey.currentContext;
     if (context == null) return;
 
-    if (data['type'] == "VehicleRequest") {
-      //
-      Navigator.pushReplacement(context,
-          CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()));
-    }
-    if (data['type'] == "MedicalLeave") {
-      //
-      Navigator.pushReplacement(context,
-          CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
-    }
-    if (data['type'] == "PurchaseRequisition") {
-      //
-      Navigator.pushReplacement(context,
-          CupertinoPageRoute(builder: (context) => PurchaseRequisitionListScreen()));
-    }
-    else {
-      Navigator.pushReplacement(context,
-          CupertinoPageRoute(builder: (context) => NotificationsScreen()));
+    final type = data['type'];
+
+    if (type == "VehicleRequest") {
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(builder: (context) => VehicleRequestListScreen()),
+      );
+    } else if (type == "MedicalLeave") {
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(builder: (context) => DocAppoinmentReq()),
+      );
+    } else if (type == "PurchaseRequisition") {
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => PurchaseRequisitionListScreen()),
+      );
+    } else if (type == "MedicalGatePass") {
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => BlankScreenNotification(data: data)),
+      );
+    } else {
+      // ✅ Default: Show BlankScreenNotification with title/body
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => BlankScreenNotification(data: data)),
+      );
     }
   }
 }
+
 

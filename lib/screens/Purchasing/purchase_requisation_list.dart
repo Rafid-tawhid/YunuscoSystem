@@ -212,6 +212,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
   }
 
   Widget _buildRequisitionCard(PurchaseRequisationListModel requisition) {
+
     return Card(
       color: Colors.white,
       elevation: 4,
@@ -313,10 +314,10 @@ getBgColor(String? mgntComment) {
     return Colors.red;
   }
   if (PurchaseStatus.deptHeadApproved == mgntComment) {
-    return Colors.green.shade400;
+    return Colors.green;
   }
   if (PurchaseStatus.managementApproved == mgntComment) {
-    return Colors.green;
+    return Colors.blueAccent;
   } else {
     return Colors.orange;
   }

@@ -325,6 +325,7 @@ class PdfService {
     );
 
 
+
     final output = await getTemporaryDirectory();
     final file = File("${output.path}/Comparative_Statement_$code.pdf");
     await file.writeAsBytes(await pdf.save());

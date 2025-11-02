@@ -190,8 +190,7 @@ class _RequisitionCard extends StatelessWidget {
                 _buildDetailRow('Style Code', requisition.styleCode),
                 _buildDetailRow('Batch No', requisition.batchNo),
                 _buildDetailRow('BOM Code', requisition.bomcode),
-                _buildDetailRow(
-                    'Created By', requisition.createdBy?.toString()),
+                _buildDetailRow('Created By', requisition.createdBy?.toString()),
                 _buildDetailRow('Created Date', requisition.createdDate),
                 _buildDetailRow('Remarks', requisition.remarks),
                 const SizedBox(height: 8),
