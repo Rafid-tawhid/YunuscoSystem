@@ -7,7 +7,7 @@ class AppConstants {
   //Testing
   static const String baseUrl = "https://192.168.15.6:5630/";
   static const String imageUrl = "http://192.168.15.6/api/inventoryapi/";
-
+//
   // demo
   //static const String baseUrl = "http://192.168.15.6:8090/";
   // static const String
