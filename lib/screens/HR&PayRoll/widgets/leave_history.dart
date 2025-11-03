@@ -90,7 +90,7 @@ class CompactLeaveInfo extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 120,
+            width: 140,
             child: Text(title, overflow: TextOverflow.ellipsis),
           ),
           Expanded(

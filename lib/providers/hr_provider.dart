@@ -115,12 +115,11 @@ class HrProvider extends ChangeNotifier {
 
   Future<void> getLeaveApplicationInfo() async {
     setLoading(true);
-    var data = await apiService.getData(
-        'api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
+    var data = await apiService.getData('api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
     setLoading(false);
 
     if (data != null) {
-      _selfLeaveInfo = SelfLeaveInfo.fromJson(data['Results']);
+      _selfLeaveInfo = SelfLeaveInfo.fromJson(data['Data']);
       _leaveTypeList = convertToLeaveBalances(_selfLeaveInfo!.toJson());
     }
     debugPrint('leaveList ${_leaveTypeList.length}');

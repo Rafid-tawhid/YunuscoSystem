@@ -11,7 +11,7 @@ class AppConstants {
   // demo
   //static const String baseUrl = "http://192.168.15.6:8090/";
   // static const String
- // static final  baseUrl = "http://202.74.243.118:8090/"; //real public
+  //static final  baseUrl = "http://202.74.243.118:8090/"; //real public
 
  // static const String apiKey = "AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY";
 
