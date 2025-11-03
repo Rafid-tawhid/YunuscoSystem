@@ -14,12 +14,17 @@ import '../purchase_requisation_list.dart';
 import 'accepted_requisation_number.dart';
 
 
+
+
 class RequisitionDetailsScreen extends StatefulWidget {
   final List<RequisitionDetailsModel> requisitionsList;
-  final PurchaseRequisationListModel reqModel;
+  final PurchaseRequisationListModel? reqModel; // make nullable
 
-
-  const RequisitionDetailsScreen({super.key, required this.requisitionsList,required this.reqModel});
+  const RequisitionDetailsScreen({
+    super.key,
+    required this.requisitionsList,
+    this.reqModel,
+  });
 
   @override
   State<RequisitionDetailsScreen> createState() => _RequisitionDetailsScreenState();
@@ -30,13 +35,14 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     requisitions = widget.requisitionsList;
   }
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController _remarksController = TextEditingController();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -49,129 +55,162 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: ElevatedButton(
+          /// ✅ Show CS button only if reqModel is not null
+          if (widget.reqModel != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: myColors.primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6), // radius
+                    borderRadius: BorderRadius.circular(6),
                   ),
                 ),
                 onPressed: () async {
-                  var pp=context.read<ProductProvider>();
-                  //CS000046
-                  //CS002423
-                  if(await pp.getSingleCSInfoByCode('CS002423'))
-                    {
-                      if(pp.csRequisationList.isNotEmpty){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SupplierSelectionScreen(requisitions: pp.csRequisationList),
+                  var pp = context.read<ProductProvider>();
+                  if (await pp.getSingleCSInfoByCode('CS002423')) {
+                    if (pp.csRequisationList.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SupplierSelectionScreen(
+                            requisitions: pp.csRequisationList,
                           ),
-                        );
-                      }
-                      else {
-                        DashboardHelpers.showAlert(msg: 'No CS Found ');
-                      }
-
+                        ),
+                      );
+                    } else {
+                      DashboardHelpers.showAlert(msg: 'No CS Found');
                     }
+                  }
+                },
+                child: Text(
+                  'CS',
+                  style: customTextStyle(14, Colors.white, FontWeight.bold),
+                ),
+              ),
+            ),
 
-
-                }, child: Text('CS',style: customTextStyle(14, Colors.white, FontWeight.bold),)),
-          ),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: requisitions.length + 1, // Add 1 for the remarks section
+              itemCount: requisitions.length + 1,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 if (index < requisitions.length) {
                   final req = requisitions[index];
-                  return _buildRequisitionCard(req,widget.reqModel,context,index);
+                  return _buildRequisitionCard(
+                      req, widget.reqModel, context, index);
                 } else {
-                  if(widget.reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
-                    {
-                      return  Column(
-                        children: [
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: _remarksController,
-                            maxLines: 3,
-                            decoration: InputDecoration(
-                              hintText: 'Enter your remarks here...',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              contentPadding: const EdgeInsets.all(12),
+                  /// ✅ Only show Approve/Reject section if reqModel is not null
+                  final reqModel = widget.reqModel;
+                  if (reqModel != null &&
+                      reqModel.isComplete == null &&
+                      (DashboardHelpers.currentUser!.isDepartmentHead == true ||
+                          DashboardHelpers.currentUser!.department == 'Management')) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _remarksController,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            hintText: 'Enter your remarks here...',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
+                            contentPadding: const EdgeInsets.all(12),
                           ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    var pp=context.read<ProductProvider>();
-                                    var data=await pp.acceptItem(widget.reqModel,_remarksController.text.trim(),false);
-                                    if(data){
-                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  var pp = context.read<ProductProvider>();
+                                  var data = await pp.acceptItem(
+                                    reqModel,
+                                    _remarksController.text.trim(),
+                                    false,
+                                  );
+                                  if (data) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PurchaseRequisitionListScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text('Reject', style: TextStyle(fontSize: 16)),
                                 ),
+                                child: const Text('Reject',
+                                    style: TextStyle(fontSize: 16)),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-
-                                    var pp=context.read<ProductProvider>();
-                                    var data=await pp.acceptItem(widget.reqModel,_remarksController.text.trim(),true);
-                                    if(data){
-                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  var pp = context.read<ProductProvider>();
+                                  var data = await pp.acceptItem(
+                                    reqModel,
+                                    _remarksController.text.trim(),
+                                    true,
+                                  );
+                                  if (data) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PurchaseRequisitionListScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text('Accept', style: TextStyle(fontSize: 16)),
                                 ),
+                                child: const Text('Accept',
+                                    style: TextStyle(fontSize: 16)),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 30),
-                        ],
-                      );
-                    }
-                 else {
-                  return SizedBox.shrink();
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    );
+                  } else {
+                    return const SizedBox.shrink();
                   }
                 }
               },
             ),
           ),
         ],
-      )
+      ),
     );
   }
 
   Widget _buildRequisitionCard(
-      RequisitionDetailsModel req,PurchaseRequisationListModel model, BuildContext context,int index) {
+      RequisitionDetailsModel req,
+      PurchaseRequisationListModel? model,
+      BuildContext context,
+      int index) {
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -184,29 +223,30 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Row
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(_formatDate(req.requisitionDate),style: customTextStyle(14, Colors.black, FontWeight.bold),),
-                Chip(
-                  label: Text(model.mgntComment??'Pending',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  backgroundColor: getBgColor(model.mgntComment),
+                Text(
+                  _formatDate(req.requisitionDate),
+                  style:
+                  customTextStyle(14, Colors.black, FontWeight.bold),
                 ),
+                /// ✅ Only show chip if model is not null
+                if (model != null)
+                  Chip(
+                    label: Text(
+                      model.mgntComment ?? 'Pending',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: getBgColor(model.mgntComment),
+                  ),
               ],
             ),
-
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image with validation
-                _buildProductImage(req),
-
+                _buildProductImage(req, model),
                 const SizedBox(width: 12),
-
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,44 +269,15 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
                     ],
                   ),
                 ),
-
-                // Status Chip
-                // if (req.status != null)
-                //   Container(
-                //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                //     decoration: BoxDecoration(
-                //       color: _getStatusColor(req.status),
-                //       borderRadius: BorderRadius.circular(12),
-                //     ),
-                //     child: Text(
-                //       req.status!,
-                //       style: const TextStyle(
-                //         color: Colors.white,
-                //         fontSize: 12,
-                //       ),
-                //     ),
-                //   ),
               ],
             ),
-
             const SizedBox(height: 16),
-
-            // Details Section
             _buildDetailSection(req),
-
             const SizedBox(height: 8),
-
-            // Quantity Summary
-            _buildQuantitySummary(req,context,index),
-
+            _buildQuantitySummary(req, context, index),
             const SizedBox(height: 16),
-
-            // Last Purchase Info
             _buildLastPurchaseInfo(req),
-
             const SizedBox(height: 8),
-
-            // Notes if available
             if (req.note?.isNotEmpty == true) _buildNotesSection(req),
           ],
         ),
@@ -274,123 +285,34 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
     );
   }
 
-  Widget _buildProductImage(RequisitionDetailsModel req) {
-    return Container(
-      width: 80,
-      height: 80,
-
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: getBgColor(widget.reqModel.mgntComment),
-      ),
-      child: req.imagePathString != null
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.inventory, size: 30,color: Colors.white,),
-              ),
-            )
-          : const Center(
-              child: Icon(Icons.inventory, size: 30),
-            ),
-    );
-  }
-
-  Widget _buildDetailSection(RequisitionDetailsModel req) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildDetailRow('Employee', req.employeeName),
-        _buildDetailRow('Department', req.department),
-        _buildDetailRow('Section', req.section),
-        _buildDetailRow('Product Description', req.productDescription?.toString()),
-        _buildDetailRow('Unit', '${req.unit}'),
-        _buildDetailRow('Required By', _formatDate(req.requiredDate)),
-        // _buildDetailRow('Approved By', req.approvedBy),
-        // _buildDetailRow('Approval Type', req.approvalType),
-      ],
-    );
-  }
-
-  Widget _buildQuantitySummary(RequisitionDetailsModel req,BuildContext context,int index) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
+  Widget _buildPurchaseDetailRow(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildQuantityPill('Requested', req.actualReqQty, Colors.orange),
-          InkWell(
-              onTap: (){
-                showDialog(
-                  context: context,
-                  builder: (context) => EnhancedRequisitionDialog(
-                    requestedNumber: req.actualReqQty??1,
-                    requisitionId: req.product??'',
-                    onConfirm: (num p1) {
-                      req.copyWith(approvedQty: p1);
-
-                    }, // Your requested number here
-                  ),
-                ).then((acceptedNumber) {
-                  if (acceptedNumber != null) {
-                    print('Accepted: $acceptedNumber');
-                    // Process the accepted number
-                    setState(() {
-                      requisitions[index] = requisitions[index].copyWith(approvedQty: acceptedNumber);
-                    });
-                  }
-                });
-              },
-              child: _buildQuantityPill('Approved', req.approvedQty, Colors.green)),
-          _buildQuantityPill(
-              'In Stock',
-              req.iNHandQty,
-              req.iNHandQty != null && req.iNHandQty! < 10
-                  ? Colors.red
-                  : Colors.blue),
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            value ?? 'N/A',
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildQuantityPill(String label, num? value, Color color) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 12,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Text(
-            value?.toString() ?? '0',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildLastPurchaseInfo(RequisitionDetailsModel req) {
     return Column(
@@ -460,7 +382,97 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
     );
   }
 
-  //
+  Widget _buildQuantityPill(String label, num? value, Color color) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            value?.toString() ?? '0',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildQuantitySummary(RequisitionDetailsModel req,BuildContext context,int index) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildQuantityPill('Requested', req.actualReqQty, Colors.orange),
+          InkWell(
+              onTap: (){
+                showDialog(
+                  context: context,
+                  builder: (context) => EnhancedRequisitionDialog(
+                    requestedNumber: req.actualReqQty??1,
+                    requisitionId: req.product??'',
+                    onConfirm: (num p1) {
+                      req.copyWith(approvedQty: p1);
+
+                    }, // Your requested number here
+                  ),
+                ).then((acceptedNumber) {
+                  if (acceptedNumber != null) {
+                    print('Accepted: $acceptedNumber');
+                    // Process the accepted number
+                    setState(() {
+                      requisitions[index] = requisitions[index].copyWith(approvedQty: acceptedNumber);
+                    });
+                  }
+                });
+              },
+              child: _buildQuantityPill('Approved', req.approvedQty, Colors.green)),
+          _buildQuantityPill(
+              'In Stock',
+              req.iNHandQty,
+              req.iNHandQty != null && req.iNHandQty! < 10
+                  ? Colors.red
+                  : Colors.blue),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailSection(RequisitionDetailsModel req) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDetailRow('Employee', req.employeeName),
+        _buildDetailRow('Department', req.department),
+        _buildDetailRow('Section', req.section),
+        _buildDetailRow('Product Description', req.productDescription?.toString()),
+        _buildDetailRow('Unit', '${req.unit}'),
+        _buildDetailRow('Required By', _formatDate(req.requiredDate)),
+        // _buildDetailRow('Approved By', req.approvedBy),
+        // _buildDetailRow('Approval Type', req.approvalType),
+      ],
+    );
+  }
+
   Widget _buildDetailRow(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -491,34 +503,6 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
     );
   }
 
-  Widget _buildPurchaseDetailRow(String label, String? value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              label,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 13,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            value ?? 'N/A',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _formatDate(String? dateString) {
     if (dateString == null) return 'N/A';
     try {
@@ -528,5 +512,546 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
       return dateString;
     }
   }
+
+  Widget _buildProductImage(RequisitionDetailsModel req, PurchaseRequisationListModel? model) {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: getBgColor(model?.mgntComment),
+      ),
+      child: req.imagePathString != null
+          ? ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          imageUrl:
+          '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
+          fit: BoxFit.cover,
+          placeholder: (context, url) => const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          errorWidget: (context, url, error) =>
+          const Icon(Icons.inventory, size: 30, color: Colors.white),
+        ),
+      )
+          : const Center(child: Icon(Icons.inventory, size: 30)),
+    );
+  }
 }
 
+
+
+//class RequisitionDetailsScreen extends StatefulWidget {
+//   final List<RequisitionDetailsModel> requisitionsList;
+//   final PurchaseRequisationListModel reqModel;
+//
+//   const RequisitionDetailsScreen({super.key, required this.requisitionsList,required this.reqModel});
+//
+//   @override
+//   State<RequisitionDetailsScreen> createState() => _RequisitionDetailsScreenState();
+// }
+//
+// class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
+//   late List<RequisitionDetailsModel> requisitions;
+//
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     requisitions = widget.requisitionsList;
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     final TextEditingController _remarksController = TextEditingController();
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       appBar: AppBar(
+//         title: const Text('Requisition Details'),
+//         centerTitle: true,
+//         foregroundColor: Colors.white,
+//         backgroundColor: myColors.primaryColor,
+//         elevation: 0,
+//       ),
+//       body: Column(
+//         crossAxisAlignment: CrossAxisAlignment.end,
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.only(right: 16.0),
+//             child: ElevatedButton(
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: myColors.primaryColor,
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(6), // radius
+//                   ),
+//                 ),
+//                 onPressed: () async {
+//                   var pp=context.read<ProductProvider>();
+//                   //CS000046
+//                   //CS002423
+//                   if(await pp.getSingleCSInfoByCode('CS002423'))
+//                     {
+//                       if(pp.csRequisationList.isNotEmpty){
+//                         Navigator.push(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) => SupplierSelectionScreen(requisitions: pp.csRequisationList),
+//                           ),
+//                         );
+//                       }
+//                       else {
+//                         DashboardHelpers.showAlert(msg: 'No CS Found ');
+//                       }
+//
+//                     }
+//
+//
+//                 }, child: Text('CS',style: customTextStyle(14, Colors.white, FontWeight.bold),)),
+//           ),
+//           Expanded(
+//             child: ListView.builder(
+//               padding: const EdgeInsets.all(16),
+//               itemCount: requisitions.length + 1, // Add 1 for the remarks section
+//               shrinkWrap: true,
+//               itemBuilder: (context, index) {
+//                 if (index < requisitions.length) {
+//                   final req = requisitions[index];
+//                   return _buildRequisitionCard(req,widget.reqModel,context,index);
+//                 } else {
+//                   if(widget.reqModel.isComplete==null&&(DashboardHelpers.currentUser!.isDepartmentHead==true||DashboardHelpers.currentUser!.department=='Management'))
+//                     {
+//                       return  Column(
+//                         children: [
+//                           const SizedBox(height: 16),
+//                           TextField(
+//                             controller: _remarksController,
+//                             maxLines: 3,
+//                             decoration: InputDecoration(
+//                               hintText: 'Enter your remarks here...',
+//                               border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(8),
+//                               ),
+//                               contentPadding: const EdgeInsets.all(12),
+//                             ),
+//                           ),
+//                           const SizedBox(height: 16),
+//                           Row(
+//                             children: [
+//                               Expanded(
+//                                 child: ElevatedButton(
+//                                   onPressed: () async {
+//                                     var pp=context.read<ProductProvider>();
+//                                     var data=await pp.acceptItem(widget.reqModel,_remarksController.text.trim(),false);
+//                                     if(data){
+//                                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
+//                                     }
+//                                   },
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: Colors.red,
+//                                     foregroundColor: Colors.white,
+//                                     padding: const EdgeInsets.symmetric(vertical: 16),
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(8),
+//                                     ),
+//                                   ),
+//                                   child: const Text('Reject', style: TextStyle(fontSize: 16)),
+//                                 ),
+//                               ),
+//                               const SizedBox(width: 16),
+//                               Expanded(
+//                                 child: ElevatedButton(
+//                                   onPressed: () async {
+//
+//                                     var pp=context.read<ProductProvider>();
+//                                     var data=await pp.acceptItem(widget.reqModel,_remarksController.text.trim(),true);
+//                                     if(data){
+//                                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>PurchaseRequisitionListScreen()));
+//                                     }
+//                                   },
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: Colors.green,
+//                                     foregroundColor: Colors.white,
+//                                     padding: const EdgeInsets.symmetric(vertical: 16),
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(8),
+//                                     ),
+//                                   ),
+//                                   child: const Text('Accept', style: TextStyle(fontSize: 16)),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                           const SizedBox(height: 30),
+//                         ],
+//                       );
+//                     }
+//                  else {
+//                   return SizedBox.shrink();
+//                   }
+//                 }
+//               },
+//             ),
+//           ),
+//         ],
+//       )
+//     );
+//   }
+//
+//   Widget _buildRequisitionCard(RequisitionDetailsModel req,PurchaseRequisationListModel model, BuildContext context,int index) {
+//     return Card(
+//       elevation: 2,
+//       color: Colors.white,
+//       margin: const EdgeInsets.only(bottom: 16),
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(12),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             // Header Row
+//
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(_formatDate(req.requisitionDate),style: customTextStyle(14, Colors.black, FontWeight.bold),),
+//                 Chip(
+//                   label: Text(model.mgntComment??'Pending',
+//                     style: const TextStyle(color: Colors.white),
+//                   ),
+//                   backgroundColor: getBgColor(model.mgntComment),
+//                 ),
+//               ],
+//             ),
+//
+//             Row(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 // Image with validation
+//                 _buildProductImage(req),
+//
+//                 const SizedBox(width: 12),
+//
+//                 Expanded(
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         req.product ?? 'No Product Name',
+//                         style: const TextStyle(
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 16,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 4),
+//                       Text(
+//                         'Req #${req.requisitionCode ?? 'N/A'} •',
+//                         style: TextStyle(
+//                           color: Colors.grey[600],
+//                           fontSize: 12,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//
+//                 // Status Chip
+//                 // if (req.status != null)
+//                 //   Container(
+//                 //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//                 //     decoration: BoxDecoration(
+//                 //       color: _getStatusColor(req.status),
+//                 //       borderRadius: BorderRadius.circular(12),
+//                 //     ),
+//                 //     child: Text(
+//                 //       req.status!,
+//                 //       style: const TextStyle(
+//                 //         color: Colors.white,
+//                 //         fontSize: 12,
+//                 //       ),
+//                 //     ),
+//                 //   ),
+//               ],
+//             ),
+//
+//             const SizedBox(height: 16),
+//
+//             // Details Section
+//             _buildDetailSection(req),
+//
+//             const SizedBox(height: 8),
+//
+//             // Quantity Summary
+//             _buildQuantitySummary(req,context,index),
+//
+//             const SizedBox(height: 16),
+//
+//             // Last Purchase Info
+//             _buildLastPurchaseInfo(req),
+//
+//             const SizedBox(height: 8),
+//
+//             // Notes if available
+//             if (req.note?.isNotEmpty == true) _buildNotesSection(req),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildProductImage(RequisitionDetailsModel req) {
+//     return Container(
+//       width: 80,
+//       height: 80,
+//
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(8),
+//         color: getBgColor(widget.reqModel.mgntComment),
+//       ),
+//       child: req.imagePathString != null
+//           ? ClipRRect(
+//               borderRadius: BorderRadius.circular(8),
+//               child: CachedNetworkImage(
+//                 imageUrl: '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
+//                 fit: BoxFit.cover,
+//                 placeholder: (context, url) => const Center(
+//                   child: CircularProgressIndicator(strokeWidth: 2),
+//                 ),
+//                 errorWidget: (context, url, error) =>
+//                     const Icon(Icons.inventory, size: 30,color: Colors.white,),
+//               ),
+//             )
+//           : const Center(
+//               child: Icon(Icons.inventory, size: 30),
+//             ),
+//     );
+//   }
+//
+//   Widget _buildDetailSection(RequisitionDetailsModel req) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         _buildDetailRow('Employee', req.employeeName),
+//         _buildDetailRow('Department', req.department),
+//         _buildDetailRow('Section', req.section),
+//         _buildDetailRow('Product Description', req.productDescription?.toString()),
+//         _buildDetailRow('Unit', '${req.unit}'),
+//         _buildDetailRow('Required By', _formatDate(req.requiredDate)),
+//         // _buildDetailRow('Approved By', req.approvedBy),
+//         // _buildDetailRow('Approval Type', req.approvalType),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildQuantitySummary(RequisitionDetailsModel req,BuildContext context,int index) {
+//     return Container(
+//       padding: const EdgeInsets.all(12),
+//       decoration: BoxDecoration(
+//         color: Colors.grey[100],
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceAround,
+//         children: [
+//           _buildQuantityPill('Requested', req.actualReqQty, Colors.orange),
+//           InkWell(
+//               onTap: (){
+//                 showDialog(
+//                   context: context,
+//                   builder: (context) => EnhancedRequisitionDialog(
+//                     requestedNumber: req.actualReqQty??1,
+//                     requisitionId: req.product??'',
+//                     onConfirm: (num p1) {
+//                       req.copyWith(approvedQty: p1);
+//
+//                     }, // Your requested number here
+//                   ),
+//                 ).then((acceptedNumber) {
+//                   if (acceptedNumber != null) {
+//                     print('Accepted: $acceptedNumber');
+//                     // Process the accepted number
+//                     setState(() {
+//                       requisitions[index] = requisitions[index].copyWith(approvedQty: acceptedNumber);
+//                     });
+//                   }
+//                 });
+//               },
+//               child: _buildQuantityPill('Approved', req.approvedQty, Colors.green)),
+//           _buildQuantityPill(
+//               'In Stock',
+//               req.iNHandQty,
+//               req.iNHandQty != null && req.iNHandQty! < 10
+//                   ? Colors.red
+//                   : Colors.blue),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildQuantityPill(String label, num? value, Color color) {
+//     return Column(
+//       children: [
+//         Text(
+//           label,
+//           style: TextStyle(
+//             color: Colors.grey[600],
+//             fontSize: 12,
+//           ),
+//         ),
+//         const SizedBox(height: 4),
+//         Container(
+//           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//           decoration: BoxDecoration(
+//             color: color,
+//             borderRadius: BorderRadius.circular(16),
+//           ),
+//           child: Text(
+//             value?.toString() ?? '0',
+//             style: const TextStyle(
+//               color: Colors.white,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildLastPurchaseInfo(RequisitionDetailsModel req) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Text(
+//           'LAST PURCHASE INFO',
+//           style: TextStyle(
+//             fontWeight: FontWeight.bold,
+//             color: Colors.grey,
+//             fontSize: 12,
+//             letterSpacing: 0.5,
+//           ),
+//         ),
+//         const SizedBox(height: 8),
+//         Container(
+//           padding: const EdgeInsets.all(12),
+//           decoration: BoxDecoration(
+//             border: Border.all(color: Colors.grey[300]!),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           child: Column(
+//             children: [
+//               _buildPurchaseDetailRow(
+//                   'Date', _formatDate(req.lastPurchaseDate)),
+//               _buildPurchaseDetailRow('Supplier', req.supplierName),
+//               _buildPurchaseDetailRow(
+//                   'Rate', req.lastPurchaseRate?.toStringAsFixed(2)),
+//               _buildPurchaseDetailRow(
+//                   'Total', '\$${req.totalPurchaseAmount?.toStringAsFixed(2)}'),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildNotesSection(RequisitionDetailsModel req) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Text(
+//           'NOTES',
+//           style: TextStyle(
+//             fontWeight: FontWeight.bold,
+//             color: Colors.grey,
+//             fontSize: 12,
+//             letterSpacing: 0.5,
+//           ),
+//         ),
+//         const SizedBox(height: 8),
+//         Container(
+//           width: double.infinity,
+//           padding: const EdgeInsets.all(12),
+//           decoration: BoxDecoration(
+//             color: Colors.amber[50],
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           child: Text(
+//             req.note!,
+//             style: const TextStyle(
+//               fontWeight: FontWeight.w500,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   //
+//   Widget _buildDetailRow(String label, String? value) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 6),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           SizedBox(
+//             width: 120,
+//             child: Text(
+//               label,
+//               style: TextStyle(
+//                 color: Colors.grey[600],
+//                 fontSize: 13,
+//               ),
+//             ),
+//           ),
+//           const SizedBox(width: 8),
+//           Expanded(
+//             child: Text(
+//               value ?? 'N/A',
+//               style: const TextStyle(
+//                 fontSize: 13,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildPurchaseDetailRow(String label, String? value) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 4),
+//       child: Row(
+//         children: [
+//           SizedBox(
+//             width: 80,
+//             child: Text(
+//               label,
+//               style: TextStyle(
+//                 color: Colors.grey[600],
+//                 fontSize: 13,
+//               ),
+//             ),
+//           ),
+//           const SizedBox(width: 8),
+//           Text(
+//             value ?? 'N/A',
+//             style: const TextStyle(
+//               fontSize: 13,
+//               fontWeight: FontWeight.w500,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   String _formatDate(String? dateString) {
+//     if (dateString == null) return 'N/A';
+//     try {
+//       final date = DateTime.parse(dateString);
+//       return DateFormat('MMM dd, yyyy').format(date);
+//     } catch (e) {
+//       return dateString;
+//     }
+//   }
+// }

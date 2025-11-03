@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/models/css_model.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
+import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/providers/purchase_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
+
+import '../Purchasing/widgets/purchase_product_details.dart';
 
 class ComperativeStatementList extends StatefulWidget {
   const ComperativeStatementList({super.key});
@@ -133,55 +137,66 @@ class RequisitionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              requisition.purchaseRequisitionCode ?? '',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              requisition.userName ?? '',
-              style: TextStyle(color: Colors.grey[700], fontSize: 14),
-            ),
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildChip(requisition.purchaseType ?? '',
-                    Colors.blue[100]!, Colors.blue[800]!),
-                const SizedBox(width: 8),
-                _buildChip(requisition.type ?? '',
-                    Colors.green[100]!, Colors.green[800]!),
-              ],
-            ),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              requisition.code ?? '',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              requisition.createdDate ?? '',
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
-            ),
-          ],
+    return InkWell(
+      onTap: () async {
+        ///api/Inventory/SingleGenPurReqMaster&Detail?Code=GPR0000000047054
+        var pp=context.read<ProductProvider>();
+        var res=await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
+
+        if (res) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitionsList: pp.requisationProductDetails,)));
+        }
+      },
+      child: Card(
+        color: Colors.white,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        elevation: 2,
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(16),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                requisition.purchaseRequisitionCode ?? '',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                requisition.userName ?? '',
+                style: TextStyle(color: Colors.grey[700], fontSize: 14),
+              ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _buildChip(requisition.purchaseType ?? '',
+                      Colors.blue[100]!, Colors.blue[800]!),
+                  const SizedBox(width: 8),
+                  _buildChip(requisition.type ?? '',
+                      Colors.green[100]!, Colors.green[800]!),
+                ],
+              ),
+            ],
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                requisition.code ?? '',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                requisition.createdDate ?? '',
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+            ],
+          ),
         ),
       ),
     );

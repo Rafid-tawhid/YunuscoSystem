@@ -147,8 +147,7 @@ class PlanningScreen extends ConsumerWidget {
                 _buildInfoItem('Target', '${line.targetValue ?? 'N/A'}'),
                 _buildInfoItem('WIP', '${line.wip ?? 'N/A'}'),
                 _buildInfoItem('SMV', '${line.smv ?? 'N/A'}'),
-                _buildInfoItem(
-                    'Man Power', '${line.allocatedManPower ?? 'N/A'}'),
+                _buildInfoItem('Man Power', '${line.allocatedManPower ?? 'N/A'}'),
                 _buildInfoItem('Hours', '${line.workingHour ?? 'N/A'}'),
               ],
             ),
