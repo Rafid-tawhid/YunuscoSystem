@@ -16,7 +16,13 @@ final allBookingsProvider = FutureProvider<List<BoardRoomBookingModel>>((ref) as
   if (response != null) {
     List<BoardRoomBookingModel> bookings = [];
     for (var item in response) {
-      bookings.add(BoardRoomBookingModel.fromJson(item));
+      var data= BoardRoomBookingModel.fromJson(item);
+      if(isPastDateTime(data.endTime.toString())){
+        data.status='completed' ;
+      }
+      if(data.status!='cancelled'){
+        bookings.add(data);
+      }
     }
     return bookings;
   } else {
@@ -31,13 +37,33 @@ final todaysBookingsProvider = FutureProvider<List<BoardRoomBookingModel>>((ref)
   if (response != null) {
     List<BoardRoomBookingModel> bookings = [];
     for (var item in response) {
-      bookings.add(BoardRoomBookingModel.fromJson(item));
+     var data= BoardRoomBookingModel.fromJson(item);
+     if(isPastDateTime(data.endTime.toString())){
+       data.status='completed' ;
+     }
+     if(data.status!='cancelled'){
+       bookings.add(data);
+     }
+
+
     }
     return bookings;
   } else {
     throw Exception('Failed to load today\'s bookings');
   }
 });
+
+
+bool isPastDateTime(String dateTimeString) {
+  try {
+    final dateTime = DateTime.parse(dateTimeString);
+    final now = DateTime.now();
+    return now.isAfter(dateTime);
+  } catch (e) {
+    print('Invalid date format: $e');
+    return false;
+  }
+}
 
 final selectedDeptProvider = StateProvider<Departments?>((ref) => null);
 

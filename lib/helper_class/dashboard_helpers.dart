@@ -973,6 +973,7 @@ class DashboardHelpers {
 
 
   static DateTime parseDateOrNow(String? dateStr) {
+
     try {
       if (dateStr == null || dateStr.isEmpty) {
         return DateTime.now();
