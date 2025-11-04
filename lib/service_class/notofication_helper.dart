@@ -261,7 +261,7 @@ class NotificationServices {
         CupertinoPageRoute(
             builder: (context) => PurchaseRequisitionListScreen()),
       );
-    } else if (type == "MedicalGatePass") {
+    } else if (type == "MedicalSystem") {
       Navigator.pushReplacement(
         context,
         CupertinoPageRoute(

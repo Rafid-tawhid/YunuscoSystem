@@ -34,7 +34,6 @@ android {
         applicationId = "com.system.yunusco_group"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
-        // Use properties from flutter.properties or default values
         versionCode = (findProperty("flutter.versionCode") as? String)?.toIntOrNull() ?: 1
         versionName = findProperty("flutter.versionName") as? String ?: "1.0.0"
     }
@@ -52,7 +51,6 @@ android {
 
     buildTypes {
         getByName("release") {
-            // Use release signing if properties file exists, otherwise use debug
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
             } else {
@@ -60,26 +58,33 @@ android {
             }
             isMinifyEnabled = true
             isShrinkResources = true
-            // NDK debug symbol configuration (if needed)
-            ndk {
-                // debugSymbolLevel is not available in current AGP versions
-                // You can remove this block if not needed
-            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
+    // 🔧 FIX for duplicate Play Core classes
+    configurations {
+        all {
+            exclude(group = "com.google.android.play", module = "core")
+            exclude(group = "com.google.android.play", module = "core-common")
+        }
+    }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0")  // Update Kotlin
-    implementation("androidx.appcompat:appcompat:1.6.1")  // Add AppCompat
-    implementation("com.google.android.material:material:1.10.0")  // Add Material
-    // ... other dependencies
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.10.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
+    // 🔥 (Optional) If any plugin requires Play Core, force a single version:
+    implementation("com.google.android.play:core:1.10.3") {
+        exclude(group = "com.google.android.play", module = "core-common")
+    }
+    implementation("com.google.android.play:core-common:2.0.3")
 }
 
 flutter {

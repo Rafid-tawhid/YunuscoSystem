@@ -342,7 +342,7 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
               _buildPurchaseDetailRow(
                   'Rate', req.lastPurchaseRate?.toStringAsFixed(2)),
               _buildPurchaseDetailRow(
-                  'Total', '\$${req.totalPurchaseAmount?.toStringAsFixed(2)}'),
+                  'Total', '${req.totalPurchaseAmount?.toStringAsFixed(2)} Bdt'),
             ],
           ),
         ),
