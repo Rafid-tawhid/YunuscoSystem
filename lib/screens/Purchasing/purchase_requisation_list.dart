@@ -22,7 +22,8 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 1;
   bool _isFetchingMore = false;
-
+  String selectedValue = 'All';
+  List<PurchaseRequisationListModel> _filteredList = [];
 
   @override
   void initState() {
@@ -30,19 +31,7 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(pageNo: _currentPage);
     });
-
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
-          !_isFetchingMore) {
-        _isFetchingMore = true;
-        _currentPage++;
-        await Provider.of<ProductProvider>(context, listen: false)
-            .getAllRequisitions(pageNo: _currentPage);
-        _isFetchingMore = false;
-      }
-    });
   }
-
 
   @override
   void dispose() {
@@ -51,13 +40,11 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
     super.dispose();
   }
 
-
   void _toggleSearch() {
     setState(() {
       _isSearching = !_isSearching;
       if (!_isSearching) {
         _searchController.clear();
-        // Reset the search filter in provider
         Provider.of<ProductProvider>(context, listen: false).filterRequisitions('');
       }
     });
@@ -71,6 +58,36 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
     await Provider.of<ProductProvider>(context, listen: false).getAllRequisitions(pageNo: 1);
   }
 
+  void _applyFilter(String value, List<PurchaseRequisationListModel> allRequisitions) {
+    setState(() {
+      selectedValue = value;
+      _isSearching = false;
+
+      if (value == 'All') {
+        _filteredList = allRequisitions;
+      } else if (value == 'Pending') {
+        if (DashboardHelpers.currentUser!.department == '15') {
+          // Management user
+          _filteredList = allRequisitions.where((e) => e.mgntComment == PurchaseStatus.deptHeadApproved).toList();
+        } else {
+          // Regular user
+          _filteredList = allRequisitions.where((e) => e.mgntComment == null || e.mgntComment!.isEmpty).toList();
+        }
+      } else if (value == 'Approved') {
+        if (DashboardHelpers.currentUser!.department == '15') {
+          // Management user
+          _filteredList = allRequisitions.where((e) =>
+          (e.mgntComment == PurchaseStatus.managementApproved) ||
+              e.mgntComment == PurchaseStatus.managementRejected
+          ).toList();
+        } else {
+          // Regular user
+          _filteredList = allRequisitions.where((e) => e.mgntComment == PurchaseStatus.deptHeadApproved).toList();
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,37 +96,37 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
         backgroundColor: myColors.primaryColor,
         title: _isSearching
             ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Search requisitions...',
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: InputBorder.none,
-                ),
-                onChanged: _onSearchChanged,
-              )
+          controller: _searchController,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: 'Search requisitions...',
+            hintStyle: TextStyle(color: Colors.white70),
+            border: InputBorder.none,
+          ),
+          onChanged: _onSearchChanged,
+        )
             : const Text(
-                'Purchase Requisitions',
-                style: TextStyle(color: Colors.white),
-              ),
+          'Purchase Requisitions',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: _isSearching
             ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  _toggleSearch();
-                  Navigator.pop(context);
-                },
-              )
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            _toggleSearch();
+            Navigator.pop(context);
+          },
+        )
             : IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-              ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
         actions: [
           if (_isSearching)
             IconButton(
@@ -124,85 +141,107 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
               icon: const Icon(Icons.search, color: Colors.white),
               onPressed: _toggleSearch,
             ),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(builder: (context) => const CreatePurchaseRequisitionScreen())
+                );
+              },
+              icon: const Icon(Icons.add, color: Colors.white)
+          )
         ],
       ),
-      body: Column(
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: myColors.green),
-                  onPressed: () {
-                    Navigator.push(context, CupertinoPageRoute(builder: (context) => const CreatePurchaseRequisitionScreen()));
-                  },
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Create',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ],
-                  )),
+      body: Consumer<ProductProvider>(
+        builder: (context, provider, child) {
+          // FIX: Initialize filtered list when provider data is available
+          if (_filteredList.isEmpty && provider.requisitions.isNotEmpty) {
+            _filteredList = List.from(provider.requisitions);
+          }
+
+          final displayRequisitions = _isSearching ? provider.filteredRequisitions : _filteredList;
+
+          return Column(
+            children: [
+              Expanded(
+                child: _buildContent(provider, displayRequisitions),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildContent(ProductProvider provider, List<PurchaseRequisationListModel> displayRequisitions) {
+    if (provider.isLoading && provider.requisitions.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (displayRequisitions.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.8,
+            child: Center(
+              child: Text(
+                _isSearching ? 'No matching requisitions found.' : 'No requisition found.',
+              ),
             ),
           ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Filter Dropdown
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const SizedBox(width: 8),
+                Text('Total : ${displayRequisitions.length}'),
+                const Spacer(),
+                Consumer<ProductProvider>(
+                  builder: (context, provider, child) {
+                    return DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedValue,
+                        icon: const Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
+                        borderRadius: BorderRadius.circular(12),
+                        items: const [
+                          DropdownMenuItem(value: 'All', child: Text('All')),
+                          DropdownMenuItem(value: 'Pending', child: Text('Pending')),
+                          DropdownMenuItem(value: 'Approved', child: Text('Approved')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            _applyFilter(value, provider.requisitions);
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          // Requisitions List
           Expanded(
-            child: Consumer<ProductProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final displayRequisitions = _isSearching ? provider.filteredRequisitions : provider.requisitions;
-
-                if (displayRequisitions.isEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: _refreshData,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        child: Center(
-                          child: Text(
-                            _isSearching ? 'No matching requisitions found.' : 'No requisition found.',
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                //
-                return RefreshIndicator(
-                  onRefresh: _refreshData,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16.0),
-                        child: Text('Total : ${displayRequisitions.length}'),
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.all(16),
-                          itemCount: displayRequisitions.length,
-                          itemBuilder: (context, index) {
-                            final requisition = displayRequisitions[index];
-                            return _buildRequisitionCard(requisition);
-                          },
-                        ),
-                      ),
-
-                    ],
-                  ),
-                );
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: displayRequisitions.length,
+              itemBuilder: (context, index) {
+                final requisition = displayRequisitions[index];
+                return _buildRequisitionCard(requisition);
               },
             ),
           ),
@@ -212,18 +251,24 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
   }
 
   Widget _buildRequisitionCard(PurchaseRequisationListModel requisition) {
-
     return Card(
       color: Colors.white,
       elevation: 4,
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: () async {
-          // Navigate to detail screen
           var pp = context.read<ProductProvider>();
           var res = await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
           if (res) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitionsList: pp.requisationProductDetails, reqModel: requisition)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RequisitionDetailsScreen(
+                        requisitionsList: pp.requisationProductDetails,
+                        reqModel: requisition
+                    )
+                )
+            );
           }
         },
         child: Stack(
@@ -243,12 +288,12 @@ class _PurchaseRequisitionListScreenState extends State<PurchaseRequisitionListS
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                     ],
                   ),
                   const SizedBox(height: 8),
                   _buildInfoRow(Icons.person, requisition.userName ?? 'Unknown'),
-                  if (requisition.department != null) _buildInfoRow(Icons.business, requisition.department?.toString() ?? 'No Department'),
+                  if (requisition.department != null)
+                    _buildInfoRow(Icons.business, requisition.department?.toString() ?? 'No Department'),
                   _buildInfoRow(Icons.category, requisition.productType ?? 'No Product Type'),
                   _buildInfoRow(Icons.calendar_today, DashboardHelpers.convertDateTime(requisition.createdDate ?? '') ?? 'No Date'),
                   _buildInfoRow(Icons.info_outline, requisition.productType ?? ''),

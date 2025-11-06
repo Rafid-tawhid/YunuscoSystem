@@ -667,7 +667,7 @@ class ProductProvider extends ChangeNotifier {
   Future<void> getAllRequisitions({required int pageNo}) async {
     setLoading(true);
     var data = await apiService.getData(
-      'api/Inventory/PurchaseRequisitionList?pageNumber=$pageNo&pageSize=100',
+      'api/Inventory/PurchaseRequisitionList?pageNumber=1&pageSize=10000',
     );
     setLoading(false);
 

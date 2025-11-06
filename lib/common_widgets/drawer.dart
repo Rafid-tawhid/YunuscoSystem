@@ -7,6 +7,7 @@ import '../providers/riverpods/testing.dart';
 import '../screens/Profile/capture_nid_info.dart';
 import '../screens/Profile/user_access_type.dart';
 import '../screens/Purchasing/new_req_list_screen.dart';
+import '../screens/Purchasing/purchase_requisation_list.dart';
 import '../screens/login_screen.dart';
 import '../screens/testing/testing_Screen.dart';
 import '../utils/google_drive.dart';
@@ -97,6 +98,17 @@ class MyDrawer extends StatelessWidget {
                   MaterialPageRoute(
                    builder: (context) => UserFormScreen(),
                    // builder: (context) => PurchaseScreen2(),
+                  ),
+                );
+              }
+              else {
+                //8096
+                //PurchaseRequisitionListScreen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PurchaseRequisitionListScreen(),
+                    // builder: (context) => PurchaseScreen2(),
                   ),
                 );
               }

@@ -14,8 +14,6 @@ import '../purchase_requisation_list.dart';
 import 'accepted_requisation_number.dart';
 
 
-
-
 class RequisitionDetailsScreen extends StatefulWidget {
   final List<RequisitionDetailsModel> requisitionsList;
   final PurchaseRequisationListModel? reqModel; // make nullable

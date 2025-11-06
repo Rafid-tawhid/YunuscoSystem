@@ -1,15 +1,13 @@
-# Keep Flutter's Play Store deferred component classes (safe even if unused)
--keep class io.flutter.embedding.android.** { *; }
--keep class io.flutter.embedding.engine.deferredcomponents.** { *; }
+# Flutter
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
 
-# Keep Google Play SplitCompat and SplitInstall (prevents R8 missing class)
--keep class com.google.android.play.core.splitcompat.** { *; }
--keep class com.google.android.play.core.splitinstall.** { *; }
--keep class com.google.android.play.core.tasks.** { *; }
--keep class com.google.android.play.core.common.** { *; }
+# Add your package name
+-keep class com.yourcompany.yourapp.** { *; }
 
-# Don't warn about missing Play Core classes (safe fallback)
--dontwarn com.google.android.play.core.**
--dontwarn com.google.android.play.core.splitcompat.**
--dontwarn com.google.android.play.core.splitinstall.**
--dontwarn com.google.android.play.core.tasks.**
+# Platform channels
+-keep class * extends io.flutter.plugin.common.MethodCall { *; }
