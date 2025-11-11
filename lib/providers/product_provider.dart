@@ -920,6 +920,22 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> getAllPurchaseSearchList(String query) async {
+    setLoading(true);
+    var data = await apiService.getData('api/Inventory/PurchaseOrderList?searchTerm=$query');
+    setLoading(false);
+    if (data != null) {
+      _purchaseList.clear();
+      for (var i in data['Data']['Items']) {
+        _purchaseList.add(PurchaseOrderModel.fromJson(i));
+      }
+      _countPage = data['Data']['TotalCount'];
+
+      debugPrint('_purchaseList ${_purchaseList.length}');
+    }
+    notifyListeners();
+  }
+
   String getStatus(bool isAccept) {
 
     if (DashboardHelpers.currentUser!.department == '15') //Management

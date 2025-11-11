@@ -34,7 +34,7 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
   }
   void getPurchaseInfo() {
     var pp=context.read<ProductProvider>();
-    //pp.getAllPurchaseList();
+   // pp.getAllPurchaseList();
   }
 
   @override
@@ -54,6 +54,10 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
           style: const TextStyle(color: Colors.white, fontSize: 18),
           onChanged: (value) {
             // 🔍 Handle search logic here
+
+              var pp=context.read<ProductProvider>();
+              pp.getAllPurchaseSearchList(value);
+
             print("Searching for $value");
           },
         )
@@ -69,6 +73,9 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
                 _isSearching = !_isSearching;
                 if (!_isSearching) {
                   _searchController.clear();
+                  var pp=context.read<ProductProvider>();
+                  pp.getAllPurchaseList('$_currentPage','50');
+
                 }
               });
             },
@@ -84,11 +91,13 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${widget.purchaseOrders.length} orders found',
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 14,
+                Consumer<ProductProvider>(
+                  builder: (context,pro,_)=>Text(
+                    '${pro.purchaseList.length} orders found',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 if (_filterStatus != 'All' || _filterType != 'All')

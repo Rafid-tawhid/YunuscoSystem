@@ -49,7 +49,7 @@ class PurchasingDashboard extends StatelessWidget {
         },
       ),
       DashboardMenuItem(
-        name: "Order\n List",
+        name: "Purchase\n Order",
         icon: Icons.list,
         cardColor: Colors.purple.shade100,
         iconColor: Colors.purple,
