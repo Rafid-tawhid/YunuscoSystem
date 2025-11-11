@@ -681,7 +681,8 @@ class ShipmentInfoScreen extends ConsumerWidget {
 
   double _calculatePercentage(num value, num total) {
     if (total == 0) return 0.0;
-    return (value / total * 100);
+    double percentage = (value / total * 100);
+    return double.parse(percentage.toStringAsFixed(2));
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/utils/colors.dart';
-
+import 'package:intl/intl.dart';
 import '../../models/dhu_model.dart';
 import '../../providers/riverpods/management_provider.dart';
 
@@ -11,7 +11,8 @@ class DHUScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDate = '2025-11-03';
+    // Initialize with today's date
+    final selectedDate = ref.watch(selectedDateProvider);
     final asyncData = ref.watch(mmrValueProvider(selectedDate));
     final dhuDataAsync = ref.watch(dhuDataProvider(selectedDate));
 
@@ -23,6 +24,13 @@ class DHUScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
+          // Date Picker Button
+          IconButton(
+            icon: const Icon(Icons.calendar_today, size: 20),
+            onPressed: () => _selectDate(context, ref),
+            tooltip: 'Select Date',
+          ),
+          // Refresh Button
           IconButton(
             icon: const Icon(Icons.refresh, size: 24),
             onPressed: () {
@@ -35,7 +43,8 @@ class DHUScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-
+          // Date Display Card
+          _buildDateCard(selectedDate, ref, context),
 
           // DHU Data Section
           Expanded(
@@ -107,14 +116,13 @@ class DHUScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-
                       // MMR Value Card
                       asyncData.when(
                         data: (data) => _buildMMRCard(data['returnvalue'].toString()),
                         loading: () => _buildMMRCard('Loading...', isLoading: true),
                         error: (error, _) => _buildMMRCard('Error', isError: true),
                       ),
-                      SizedBox(height: 8,),
+                      const SizedBox(height: 8),
                       // Total DHU Card
                       _buildTotalDHUCard(data.totalDHU),
                       const SizedBox(height: 20),
@@ -125,7 +133,7 @@ class DHUScreen extends ConsumerWidget {
 
                       // Line-wise DHU
                       _buildLineDHUCard(data.lineWiseDHU),
-                      SizedBox(height: 120,)
+                      const SizedBox(height: 120),
                     ],
                   ),
                 );
@@ -137,6 +145,107 @@ class DHUScreen extends ConsumerWidget {
     );
   }
 
+  // Date Selection Function
+  Future<void> _selectDate(BuildContext context, WidgetRef ref) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: myColors.primaryColor, // header background color
+              onPrimary: Colors.white, // header text color
+              onSurface: Colors.black, // body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: myColors.primaryColor, // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+      ref.read(selectedDateProvider.notifier).state = formattedDate;
+
+      // Refresh data for the new date
+      ref.invalidate(dhuDataProvider);
+      ref.invalidate(mmrValueProvider);
+    }
+  }
+
+  // Date Display Card Widget
+  Widget _buildDateCard(String selectedDate, WidgetRef ref, BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            myColors.primaryColor.withOpacity(0.1),
+            myColors.primaryColor.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: myColors.primaryColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Selected Date',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                DateFormat('MMMM dd, yyyy').format(DateTime.parse(selectedDate)),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: myColors.primaryColor,
+                ),
+              ),
+            ],
+          ),
+          ElevatedButton.icon(
+            onPressed: () => _selectDate(context, ref),
+            icon: const Icon(Icons.calendar_month, size: 18),
+            label: const Text('Change Date'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: myColors.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Your existing widget methods remain the same...
   Widget _buildMMRCard(String value, {bool isLoading = false, bool isError = false}) {
     return Card(
       elevation: 2,

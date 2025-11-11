@@ -147,7 +147,7 @@ class KaizanCountScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            Text(nums.toString()),
+            // Text(nums.toString()),
             // Clear Dates Button
             if (dates['fromDate'] != null || dates['toDate'] != null)
               Padding(

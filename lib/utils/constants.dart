@@ -8,10 +8,10 @@ import '../screens/home_page.dart';
 class AppConstants {
   // 🔗 API Base URLs
   //Testing
-  static const String baseUrl = "https://192.168.15.6:5630/";
+  //static const String baseUrl = "https://192.168.15.6:5630/";
 
   // static const String
- //static final  baseUrl = "http://202.74.243.118:8090/"; //real public
+ static final  baseUrl = "http://202.74.243.118:8090/"; //real public
 
   static const String imageUrl = "http://192.168.15.6/api/inventoryapi/";
 //
