@@ -428,6 +428,7 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
                   builder: (context) => EnhancedRequisitionDialog(
                     requestedNumber: req.actualReqQty??1,
                     requisitionId: req.product??'',
+                    model: req,
                     onConfirm: (num p1) {
                       req.copyWith(approvedQty: p1);
 

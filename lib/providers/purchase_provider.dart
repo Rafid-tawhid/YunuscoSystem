@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../models/approval_Supply_model.dart';
 import '../models/puchaseMasterModelFirebase.dart';
@@ -7,6 +8,7 @@ import '../models/puchaseMasterModelFirebase.dart';
 class PurchaseProvider extends ChangeNotifier {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  ApiService apiService=ApiService();
 
   // Collection references
   CollectionReference get requisitionMasters => _firestore.collection('requisition_masters');
@@ -313,6 +315,14 @@ class PurchaseProvider extends ChangeNotifier {
       print('Error getting supplier quotes: $e');
       throw Exception('Error fetching supplier quotes: $e');
     }
+  }
+
+  Future<bool> updateTheRequisationQuantoty(dynamic data) async {
+
+    var result = await apiService.patchData(
+        'api/Inventory/ApprovedReqPurQtyChange', data);
+
+    return result == null ? false : true;
   }
 
 

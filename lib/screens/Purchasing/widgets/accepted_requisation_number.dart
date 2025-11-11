@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/providers/purchase_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../../../models/requisition_details_model.dart';
 
 class EnhancedRequisitionDialog extends StatefulWidget {
   final num requestedNumber;
+  final RequisitionDetailsModel model;
   final String requisitionId;
   final Function(num) onConfirm;
 
@@ -9,6 +15,7 @@ class EnhancedRequisitionDialog extends StatefulWidget {
     Key? key,
     required this.requestedNumber,
     required this.requisitionId,
+    required this.model,
     required this.onConfirm,
   }) : super(key: key);
 
@@ -66,6 +73,20 @@ class _EnhancedRequisitionDialogState extends State<EnhancedRequisitionDialog> {
     if (_isValid) {
       final int acceptedNumber = int.parse(_controller.text);
       widget.onConfirm(acceptedNumber);
+      //update the contact
+      var pp=context.read<PurchaseProvider>();
+      debugPrint("---------");
+
+      var data={
+        "RequisitionCode": widget.model.requisitionCode,
+        "DetailId": widget.model.detailId.toString(),
+        "ProductId": widget.model.productId.toString(),
+        "OldQty": widget.model.actualReqQty!.toInt().toString(),
+        "NewQty": acceptedNumber.toString(),
+        "IsMgnt" : DashboardHelpers.currentUser!.department=='15'?true:false
+      };
+
+       pp.updateTheRequisationQuantoty(data);
       Navigator.of(context).pop(acceptedNumber);
     }
   }
