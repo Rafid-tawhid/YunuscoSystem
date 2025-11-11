@@ -1,11 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/JobCardDropdownModel.dart';
+import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/providers/riverpods/meeting_provider.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/selected_peoples.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../providers/riverpods/purchase_order_riverpod.dart';
+import 'members_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class CreateMeetingScreen extends ConsumerStatefulWidget {
   const CreateMeetingScreen({super.key});
@@ -130,6 +136,19 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
 
       if (response['success'] == true) {
         debugPrint('3. Success - showing snackbar');
+
+        var pp=context.read<HrProvider>();
+        final selectedMembers = pp.member_list.where((m) => m.isSelected).toList();
+        for (var e in selectedMembers) {
+          pp.sendNotification(
+              sendTo: e.idCardNo.toString(),
+              title:_titleController.text,
+              body:"Invitation for a meeting at ${formatDateTime(_startTime)} from ${DashboardHelpers.currentUser!.userName}",
+              type:"BoardMeeting"
+          );
+        }
+
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -310,7 +329,31 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                InkWell(
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) =>
+                                PersonSelectionScreen())).then((persons) {
+                      if (persons != null) {
+                        debugPrint('person $persons');
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.person_add),
+                        SizedBox(width: 12,),
+                        Text('Invite People for the Meeting')
+                      ],
+                    ),
+                  ),
+                ),
+
+                SelectedPeopleWidget(),
 
                 // Attendees
                 _buildTextField(
@@ -510,6 +553,24 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
       final DateTime now = DateTime.now();
       return now.toIso8601String().split('.').first;
     }
+  }
+
+
+  String formatDateTime(DateTime dateTime) {
+    // Format date part (Jan 15, 2024)
+    final datePart = DateFormat('MMM dd, yyyy').format(dateTime);
+
+    // Format time part with AM/PM (02:30 PM)
+    final timePart = DateFormat('hh:mm a').format(dateTime);
+
+    return '$datePart at $timePart';
+  }
+
+  static String _formatTimeAMPM(DateTime dateTime) {
+    final String period = dateTime.hour < 12 ? 'AM' : 'PM';
+    final int hour = dateTime.hour == 0 ? 12 : (dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour);
+
+    return '${hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} $period';
   }
 
 

@@ -528,4 +528,14 @@ class HrProvider extends ChangeNotifier {
     debugPrint('filterList ${filterList.length}');
     return filterList;
   }
+
+  void sendNotification({required String sendTo, required String title, required String body, required String type}) async{
+
+    apiService.postData('api/dashboard/IndividualNotificationSender', {
+          "userId": sendTo,
+          "title": title,
+          "body": body,
+          "type": type
+    });
+  }
 }

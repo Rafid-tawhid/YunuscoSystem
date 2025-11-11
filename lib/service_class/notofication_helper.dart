@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/meeting_screen_new.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -267,7 +268,18 @@ class NotificationServices {
         CupertinoPageRoute(
             builder: (context) => BlankScreenNotification(data: data)),
       );
-    } else {
+    }
+
+    else if (type == "BoardMeeting") {
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => MeetingsScreen()),
+      );
+    }
+
+    //
+    else {
       // ✅ Default: Show BlankScreenNotification with title/body
       Navigator.pushReplacement(
         context,
