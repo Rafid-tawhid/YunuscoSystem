@@ -29,6 +29,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     final commentsAsync = ref.watch(commentsStreamProvider(widget.postId));
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Comments'),
         backgroundColor: myColors.primaryColor,

@@ -26,6 +26,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
     final isCreating = ref.watch(createPostProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Create Post'),
         backgroundColor: myColors.primaryColor,
