@@ -171,6 +171,7 @@ class KaizanCountScreen extends ConsumerWidget {
                   loading: () => const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      //
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
                       Text('Loading Kaizan Count...'),
