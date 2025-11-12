@@ -94,7 +94,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         }
         break;
       case 1:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceEvaluationScreen()));
         break;
       case 2:
         Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
