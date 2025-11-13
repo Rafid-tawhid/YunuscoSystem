@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_performance_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/search_emp_bottomsheet.dart';
+import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
@@ -353,12 +354,12 @@ class _PerformanceEvaluationScreenState
                 children: [
                   Text(
                     'This Week\'s Performance:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                   Text(
                     _overallRating,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: _overallRatingColor,
                     ),
@@ -490,7 +491,7 @@ class _PerformanceEvaluationScreenState
       _overallRatingColor = Colors.green;
     }
   }
-  void _submitEvaluation() {
+  Future<void> _submitEvaluation() async {
     if (_formKey.currentState!.validate()) {
       // Get current date for ratingDate
       final now = DateTime.now();
@@ -527,15 +528,18 @@ class _PerformanceEvaluationScreenState
       debugPrint('Evaluation Data: ${evaluationData.toString()}');
 
       // Here you would typically send this data to your API
-      // _sendEvaluationToApi(evaluationData);
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Performance evaluation submitted successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+       ApiService apiService=ApiService();
+       var response=await apiService.postData('api/Support/SaveRatings', evaluationData);
+      //evaluationData
+      if(response!=null){
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Performance evaluation submitted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
 
       // Optional: Clear form after submission
       // _clearForm();
