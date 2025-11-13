@@ -269,11 +269,18 @@ class DashboardHelpers {
   }
 
   static String getFistAndLastNmaeByFullName(String fullname) {
+    String initials;
     // Split the full name by spaces
-    List<String> names = fullname.split(' ');
+    try {
+      List<String> names = fullname.split(' ');
 
-    // Take the first letter of each part of the name
-    String initials = names.map((name) => name[0]).join();
+      // Take the first letter of each part of the name
+      initials = names.map((name) => name[0]).join();
+    }
+    catch (e)
+    {
+       initials='N/A';
+    }
 
     // Return the initials in uppercase
     return initials.toUpperCase();

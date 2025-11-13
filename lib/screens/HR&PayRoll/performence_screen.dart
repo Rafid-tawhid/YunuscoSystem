@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/widgets/employee_performance_list.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/widgets/search_emp_bottomsheet.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -16,10 +18,10 @@ class PerformanceEvaluationScreen extends StatefulWidget {
 class _PerformanceEvaluationScreenState
     extends State<PerformanceEvaluationScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _commentsController = TextEditingController();
   final TextEditingController _goalsController = TextEditingController();
   final TextEditingController _empId = TextEditingController();
+  final TextEditingController _weekController = TextEditingController();
   MembersModel? selectedEmp;
 
   final Map<String, double> _ratings = {
@@ -39,6 +41,25 @@ class _PerformanceEvaluationScreenState
   Color _overallRatingColor = Colors.orange;
 
   @override
+  void initState() {
+    super.initState();
+    _calculateOverallRating();
+    _setDefaultWeek();
+  }
+
+  void _setDefaultWeek() {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(Duration(days: 6));
+
+    _weekController.text = '${_formatDate(startOfWeek)} - ${_formatDate(endOfWeek)}';
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -47,6 +68,11 @@ class _PerformanceEvaluationScreenState
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>PerformanceRatingsScreen()));
+          }, icon: Icon(Icons.list))
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -55,17 +81,57 @@ class _PerformanceEvaluationScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // _buildWeekSelectionSection(),
+              SizedBox(height: 16),
               _buildEmployeeInfoSection(),
               SizedBox(height: 24),
               _buildEvaluationCriteriaSection(),
               SizedBox(height: 24),
               _buildOverallRatingSection(),
               SizedBox(height: 24),
-              _buildCommentsSection(),
+              _buildWeeklyCommentsSection(),
               SizedBox(height: 24),
               _buildActionButtons(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeekSelectionSection() {
+    return Card(
+      color: Colors.white,
+      elevation: 2,
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Evaluation Week',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[800],
+              ),
+            ),
+            SizedBox(height: 12),
+            _buildTextFormField(
+              controller: _weekController,
+              label: 'Week Period (DD/MM/YYYY - DD/MM/YYYY)',
+              isRequired: true,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'This evaluation covers performance for the selected week',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -90,7 +156,7 @@ class _PerformanceEvaluationScreenState
             ),
             SizedBox(height: 16),
             InkWell(
-              onTap: (){
+              onTap: () {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
@@ -98,25 +164,77 @@ class _PerformanceEvaluationScreenState
                     onEmployeeSelected: (selectedEmployee) {
                       setState(() {
                         debugPrint('selectedEmployee ${selectedEmployee.idCardNo}');
-                        _empId.text=selectedEmployee.idCardNo??'';
-                        selectedEmp=selectedEmployee;
+                        _empId.text = selectedEmployee.idCardNo ?? '';
+                        selectedEmp = selectedEmployee;
                       });
-
                     },
                   ),
                 );
               },
               child: _buildTextFormField(
                 controller: _empId,
-                label: 'Employee Id',
+                label: 'Employee ID',
                 isEnable: false,
                 isRequired: true,
               ),
             ),
-
             SizedBox(height: 12),
+            if (selectedEmp != null) _buildSelectedEmployeeInfo(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedEmployeeInfo() {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue[100]!),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.blue[100],
+            child: Text(
+              _getInitials(selectedEmp!.fullName ?? 'N/A'),
+              style: TextStyle(
+                color: Colors.blue[800],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  selectedEmp!.fullName ?? 'No Name',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                if (selectedEmp!.departmentName != null)
+                  Text(
+                    selectedEmp!.departmentName!,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                if (selectedEmp!.designationName != null)
+                  Text(
+                    selectedEmp!.designationName!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -131,7 +249,7 @@ class _PerformanceEvaluationScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Performance Criteria',
+              'Weekly Performance Criteria',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -140,7 +258,7 @@ class _PerformanceEvaluationScreenState
             ),
             SizedBox(height: 8),
             Text(
-              'Rate each category from 1 (Needs Improvement) to 5 (Excellent)',
+              'Rate each category from 1 (Needs Improvement) to 5 (Excellent) based on this week\'s performance',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -163,12 +281,14 @@ class _PerformanceEvaluationScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                criterion,
-                style: TextStyle(fontWeight: FontWeight.w500),
+              Expanded(
+                child: Text(
+                  criterion,
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
               ),
               Text(
-                '${_ratings[criterion]!.toStringAsFixed(1)}',
+                _ratings[criterion]!.toStringAsFixed(1),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: _getRatingColor(_ratings[criterion]!),
@@ -213,7 +333,7 @@ class _PerformanceEvaluationScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Overall Rating',
+              'Weekly Overall Rating',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -232,7 +352,7 @@ class _PerformanceEvaluationScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Performance Level:',
+                    'This Week\'s Performance:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   Text(
@@ -249,7 +369,7 @@ class _PerformanceEvaluationScreenState
             SizedBox(height: 16),
             _buildTextFormField(
               controller: _goalsController,
-              label: 'Goals for Next Period',
+              label: 'Goals for Next Week',
               maxLines: 3,
             ),
           ],
@@ -258,7 +378,7 @@ class _PerformanceEvaluationScreenState
     );
   }
 
-  Widget _buildCommentsSection() {
+  Widget _buildWeeklyCommentsSection() {
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -268,11 +388,19 @@ class _PerformanceEvaluationScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Additional Comments',
+              'Weekly Performance Comments',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue[800],
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Provide feedback on this week\'s performance, achievements, and areas for improvement',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
               ),
             ),
             SizedBox(height: 16),
@@ -280,7 +408,7 @@ class _PerformanceEvaluationScreenState
               controller: _commentsController,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText: 'Enter additional comments, strengths, and areas for improvement...',
+                hintText: 'Enter comments about this week\'s performance, key achievements, challenges faced, and suggestions for improvement...',
                 border: OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
@@ -294,7 +422,6 @@ class _PerformanceEvaluationScreenState
   Widget _buildActionButtons() {
     return Row(
       children: [
-
         Expanded(
           child: ElevatedButton(
             onPressed: _submitEvaluation,
@@ -302,7 +429,7 @@ class _PerformanceEvaluationScreenState
               backgroundColor: myColors.primaryColor,
               padding: EdgeInsets.symmetric(vertical: 16),
             ),
-            child: Text('Submit Evaluation', style: TextStyle(fontSize: 16,color: Colors.white)),
+            child: Text('Submit Weekly Evaluation', style: TextStyle(fontSize: 16, color: Colors.white)),
           ),
         ),
       ],
@@ -363,44 +490,94 @@ class _PerformanceEvaluationScreenState
       _overallRatingColor = Colors.green;
     }
   }
-
   void _submitEvaluation() {
     if (_formKey.currentState!.validate()) {
-      // Here you would typically save the evaluation to your database
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Evaluation Submitted'),
-            content: Text('Performance evaluation has been successfully submitted.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  // Optionally reset the form or navigate away
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
+      // Get current date for ratingDate
+      final now = DateTime.now();
+      final ratingDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+      // Parse week period to get the start date (assuming first date is the start)
+      final weekPeriod = _weekController.text.split(' - ').first;
+      final weekParts = weekPeriod.split('/');
+      final weekStartDate = '${weekParts[2]}-${weekParts[1].padLeft(2, '0')}-${weekParts[0].padLeft(2, '0')}';
+
+      // Create the evaluation data map
+      Map<String, dynamic> evaluationData = {
+        "employeeId": _empId.text.trim(),
+        "ratingDate": weekStartDate, // Using the start of the week period
+        "qualityOfWork": _ratings['Quality of Work'],
+        "productivity": _ratings['Productivity'],
+        "technicalSkills": _ratings['Technical Skills'],
+        "communication": _ratings['Communication'],
+        "teamwork": _ratings['Teamwork'],
+        "problemSolving": _ratings['Problem Solving'],
+        "initiative": _ratings['Initiative'],
+        "attendance": _ratings['Attendance'],
+        "adaptability": _ratings['Adaptability'],
+        "leadership": _ratings['Leadership'],
+        "comments": _commentsController.text.trim(),
+        "goals": _goalsController.text.trim(),
+        "reviewedBy": DashboardHelpers.currentUser!.iDnum, // You might want to get this from user session
+        "overallRating": _overallRating,
+        "averageScore": _calculateAverageScore(),
+        "weekPeriod": _weekController.text.trim(),
+      };
+
+      // Print the data for verification (you can replace this with API call)
+      debugPrint('Evaluation Data: ${evaluationData.toString()}');
+
+      // Here you would typically send this data to your API
+      // _sendEvaluationToApi(evaluationData);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Performance evaluation submitted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Optional: Clear form after submission
+      // _clearForm();
+    } else {
+      // Show error message if validation fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill all required fields'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
-  void _saveAsDraft() {
-    // Save evaluation as draft
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Evaluation saved as draft'),
-        backgroundColor: Colors.green,
-      ),
-    );
+// Add this helper method to calculate average score
+  double _calculateAverageScore() {
+    return _ratings.values.reduce((a, b) => a + b) / _ratings.length;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _calculateOverallRating();
+// Optional: Method to clear form after submission
+  void _clearForm() {
+    _formKey.currentState?.reset();
+    _empId.clear();
+    _commentsController.clear();
+    _goalsController.clear();
+    setState(() {
+      selectedEmp = null;
+      // Reset all ratings to 3.0
+      for (var key in _ratings.keys) {
+        _ratings[key] = 3.0;
+      }
+      _calculateOverallRating();
+    });
+  }
+
+  String _getInitials(String name) {
+    List<String> names = name.split(' ');
+    if (names.length >= 2) {
+      return '${names[0][0]}${names[1][0]}'.toUpperCase();
+    } else if (name.isNotEmpty) {
+      return name.substring(0, 1).toUpperCase();
+    }
+    return 'N/A';
   }
 }

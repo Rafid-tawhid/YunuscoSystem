@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import '../../../models/members_model.dart';
 import '../../../providers/riverpods/employee_provider.dart';
 
@@ -213,7 +214,7 @@ class _EmployeeSearchBottomSheetState extends ConsumerState<EmployeeSearchBottom
       leading: CircleAvatar(
         backgroundColor: Colors.blue[100],
         child: Text(
-          _getInitials(staff.fullName ?? 'N/A'),
+          DashboardHelpers.getFistAndLastNmaeByFullName(staff.fullName??''),
           style: TextStyle(
             color: Colors.blue[800],
             fontWeight: FontWeight.bold,
@@ -306,13 +307,5 @@ class _EmployeeSearchBottomSheetState extends ConsumerState<EmployeeSearchBottom
     );
   }
 
-  String _getInitials(String name) {
-    List<String> names = name.split(' ');
-    if (names.length >= 2) {
-      return '${names[0][0]}${names[1][0]}'.toUpperCase();
-    } else if (name.isNotEmpty) {
-      return name.substring(0, 1).toUpperCase();
-    }
-    return 'N/A';
-  }
+
 }
