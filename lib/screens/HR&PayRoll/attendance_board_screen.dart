@@ -173,6 +173,32 @@ class _AttandanceBoardScreenState extends ConsumerState<AttandanceBoardScreen> {
 class AttendanceListWidget extends ConsumerWidget {
   const AttendanceListWidget({super.key});
 
+  // Add this method to calculate original ranks
+  Map<String, int> _getOriginalEmployeeRanks(List<AttendanceBoardModel> allAttendance) {
+    final Map<String, List<AttendanceBoardModel>> groupedAttendance = {};
+    for (final attendance in allAttendance) {
+      final employeeId = attendance.employeeId ?? 'unknown';
+      if (!groupedAttendance.containsKey(employeeId)) {
+        groupedAttendance[employeeId] = [];
+      }
+      groupedAttendance[employeeId]!.add(attendance);
+    }
+
+    final sortedEmployeeIds = groupedAttendance.keys.toList()
+      ..sort((a, b) {
+        final totalHoursA = _calculateTotalHoursForEmployee(groupedAttendance[a]!);
+        final totalHoursB = _calculateTotalHoursForEmployee(groupedAttendance[b]!);
+        return totalHoursB.compareTo(totalHoursA);
+      });
+
+    final employeeRankMap = <String, int>{};
+    for (int i = 0; i < sortedEmployeeIds.length; i++) {
+      employeeRankMap[sortedEmployeeIds[i]] = i;
+    }
+
+    return employeeRankMap;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final attendanceList = ref.watch(userListProvider);
@@ -191,7 +217,10 @@ class AttendanceListWidget extends ConsumerWidget {
       );
     }
 
-// After grouping attendance by employee
+    // Get the original ranks from the provider's original list
+    final originalRanks = ref.read(userListProvider.notifier).getOriginalRanks();
+
+    // Rest of your grouping logic for the current (filtered) list
     final Map<String, List<AttendanceBoardModel>> groupedAttendance = {};
     for (final attendance in attendanceList) {
       final employeeId = attendance.employeeId ?? 'unknown';
@@ -201,13 +230,7 @@ class AttendanceListWidget extends ConsumerWidget {
       groupedAttendance[employeeId]!.add(attendance);
     }
 
-// ADD THIS: Sort employees by total working hours (highest first)
-    final sortedEmployeeIds = groupedAttendance.keys.toList()
-      ..sort((a, b) {
-        final totalHoursA = _calculateTotalHoursForEmployee(groupedAttendance[a]!);
-        final totalHoursB = _calculateTotalHoursForEmployee(groupedAttendance[b]!);
-        return totalHoursB.compareTo(totalHoursA); // Descending order
-      });
+    final currentEmployeeIds = groupedAttendance.keys.toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,20 +246,18 @@ class AttendanceListWidget extends ConsumerWidget {
           ),
         ),
 
-        // Grouped List View
-        // Grouped List View
         Expanded(
           child: ListView.builder(
-            itemCount: sortedEmployeeIds.length, // Use sorted list
+            itemCount: currentEmployeeIds.length,
             itemBuilder: (context, index) {
-              final employeeId = sortedEmployeeIds[index]; // Get from sorted list
+              final employeeId = currentEmployeeIds[index];
               final employeeRecords = groupedAttendance[employeeId]!;
               final firstRecord = employeeRecords.first;
 
               return _EmployeeGroupItem(
-                  employee: firstRecord,
-                  attendanceRecords: employeeRecords,
-                  index: index
+                employee: firstRecord,
+                attendanceRecords: employeeRecords,
+                index: originalRanks[employeeId] ?? 999, // Use original rank, fallback for safety
               );
             },
           ),
@@ -375,10 +396,10 @@ class _EmployeeGroupItemState extends State<_EmployeeGroupItem> {
     return '${totalHours.toStringAsFixed(1)}h';
   }
 
-  String _getAvatarText( String name , int index) {
+  String _getAvatarText(String name, int rank) {
     // For first 10 items, show 1st, 2nd, 3rd, etc. up to 10th
-    if (index < 10) {
-      switch (index) {
+    if (rank < 10) {
+      switch (rank) {
         case 0:
           return '1st';
         case 1:
@@ -400,12 +421,12 @@ class _EmployeeGroupItemState extends State<_EmployeeGroupItem> {
         case 9:
           return '10th';
         default:
-          return index.toString();
+          return rank.toString();
       }
     }
 
-    // For items beyond 10, show first letter of employee name
-    return (index+1).toString();
+    // For items beyond 10, show rank number
+    return (rank + 1).toString();
   }
 }
 

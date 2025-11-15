@@ -112,12 +112,21 @@ final userListProvider = StateNotifierProvider<AttendanceListNotifier, List<Atte
 );
 
 class AttendanceListNotifier extends StateNotifier<List<AttendanceBoardModel>> {
-  final Ref ref;
-  List<AttendanceBoardModel> _originalList = []; // Store original data
+
 
   AttendanceListNotifier(this.ref) : super([]);
 
-  Future<void> getEmployeeAttendance(String startDate,String endDate) async {
+  final Ref ref;
+  List<AttendanceBoardModel> _originalList = [];
+  Map<String, int> _originalRanks = {}; // Add this
+
+  // Add this method to get original ranks
+  Map<String, int> getOriginalRanks() {
+    return _originalRanks;
+  }
+
+
+  Future<void> getEmployeeAttendance(String startDate, String endDate) async {
     try {
       final apiService = ref.read(apiServiceProvider);
       final results = await apiService.getData('api/Support/GetEmployeeAttendanceByDateRange?startDate=$startDate&endDate=$endDate');
@@ -127,14 +136,55 @@ class AttendanceListNotifier extends StateNotifier<List<AttendanceBoardModel>> {
         empList.add(AttendanceBoardModel.fromJson(i));
       }
 
-      _originalList = empList; // Store original data
-      state = empList; // Replace the entire list with new data
+      _originalList = empList;
+
+      // Calculate and store original ranks here
+      _originalRanks = _calculateRanks(empList);
+
+      state = empList;
 
       debugPrint('empList ${empList.length}');
     } catch (e) {
       print('Error fetching employees: $e');
     }
   }
+
+  // Add this method to calculate ranks
+  Map<String, int> _calculateRanks(List<AttendanceBoardModel> list) {
+    final Map<String, List<AttendanceBoardModel>> grouped = {};
+    for (final attendance in list) {
+      final employeeId = attendance.employeeId ?? 'unknown';
+      if (!grouped.containsKey(employeeId)) {
+        grouped[employeeId] = [];
+      }
+      grouped[employeeId]!.add(attendance);
+    }
+
+    final sortedIds = grouped.keys.toList()
+      ..sort((a, b) {
+        final totalHoursA = _calculateTotalHours(grouped[a]!);
+        final totalHoursB = _calculateTotalHours(grouped[b]!);
+        return totalHoursB.compareTo(totalHoursA);
+      });
+
+    final ranks = <String, int>{};
+    for (int i = 0; i < sortedIds.length; i++) {
+      ranks[sortedIds[i]] = i;
+    }
+
+    return ranks;
+  }
+
+  double _calculateTotalHours(List<AttendanceBoardModel> records) {
+    double totalHours = 0;
+    for (final record in records) {
+      if (record.workingHoursDecimal != null) {
+        totalHours += record.workingHoursDecimal!;
+      }
+    }
+    return totalHours;
+  }
+
 
   // Search by ID or Name
   void searchEmployees(String query) {
