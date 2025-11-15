@@ -191,7 +191,7 @@ class AttendanceListWidget extends ConsumerWidget {
       );
     }
 
-    // Group attendance by employee
+// After grouping attendance by employee
     final Map<String, List<AttendanceBoardModel>> groupedAttendance = {};
     for (final attendance in attendanceList) {
       final employeeId = attendance.employeeId ?? 'unknown';
@@ -200,6 +200,14 @@ class AttendanceListWidget extends ConsumerWidget {
       }
       groupedAttendance[employeeId]!.add(attendance);
     }
+
+// ADD THIS: Sort employees by total working hours (highest first)
+    final sortedEmployeeIds = groupedAttendance.keys.toList()
+      ..sort((a, b) {
+        final totalHoursA = _calculateTotalHoursForEmployee(groupedAttendance[a]!);
+        final totalHoursB = _calculateTotalHoursForEmployee(groupedAttendance[b]!);
+        return totalHoursB.compareTo(totalHoursA); // Descending order
+      });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,24 +224,35 @@ class AttendanceListWidget extends ConsumerWidget {
         ),
 
         // Grouped List View
+        // Grouped List View
         Expanded(
           child: ListView.builder(
-            itemCount: groupedAttendance.length,
+            itemCount: sortedEmployeeIds.length, // Use sorted list
             itemBuilder: (context, index) {
-              final employeeId = groupedAttendance.keys.elementAt(index);
+              final employeeId = sortedEmployeeIds[index]; // Get from sorted list
               final employeeRecords = groupedAttendance[employeeId]!;
               final firstRecord = employeeRecords.first;
 
               return _EmployeeGroupItem(
-                employee: firstRecord,
-                attendanceRecords: employeeRecords,
-                index:index
+                  employee: firstRecord,
+                  attendanceRecords: employeeRecords,
+                  index: index
               );
             },
           ),
         ),
       ],
     );
+  }
+
+  double _calculateTotalHoursForEmployee(List<AttendanceBoardModel> records) {
+    double totalHours = 0;
+    for (final record in records) {
+      if (record.workingHoursDecimal != null) {
+        totalHours += record.workingHoursDecimal!;
+      }
+    }
+    return totalHours;
   }
 }
 
@@ -381,14 +400,12 @@ class _EmployeeGroupItemState extends State<_EmployeeGroupItem> {
         case 9:
           return '10th';
         default:
-          return name[0] ?? '?';
+          return index.toString();
       }
     }
 
     // For items beyond 10, show first letter of employee name
-    return widget.employee.employeeName?.isNotEmpty == true
-        ? widget.employee.employeeName![0]
-        : '?';
+    return (index+1).toString();
   }
 }
 
@@ -519,37 +536,4 @@ class _AttendanceDetailItem extends StatelessWidget {
     return Colors.red;
   }
 
-  Color _getStatusColor(String? flagType) {
-    switch (flagType?.toLowerCase()) {
-      case 'p':
-      case 'present':
-        return Colors.green;
-      case 'a':
-      case 'absent':
-        return Colors.red;
-      case 'l':
-      case 'late':
-        return Colors.orange;
-      case 'h':
-      case 'half day':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getStatusText(String? flagType) {
-    switch (flagType?.toLowerCase()) {
-      case 'p':
-        return 'Present';
-      case 'a':
-        return 'Absent';
-      case 'l':
-        return 'Late';
-      case 'h':
-        return 'Half Day';
-      default:
-        return flagType ?? 'Unknown';
-    }
-  }
 }
