@@ -12,6 +12,7 @@ import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
 import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
+import 'attendance_board_screen.dart';
 import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
 import 'it_ticketing_webview.dart';
@@ -34,6 +35,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Color(0xFFFCE4EC),
     Color(0xFFE0F7FA),
     Color(0xFFE8EAF6),
+    Color(0xFFF6EBB3),
   ];
 
   final List<Color> iconColors = [
@@ -44,6 +46,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Colors.pink[600]!,
     Colors.cyan[700]!,
     Colors.indigo[700]!,
+    Colors.amber
   ];
 
   List<DashboardMenuItem> menuItems = [];
@@ -119,6 +122,10 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
         break;
 
+      case 9:
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => AttandanceBoardScreen()));
+        break;
+
     }
   }
 
@@ -132,8 +139,15 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         onTap: () => goToScreen(0),
       ),
       DashboardMenuItem(
-        name: "Performance",
-        icon: Icons.favorite,
+        name: "Attendance\nBoard",
+        icon: Icons.workspace_premium,
+        cardColor: cardColors[7],
+        iconColor: iconColors[7],
+        onTap: () => goToScreen(9),
+      ),
+      DashboardMenuItem(
+        name: "Evaluation",
+        icon: Icons.reply_all_outlined,
         cardColor: cardColors[1],
         iconColor: iconColors[1],
         onTap: () => goToScreen(1),

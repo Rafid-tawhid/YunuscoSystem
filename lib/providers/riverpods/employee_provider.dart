@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:yunusco_group/models/attendance_board_model.dart';
 import 'package:yunusco_group/models/emp_single_evaluation_model.dart';
 import 'package:yunusco_group/models/members_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
@@ -100,3 +101,65 @@ final employerSingleEvaluationList=StateNotifierProvider<EmployeeSingleNotifier,
   final service=ref.read(apiServiceProvider);
   return EmployeeSingleNotifier(service);
 });
+
+
+
+
+//attendance board
+
+final userListProvider = StateNotifierProvider<AttendanceListNotifier, List<AttendanceBoardModel>>(
+      (ref) => AttendanceListNotifier(ref),
+);
+
+class AttendanceListNotifier extends StateNotifier<List<AttendanceBoardModel>> {
+  final Ref ref;
+  List<AttendanceBoardModel> _originalList = []; // Store original data
+
+  AttendanceListNotifier(this.ref) : super([]);
+
+  Future<void> getEmployeeAttendance(String startDate,String endDate) async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      final results = await apiService.getData('api/Support/GetEmployeeAttendanceByDateRange?startDate=$startDate&endDate=$endDate');
+
+      List<AttendanceBoardModel> empList = [];
+      for(var i in results['data']) {
+        empList.add(AttendanceBoardModel.fromJson(i));
+      }
+
+      _originalList = empList; // Store original data
+      state = empList; // Replace the entire list with new data
+
+      debugPrint('empList ${empList.length}');
+    } catch (e) {
+      print('Error fetching employees: $e');
+    }
+  }
+
+  // Search by ID or Name
+  void searchEmployees(String query) {
+    if (query.isEmpty) {
+      // If search query is empty, show all data
+      state = _originalList;
+    } else {
+      // Filter by ID or Name (case insensitive)
+      final filteredList = _originalList.where((employee) {
+        final id = employee.employeeId.toString().toLowerCase() ?? '';
+        final name = employee.employeeName?.toLowerCase() ?? '';
+        final searchQuery = query.toLowerCase();
+
+        return id.contains(searchQuery) || name.contains(searchQuery);
+      }).toList();
+
+      state = filteredList;
+    }
+  }
+
+  // Clear search and show all data
+  void clearSearch() {
+    state = _originalList;
+  }
+}
+
+// Provider for loading state
+final isLoadingProvider = StateProvider<bool>((ref) => false);
