@@ -107,6 +107,7 @@ class _AttandanceBoardScreenState extends ConsumerState<AttandanceBoardScreen> {
               ? IconButton(
             icon: const Icon(Icons.close),
             onPressed: () {
+              ref.read(userListProvider.notifier).clearSearch();
               setState(() {
                 _searchOn = false;
                 _searchController.clear();
