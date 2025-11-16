@@ -538,4 +538,29 @@ class HrProvider extends ChangeNotifier {
           "type": type
     });
   }
+
+
+
+  String _searchQuery = '';
+  // In HrProvider class
+  List<DocAppoinmentListModel> get filteredDocAppointmentList {
+    return _searchQuery.isEmpty
+        ? docAppointmentList
+        : docAppointmentList.where((appointment) {
+      final id = appointment.idCardNo?.toLowerCase() ?? '';
+      final name = appointment.fullName?.toLowerCase() ?? '';
+      final query = _searchQuery.toLowerCase();
+      return id.contains(query) || name.contains(query);
+    }).toList();
+  }
+
+  void searchAppointments(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _searchQuery = '';
+    notifyListeners();
+  }
 }

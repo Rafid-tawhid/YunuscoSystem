@@ -277,12 +277,21 @@ class _EmployeeGroupItemState extends State<_EmployeeGroupItem> {
         children: [
           // Employee Header (Always visible)
           ListTile(
-            leading: CircleAvatar(
-              backgroundColor: widget.index<10?Colors.amber: Colors.blue[100],
-              child: Text(
-                _getAvatarText(widget.employee.employeeName??'', widget.index),
-                style:  TextStyle(fontWeight: FontWeight.bold,color: widget.index<10?Colors.black:Colors.black),
-              ),
+            leading: Stack(
+              children: [
+                CircleAvatar(
+                  backgroundColor: widget.index<10?Colors.amber: Colors.blue[100],
+                  child: Text(
+                    _getAvatarText(widget.employee.employeeName??'', widget.index),
+                    style:  TextStyle(fontWeight: FontWeight.bold,color: widget.index<10?Colors.black:Colors.black),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child:  widget.index<10? Icon(Icons.emoji_events,size: 12,color: Colors.red,):Text(''),
+                )
+              ],
             ),
             title: Text(
               widget.employee.employeeName ?? 'Unknown Employee',

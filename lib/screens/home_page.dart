@@ -258,9 +258,9 @@ class _HomeScreenState extends State<HomeScreen> {
             CupertinoPageRoute(
                 builder: (context) => ProductionStrengthScreen()));
       case 52:
+
         var hp = context.read<HrProvider>();
-        await hp
-            .getAllDocAppointment(); //go to different screen depending on designation
+        await hp.getAllDocAppointment(); //go to different screen depending on designation
         if (DashboardHelpers.currentUser!.designation == 'Medical Officer') {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => AppointmentListScreen()));
