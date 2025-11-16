@@ -173,31 +173,6 @@ class _AttandanceBoardScreenState extends ConsumerState<AttandanceBoardScreen> {
 class AttendanceListWidget extends ConsumerWidget {
   const AttendanceListWidget({super.key});
 
-  // Add this method to calculate original ranks
-  Map<String, int> _getOriginalEmployeeRanks(List<AttendanceBoardModel> allAttendance) {
-    final Map<String, List<AttendanceBoardModel>> groupedAttendance = {};
-    for (final attendance in allAttendance) {
-      final employeeId = attendance.employeeId ?? 'unknown';
-      if (!groupedAttendance.containsKey(employeeId)) {
-        groupedAttendance[employeeId] = [];
-      }
-      groupedAttendance[employeeId]!.add(attendance);
-    }
-
-    final sortedEmployeeIds = groupedAttendance.keys.toList()
-      ..sort((a, b) {
-        final totalHoursA = _calculateTotalHoursForEmployee(groupedAttendance[a]!);
-        final totalHoursB = _calculateTotalHoursForEmployee(groupedAttendance[b]!);
-        return totalHoursB.compareTo(totalHoursA);
-      });
-
-    final employeeRankMap = <String, int>{};
-    for (int i = 0; i < sortedEmployeeIds.length; i++) {
-      employeeRankMap[sortedEmployeeIds[i]] = i;
-    }
-
-    return employeeRankMap;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -230,7 +205,13 @@ class AttendanceListWidget extends ConsumerWidget {
       groupedAttendance[employeeId]!.add(attendance);
     }
 
-    final currentEmployeeIds = groupedAttendance.keys.toList();
+    // Sort the current employee IDs by their original ranks
+    final currentEmployeeIds = groupedAttendance.keys.toList()
+      ..sort((a, b) {
+        final rankA = originalRanks[a] ?? 999;
+        final rankB = originalRanks[b] ?? 999;
+        return rankA.compareTo(rankB); // Ascending order (lower rank first)
+      });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,16 +245,6 @@ class AttendanceListWidget extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  double _calculateTotalHoursForEmployee(List<AttendanceBoardModel> records) {
-    double totalHours = 0;
-    for (final record in records) {
-      if (record.workingHoursDecimal != null) {
-        totalHours += record.workingHoursDecimal!;
-      }
-    }
-    return totalHours;
   }
 }
 

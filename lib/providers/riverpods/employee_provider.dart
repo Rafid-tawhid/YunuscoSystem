@@ -149,7 +149,7 @@ class AttendanceListNotifier extends StateNotifier<List<AttendanceBoardModel>> {
     }
   }
 
-  // Add this method to calculate ranks
+// Add this method to calculate ranks based on present days first, then total hours
   Map<String, int> _calculateRanks(List<AttendanceBoardModel> list) {
     final Map<String, List<AttendanceBoardModel>> grouped = {};
     for (final attendance in list) {
@@ -162,9 +162,21 @@ class AttendanceListNotifier extends StateNotifier<List<AttendanceBoardModel>> {
 
     final sortedIds = grouped.keys.toList()
       ..sort((a, b) {
-        final totalHoursA = _calculateTotalHours(grouped[a]!);
-        final totalHoursB = _calculateTotalHours(grouped[b]!);
-        return totalHoursB.compareTo(totalHoursA);
+        final recordsA = grouped[a]!;
+        final recordsB = grouped[b]!;
+
+        // First compare by number of records (present days)
+        final recordCountA = recordsA.length;
+        final recordCountB = recordsB.length;
+
+        if (recordCountA != recordCountB) {
+          return recordCountB.compareTo(recordCountA); // Descending order
+        }
+
+        // If record counts are equal, compare by total working hours
+        final totalHoursA = _calculateTotalHours(recordsA);
+        final totalHoursB = _calculateTotalHours(recordsB);
+        return totalHoursB.compareTo(totalHoursA); // Descending order
       });
 
     final ranks = <String, int>{};
