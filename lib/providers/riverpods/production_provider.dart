@@ -22,7 +22,7 @@ class QcDataNotifier extends StateNotifier<List<ProductionQcModel>> {
     debugPrint('Selected date :$date');
     try {
       List<ProductionQcModel> qcList=[];
-      final data = await apiService.getData('api/Support/GetQCPassDataByDate?selectedDate=2025-11-13');
+      final data = await apiService.getData('api/Support/GetQCPassDataByDate?selectedDate=$date');
       for(var i in data['data'])
       {
         qcList.add(ProductionQcModel.fromJson(i));

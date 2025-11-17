@@ -105,15 +105,15 @@ class ProductHomeScreen extends ConsumerWidget {
         cardColor: Colors.green, // Light amber
         iconColor: Colors.white, // Dark amber
         onTap: () async {
-         final today=DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'yyyy-MM-dd');
-          await ref.read(qcDataProvider.notifier).loadQcData(today);
+          final today = DateTime.now();
+          final yesterday = today.subtract(const Duration(days: 1));
+
+          final todayFormatted = DashboardHelpers.convertDateTime(today.toString(), pattern: 'yyyy-MM-dd');
+          final yesterdayFormatted = DashboardHelpers.convertDateTime(yesterday.toString(), pattern: 'yyyy-MM-dd');
+          await ref.read(qcDataProvider.notifier).loadQcData(yesterdayFormatted);
           //ProductionQcListScreen(qcItems: qcItems),
          final qcDataAsync = ref.watch(qcDataProvider);
-         // List<ProductionQcModel> data=[];
 
-          // for(var i in qc_model_list){
-          //   data.add(ProductionQcModel.fromJson(i));
-          // }
 
             Navigator.push(
               context,

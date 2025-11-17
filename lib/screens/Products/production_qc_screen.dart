@@ -131,6 +131,7 @@ class _ProductionQcListScreenState extends State<ProductionQcListScreen> {
     );
   }
 
+  //
   Widget _buildSummaryCards() {
     final totalItems = _filteredItems.length;
     final totalDefects = _filteredItems.fold(0, (sum, item) => sum + (item.totalDefect!.toInt() ?? 0));
