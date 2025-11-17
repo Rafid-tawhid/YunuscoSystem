@@ -284,7 +284,7 @@ class _QcDifferenceDashboardState extends State<QcDifferenceDashboard> {
       ),
     );
   }
-//
+
   Widget _buildSummaryStats() {
     final totalImprovements = _filteredItems.where((item) => (item.defectDifference ?? 0) < 0).length;
     final totalDeclines = _filteredItems.where((item) => (item.defectDifference ?? 0) > 0).length;
