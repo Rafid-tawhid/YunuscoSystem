@@ -107,17 +107,14 @@ class ProductHomeScreen extends ConsumerWidget {
         onTap: () async {
           final today = DateTime.now();
           final yesterday = today.subtract(const Duration(days: 1));
-
-          final todayFormatted = DashboardHelpers.convertDateTime(today.toString(), pattern: 'yyyy-MM-dd');
           final yesterdayFormatted = DashboardHelpers.convertDateTime(yesterday.toString(), pattern: 'yyyy-MM-dd');
           await ref.read(qcDataProvider.notifier).loadQcData(yesterdayFormatted);
           //ProductionQcListScreen(qcItems: qcItems),
          final qcDataAsync = ref.watch(qcDataProvider);
 
-
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProductionQcListScreen(qcItems: qcDataAsync,)),
+              MaterialPageRoute(builder: (context) => ProductionQcListScreen()),
             );
         },
       ),

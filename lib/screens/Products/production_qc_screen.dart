@@ -1,43 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/production_qc_model.dart';
+import '../../providers/riverpods/production_provider.dart';
 
-class ProductionQcListScreen extends StatefulWidget {
-  final List<ProductionQcModel> qcItems;
+class ProductionQcListScreen extends ConsumerStatefulWidget {
 
-  const ProductionQcListScreen({Key? key, required this.qcItems}) : super(key: key);
+
+  const ProductionQcListScreen({Key? key,}) : super(key: key);
 
   @override
-  _ProductionQcListScreenState createState() => _ProductionQcListScreenState();
+  ConsumerState createState() => _ProductionQcListScreenState();
 }
 
-class _ProductionQcListScreenState extends State<ProductionQcListScreen> {
+class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen> {
   List<ProductionQcModel> _filteredItems = [];
   String _searchQuery = '';
-  final String _selectedFilter = 'All';
-  bool _sortAscending = true;
+  final bool _sortAscending = true;
+  late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = widget.qcItems;
+    _selectedDate = DateTime.now().subtract(const Duration(days: 1));
+    _filteredItems = ref.read(qcDataProvider);
   }
 
   void _filterItems() {
     setState(() {
-      _filteredItems = widget.qcItems.where((item) {
+      _filteredItems = ref.read(qcDataProvider).where((item) {
         final matchesSearch = _searchQuery.isEmpty ||
             item.style?.toLowerCase().contains(_searchQuery.toLowerCase()) == true ||
             item.buyerName?.toLowerCase().contains(_searchQuery.toLowerCase()) == true ||
             item.po?.toLowerCase().contains(_searchQuery.toLowerCase()) == true;
 
-        final matchesFilter = _selectedFilter == 'All' ||
-            (_selectedFilter == 'High Defect' && (item.totalDefect ?? 0) > 10) ||
-            (_selectedFilter == 'Medium Defect' && (item.totalDefect ?? 0) > 5) ||
-            (_selectedFilter == 'Low Defect' && (item.totalDefect ?? 0) <= 5);
-
-        return matchesSearch && matchesFilter;
+        return matchesSearch;
       }).toList();
 
       // Sort by defect count
@@ -54,10 +53,34 @@ class _ProductionQcListScreenState extends State<ProductionQcListScreen> {
     return Colors.green;
   }
 
+  Future<void> _selectDate(BuildContext context,WidgetRef ref) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      debugPrint('Selected Date $picked');
+      setState(() {
+        _selectedDate = picked;
+      });
+
+      final date = DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd');
+      await ref.read(qcDataProvider.notifier).loadQcData(date);
+
+      // FIX: Update filteredItems with the new data from Riverpod
+      setState(() {
+        _filteredItems = ref.read(qcDataProvider); // Use read instead of watch
+      });
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -66,18 +89,21 @@ class _ProductionQcListScreenState extends State<ProductionQcListScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
-            onPressed: () {
-              setState(() {
-                _sortAscending = !_sortAscending;
-                _filterItems();
-              });
+            icon: Icon(Icons.calendar_month),
+            onPressed: (){
+              _selectDate(context,ref);
             },
           ),
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
+            child: Text('Date: ${DashboardHelpers.convertDateTime(_selectedDate.toString(),pattern: 'dd-MM-yyyy')}',style: TextStyle(fontWeight: FontWeight.bold),),
+          ),
           // Search and Filter Section
           _buildSearchFilterSection(),
 
@@ -105,7 +131,7 @@ class _ProductionQcListScreenState extends State<ProductionQcListScreen> {
 
   Widget _buildSearchFilterSection() {
     return Container(
-      padding: const EdgeInsets.only(left: 16,right: 16,top: 16),
+      padding: const EdgeInsets.only(left: 16,right: 16,),
       color: Colors.white,
       child: Column(
         children: [
