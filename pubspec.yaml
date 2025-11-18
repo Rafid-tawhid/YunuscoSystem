@@ -103,6 +103,7 @@ dev_dependencies:
   signature: ^6.3.0
   photo_manager: ^3.7.1
   webview_flutter_plus: ^0.4.19
+  syncfusion_flutter_charts: ^31.2.10
 
 
 

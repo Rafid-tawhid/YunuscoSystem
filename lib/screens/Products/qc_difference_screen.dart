@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/providers/riverpods/production_provider.dart';
 import 'package:yunusco_group/screens/Products/widgets/date_compare_dialoge.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import '../../helper_class/dashboard_helpers.dart';
 import '../../models/qc_difference_model.dart';
 
-class QcDifferenceDashboard extends StatefulWidget {
-  final List<QcDifferenceModel> qcDifferences;
+class QcDifferenceDashboard extends ConsumerStatefulWidget {
   final String date1Label;
   final String date2Label;
 
   const QcDifferenceDashboard({
     Key? key,
-    required this.qcDifferences,
     this.date1Label = 'Date 1',
     this.date2Label = 'Date 2',
   }) : super(key: key);
 
   @override
-  _QcDifferenceDashboardState createState() => _QcDifferenceDashboardState();
+  ConsumerState createState() => _QcDifferenceDashboardState();
 }
 
-class _QcDifferenceDashboardState extends State<QcDifferenceDashboard> {
+class _QcDifferenceDashboardState extends ConsumerState<QcDifferenceDashboard> {
   List<QcDifferenceModel> _filteredItems = [];
   String _searchQuery = '';
   String _selectedFilter = 'All';
@@ -30,12 +31,12 @@ class _QcDifferenceDashboardState extends State<QcDifferenceDashboard> {
   @override
   void initState() {
     super.initState();
-    _filteredItems = widget.qcDifferences;
+    _filteredItems = ref.read(differenceDataProvider);
   }
 
   void _filterItems() {
     setState(() {
-      _filteredItems = widget.qcDifferences.where((item) {
+      _filteredItems = ref.read(differenceDataProvider).where((item) {
         final matchesSearch = _searchQuery.isEmpty ||
             item.lineName?.toLowerCase().contains(_searchQuery.toLowerCase()) == true ||
             item.sectionName?.toLowerCase().contains(_searchQuery.toLowerCase()) == true ||
@@ -525,11 +526,12 @@ class _QcDifferenceDashboardState extends State<QcDifferenceDashboard> {
 
     if (result != null) {
       // Use the selected dates
-      DateTime startDate = result['startDate'];
-      DateTime endDate = result['endDate'];
-
-      // Update your QcDifferenceModel data
-      // _fetchComparisonData(startDate, endDate);
+      String startDate = DashboardHelpers.convertDateTime(result['startDate'].toString(),pattern: 'yyyy-MM-dd');
+      String endDate = DashboardHelpers.convertDateTime(result['endDate'].toString(),pattern: 'yyyy-MM-dd');
+      await ref.read(differenceDataProvider.notifier).loadDifferenceData(startDate, endDate);
+      setState(() {
+        _filteredItems = ref.read(differenceDataProvider);
+      });
     }
   }
 }

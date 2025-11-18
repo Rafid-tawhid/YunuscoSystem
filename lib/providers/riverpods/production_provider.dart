@@ -4,6 +4,7 @@
 // Provider for Production QC Data
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:yunusco_group/models/qc_pass_summary_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../../models/production_qc_model.dart';
@@ -40,6 +41,7 @@ final differenceDataProvider = StateNotifierProvider<DifferenceDataNotifier, Lis
   return DifferenceDataNotifier();
 });
 
+
 class DifferenceDataNotifier extends StateNotifier<List<QcDifferenceModel>> {
   DifferenceDataNotifier() : super([]);
   ApiService apiService=ApiService();
@@ -47,12 +49,39 @@ class DifferenceDataNotifier extends StateNotifier<List<QcDifferenceModel>> {
   Future<void> loadDifferenceData(String date1, String date2) async {
     try {
       List<QcDifferenceModel> diffList=[];
-      final data = await apiService.getData('api/Support/GetQCPassComparisonByDate?startDate=2025-11-10&endDate=2025-11-11');
+      final data = await apiService.getData('api/Support/GetQCPassComparisonByDate?startDate=$date1&endDate=$date2');
       for(var i in data['data'])
       {
         diffList.add(QcDifferenceModel.fromJson(i));
       }
       state=diffList;
+    } catch (e) {
+      state = [];
+      rethrow;
+    }
+  }
+}
+
+
+
+final summaryDataProvider = StateNotifierProvider<QcPassSummaryNotifier, List<QcPassSummaryModel>>((ref) {
+  return QcPassSummaryNotifier();
+});
+
+
+class QcPassSummaryNotifier extends StateNotifier<List<QcPassSummaryModel>> {
+  QcPassSummaryNotifier() : super([]);
+  ApiService apiService=ApiService();
+
+  Future<void> loadDifferenceData(String date1, String date2) async {
+    try {
+      List<QcPassSummaryModel> summaryList=[];
+      final data = await apiService.getData('api/Support/GetQCPassSummaryByDateRange?startDate=2025-10-01&endDate=2025-10-31');
+      for(var i in data['data'])
+      {
+        summaryList.add(QcPassSummaryModel.fromJson(i));
+      }
+      state=summaryList;
     } catch (e) {
       state = [];
       rethrow;

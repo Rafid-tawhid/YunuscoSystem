@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/common_widgets/custom_button.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
@@ -7,15 +8,16 @@ import '../../models/production_qc_model.dart';
 import '../../providers/riverpods/production_provider.dart';
 
 class ProductionQcListScreen extends ConsumerStatefulWidget {
-
-
-  const ProductionQcListScreen({Key? key,}) : super(key: key);
+  const ProductionQcListScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   ConsumerState createState() => _ProductionQcListScreenState();
 }
 
-class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen> {
+class _ProductionQcListScreenState
+    extends ConsumerState<ProductionQcListScreen> {
   List<ProductionQcModel> _filteredItems = [];
   String _searchQuery = '';
   final bool _sortAscending = true;
@@ -32,8 +34,12 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
     setState(() {
       _filteredItems = ref.read(qcDataProvider).where((item) {
         final matchesSearch = _searchQuery.isEmpty ||
-            item.style?.toLowerCase().contains(_searchQuery.toLowerCase()) == true ||
-            item.buyerName?.toLowerCase().contains(_searchQuery.toLowerCase()) == true ||
+            item.style?.toLowerCase().contains(_searchQuery.toLowerCase()) ==
+                true ||
+            item.buyerName
+                    ?.toLowerCase()
+                    .contains(_searchQuery.toLowerCase()) ==
+                true ||
             item.po?.toLowerCase().contains(_searchQuery.toLowerCase()) == true;
 
         return matchesSearch;
@@ -43,17 +49,18 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
       _filteredItems.sort((a, b) {
         final aDefects = a.totalDefect ?? 0;
         final bDefects = b.totalDefect ?? 0;
-        return _sortAscending ? aDefects.compareTo(bDefects) : bDefects.compareTo(aDefects);
+        return _sortAscending
+            ? aDefects.compareTo(bDefects)
+            : bDefects.compareTo(aDefects);
       });
     });
   }
 
   Color _getDefectColor(num? defectCount) {
-
     return Colors.green;
   }
 
-  Future<void> _selectDate(BuildContext context,WidgetRef ref) async {
+  Future<void> _selectDate(BuildContext context, WidgetRef ref) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -67,7 +74,8 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
         _selectedDate = picked;
       });
 
-      final date = DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'yyyy-MM-dd');
+      final date = DashboardHelpers.convertDateTime(_selectedDate.toString(),
+          pattern: 'yyyy-MM-dd');
       await ref.read(qcDataProvider.notifier).loadQcData(date);
 
       // FIX: Update filteredItems with the new data from Riverpod
@@ -77,10 +85,8 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -90,8 +96,8 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
         actions: [
           IconButton(
             icon: Icon(Icons.calendar_month),
-            onPressed: (){
-              _selectDate(context,ref);
+            onPressed: () {
+              _selectDate(context, ref);
             },
           ),
         ],
@@ -99,10 +105,12 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 16),
-            child: Text('Date: ${DashboardHelpers.convertDateTime(_selectedDate.toString(),pattern: 'dd-MM-yyyy')}',style: TextStyle(fontWeight: FontWeight.bold),),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+            child: Text(
+              'Date: ${DashboardHelpers.convertDateTime(_selectedDate.toString(), pattern: 'dd-MM-yyyy')}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           // Search and Filter Section
           _buildSearchFilterSection(),
@@ -118,11 +126,11 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
             child: _filteredItems.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
-              itemCount: _filteredItems.length,
-              itemBuilder: (context, index) {
-                return _buildQcItemCard(_filteredItems[index]);
-              },
-            ),
+                    itemCount: _filteredItems.length,
+                    itemBuilder: (context, index) {
+                      return _buildQcItemCard(_filteredItems[index]);
+                    },
+                  ),
           ),
         ],
       ),
@@ -131,7 +139,10 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
 
   Widget _buildSearchFilterSection() {
     return Container(
-      padding: const EdgeInsets.only(left: 16,right: 16,),
+      padding: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+      ),
       color: Colors.white,
       child: Column(
         children: [
@@ -151,7 +162,6 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
               _filterItems();
             },
           ),
-
         ],
       ),
     );
@@ -160,25 +170,32 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
   //
   Widget _buildSummaryCards() {
     final totalItems = _filteredItems.length;
-    final totalDefects = _filteredItems.fold(0, (sum, item) => sum + (item.totalDefect!.toInt() ?? 0));
-    final totalPass = _filteredItems.fold(0, (sum, item) => sum + (item.totalPass!.toInt() ?? 0));
+    final totalDefects = _filteredItems.fold(
+        0, (sum, item) => sum + (item.totalDefect!.toInt() ?? 0));
+    final totalPass = _filteredItems.fold(
+        0, (sum, item) => sum + (item.totalPass!.toInt() ?? 0));
 
     return Container(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          _buildSummaryCard('Total Lines', totalItems.toString(), Icons.list_alt, Colors.blue),
+          _buildSummaryCard('Total Lines', totalItems.toString(),
+              Icons.list_alt, Colors.blue),
           const SizedBox(width: 12),
-          _buildSummaryCard('Total Pass', totalPass.toStringAsFixed(1), Icons.analytics, Colors.green),
-          SizedBox(width: 12,),
-          _buildSummaryCard('Total Defects', totalDefects.toString(), Icons.warning, Colors.orange),
-
+          _buildSummaryCard('Total Pass', totalPass.toStringAsFixed(1),
+              Icons.analytics, Colors.green),
+          SizedBox(
+            width: 12,
+          ),
+          _buildSummaryCard('Total Defects', totalDefects.toString(),
+              Icons.warning, Colors.orange),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+      String title, String value, IconData icon, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -220,16 +237,19 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
         children: [
           Expanded(
             flex: 2,
-            child: Text('Style/PO', style: TextStyle(fontWeight: FontWeight.bold)),
+            child:
+                Text('Style/PO', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(
             child: Text('Buyer', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(
-            child: Text('Defects', style: TextStyle(fontWeight: FontWeight.bold)),
+            child:
+                Text('Defects', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(
-            child: Text('Status', style: TextStyle(fontWeight: FontWeight.bold)),
+            child:
+                Text('Status', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           SizedBox(width: 40), // Space for action button
         ],
@@ -331,6 +351,7 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
 
   Widget _buildDetailSheet(ProductionQcModel item) {
     return Container(
+      color: Colors.white,
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -364,7 +385,8 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
           _buildDetailRow('Section', item.sectionName),
           _buildDetailRow('Date', item.date),
           const SizedBox(height: 16),
-          const Text('Defect Analysis', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text('Defect Analysis',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -379,13 +401,11 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
             ],
           ),
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-            ),
-          ),
+          CustomElevatedButton(
+              text: 'Close',
+              onPressed: () {
+                Navigator.pop(context);
+              })
         ],
       ),
     );
@@ -398,7 +418,8 @@ class _ProductionQcListScreenState extends ConsumerState<ProductionQcListScreen>
         children: [
           SizedBox(
             width: 100,
-            child: Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text('$label:',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
           Text(value ?? 'N/A'),
         ],
