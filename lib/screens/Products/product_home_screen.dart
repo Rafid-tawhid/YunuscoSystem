@@ -146,19 +146,19 @@ class ProductHomeScreen extends ConsumerWidget {
         iconColor: const Color(0xFF180243), // Dark pink
         onTap: () async {
 
-          final now = DateTime.now();
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => QcPassSummaryScreen()),
+          );
+        },
+      ),
 
-          // Get the first day of previous month
-          final firstDayCurrentMonth = DateTime(now.year, now.month, 1);
-
-          // Get the last day of previous month
-          final lastDayCurrentMonth = DateTime(now.year, now.month, 0);
-          final currentMonthFirstDate = DashboardHelpers.convertDateTime(firstDayCurrentMonth.toString(), pattern: 'yyyy-MM-dd');
-          final currentMonthLastDate = DashboardHelpers.convertDateTime(lastDayCurrentMonth.toString(), pattern: 'yyyy-MM-dd');
-
-
-          await ref.read(summaryDataProvider.notifier).loadSummeryData(currentMonthFirstDate, currentMonthLastDate);
-
+      DashboardMenuItem(
+        name: 'Error\nSummary',
+        icon: Icons.compare_arrows,
+        cardColor: const Color(0x18BBC5EF), // Light pink
+        iconColor: const Color(0xFF180243), // Dark pink
+        onTap: () async {
 
           Navigator.push(
             context,
