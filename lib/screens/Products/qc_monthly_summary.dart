@@ -1,44 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
+import 'package:yunusco_group/providers/riverpods/production_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-import 'package:flutter/material.dart';
 
-class QcPassSummaryScreen extends StatefulWidget {
-  final List<QcPassSummaryModel> monthlyData;
 
-  const QcPassSummaryScreen({Key? key, required this.monthlyData}) : super(key: key);
+class QcPassSummaryScreen extends ConsumerStatefulWidget {
+
+
+  const QcPassSummaryScreen({Key? key,}) : super(key: key);
 
   @override
-  State<QcPassSummaryScreen> createState() => _QcPassSummaryScreenState();
+  ConsumerState<QcPassSummaryScreen> createState() => _QcPassSummaryScreenState();
 }
 
-class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
-  late List<QcPassSummaryModel> _filteredData;
+class _QcPassSummaryScreenState extends ConsumerState<QcPassSummaryScreen> {
+  List<QcPassSummaryModel> _filteredData=[];
   String? _selectedMonth;
   final List<String> _months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
+  final DateTime now = DateTime.now();
+
 
   @override
   void initState() {
     super.initState();
-    _filteredData = widget.monthlyData;
-    // Set current month as default
+    // Initialize with current month data
     _selectedMonth = _months[DateTime.now().month - 1];
-    _filterByMonth(_selectedMonth!);
+
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    final (firstDay, lastDay) = _getFirstLastDayOfMonth(_selectedMonth!);
+    final first = DashboardHelpers.convertDateTime(firstDay.toString(), pattern: 'yyyy-MM-dd');
+    final last = DashboardHelpers.convertDateTime(lastDay.toString(), pattern: 'yyyy-MM-dd');
+
+    await ref.read(summaryDataProvider.notifier).loadSummeryData(first, last);
+
+    // Wait for the provider to update and then filter
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _filterByMonth(_selectedMonth!);
+    });
   }
 
   void _filterByMonth(String month) {
     final monthIndex = _months.indexOf(month) + 1;
+    final allData = ref.read(summaryDataProvider);
+
     setState(() {
-      _filteredData = widget.monthlyData.where((item) {
+      _filteredData = allData.where((item) {
         if (item.day == null) return false;
-        final date = DateTime.parse(item.day!);
-        return date.month == monthIndex;
+        try {
+          final date = DateTime.parse(item.day!);
+          return date.month == monthIndex;
+        } catch (e) {
+          return false;
+        }
       }).toList();
     });
   }
@@ -51,9 +73,38 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
     return (firstDay, lastDay);
   }
 
+  // Update the onChanged method in _buildMonthSelector:
+  void _onMonthChanged(String? newValue) async {
+    if (newValue != null) {
+      setState(() {
+        _selectedMonth = newValue;
+        _filteredData = []; // Clear data while loading
+      });
+
+      final (firstDay, lastDay) = _getFirstLastDayOfMonth(newValue);
+      final first = DashboardHelpers.convertDateTime(firstDay.toString(), pattern: 'yyyy-MM-dd');
+      final last = DashboardHelpers.convertDateTime(lastDay.toString(), pattern: 'yyyy-MM-dd');
+
+      try {
+        await ref.read(summaryDataProvider.notifier).loadSummeryData(first, last);
+
+        // After data is loaded, filter it
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _filterByMonth(newValue);
+        });
+      } catch (e) {
+        // Handle error
+        setState(() {
+          _filteredData = [];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final (firstDay, lastDay) = _getFirstLastDayOfMonth(_selectedMonth!);
+
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -62,28 +113,42 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Month Selector and Date Range
-            _buildMonthSelector(firstDay, lastDay),
-        
-            _buildPassTrendChart(),
-            // Summary Cards
-            _buildSummaryCards(),
-            SizedBox(height: 16,),
-            // Data Table
-            _buildDataTable(),
-        
-        
-        
-        
-          ],
-        ),
+      body: Consumer(
+        builder: (context, ref, child) {
+          // Watch the provider to react to data changes
+          final allData = ref.watch(summaryDataProvider);
+
+          // Auto-update filtered data when provider data changes
+          if (_filteredData.isEmpty && allData.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _filterByMonth(_selectedMonth!);
+            });
+          }
+
+          final (firstDay, lastDay) = _getFirstLastDayOfMonth(_selectedMonth!);
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // Month Selector and Date Range
+                _buildMonthSelector(firstDay, lastDay),
+
+                // Summary Cards
+                _buildSummaryCards(),
+                _buildPassTrendChart(),
+
+                const SizedBox(height: 16),
+                // Data Table
+                _buildDataTable(),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
+  // Update the dropdown onChanged:
   Widget _buildMonthSelector(DateTime firstDay, DateTime lastDay) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -106,7 +171,6 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
@@ -124,12 +188,7 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
                         color: Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedMonth = newValue!;
-                          _filterByMonth(newValue);
-                        });
-                      },
+                      onChanged: _onMonthChanged, // Use the new method
                       items: _months.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -139,8 +198,6 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),
@@ -166,7 +223,7 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
                   ),
                   child: Text(
                     '${DashboardHelpers.convertDateTime(firstDay.toString(), pattern: 'dd MMM')} - ${DashboardHelpers.convertDateTime(lastDay.toString(), pattern: 'dd MMM yyyy')}',
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.blue.shade800,
                     ),
@@ -179,6 +236,69 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
       ),
     );
   }
+
+  // Also update the chart to use _filteredData instead of ref.read
+  Widget _buildPassTrendChart() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$_selectedMonth Summary',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 300,
+            child: SfCartesianChart(
+              primaryXAxis: CategoryAxis(
+                labelRotation: -45,
+                majorGridLines: const MajorGridLines(width: 0),
+                axisLine: const AxisLine(width: 1, color: Colors.grey),
+                majorTickLines: const MajorTickLines(size: 0),
+              ),
+              primaryYAxis: NumericAxis(
+                majorGridLines: const MajorGridLines(color: Colors.grey, width: 0.5),
+                axisLine: const AxisLine(width: 1, color: Colors.grey),
+                majorTickLines: const MajorTickLines(size: 0),
+              ),
+              series: <CartesianSeries>[
+                LineSeries<QcPassSummaryModel, String>(
+                  dataSource: _filteredData, // Use filtered data instead of ref.read
+                  xValueMapper: (QcPassSummaryModel data, _) => _formatDateForChart(data.day),
+                  yValueMapper: (QcPassSummaryModel data, _) => data.totalPass?.toDouble(),
+                  name: 'Pass',
+                  color: Colors.green.shade600,
+                  width: 3,
+                  markerSettings: const MarkerSettings(
+                    isVisible: true,
+                    color: Colors.green,
+                    borderWidth: 2,
+                    borderColor: Colors.white,
+                    shape: DataMarkerType.circle,
+                    height: 6,
+                    width: 6,
+                  ),
+                ),
+              ],
+              tooltipBehavior: TooltipBehavior(
+                enable: true,
+                color: Colors.green.shade100,
+                borderColor: Colors.green,
+                borderWidth: 1,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildSummaryCards() {
     if (_filteredData.isEmpty) {
@@ -463,78 +583,6 @@ class _QcPassSummaryScreenState extends State<QcPassSummaryScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPassTrendChart() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-           Text(
-            '$_selectedMonth Summary',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 300,
-            child: SfCartesianChart(
-              // Chart background and border
-
-              primaryXAxis: CategoryAxis(
-                labelRotation: -45,
-                majorGridLines: const MajorGridLines(width: 0),
-                axisLine: const AxisLine(width: 1, color: Colors.grey),
-                majorTickLines: const MajorTickLines(size: 0),
-              ),
-              primaryYAxis: NumericAxis(
-                majorGridLines: const MajorGridLines(color: Colors.grey, width: 0.5),
-                axisLine: const AxisLine(width: 1, color: Colors.grey),
-                majorTickLines: const MajorTickLines(size: 0),
-                // labelFormatter: (axisLabelRenderArgs) {
-                //   final value = double.tryParse(axisLabelRenderArgs.text) ?? 0;
-                //   if (value >= 1000) {
-                //     return '${(value / 1000).toStringAsFixed(0)}K';
-                //   }
-                //   return value.toStringAsFixed(0);
-                // },
-              ),
-
-              series: <CartesianSeries>[
-                LineSeries<QcPassSummaryModel, String>(
-                  dataSource: widget.monthlyData,
-                  xValueMapper: (QcPassSummaryModel data, _) => _formatDateForChart(data.day),
-                  yValueMapper: (QcPassSummaryModel data, _) => data.totalPass?.toDouble(),
-                  name: 'Pass',
-                  color: Colors.green.shade600,
-                  width: 3,
-                  markerSettings: const MarkerSettings(
-                    isVisible: true,
-                    color: Colors.green,
-                    borderWidth: 2,
-                    borderColor: Colors.white,
-                    shape: DataMarkerType.circle,
-                    height: 6,
-                    width: 6,
-                  ),
-                ),
-              ],
-
-              tooltipBehavior: TooltipBehavior(
-                enable: true,
-                color: Colors.green.shade100,
-                borderColor: Colors.green,
-                borderWidth: 1,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

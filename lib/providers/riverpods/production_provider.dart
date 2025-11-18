@@ -73,10 +73,10 @@ class QcPassSummaryNotifier extends StateNotifier<List<QcPassSummaryModel>> {
   QcPassSummaryNotifier() : super([]);
   ApiService apiService=ApiService();
 
-  Future<void> loadDifferenceData(String date1, String date2) async {
+  Future<void> loadSummeryData(String date1, String date2) async {
     try {
       List<QcPassSummaryModel> summaryList=[];
-      final data = await apiService.getData('api/Support/GetQCPassSummaryByDateRange?startDate=2025-10-01&endDate=2025-10-31');
+      final data = await apiService.getData('api/Support/GetQCPassSummaryByDateRange?startDate=$date1&endDate=$date2');
       for(var i in data['data'])
       {
         summaryList.add(QcPassSummaryModel.fromJson(i));

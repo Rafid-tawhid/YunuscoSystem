@@ -145,28 +145,24 @@ class ProductHomeScreen extends ConsumerWidget {
         cardColor: const Color(0x18BBC5EF), // Light pink
         iconColor: const Color(0xFF180243), // Dark pink
         onTap: () async {
-          List<QcPassSummaryModel> dataList=[];
-          for(var i in summaryList){
-            dataList.add(QcPassSummaryModel.fromJson(i));
-          }
 
           final now = DateTime.now();
 
-          // // Get the first day of previous month
-          // final firstDayCurrentMonth = DateTime(now.year, now.month, 1);
-          //
-          // // Get the last day of previous month
-          // final lastDayCurrentMonth = DateTime(now.year, now.month, 0);
-          // final todayFormatted = DashboardHelpers.convertDateTime(firstDayCurrentMonth.toString(), pattern: 'yyyy-MM-dd');
-          // final yesterdayFormatted = DashboardHelpers.convertDateTime(lastDayCurrentMonth.toString(), pattern: 'yyyy-MM-dd');
-          //
-          //
-          // await ref.read(differenceDataProvider.notifier).loadDifferenceData(todayFormatted, yesterdayFormatted);
-          // final asyncDiffData = ref.watch(differenceDataProvider);
+          // Get the first day of previous month
+          final firstDayCurrentMonth = DateTime(now.year, now.month, 1);
+
+          // Get the last day of previous month
+          final lastDayCurrentMonth = DateTime(now.year, now.month, 0);
+          final currentMonthFirstDate = DashboardHelpers.convertDateTime(firstDayCurrentMonth.toString(), pattern: 'yyyy-MM-dd');
+          final currentMonthLastDate = DashboardHelpers.convertDateTime(lastDayCurrentMonth.toString(), pattern: 'yyyy-MM-dd');
+
+
+          await ref.read(summaryDataProvider.notifier).loadSummeryData(currentMonthFirstDate, currentMonthLastDate);
+
 
           Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => QcPassSummaryScreen(monthlyData: dataList,)),
+            CupertinoPageRoute(builder: (context) => QcPassSummaryScreen()),
           );
         },
       ),
@@ -220,197 +216,3 @@ class ProductHomeScreen extends ConsumerWidget {
   }
 }
 
-var summaryList=[
-  {
-    "Day": "2025-10-01T00:00:00",
-    "TotalPass": 955,
-    "TotalDefect": 50,
-    "TotalDefectiveGarments": 6,
-    "TotalReject": 6,
-    "TotalAlterCheck": 9
-  },
-  {
-    "Day": "2025-10-02T00:00:00",
-    "TotalPass": 3410,
-    "TotalDefect": 279,
-    "TotalDefectiveGarments": 249,
-    "TotalReject": 0,
-    "TotalAlterCheck": 276
-  },
-  {
-    "Day": "2025-10-06T00:00:00",
-    "TotalPass": 5670,
-    "TotalDefect": 314,
-    "TotalDefectiveGarments": 275,
-    "TotalReject": 0,
-    "TotalAlterCheck": 314
-  },
-  {
-    "Day": "2025-10-07T00:00:00",
-    "TotalPass": 5697,
-    "TotalDefect": 270,
-    "TotalDefectiveGarments": 235,
-    "TotalReject": 0,
-    "TotalAlterCheck": 270
-  },
-  {
-    "Day": "2025-10-08T00:00:00",
-    "TotalPass": 7040,
-    "TotalDefect": 375,
-    "TotalDefectiveGarments": 321,
-    "TotalReject": 0,
-    "TotalAlterCheck": 375
-  },
-  {
-    "Day": "2025-10-09T00:00:00",
-    "TotalPass": 4884,
-    "TotalDefect": 247,
-    "TotalDefectiveGarments": 225,
-    "TotalReject": 0,
-    "TotalAlterCheck": 247
-  },
-  {
-    "Day": "2025-10-11T00:00:00",
-    "TotalPass": 5409,
-    "TotalDefect": 264,
-    "TotalDefectiveGarments": 243,
-    "TotalReject": -1,
-    "TotalAlterCheck": 256
-  },
-  {
-    "Day": "2025-10-12T00:00:00",
-    "TotalPass": 8886,
-    "TotalDefect": 637,
-    "TotalDefectiveGarments": 629,
-    "TotalReject": 0,
-    "TotalAlterCheck": 637
-  },
-  {
-    "Day": "2025-10-13T00:00:00",
-    "TotalPass": 12103,
-    "TotalDefect": 684,
-    "TotalDefectiveGarments": 652,
-    "TotalReject": 0,
-    "TotalAlterCheck": 684
-  },
-  {
-    "Day": "2025-10-14T00:00:00",
-    "TotalPass": 15836,
-    "TotalDefect": 949,
-    "TotalDefectiveGarments": 919,
-    "TotalReject": 0,
-    "TotalAlterCheck": 949
-  },
-  {
-    "Day": "2025-10-15T00:00:00",
-    "TotalPass": 20580,
-    "TotalDefect": 1320,
-    "TotalDefectiveGarments": 1281,
-    "TotalReject": 0,
-    "TotalAlterCheck": 1253
-  },
-  {
-    "Day": "2025-10-16T00:00:00",
-    "TotalPass": 139893,
-    "TotalDefect": 8719,
-    "TotalDefectiveGarments": 7657,
-    "TotalReject": 0,
-    "TotalAlterCheck": 11835
-  },
-  {
-    "Day": "2025-10-18T00:00:00",
-    "TotalPass": 155386,
-    "TotalDefect": 9119,
-    "TotalDefectiveGarments": 8029,
-    "TotalReject": 0,
-    "TotalAlterCheck": 8318
-  },
-  {
-    "Day": "2025-10-19T00:00:00",
-    "TotalPass": 159615,
-    "TotalDefect": 9226,
-    "TotalDefectiveGarments": 8002,
-    "TotalReject": 9,
-    "TotalAlterCheck": 8343
-  },
-  {
-    "Day": "2025-10-20T00:00:00",
-    "TotalPass": 157505,
-    "TotalDefect": 8788,
-    "TotalDefectiveGarments": 7648,
-    "TotalReject": 0,
-    "TotalAlterCheck": 7803
-  },
-  {
-    "Day": "2025-10-21T00:00:00",
-    "TotalPass": 163296,
-    "TotalDefect": 9190,
-    "TotalDefectiveGarments": 8078,
-    "TotalReject": 0,
-    "TotalAlterCheck": 8296
-  },
-  {
-    "Day": "2025-10-22T00:00:00",
-    "TotalPass": 174333,
-    "TotalDefect": 10251,
-    "TotalDefectiveGarments": 8889,
-    "TotalReject": 0,
-    "TotalAlterCheck": 9475
-  },
-  {
-    "Day": "2025-10-23T00:00:00",
-    "TotalPass": 162531,
-    "TotalDefect": 9598,
-    "TotalDefectiveGarments": 8578,
-    "TotalReject": 0,
-    "TotalAlterCheck": 9908
-  },
-  {
-    "Day": "2025-10-25T00:00:00",
-    "TotalPass": 116850,
-    "TotalDefect": 7285,
-    "TotalDefectiveGarments": 6167,
-    "TotalReject": 0,
-    "TotalAlterCheck": 6302
-  },
-  {
-    "Day": "2025-10-26T00:00:00",
-    "TotalPass": 177325,
-    "TotalDefect": 9966,
-    "TotalDefectiveGarments": 8822,
-    "TotalReject": 0,
-    "TotalAlterCheck": 9433
-  },
-  {
-    "Day": "2025-10-27T00:00:00",
-    "TotalPass": 169981,
-    "TotalDefect": 9494,
-    "TotalDefectiveGarments": 8410,
-    "TotalReject": 0,
-    "TotalAlterCheck": 8955
-  },
-  {
-    "Day": "2025-10-28T00:00:00",
-    "TotalPass": 159811,
-    "TotalDefect": 9541,
-    "TotalDefectiveGarments": 8384,
-    "TotalReject": 0,
-    "TotalAlterCheck": 8254
-  },
-  {
-    "Day": "2025-10-29T00:00:00",
-    "TotalPass": 170179,
-    "TotalDefect": 9886,
-    "TotalDefectiveGarments": 8784,
-    "TotalReject": 0,
-    "TotalAlterCheck": 10400
-  },
-  {
-    "Day": "2025-10-30T00:00:00",
-    "TotalPass": 169841,
-    "TotalDefect": 9948,
-    "TotalDefectiveGarments": 8759,
-    "TotalReject": 0,
-    "TotalAlterCheck": 8568
-  }
-];
