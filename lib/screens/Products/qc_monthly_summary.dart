@@ -40,7 +40,7 @@ class _QcPassSummaryScreenState extends ConsumerState<QcPassSummaryScreen> {
     final first = DashboardHelpers.convertDateTime(firstDay.toString(), pattern: 'yyyy-MM-dd');
     final last = DashboardHelpers.convertDateTime(lastDay.toString(), pattern: 'yyyy-MM-dd');
 
-    await ref.read(summaryDataProvider.notifier).loadSummeryData(first, last);
+    await ref.read(summaryDataProvider.notifier).loadSummaryData(first, last);
 
     // Wait for the provider to update and then filter
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -86,7 +86,7 @@ class _QcPassSummaryScreenState extends ConsumerState<QcPassSummaryScreen> {
       final last = DashboardHelpers.convertDateTime(lastDay.toString(), pattern: 'yyyy-MM-dd');
 
       try {
-        await ref.read(summaryDataProvider.notifier).loadSummeryData(first, last);
+        await ref.read(summaryDataProvider.notifier).loadSummaryData(first, last);
 
         // After data is loaded, filter it
         WidgetsBinding.instance.addPostFrameCallback((_) {

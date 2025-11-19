@@ -18,6 +18,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
 import '../../models/production_qc_model.dart';
 import '../../providers/riverpods/production_provider.dart';
+import 'error_summary.dart';
 import 'get_all_style_screen.dart';
 import 'widgets/buyers_screen.dart';
 import 'package:riverpod/riverpod.dart';
@@ -141,11 +142,10 @@ class ProductHomeScreen extends ConsumerWidget {
 
       DashboardMenuItem(
         name: 'QC\nSummary',
-        icon: Icons.compare_arrows,
-        cardColor: const Color(0x18BBC5EF), // Light pink
-        iconColor: const Color(0xFF180243), // Dark pink
+        icon: Icons.analytics,
+        cardColor: const Color(0xFFEFF6FF), // Light blue
+        iconColor: const Color(0xFF1D4ED8), // Deep blue
         onTap: () async {
-
           Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => QcPassSummaryScreen()),
@@ -155,14 +155,13 @@ class ProductHomeScreen extends ConsumerWidget {
 
       DashboardMenuItem(
         name: 'Error\nSummary',
-        icon: Icons.compare_arrows,
-        cardColor: const Color(0x18BBC5EF), // Light pink
-        iconColor: const Color(0xFF180243), // Dark pink
+        icon: Icons.insights,
+        cardColor: const Color(0xFFFFF4E6), // Light orange
+        iconColor: const Color(0xFFEA580C), // Deep orange
         onTap: () async {
-
           Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => QcPassSummaryScreen()),
+            CupertinoPageRoute(builder: (context) => ErrorSummaryScreen()),
           );
         },
       ),

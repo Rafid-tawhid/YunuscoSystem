@@ -22,7 +22,7 @@ class InventoryPorvider extends ChangeNotifier {
   }
 
   //
-  Future<bool> getInventoryStockSummery(DateTime date, String type) async {
+  Future<bool> getInventoryStockSummary(DateTime date, String type) async {
     debugPrint('This is type $type');
     final formattedDate = formatDateSlash(date);
     var data = await apiService.getData(
