@@ -1,15 +1,39 @@
 // screens/tna_notification_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../models/tna_notification_model.dart';
 import '../../providers/riverpods/notification_provider.dart';
 
-class TnaNotificationScreen extends ConsumerWidget {
+class TnaNotificationScreen extends ConsumerStatefulWidget {
   const TnaNotificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TnaNotificationScreen> createState() => _TnaNotificationScreenState();
+}
+
+class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load notifications when the screen is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
+  }
+
+  Future<void> _loadInitialData() async {
+    try {
+      await ref.read(tnaNotificationsProvider.notifier).loadNotificationData();
+    } catch (e) {
+      // Handle error if needed
+      debugPrint('Error loading initial data: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final notifications = ref.watch(tnaNotificationsProvider);
 
     return Scaffold(
@@ -26,7 +50,18 @@ class TnaNotificationScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-
+          IconButton(
+              onPressed: () {
+                ref.read(tnaNotificationsProvider.notifier).loadNotificationData();
+              },
+              icon: const Icon(Icons.refresh)
+          ),
+          IconButton(
+              onPressed: () {
+                ref.read(tnaNotificationsProvider.notifier).sendNotification();
+              },
+              icon: const Icon(Icons.send)
+          ),
         ],
       ),
       body: Column(
@@ -141,12 +176,12 @@ class TnaNotificationScreen extends ConsumerWidget {
       itemCount: notifications.length,
       itemBuilder: (context, index) {
         final notification = notifications[index];
-        return _buildNotificationCard(notification, index,context);
+        return _buildNotificationCard(notification, index, context);
       },
     );
   }
 
-  Widget _buildNotificationCard(TnaNotificationModel notification, int index,BuildContext ctx) {
+  Widget _buildNotificationCard(TnaNotificationModel notification, int index, BuildContext ctx) {
     return Card(
       elevation: 2,
       color: Colors.white,
@@ -282,7 +317,7 @@ class TnaNotificationScreen extends ConsumerWidget {
             Icon(Icons.shopping_bag, size: 12, color: Colors.grey.shade600),
             const SizedBox(width: 4),
             Text(
-              'PO: ${notification.po ?? 'N/A'}',
+              'PO: ${DashboardHelpers.truncateString(notification.po.toString(), 10) ?? 'N/A'}',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
           ],
@@ -297,12 +332,6 @@ class TnaNotificationScreen extends ConsumerWidget {
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(width: 12),
-            Icon(Icons.person, size: 12, color: Colors.grey.shade600),
-            const SizedBox(width: 4),
-            Text(
-              'Role: ${notification.recipientRole ?? 'N/A'}',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-            ),
           ],
         ),
       ],
@@ -406,6 +435,4 @@ class TnaNotificationScreen extends ConsumerWidget {
       ),
     );
   }
-
-
 }

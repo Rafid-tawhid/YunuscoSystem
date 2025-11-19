@@ -17,7 +17,8 @@ class TnaNotificationNotifier extends StateNotifier<List<TnaNotificationModel>>{
   TnaNotificationNotifier() : super([]);
   ApiService apiService=ApiService();
 
-  Future<void> loadErrorSummaryData(String date) async {
+  Future<void> loadNotificationData() async {
+
     try {
       List<TnaNotificationModel> dataList=[];
       final data = await apiService.getData('api/Support/GetTNAData');
@@ -28,6 +29,21 @@ class TnaNotificationNotifier extends StateNotifier<List<TnaNotificationModel>>{
       debugPrint('notificationList ${dataList.length}');
       state=dataList;
     } catch (e) {
+
+      state = [];
+      rethrow;
+    }
+  }
+
+
+  Future<void> sendNotification() async {
+
+    try {
+      final data = await apiService.getData('api/support/SendTNA_Notification');
+      debugPrint('sendNotification $data');
+
+    } catch (e) {
+      debugPrint('sendNotification ERROR $e');
       state = [];
       rethrow;
     }
