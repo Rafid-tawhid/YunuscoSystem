@@ -15,6 +15,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../common_widgets/drawer.dart';
 import '../providers/auth_provider.dart';
 import '../providers/hr_provider.dart';
+import 'Notification/tna_notification_screen.dart';
 import 'Purchasing/purchase_requisation_list.dart';
 import 'Accounts/account_menu_screen.dart';
 import 'HR&PayRoll/doc_appointment_requisation.dart';
@@ -268,6 +269,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(context,
               CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
         }
+        break;
+
+      case 51:
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => TnaNotificationScreen()),
+        );
         break;
       default:
         DashboardHelpers.showAlert(msg: 'Not Available');

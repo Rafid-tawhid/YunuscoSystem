@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/screens/Products/style_wise_efficiency_screen.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../helper_class/dashboard_helpers.dart';
 import '../../utils/constants.dart';
@@ -55,6 +56,8 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: isSearching
             ? TextField(
                 controller: searchController,
@@ -62,13 +65,13 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                 decoration: InputDecoration(
                     hintText: 'Search styles...',
                     border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.black)),
-                style: TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.white)),
+                style: TextStyle(color: Colors.white),
                 onChanged: filterStyles,
               )
             : Text('Select Style',
                 style: AppConstants.customTextStyle(
-                    18, Colors.black, FontWeight.w500)),
+                    18, Colors.white, FontWeight.w500)),
         centerTitle: true,
         elevation: 0,
         actions: [

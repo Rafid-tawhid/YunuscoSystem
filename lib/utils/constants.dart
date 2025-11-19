@@ -69,6 +69,7 @@ TextStyle customTextStyle(double size, Color color, FontWeight weight) =>
     ); //
 List<Menu> fullModuleList = [
   Menu(7, 'assets/images/purchase.png', 'Purchasing', false), // ID matched from moduleList
+  Menu(51, 'assets/images/notification.png', 'Notification', false), // ID matched from moduleList
   Menu(44, 'assets/images/management.png', 'Management', false), // ID matched
   Menu(1, 'assets/images/hrbold.png', 'HR & Payroll', false), // ID matched
   Menu(6, 'assets/images/button-merch.png', 'Merchandising', false), // ID matched
