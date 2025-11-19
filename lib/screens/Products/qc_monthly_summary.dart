@@ -132,10 +132,10 @@ class _QcPassSummaryScreenState extends ConsumerState<QcPassSummaryScreen> {
               children: [
                 // Month Selector and Date Range
                 _buildMonthSelector(firstDay, lastDay),
-
+                _buildPassTrendChart(),
                 // Summary Cards
                 _buildSummaryCards(),
-                _buildPassTrendChart(),
+
 
                 const SizedBox(height: 16),
                 // Data Table
