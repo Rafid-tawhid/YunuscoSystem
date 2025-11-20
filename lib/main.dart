@@ -30,6 +30,7 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+//
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isAndroid) {

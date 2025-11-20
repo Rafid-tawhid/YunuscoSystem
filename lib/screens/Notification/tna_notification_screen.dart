@@ -14,6 +14,8 @@ class TnaNotificationScreen extends ConsumerStatefulWidget {
 }
 
 class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
+  String _selectedFilter = 'all'; // 'all', 'sent', 'pending', 'urgent'
+
   @override
   void initState() {
     super.initState();
@@ -32,9 +34,22 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
     }
   }
 
+  List<TnaNotificationModel> _getFilteredNotifications(List<TnaNotificationModel> allNotifications) {
+    switch (_selectedFilter) {
+      case 'sent':
+        return allNotifications.where((n) => n.isSent == true).toList();
+      case 'pending':
+        return allNotifications.where((n) => n.isSent !=true).toList();
+      case 'all':
+      default:
+        return allNotifications;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final notifications = ref.watch(tnaNotificationsProvider);
+    final allNotifications = ref.watch(tnaNotificationsProvider);
+    final filteredNotifications = _getFilteredNotifications(allNotifications);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -67,13 +82,48 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
       body: Column(
         children: [
           // Summary Cards
-          _buildSummaryCards(notifications),
+          _buildSummaryCards(allNotifications),
+
+          // Filter indicator
+          if (_selectedFilter != 'all')
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: Colors.orange.shade50,
+              child: Row(
+                children: [
+                  Icon(Icons.filter_alt, size: 16, color: Colors.orange.shade700),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Showing ${_getFilterLabel(_selectedFilter)}',
+                    style: TextStyle(
+                      color: Colors.orange.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedFilter = 'all';
+                      });
+                    },
+                    child: Text(
+                      'Clear',
+                      style: TextStyle(
+                        color: Colors.orange.shade700,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           // Notifications List
           Expanded(
-            child: notifications.isEmpty
-                ? _buildEmptyState()
-                : _buildNotificationsList(notifications),
+            child: filteredNotifications.isEmpty
+                ? _buildEmptyState(_selectedFilter)
+                : _buildNotificationsList(filteredNotifications),
           ),
         ],
       ),
@@ -83,7 +133,6 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
   Widget _buildSummaryCards(List<TnaNotificationModel> notifications) {
     final sentCount = notifications.where((n) => n.isSent == true).length;
     final pendingCount = notifications.where((n) => n.isSent != true).length;
-    final urgentCount = notifications.where((n) => (n.daysOffset ?? 0) <= 0).length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -96,49 +145,113 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
       ),
       child: Row(
         children: [
-          _buildSummaryItem('Total', notifications.length.toString(), Colors.blue),
-          _buildSummaryItem('Sent', sentCount.toString(), Colors.green),
-          _buildSummaryItem('Pending', pendingCount.toString(), Colors.orange),
-          _buildSummaryItem('Urgent', urgentCount.toString(), Colors.red),
+          _buildSummaryItem(
+            'Total',
+            notifications.length.toString(),
+            Colors.blue,
+            'all',
+            isSelected: _selectedFilter == 'all',
+          ),
+          _buildSummaryItem(
+            'Sent',
+            sentCount.toString(),
+            Colors.green,
+            'sent',
+            isSelected: _selectedFilter == 'sent',
+          ),
+          _buildSummaryItem(
+            'Pending',
+            pendingCount.toString(),
+            Colors.orange,
+            'pending',
+            isSelected: _selectedFilter == 'pending',
+          ),
+          // _buildSummaryItem(
+          //   'Urgent',
+          //   urgentCount.toString(),
+          //   Colors.red,
+          //   'urgent',
+          //   isSelected: _selectedFilter == 'urgent',
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryItem(String title, String value, Color color) {
+  Widget _buildSummaryItem(String title, String value, Color color, String filterType, {bool isSelected = false}) {
     return Expanded(
-      child: Column(
-        children: [
-          Container(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3.0),
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedFilter = filterType;
+            });
+          },
+          child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+              color: isSelected ? color.withOpacity(0.3) : color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: isSelected ? Border.all(color: color, width: 2) : null,
             ),
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isSelected ? color : color.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : color,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected ? color : Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black54,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(String filter) {
+    String message;
+    String subtitle;
+
+    switch (filter) {
+      case 'sent':
+        message = 'No Sent Notifications';
+        subtitle = 'No notifications have been sent yet';
+        break;
+      case 'pending':
+        message = 'No Pending Notifications';
+        subtitle = 'All notifications have been sent';
+        break;
+      case 'urgent':
+        message = 'No Urgent Notifications';
+        subtitle = 'Great! No urgent notifications';
+        break;
+      case 'all':
+      default:
+        message = 'No Notifications';
+        subtitle = 'You\'re all caught up!';
+    }
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -150,7 +263,7 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Notifications',
+            message,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey.shade600,
@@ -159,7 +272,7 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'You\'re all caught up!',
+            subtitle,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade500,
@@ -339,11 +452,10 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
   }
 
   Color _getNotificationColor(TnaNotificationModel notification) {
-    final daysOffset = notification.daysOffset ?? 0;
+    final sent = notification.isSent ?? false;
 
-    if (daysOffset <= 0) return Colors.red;
-    if (daysOffset <= 2) return Colors.orange;
-    if (notification.isSent == true) return Colors.green;
+    if (sent == true) return Colors.green;
+    if (sent !=true) return Colors.orange;
     return Colors.blue;
   }
 
@@ -370,11 +482,22 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
     }
   }
 
+  String _getFilterLabel(String filter) {
+    switch (filter) {
+      case 'sent': return 'Sent Notifications';
+      case 'pending': return 'Pending Notifications';
+      case 'urgent': return 'Urgent Notifications';
+      default: return 'All Notifications';
+    }
+  }
+
+
   void _showNotificationDetails(BuildContext context, TnaNotificationModel notification) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(notification.notificationType ?? 'Notification Details'),
+        backgroundColor: Colors.white,
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
