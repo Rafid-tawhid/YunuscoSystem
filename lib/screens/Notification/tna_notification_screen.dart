@@ -6,6 +6,8 @@ import 'package:yunusco_group/utils/colors.dart';
 import '../../models/tna_notification_model.dart';
 import '../../providers/riverpods/notification_provider.dart';
 
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 class TnaNotificationScreen extends ConsumerStatefulWidget {
   const TnaNotificationScreen({super.key});
 
@@ -72,10 +74,24 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
               icon: const Icon(Icons.refresh)
           ),
           IconButton(
-              onPressed: () {
-                ref.read(tnaNotificationsProvider.notifier).sendNotification();
-              },
-              icon: const Icon(Icons.send)
+            onPressed: () async {
+              // Show loading dialog
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const AlertDialog(
+                  content: Row(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 16),
+                      Text("Sending notification..."),
+                    ],
+                  ),
+                ),
+              );
+              sendEmailNotification(context);
+            },
+            icon: const Icon(Icons.send),
           ),
         ],
       ),
@@ -557,5 +573,36 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
         ],
       ),
     );
+  }
+
+  void sendEmailNotification(BuildContext context) async{
+    try {
+      // Call your API
+      await ref.read(tnaNotificationsProvider.notifier).sendNotification();
+
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Notification sent successfully!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (error) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to send notification: $error'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 }

@@ -39,7 +39,7 @@ class TnaNotificationNotifier extends StateNotifier<List<TnaNotificationModel>>{
   Future<void> sendNotification() async {
 
     try {
-      final data = await apiService.getData('api/support/SendTNA_Notification');
+      final data = await apiService.postData('api/support/SendTNA_Notification',{});
       debugPrint('sendNotification $data');
 
     } catch (e) {
