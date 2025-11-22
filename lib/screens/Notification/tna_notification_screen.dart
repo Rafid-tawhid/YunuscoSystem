@@ -574,6 +574,7 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
       ),
     );
   }
+  //
 
   void sendEmailNotification(BuildContext context) async{
     try {
