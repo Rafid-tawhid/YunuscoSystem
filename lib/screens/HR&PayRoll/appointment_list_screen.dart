@@ -259,6 +259,7 @@ class AppointmentListScreen extends ConsumerWidget {
                         const SizedBox(height: 16),
 
                         // Date and Time Section
+                        // In the Date and Time Section, wrap the Time part with GestureDetector
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -283,16 +284,89 @@ class AppointmentListScreen extends ConsumerWidget {
                                 margin: const EdgeInsets.symmetric(horizontal: 8),
                               ),
                               Expanded(
-                                child: _buildDateTimeItem(
-                                  Icons.access_time,
-                                  'Requested Time',
-                                  _formatTime(appointment.preferredTime),
-                                  Colors.blue.shade700,
+                                child: GestureDetector(
+                                  onTap: () => _onTimeTap(context, appointment),
+                                  child: _buildDateTimeItem(
+                                    Icons.access_time,
+                                    'Requested Time',
+                                    _formatTime(appointment.preferredTime),
+                                    Colors.blue.shade700,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
+
+// Also add the same for Manager Scheduled Time if available
+                        if (appointment.managerScheduledDate != null &&
+                            appointment.managerScheduledDate.toString().isNotEmpty)
+                          Column(
+                            children: [
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.green.shade100),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.check_circle, size: 16, color: Colors.green.shade700),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Scheduled by Manager',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green.shade800,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildDateTimeItem(
+                                        Icons.calendar_today,
+                                        'Scheduled Date',
+                                        _formatDate(appointment.managerScheduledDate.toString()),
+                                        Colors.green.shade700,
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 1,
+                                      height: 40,
+                                      color: Colors.green.shade200,
+                                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => _onTimeTap(context, appointment),
+                                        child: _buildDateTimeItem(
+                                          Icons.access_time,
+                                          'Scheduled Time',
+                                          _formatTime(appointment.managerScheduledTime?.toString()),
+                                          Colors.green.shade700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
 
                         // Manager Scheduled Date/Time (if available)
                         if (appointment.managerScheduledDate != null &&
@@ -538,6 +612,67 @@ class AppointmentListScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _onTimeTap(BuildContext context, AppointmentModel appointment) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Reschedule Time'),
+          content: const Text('Do you want to select a new time for this appointment?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _selectNewTime(context, appointment);
+              },
+              child: const Text('Select New Time'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _selectNewTime(BuildContext context, AppointmentModel appointment) async {
+    final TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (selectedTime != null) {
+      // Call your API here with the new time
+      _callRescheduleApi(appointment, selectedTime,context);
+    }
+  }
+
+  void _callRescheduleApi(AppointmentModel appointment, TimeOfDay newTime,BuildContext context) {
+    // Implement your API call here
+    final newTimeString = "${newTime.hour.toString().padLeft(2, '0')}:${newTime.minute.toString().padLeft(2, '0')}:00";
+
+    debugPrint('Calling API to reschedule appointment ${appointment.appointmentId} to $newTimeString');
+
+    // Example API call structure:
+    // final apiService = ref.read(apiServiceProvider);
+    // apiService.postData('api/Support/reschedule-appointment', {
+    //   'appointmentId': appointment.appointmentId,
+    //   'newTime': newTimeString,
+    // });
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Appointment time updated to ${newTime.format(context)}'),
+        backgroundColor: Colors.green,
+      ),
     );
   }
 }
