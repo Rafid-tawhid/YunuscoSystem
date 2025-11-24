@@ -15,6 +15,8 @@ import '../../models/dhu_model.dart';
 import '../../models/item_efficiency_model.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/members_model.dart';
+
 ApiService apiService=ApiService();
 
 
@@ -276,5 +278,29 @@ final dhuDataProvider = FutureProvider.family<DHUResponse, String>((ref, date) a
 
   return DHUResponse.fromJson(data);
 });
+
+
+
+
+final selectedMemberIdProvider = StateProvider<String?>((ref) => null);
+
+final allStaffListProvider = FutureProvider.autoDispose<List<MembersModel>>((ref) async {
+  final apiService = ref.read(apiServiceProvider);
+
+  final data = await apiService.getData('api/Test/AllEmpData');
+
+  if (data == null) return [];
+
+  List<MembersModel> dataList =
+  data.map<MembersModel>((e) => MembersModel.fromJson(e)).toList();
+
+  List<MembersModel> managementList = dataList
+      .where((e) => e.departmentName == 'Management')
+      .toList();
+
+  debugPrint('managementList ${managementList.length}');
+  return managementList;
+});
+
 
 

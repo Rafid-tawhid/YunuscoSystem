@@ -6,8 +6,6 @@ import 'package:yunusco_group/utils/colors.dart';
 import '../../models/tna_notification_model.dart';
 import '../../providers/riverpods/notification_provider.dart';
 
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-
 class TnaNotificationScreen extends ConsumerStatefulWidget {
   const TnaNotificationScreen({super.key});
 
@@ -442,7 +440,11 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
               'Buyer: ${notification.buyer ?? 'N/A'}',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
-            const SizedBox(width: 12),
+
+          ],
+        ),
+        Row(
+          children: [
             Icon(Icons.shopping_bag, size: 12, color: Colors.grey.shade600),
             const SizedBox(width: 4),
             Text(
@@ -451,7 +453,16 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        Row(
+          children: [
+            Icon(Icons.style, size: 12, color: Colors.grey.shade600),
+            const SizedBox(width: 4),
+            Text(
+              'Style: ${DashboardHelpers.truncateString(notification.style.toString(), 20) ?? 'N/A'}',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+          ],
+        ),
         Row(
           children: [
             Icon(Icons.calendar_today, size: 12, color: Colors.grey.shade600),

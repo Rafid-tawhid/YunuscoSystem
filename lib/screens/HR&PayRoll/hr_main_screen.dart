@@ -16,6 +16,7 @@ import 'attendance_board_screen.dart';
 import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
 import 'it_ticketing_webview.dart';
+import 'appointment_list_screen.dart';
 import 'meeting_screen_new.dart';
 import 'it_ticketing_generate_screen.dart';
 
@@ -232,6 +233,17 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => NidExtractorScreen()));
+
+        },
+      ),
+      DashboardMenuItem(
+        name: 'Management\nAppointment',
+        icon: Icons.notifications_active,
+        cardColor: Colors.blueAccent,
+        iconColor: Colors.white,
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AppointmentListScreen()));
 
         },
       ),
