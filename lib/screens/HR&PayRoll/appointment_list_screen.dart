@@ -153,7 +153,7 @@ class AppointmentListScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Appointment #${appointment.appointmentNumber ?? 'N/A'}',
+                                    '#${appointment.appointmentNumber ?? 'N/A'}',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

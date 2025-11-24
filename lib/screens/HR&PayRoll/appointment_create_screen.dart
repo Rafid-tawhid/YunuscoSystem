@@ -471,31 +471,32 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
 
         // Prepare appointment data
 
-        final data= {
-          "employeeName": "Muhammad Amimul Ihsan",
-          "employeeId": "38682",
-          "department": "17",
-          "designation": "Assistant General Manager",
-          "appointmentWith": "Tahamina Khanam",
-          "preferredDate": "2025-11-25T00:00:00.000",
-          "preferredTime": "10:00 AM",
-          "purpose": "xcxcxcxcxcxcxcxcxcx",
-          "createdBy": "Muhammad Amimul Ihsan"
-        };
+        // final data= {
+        //   "employeeName": "Muhammad Amimul Ihsan",
+        //   "employeeId": "38682",
+        //   "department": "17",
+        //   "designation": "Assistant General Manager",
+        //   "appointmentWith": "Tahamina Khanam",
+        //   "preferredDate": "2025-11-25T00:00:00.000",
+        //   "preferredTime": "10:00 AM",
+        //   "purpose": "xcxcxcxcxcxcxcxcxcx",
+        //   "createdBy": "Muhammad Amimul Ihsan"
+        // };
 
         var  appointmentData = {
           "employeeName": DashboardHelpers.currentUser!.userName,
           "employeeId": DashboardHelpers.currentUser!.iDnum,
+          "appointmentNumber": "YBDL-${DateTime.now().millisecondsSinceEpoch}",
           "department": DashboardHelpers.currentUser!.department,
           "designation": DashboardHelpers.currentUser!.designation,
           "appointmentWith": _selectedMember!.fullName,
-          "preferredDate": '2024-03-20T10:00:00',
-          "preferredTime": "10:00 AM",
+          "preferredDate": '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}T00:00:00.000',
+          "preferredTime": '${_selectedTime!.hourOfPeriod.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')} ${_selectedTime!.period == DayPeriod.am ? 'AM' : 'PM'}',
           "purpose": _purposeController.text.trim(),
           "createdBy": DashboardHelpers.currentUser!.userName,
         };
         // Create appointment
-        _createAppointment(data);
+        _createAppointment(appointmentData);
       }
 
 
@@ -528,6 +529,8 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
           _selectedDate = null;
           _selectedTime = null;
         });
+
+        Navigator.pop(context);
 
       }
     } catch (e) {
