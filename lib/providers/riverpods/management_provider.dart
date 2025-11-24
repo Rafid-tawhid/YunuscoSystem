@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/appointment_model.dart';
 import 'package:yunusco_group/models/buyer_wise_value_model.dart';
 import 'package:yunusco_group/models/production_strength_model.dart';
 import 'package:yunusco_group/models/shipment_info_model.dart';
@@ -282,9 +283,8 @@ final dhuDataProvider = FutureProvider.family<DHUResponse, String>((ref, date) a
 
 
 
-final selectedMemberIdProvider = StateProvider<String?>((ref) => null);
 
-final allStaffListProvider = FutureProvider.autoDispose<List<MembersModel>>((ref) async {
+final allStaffListProvider = FutureProvider.family<List<MembersModel>,String>((ref,id) async {
   final apiService = ref.read(apiServiceProvider);
 
   final data = await apiService.getData('api/Test/AllEmpData');
@@ -303,4 +303,44 @@ final allStaffListProvider = FutureProvider.autoDispose<List<MembersModel>>((ref
 });
 
 
+//get all appointment list
 
+final allAppointmentListProvider = FutureProvider.autoDispose<List<AppointmentModel>>((ref) async {
+  final apiService = ref.read(apiServiceProvider);
+
+  final data = await apiService.getData('api/Support/appointments');
+
+  if (data == null) return [];
+
+  List<AppointmentModel> dataList =
+  data['data'].map<AppointmentModel>((e) => AppointmentModel.fromJson(e)).toList();
+
+
+  debugPrint('appointmentList ${dataList.length}');
+  return dataList;
+});
+
+
+
+// -------------------- Provider --------------------
+final updateProvider = StateProvider<bool>((ref) => false);
+
+// -------------------- Function --------------------
+Future<void> createManagementMeeting(WidgetRef ref, Map<String, dynamic> body) async {
+  try {
+    final apiService = ref.read(apiServiceProvider);
+
+    final response = await apiService.postData('api/support/Appointments', body);
+
+    if (response != null) {
+      ref.read(updateProvider.notifier).state = true; // Success
+    } else {
+      ref.read(updateProvider.notifier).state = false;
+      throw Exception('Update failed with status: ${response?.statusCode}');
+    }
+  } catch (e) {
+    ref.read(updateProvider.notifier).state = false;
+    print('Update error: $e');
+    rethrow;
+  }
+}

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/members_model.dart';
 import '../../providers/riverpods/employee_provider.dart';
+import '../../providers/riverpods/management_provider.dart';
 
 class CreateAppointmentScreen extends ConsumerStatefulWidget {
   const CreateAppointmentScreen({super.key});
@@ -68,9 +71,11 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
     // final selectedMemberId = ref.watch(selectedMemberIdProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+
         title: const Text('Create Appointment'),
-        backgroundColor: Colors.blue,
+        backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -158,7 +163,7 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
                 child: ElevatedButton(
                   onPressed: () => _submitAppointment(ref),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: myColors.primaryColor,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -186,10 +191,10 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Colors.blue,
+        color: myColors.primaryColor,
       ),
     );
   }
@@ -386,11 +391,11 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+           Text(
             'Appointment Preview:',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: myColors.primaryColor,
             ),
           ),
           const SizedBox(height: 12),
@@ -463,23 +468,38 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
       // Get selected member details
 
       if(_selectedMember!=null){
+
         // Prepare appointment data
-        final appointmentData = {
-          "fullName": _selectedMember!.fullName,
-          "idCardNo": _selectedMember!.idCardNo,
-          "department": _selectedMember!.departmentName,
-          "designationName": _selectedMember!.designationName,
-          "appointmentWith": _selectedMember!.fullName, // Or you might want a different field
-          "preferredDate": _formatDateForApi(_selectedDate!),
-          "preferredTime": _selectedTime!.format(context),
-          "purpose": _purposeController.text,
-          "createdBy": "current_user", // Replace with actual user from your auth system
+
+        final data= {
+          "employeeName": "Muhammad Amimul Ihsan",
+          "employeeId": "38682",
+          "department": "17",
+          "designation": "Assistant General Manager",
+          "appointmentWith": "Tahamina Khanam",
+          "preferredDate": "2025-11-25T00:00:00.000",
+          "preferredTime": "10:00 AM",
+          "purpose": "xcxcxcxcxcxcxcxcxcx",
+          "createdBy": "Muhammad Amimul Ihsan"
         };
+
+        var  appointmentData = {
+          "employeeName": DashboardHelpers.currentUser!.userName,
+          "employeeId": DashboardHelpers.currentUser!.iDnum,
+          "department": DashboardHelpers.currentUser!.department,
+          "designation": DashboardHelpers.currentUser!.designation,
+          "appointmentWith": _selectedMember!.fullName,
+          "preferredDate": '2024-03-20T10:00:00',
+          "preferredTime": "10:00 AM",
+          "purpose": _purposeController.text.trim(),
+          "createdBy": DashboardHelpers.currentUser!.userName,
+        };
+        // Create appointment
+        _createAppointment(data);
       }
 
 
-      // Create appointment
-      //_createAppointment(appointmentData);
+
     }
   }
 
@@ -487,51 +507,39 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}T${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}:00';
   }
 
-  void _createAppointment(Map<String, dynamic> data) {
+  Future<void> _createAppointment(Map<String, dynamic> data) async {
     // Show loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Creating appointment...'),
-            ],
-          ),
+
+
+    try {
+      await createManagementMeeting(ref, data);
+
+      // Optionally check updateProvider state
+      final success = ref.read(updateProvider);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Appointment created successfully!')),
         );
-      },
-    );
 
-    // Simulate API call
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context); // Close loading dialog
+        // Clear form and navigate back
+        _formKey.currentState!.reset();
+        ref.read(selectedMemberIdProvider.notifier).state = null;
+        setState(() {
+          _selectedDate = null;
+          _selectedTime = null;
+        });
 
-      // Show success message
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Appointment created successfully!'),
-          backgroundColor: Colors.green,
-        ),
+        SnackBar(content: Text('Error: $e')),
       );
+    }
 
-      // Print data for testing
-      debugPrint('Appointment Data: $data');
-
-      // Clear form and navigate back
-      _formKey.currentState!.reset();
-      ref.read(selectedMemberIdProvider.notifier).state = null;
-      setState(() {
-        _selectedDate = null;
-        _selectedTime = null;
-      });
 
       // Optionally navigate back after success
       // Navigator.pop(context);
-    });
+
   }
 
   @override
