@@ -441,7 +441,7 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
     );
   }
 
-  void _submitAppointment(WidgetRef ref) {
+  Future<void> _submitAppointment(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
 
       // Validate all required fields
@@ -497,7 +497,8 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
           "createdBy": DashboardHelpers.currentUser!.userName,
         };
         // Create appointment
-        _createAppointment(appointmentData);
+        await _createAppointment(appointmentData);
+        ref.invalidate(allAppointmentListProvider);
       }
 
 
