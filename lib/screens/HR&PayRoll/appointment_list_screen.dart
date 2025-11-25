@@ -5,6 +5,7 @@ import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/appointment_model.dart';
 import '../../providers/riverpods/management_provider.dart';
+import '../notification_screen.dart';
 import 'appointment_create_screen.dart';
 
 class AppointmentListScreen extends ConsumerWidget {
@@ -92,15 +93,12 @@ class AppointmentListScreen extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    return RefreshIndicator(
-      onRefresh: () => _refreshAppointments(ref),
-      child: ListView.builder(
-        itemCount: appointments.length,
-        itemBuilder: (context, index) {
-          final appointment = appointments[index];
-          return _buildAppointmentCard(context, ref, appointment);
-        },
-      ),
+    return ListView.builder(
+      itemCount: appointments.length,
+      itemBuilder: (context, index) {
+        final appointment = appointments[index];
+        return _buildAppointmentCard(context, ref, appointment);
+      },
     );
   }
 
@@ -176,7 +174,7 @@ class AppointmentListScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '#${appointment.appointmentNumber ?? 'N/A'}',
+                '#Appointment: ${appointment.appointmentId ?? 'N/A'}',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -243,7 +241,7 @@ class AppointmentListScreen extends ConsumerWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            _buildInfoChip(Icons.work, appointment.department ?? 'N/A'),
+            _buildInfoChip(Icons.badge,departments.firstWhere((e)=>e['id']==int.parse(appointment.department.toString()),orElse: ()=>{'name':'N/A'})['name']??'N/A'),
             const SizedBox(width: 8),
             _buildInfoChip(Icons.fingerprint, appointment.employeeId ?? 'N/A'),
           ],
@@ -785,7 +783,7 @@ class AppointmentListScreen extends ConsumerWidget {
             const SizedBox(height: 28),
             Row(children: [
               _buildCompletionDialogButton(text: 'Still Going', icon: Icons.close, color: Colors.grey, onPressed: () => Navigator.of(context).pop()),
-              const SizedBox(width: 12),
+              const SizedBox(width: 6),
               _buildCompletionDialogButton(text: 'Completed', icon: Icons.check, color: Colors.green, onPressed: () => _handleMarkCompleted(context, appointment, ref)),
             ]),
             const SizedBox(height: 8),
@@ -815,7 +813,7 @@ class AppointmentListScreen extends ConsumerWidget {
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, size: 18), const SizedBox(width: 6), Text(text, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600))]),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(text, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600))]),
         ),
       ),
     );

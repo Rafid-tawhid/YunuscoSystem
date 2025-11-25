@@ -79,109 +79,111 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Staff Dropdown
-              _buildSectionHeader('Select Management'),
-              const SizedBox(height: 8),
-            _buildStaffDropdown(managementList, managementList.first.idCardNo),
-              // staffListAsync.when(
-              //   loading: () => const Center(child: CircularProgressIndicator()),
-              //   error: (error, stack) => Container(
-              //     padding: const EdgeInsets.all(16),
-              //     decoration: BoxDecoration(
-              //       border: Border.all(color: Colors.red),
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //     child: Text(
-              //       'Error loading staff: $error',
-              //       style: const TextStyle(color: Colors.red),
-              //     ),
-              //   ),
-              //   data: (staffList) {
-              //     return _buildStaffDropdown(staffList, selectedMemberId);
-              //   },
-              // ),
-
-              const SizedBox(height: 24),
-
-              // Date and Time Selection
-              _buildSectionHeader('Preferred Date & Time'),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildDateField(),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTimeField(),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // Purpose TextField
-              _buildSectionHeader('Appointment Purpose'),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _purposeController,
-                decoration: InputDecoration(
-                  hintText: 'Enter the purpose of your appointment...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Staff Dropdown
+                _buildSectionHeader('Select Management'),
+                const SizedBox(height: 8),
+              _buildStaffDropdown(managementList, managementList.first.idCardNo),
+                // staffListAsync.when(
+                //   loading: () => const Center(child: CircularProgressIndicator()),
+                //   error: (error, stack) => Container(
+                //     padding: const EdgeInsets.all(16),
+                //     decoration: BoxDecoration(
+                //       border: Border.all(color: Colors.red),
+                //       borderRadius: BorderRadius.circular(8),
+                //     ),
+                //     child: Text(
+                //       'Error loading staff: $error',
+                //       style: const TextStyle(color: Colors.red),
+                //     ),
+                //   ),
+                //   data: (staffList) {
+                //     return _buildStaffDropdown(staffList, selectedMemberId);
+                //   },
+                // ),
+        
+                const SizedBox(height: 24),
+        
+                // Date and Time Selection
+                _buildSectionHeader('Preferred Date & Time'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildDateField(),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildTimeField(),
+                    ),
+                  ],
                 ),
-                maxLines: 4,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter appointment purpose';
-                  }
-                  if (value.length < 5) {
-                    return 'Please provide more details (min. 10 characters)';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 32),
-
-              // Submit Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () => _submitAppointment(ref),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: myColors.primaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
+        
+                const SizedBox(height: 24),
+        
+                // Purpose TextField
+                _buildSectionHeader('Appointment Purpose'),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _purposeController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter the purpose of your appointment...',
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 16,
+                    ),
                   ),
-                  child: const Text(
-                    'Create Appointment',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  maxLines: 4,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter appointment purpose';
+                    }
+                    if (value.length < 5) {
+                      return 'Please provide more details (min. 10 characters)';
+                    }
+                    return null;
+                  },
+                ),
+        
+                const SizedBox(height: 32),
+        
+                // Submit Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => _submitAppointment(ref),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: myColors.primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Create Appointment',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 16),
-             if(_selectedMember!=null) _buildAppointmentPreview(ref, _selectedMember!.idCardNo, managementList),
-              // Preview Section
-              // if (_canShowPreview(selectedMemberId))
-              //   _buildAppointmentPreview(ref, selectedMemberId, staffListAsync.value),
-            ],
+        
+                const SizedBox(height: 16),
+               if(_selectedMember!=null) _buildAppointmentPreview(ref, _selectedMember!.idCardNo, managementList),
+                // Preview Section
+                // if (_canShowPreview(selectedMemberId))
+                //   _buildAppointmentPreview(ref, selectedMemberId, staffListAsync.value),
+              ],
+            ),
           ),
         ),
       ),
