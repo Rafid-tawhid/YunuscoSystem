@@ -320,15 +320,18 @@ FutureProvider.autoDispose<List<AppointmentModel>>((ref) async {
       .toList();
 
   /// Filter: keep only items whose status is NOT "Completed"
-  final filteredList = dataList
+  List<AppointmentModel> filteredList = dataList
       .where((item) => item.status?.toLowerCase() != "completed")
       .toList();
 
+  /// Reverse the list to show newest appointments first
+  List<AppointmentModel> reversedList = filteredList.reversed.toList();
+
   debugPrint('Filtered appointmentList ${filteredList.length}');
+  debugPrint('Reversed appointmentList ${reversedList.length}');
 
-  return filteredList;
+  return reversedList;
 });
-
 
 
 // -------------------- Provider --------------------
