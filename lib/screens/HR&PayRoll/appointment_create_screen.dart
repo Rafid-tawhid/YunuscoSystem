@@ -490,6 +490,7 @@ class _CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScree
           "department": DashboardHelpers.currentUser!.department,
           "designation": DashboardHelpers.currentUser!.designation,
           "appointmentWith": _selectedMember!.fullName,
+          "status": "Pending",
           "preferredDate": '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}T00:00:00.000',
           "preferredTime": '${_selectedTime!.hourOfPeriod.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')} ${_selectedTime!.period == DayPeriod.am ? 'AM' : 'PM'}',
           "purpose": _purposeController.text.trim(),

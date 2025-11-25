@@ -305,19 +305,28 @@ final allStaffListProvider = FutureProvider.family<List<MembersModel>,String>((r
 
 //get all appointment list
 
-final allAppointmentListProvider = FutureProvider.autoDispose<List<AppointmentModel>>((ref) async {
+final allAppointmentListProvider =
+FutureProvider.autoDispose<List<AppointmentModel>>((ref) async {
   final apiService = ref.read(apiServiceProvider);
 
   final data = await apiService.getData('api/Support/appointments');
 
   if (data == null) return [];
 
+  /// Convert json → model list
   List<AppointmentModel> dataList =
-  data['data'].map<AppointmentModel>((e) => AppointmentModel.fromJson(e)).toList();
+  data['data']
+      .map<AppointmentModel>((e) => AppointmentModel.fromJson(e))
+      .toList();
 
+  /// Filter: keep only items whose status is NOT "Completed"
+  final filteredList = dataList
+      .where((item) => item.status?.toLowerCase() != "completed")
+      .toList();
 
-  debugPrint('appointmentList ${dataList.length}');
-  return dataList;
+  debugPrint('Filtered appointmentList ${filteredList.length}');
+
+  return filteredList;
 });
 
 
