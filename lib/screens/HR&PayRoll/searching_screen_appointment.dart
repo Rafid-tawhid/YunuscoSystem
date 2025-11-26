@@ -1,10 +1,13 @@
 // screens/network_searching_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/helper_class/firebase_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/searchig_application_request.dart';
+
+import '../../providers/riverpods/meeting_provider.dart';
 
 class NetworkSearchingScreen extends StatefulWidget {
   const NetworkSearchingScreen({Key? key}) : super(key: key);
@@ -23,18 +26,10 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
   bool _isSearching = false;
   final FirebaseService _firebaseService = FirebaseService();
 
-  final List<Device> _devices = [
-    Device(name: "iPhone 14 Pro", type: "iPhone", signal: 4),
-    Device(name: "Samsung Galaxy S23", type: "Android", signal: 3),
-    Device(name: "iPad Air", type: "iPad", signal: 5),
-    Device(name: "MacBook Pro", type: "Laptop", signal: 5),
-    Device(name: "Windows PC", type: "Computer", signal: 2),
-  ];
 
   @override
   void initState() {
     super.initState();
-
     _initializeAnimations();
   }
 
@@ -107,12 +102,14 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
         DashboardHelpers.currentUser!.userName!,
         false
     );
+
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.deepPurple[50],
       appBar: AppBar(
@@ -381,7 +378,7 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Scanning for devices",
+            "Waiting for requests",
             style: TextStyle(
               fontSize: 18,
               color: Colors.deepPurple[800],
@@ -437,123 +434,18 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
               children: [
                 Icon(Icons.devices_rounded, color: Colors.deepPurple[600]),
                 const SizedBox(width: 10),
-                Text(
-                  "Available Devices (${_devices.length})",
-                  style: TextStyle(
-                    color: Colors.deepPurple[800],
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
               ],
             ),
           ),
+          AppointmentListWidget(userId: '09623',),
 
-          // Devices List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: _devices.length,
-              itemBuilder: (context, index) {
-                return _buildDeviceItem(_devices[index]);
-              },
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildDeviceItem(Device device) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.deepPurple[100]!),
-      ),
-      child: ListTile(
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.deepPurple[100],
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            _getDeviceIcon(device.type),
-            color: Colors.deepPurple[600],
-          ),
-        ),
-        title: Text(
-          device.name,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.deepPurple[800],
-          ),
-        ),
-        subtitle: Text(
-          device.type,
-          style: TextStyle(color: Colors.grey[600]),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildSignalStrength(device.signal),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple[500],
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Text(
-                "Connect",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildSignalStrength(int strength) {
-    return Row(
-      children: List.generate(5, (index) {
-        return Container(
-          width: 3,
-          height: (index + 1) * 3.0,
-          margin: const EdgeInsets.symmetric(horizontal: 1),
-          decoration: BoxDecoration(
-            color: index < strength ? Colors.green : Colors.grey[300],
-            borderRadius: BorderRadius.circular(2),
-          ),
-        );
-      }),
-    );
-  }
 
-  IconData _getDeviceIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'iphone':
-        return Icons.phone_iphone_rounded;
-      case 'android':
-        return Icons.phone_android_rounded;
-      case 'ipad':
-        return Icons.tablet_mac_rounded;
-      case 'laptop':
-        return Icons.laptop_mac_rounded;
-      case 'computer':
-        return Icons.computer_rounded;
-      default:
-        return Icons.device_unknown_rounded;
-    }
-  }
 
   Widget _buildActionButton() {
     return Padding(
@@ -611,13 +503,9 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
   }
 }
 
-class Device {
-  final String name;
-  final String type;
-  final int signal;
 
-  Device({required this.name, required this.type, required this.signal});
-}
+
+
 
 // Custom painter for radar circles
 class RadarPainter extends CustomPainter {
@@ -666,4 +554,108 @@ class RadarSweepPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+
+
+
+
+class AppointmentListWidget extends ConsumerWidget {
+  final String userId;
+
+  const AppointmentListWidget({super.key, required this.userId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (userId.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Use select to only rebuild when data changes, not on connection state
+    final appointmentsAsync = ref.watch(appointmentStreamProvider(userId).select((value) => value.value));
+
+    // This will only rebuild when we have actual data, not during loading states
+    return appointmentsAsync == null
+        ? const Center(
+      child: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: CircularProgressIndicator(),
+      ),
+    )
+        : appointmentsAsync.isEmpty
+        ? const Center(
+      child: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Text(
+          'No appointment requests',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      ),
+    )
+        : ListView.builder(
+      itemCount: appointmentsAsync.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final appointment = appointmentsAsync[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: _getStatusColor(appointment.status),
+              child: Text(
+                appointment.targetUserName[0],
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+            title: Text(
+              appointment.bookedByUserName,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(appointment.purpose),
+                const SizedBox(height: 4),
+                Text(
+                  'Type: ${appointment.appointmentType}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+            trailing: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _getStatusColor(appointment.status),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                appointment.status.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'pending':
+        return Colors.orange;
+      case 'accepted':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'completed':
+        return Colors.blue;
+      default:
+        return Colors.grey;
+    }
+  }
 }

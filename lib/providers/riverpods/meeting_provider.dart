@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/models/JobCardDropdownModel.dart';
+import 'package:yunusco_group/models/appointment_model_new.dart';
 import 'package:yunusco_group/models/board_room_booking_model.dart';
+import 'package:yunusco_group/providers/riverpods/management_provider.dart';
 import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
+
+import '../../helper_class/firebase_helpers.dart';
+import '../../models/appointment_model.dart';
 
 
 // Separate providers for each API
@@ -130,3 +135,10 @@ void deleteItem(WidgetRef ref, String id) async {
     print('Delete error: $e');
   }
 }
+
+
+//
+final appointmentStreamProvider = StreamProvider.autoDispose.family<List<AppointmentModelNew>, String>((ref, userId) {
+  final firebaseService = FirebaseService();
+  return firebaseService.getAllAppointmentRequest(userId);
+});

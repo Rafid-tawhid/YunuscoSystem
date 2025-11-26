@@ -81,6 +81,14 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
     if (!_validateForm()) return;
 
     try {
+      // First check if today's pending requests are less than 10
+      final todayPendingCount = await _getTodayPendingAppointmentsCount();
+
+      if (todayPendingCount >= 10) {
+        DashboardHelpers.showAlert(msg: 'Pending queue is full.. try again later');
+        return;
+      }
+
       // Find the selected person's name
       final selectedPerson = _activePersons.firstWhere(
             (person) => person['userId'] == _selectedPerson,
@@ -115,6 +123,27 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
 
     } catch (e) {
       _showError('Failed to book appointment: $e');
+    }
+  }
+
+  Future<int> _getTodayPendingAppointmentsCount() async {
+    try {
+      // Get today's start and end timestamps
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('appointments')
+          .where('status', isEqualTo: 'pending')
+          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+          .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(todayEnd))
+          .get();
+
+      return snapshot.docs.length;
+    } catch (e) {
+      print('Error counting today appointments: $e');
+      return 0; // Return 0 in case of error to allow booking
     }
   }
 

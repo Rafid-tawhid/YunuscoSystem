@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/appointment_model_new.dart';
 import '../models/announcement_model.dart';
 
 class FirebaseService {
@@ -141,6 +142,28 @@ class FirebaseService {
       'lastUpdated': FieldValue.serverTimestamp(),
       'userId': userId, // Keep user ID for reference
     }, SetOptions(merge: true)); // This merges with existing document
+  }
+
+
+
+  Stream<List<AppointmentModelNew>> getAllAppointmentRequest(String userId) {
+    return _firestore
+        .collection('appointments')
+        .where('targetUserId', isEqualTo: userId) // Use only one where clause
+        .orderBy('createdAt', descending: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) {
+      final appointment = AppointmentModelNew.fromMap(doc.data());
+      // Filter pending appointments locally
+      if (appointment.status == 'pending') {
+        return appointment;
+      }
+      return null;
+    })
+        .where((appointment) => appointment != null)
+        .cast<AppointmentModelNew>()
+        .toList());
   }
 
 }
