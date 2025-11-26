@@ -6,7 +6,9 @@ import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/helper_class/firebase_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/searchig_application_request.dart';
+import 'package:yunusco_group/service_class/api_services.dart';
 
+import '../../models/appointment_model_new.dart';
 import '../../providers/riverpods/meeting_provider.dart';
 
 class NetworkSearchingScreen extends StatefulWidget {
@@ -25,7 +27,6 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
 
   bool _isSearching = false;
   final FirebaseService _firebaseService = FirebaseService();
-
 
   @override
   void initState() {
@@ -70,11 +71,8 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
     _controller.repeat();
 
     // Update Firebase status to active
-    await _firebaseService.updatePresence(
-        DashboardHelpers.currentUser!.iDnum!,
-        DashboardHelpers.currentUser!.userName!,
-        true
-    );
+    await _firebaseService.updatePresence(DashboardHelpers.currentUser!.iDnum!,
+        DashboardHelpers.currentUser!.userName!, true);
   }
 
   void _stopSearching() async {
@@ -87,21 +85,15 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
     _controller.reset();
 
     // Update Firebase status to deactive
-    await _firebaseService.updatePresence(
-        DashboardHelpers.currentUser!.iDnum!,
-        DashboardHelpers.currentUser!.userName!,
-        false
-    );
+    await _firebaseService.updatePresence(DashboardHelpers.currentUser!.iDnum!,
+        DashboardHelpers.currentUser!.userName!, false);
   }
 
   @override
   void dispose() {
     // Always set to deactive when screen is disposed
-    _firebaseService.updatePresence(
-        DashboardHelpers.currentUser!.iDnum!,
-        DashboardHelpers.currentUser!.userName!,
-        false
-    );
+    _firebaseService.updatePresence(DashboardHelpers.currentUser!.iDnum!,
+        DashboardHelpers.currentUser!.userName!, false);
 
     _controller.dispose();
     super.dispose();
@@ -109,7 +101,6 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.deepPurple[50],
       appBar: AppBar(
@@ -117,14 +108,16 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
         centerTitle: true,
         backgroundColor: Colors.deepPurple[600],
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AppointmentBookingScreen(),
-              ),
-            );
-          }, icon: Icon(Icons.person))
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AppointmentBookingScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.person))
         ],
       ),
       body: SafeArea(
@@ -186,7 +179,7 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
         children: [
           const SizedBox(height: 10),
           Text(
-            "Network Sharing",
+            "Appointments",
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -195,7 +188,7 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            _isSearching ? "Searching for devices..." : "Ready to scan",
+            _isSearching ? "Looking for appointments..." : "Ready to scan",
             style: TextStyle(
               color: Colors.white.withOpacity(0.9),
               fontSize: 16,
@@ -241,7 +234,7 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
         ),
         const SizedBox(height: 30),
         Text(
-          "Network Scanner Ready",
+          "Ready for Appointment Requests",
           style: TextStyle(
             fontSize: 22,
             color: Colors.deepPurple[800],
@@ -252,7 +245,7 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Text(
-            "Click the 'Start Sharing' button below to begin scanning for nearby devices",
+            "Click the 'Start Sharing' button below to begin requests for appointments from available users.",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
@@ -405,107 +398,119 @@ class _NetworkSearchingScreenState extends State<NetworkSearchingScreen>
   }
 
   Widget _buildDevicesList() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.deepPurple[100]!,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // List Header
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple[50],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+    return Consumer(
+      builder: (context, ref, _) {
+        final appointmentsAsync = ref.watch(appointmentStreamProvider(
+            DashboardHelpers.currentUser!.iDnum ?? ''));
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.deepPurple[100]!,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
               ),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.devices_rounded, color: Colors.deepPurple[600]),
-                const SizedBox(width: 10),
-              ],
-            ),
+            ],
           ),
-          AppointmentListWidget(userId: '09623',),
-
-        ],
-      ),
+          child: Column(
+            children: [
+              (appointmentsAsync.value == null ||
+                      appointmentsAsync.value!.isEmpty)
+                  ? SizedBox()
+                  :
+                  // List Header
+                  Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple[50],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.devices_rounded,
+                              color: Colors.deepPurple[600]),
+                          const SizedBox(width: 10),
+                          Text(
+                            '${appointmentsAsync.value!.length} Request Found ',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
+                    ),
+              Expanded(
+                  child: AppointmentListWidget(
+                userId: '09623',
+              )),
+            ],
+          ),
+        );
+      },
     );
   }
-
-
-
 
   Widget _buildActionButton() {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: _isSearching
           ? ElevatedButton(
-        onPressed: _stopSearching,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 5,
-          shadowColor: Colors.red[300],
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.stop_rounded),
-            SizedBox(width: 10),
-            Text(
-              "Stop Sharing",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      )
+              onPressed: _stopSearching,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 5,
+                shadowColor: Colors.red[300],
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.stop_rounded),
+                  SizedBox(width: 10),
+                  Text(
+                    "Stop Sharing",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            )
           : ElevatedButton(
-        onPressed: _startSearching,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.deepPurple[600],
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 5,
-          shadowColor: Colors.deepPurple[300],
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.play_arrow_rounded),
-            SizedBox(width: 10),
-            Text(
-              "Start Sharing",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              onPressed: _startSearching,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple[600],
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 5,
+                shadowColor: Colors.deepPurple[300],
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.play_arrow_rounded),
+                  SizedBox(width: 10),
+                  Text(
+                    "Start Sharing",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
-
-
-
-
 
 // Custom painter for radar circles
 class RadarPainter extends CustomPainter {
@@ -517,7 +522,8 @@ class RadarPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final paint = Paint()
-      ..color = Colors.deepPurple[300]!.withOpacity(0.3 - (animationValue * 0.3))
+      ..color =
+          Colors.deepPurple[300]!.withOpacity(0.3 - (animationValue * 0.3))
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -546,7 +552,8 @@ class RadarSweepPainter extends CustomPainter {
     );
 
     final paint = Paint()
-      ..shader = sweepGradient.createShader(Rect.fromCircle(center: center, radius: size.width / 2))
+      ..shader = sweepGradient
+          .createShader(Rect.fromCircle(center: center, radius: size.width / 2))
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, size.width / 2, paint);
@@ -556,93 +563,303 @@ class RadarSweepPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-
-
-
-
-class AppointmentListWidget extends ConsumerWidget {
+class AppointmentListWidget extends StatelessWidget {
   final String userId;
+  final FirebaseService _firebaseService = FirebaseService();
 
-  const AppointmentListWidget({super.key, required this.userId});
+  AppointmentListWidget({super.key, required this.userId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (userId.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    // Use select to only rebuild when data changes, not on connection state
-    final appointmentsAsync = ref.watch(appointmentStreamProvider(userId).select((value) => value.value));
+    return StreamBuilder<List<AppointmentModelNew>>(
+      stream: _firebaseService.getAllAppointmentRequest(userId),
+      builder: (context, snapshot) {
+        // Handle connection state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
 
-    // This will only rebuild when we have actual data, not during loading states
-    return appointmentsAsync == null
-        ? const Center(
-      child: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: CircularProgressIndicator(),
-      ),
-    )
-        : appointmentsAsync.isEmpty
-        ? const Center(
-      child: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Text(
-          'No appointment requests',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      ),
-    )
-        : ListView.builder(
-      itemCount: appointmentsAsync.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        final appointment = appointmentsAsync[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: _getStatusColor(appointment.status),
+        // Handle errors
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text('Error: ${snapshot.error}'),
+            ),
+          );
+        }
+
+        // Handle data
+        final appointments = snapshot.data ?? [];
+
+        if (appointments.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
               child: Text(
-                appointment.targetUserName[0],
-                style: const TextStyle(color: Colors.white),
+                'No appointment requests',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
-            title: Text(
-              appointment.bookedByUserName,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: appointments.length,
+          itemBuilder: (context, index) {
+            final appointment = appointments[index];
+            return GestureDetector(
+              onTap: (){
+                _showStatusAlert(context,appointment);
+              },
+              child: Card(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: _getStatusColor(appointment.status),
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  title: Text(
+                    appointment.bookedByUserName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(appointment.purpose),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Type: ${appointment.appointmentType}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  trailing: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(appointment.status),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      appointment.status.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+
+
+  }
+  void _showStatusAlert(BuildContext context,AppointmentModelNew data) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(appointment.purpose),
-                const SizedBox(height: 4),
-                Text(
-                  'Type: ${appointment.appointmentType}',
-                  style: const TextStyle(fontSize: 12),
+                // Header Icon
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.work_outline,
+                    color: Colors.blue[700],
+                    size: 32,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Title
+                const Text(
+                  'Update Status',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Description
+                const Text(
+                  'Select the current status of this item',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    height: 1.4,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Buttons Row
+                Row(
+                  children: [
+                    // In Progress Button
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.orange[400]!, Colors.orange[600]!],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.orange.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _handleInProgress(data);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.hourglass_top, color: Colors.white, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'In Progress',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    // Finished Button
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.green[500]!, Colors.green[700]!],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _handleFinished(data);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.check_circle, color: Colors.white, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Finished',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: _getStatusColor(appointment.status),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                appointment.status.toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
           ),
         );
       },
     );
   }
+
+  void _handleInProgress(AppointmentModelNew data) {
+    FirebaseService fs=FirebaseService();
+    fs.updateStatusAppointment("in_progress",data);
+    // Add your logic here
+  }
+
+  void _handleFinished(AppointmentModelNew data) {
+    FirebaseService fs=FirebaseService();
+    fs.updateStatusAppointment("completed",data);
+    // Add your logic here
+  }
+
+
+
 
   Color _getStatusColor(String status) {
     switch (status) {

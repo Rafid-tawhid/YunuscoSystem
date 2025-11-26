@@ -147,23 +147,40 @@ class FirebaseService {
 
 
   Stream<List<AppointmentModelNew>> getAllAppointmentRequest(String userId) {
-    return _firestore
-        .collection('appointments')
-        .where('targetUserId', isEqualTo: userId) // Use only one where clause
-        .orderBy('createdAt', descending: false)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) {
-      final appointment = AppointmentModelNew.fromMap(doc.data());
-      // Filter pending appointments locally
-      if (appointment.status == 'pending') {
-        return appointment;
-      }
-      return null;
-    })
-        .where((appointment) => appointment != null)
-        .cast<AppointmentModelNew>()
-        .toList());
+    try {
+      return _firestore
+          .collection('appointments')
+          .where('targetUserId', isEqualTo: userId)
+          .orderBy('createdAt', descending: false)
+          .snapshots()
+          .handleError((error) {
+        print('Firestore stream error: $error');
+        // Return an empty list when error occurs to keep the stream alive
+        return [];
+      })
+          .map((snapshot) {
+        try {
+          final appointments = snapshot.docs
+              .map((doc) => AppointmentModelNew.fromMap(doc.data()))
+              .where((appointment) => appointment.status == 'pending')
+              .toList();
+          return appointments;
+        } catch (e) {
+          print('Error processing documents: $e');
+          return [];
+        }
+      });
+    } catch (e) {
+      print('Error creating stream: $e');
+      // Return an empty stream if initial setup fails
+      return Stream.value([]);
+    }
+  }
+
+  void updateStatusAppointment(String s,AppointmentModelNew data) {
+    _firestore.collection('appointments').doc(data.appointmentId).update({
+      'status': s,
+    });
   }
 
 }

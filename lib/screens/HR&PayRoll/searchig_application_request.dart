@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/helper_class/firebase_helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/search_appointment_all_list.dart';
 
 class AppointmentBookingScreen extends StatefulWidget {
   const AppointmentBookingScreen({Key? key}) : super(key: key);
@@ -184,6 +185,13 @@ class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
         backgroundColor: Colors.blue[700],
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AppointmentDashboardScreen()));
+            },
+            tooltip: 'Refresh active persons',
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadActivePersons,
