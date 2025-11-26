@@ -162,7 +162,7 @@ class FirebaseService {
         try {
           final appointments = snapshot.docs
               .map((doc) => AppointmentModelNew.fromMap(doc.data()))
-              .where((appointment) => appointment.status == 'pending')
+              .where((appointment) => (appointment.status == 'pending')||(appointment.status == 'in_progress'))
               .toList();
           return appointments;
         } catch (e) {
