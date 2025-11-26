@@ -126,4 +126,21 @@ class FirebaseService {
       'isActive': false,
     });
   }
+
+
+  // Reference to the presence document collection
+
+  // Update presence status
+  Future<void> updatePresence(String userId,String name, bool isActive) async {
+    await FirebaseFirestore.instance
+        .collection('presence')
+        .doc(userId) // This ensures only one document per user
+        .set({
+      'isActive': isActive,
+      'name': name,
+      'lastUpdated': FieldValue.serverTimestamp(),
+      'userId': userId, // Keep user ID for reference
+    }, SetOptions(merge: true)); // This merges with existing document
+  }
+
 }

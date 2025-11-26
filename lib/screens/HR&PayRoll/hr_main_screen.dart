@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/performence_screen.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/searching_screen_appointment.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/vehicle_requisition_screen.dart';
 import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -239,12 +240,23 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
       DashboardMenuItem(
         name: 'Management\nAppointment',
         icon: Icons.notifications_active,
-        cardColor: Colors.blueAccent,
+        cardColor: Color(0x69A2FDFF),
         iconColor: Colors.white,
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => AppointmentListScreen()));
 
+        },
+      ),
+
+      DashboardMenuItem(
+        name: 'Appointment',
+        icon: Icons.airplanemode_active_outlined,
+        cardColor: Colors.green,
+        iconColor: Colors.white,
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => NetworkSearchingScreen()));
         },
       ),
     ];

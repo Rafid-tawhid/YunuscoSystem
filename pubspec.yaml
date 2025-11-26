@@ -104,6 +104,7 @@ dev_dependencies:
   photo_manager: ^3.7.1
   webview_flutter_plus: ^0.4.19
   syncfusion_flutter_charts: ^31.2.10
+  vector_math: ^2.2.0
 
 
 
