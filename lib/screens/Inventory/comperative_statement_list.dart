@@ -7,7 +7,7 @@ import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/providers/purchase_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
-import '../Purchasing/widgets/purchase_product_details.dart';
+import '../Purchasing/widgets/requisition_product_details.dart';
 
 class ComperativeStatementList extends StatefulWidget {
   const ComperativeStatementList({super.key});

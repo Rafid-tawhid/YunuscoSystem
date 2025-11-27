@@ -7,6 +7,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
+import '../../../common_widgets/animated_images.dart';
 import '../../../models/purchase_requisation_list_model.dart';
 import '../../../models/requisition_details_model.dart';
 import '../cs_report_screen.dart';
@@ -523,15 +524,29 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
       child: req.imagePathString != null
           ? ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl:
-          '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
-          fit: BoxFit.cover,
-          placeholder: (context, url) => const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
+        child: GestureDetector(
+          onTap: (){
+
+            showDialog(
+              context: context,
+              builder: (context) =>ExpandableImage(
+                imageUrl:
+                '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
+                heroTag: req.requisitionCode ?? 'requisition_image_${DateTime.now().millisecondsSinceEpoch}',
+                height: 300,
+                width: 300,
+              ));
+          },
+          child: CachedNetworkImage(
+            imageUrl:
+            '${AppConstants.imageUrl}GetRequisitionPhoto/?fileName=${req.imagePathString}',
+            fit: BoxFit.cover,
+            placeholder: (context, url) => const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            errorWidget: (context, url, error) =>
+            const Icon(Icons.inventory, size: 30, color: Colors.white),
           ),
-          errorWidget: (context, url, error) =>
-          const Icon(Icons.inventory, size: 30, color: Colors.white),
         ),
       )
           : const Center(child: Icon(Icons.inventory, size: 30)),

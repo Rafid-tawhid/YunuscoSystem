@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
-import 'package:yunusco_group/screens/Purchasing/widgets/purchase_product_details.dart';
+import 'package:yunusco_group/screens/Purchasing/widgets/requisition_product_details.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../../models/purchase_requisation_list_model.dart';
