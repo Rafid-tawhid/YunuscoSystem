@@ -5,6 +5,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
 import 'comperative_statement_list.dart';
 import 'inventory_screen.dart';
+import 'mis_asset_inventory.dart';
 
 class InventoryHomeScreen extends StatelessWidget {
   const InventoryHomeScreen({super.key});
@@ -43,6 +44,15 @@ class InventoryHomeScreen extends StatelessWidget {
         iconColor: const Color(0xFFD97FF1),
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>ComperativeStatementList()));
+        }, // dummy
+      ),
+      DashboardMenuItem(
+        name: 'MIS\nAssets',
+        icon: Icons.videogame_asset,
+        cardColor: const Color(0xFFFFFFFF),
+        iconColor: const Color(0xFFA6F688),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>MisAssetsScreen()));
         }, // dummy
       ),
     ];
