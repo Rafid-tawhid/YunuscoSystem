@@ -20,7 +20,6 @@ class MisAssetsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('MIS Assets'),
         backgroundColor: myColors.primaryColor,
-
         foregroundColor: Colors.white,
       ),
       body: Column(
