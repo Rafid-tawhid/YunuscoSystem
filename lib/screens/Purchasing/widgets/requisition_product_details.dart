@@ -17,12 +17,14 @@ import 'accepted_requisation_number.dart';
 
 class RequisitionDetailsScreen extends StatefulWidget {
   final List<RequisitionDetailsModel> requisitionsList;
-  final PurchaseRequisationListModel? reqModel; // make nullable
+  final PurchaseRequisationListModel? reqModel;
+  final String? csCode;
 
   const RequisitionDetailsScreen({
     super.key,
     required this.requisitionsList,
     this.reqModel,
+    this.csCode
   });
 
   @override
@@ -55,7 +57,7 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           /// ✅ Show CS button only if reqModel is not null
-          if (widget.reqModel != null)
+          if (widget.csCode != null)
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: ElevatedButton(
@@ -67,7 +69,7 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
                 ),
                 onPressed: () async {
                   var pp = context.read<ProductProvider>();
-                  if (await pp.getSingleCSInfoByCode('CS002423')) {
+                  if (await pp.getSingleCSInfoByCode(widget.csCode)) {
                     if (pp.csRequisationList.isNotEmpty) {
                       Navigator.push(
                         context,

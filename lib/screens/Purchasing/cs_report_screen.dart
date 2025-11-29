@@ -133,7 +133,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
   void _confirmSelection(List<CsRequisationModel> selectedItems) {
     // Handle confirmation logic
     selectedItems.forEach((e){
-      debugPrint('index ${e.productId} : ${e.code}');
+      debugPrint('product Id ${e.productId} :CS ${e.code}');
     });
     // Navigate to next screen or save data
   }
@@ -161,13 +161,13 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
         itemCount: _productGroups.length,
         itemBuilder: (context, index) {
           final productGroup = _productGroups[index];
-          return _buildProductCard(productGroup);
+          return _buildProductCard(productGroup,index);
         },
       ),
     );
   }
 
-  Widget _buildProductCard(ProductGroup productGroup) {
+  Widget _buildProductCard(ProductGroup productGroup,int index) {
     final isSelected = _selectedSuppliers.containsKey(productGroup.productName);
     final selectedSupplier = isSelected ? _selectedSuppliers[productGroup.productName] : null;
 
@@ -177,7 +177,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
       child: ExpansionTile(
         leading: isSelected ? Icon(Icons.check_circle, color: Colors.green) : Icon(Icons.radio_button_unchecked),
         title: Text(
-          productGroup.productName,
+          '${index+1}. ${productGroup.productName}',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         subtitle: Column(

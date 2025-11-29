@@ -143,8 +143,9 @@ class RequisitionCard extends StatelessWidget {
         var pp=context.read<ProductProvider>();
         var res=await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
 
+
         if (res) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitionsList: pp.requisationProductDetails,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitionsList: pp.requisationProductDetails,csCode: requisition.code,)));
         }
       },
       child: Card(
