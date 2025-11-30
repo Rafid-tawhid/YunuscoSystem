@@ -40,6 +40,10 @@ class MisAssetModel {
     String? remarks,
     String? businessUnitName,
     String? employeeIdcardNo,
+    String? frontPhotoPath,
+    String? backPhotoPath,
+    String? keyPhotoPath,
+    String? screenPhotoPath,
   }) {
     _misAssetId = misAssetId;
     _assetNo = assetNo;
@@ -81,6 +85,10 @@ class MisAssetModel {
     _remarks = remarks;
     _businessUnitName = businessUnitName;
     _employeeIdcardNo = employeeIdcardNo;
+    _frontPhotoPath = frontPhotoPath;
+    _backPhotoPath = backPhotoPath;
+    _keyPhotoPath = keyPhotoPath;
+    _screenPhotoPath = screenPhotoPath;
   }
 
   MisAssetModel.fromJson(dynamic json) {
@@ -124,6 +132,10 @@ class MisAssetModel {
     _remarks = json['Remarks'];
     _businessUnitName = json['BusinessUnitName'];
     _employeeIdcardNo = json['EmployeeIdcardNo'];
+    _frontPhotoPath = json['FrontPhotoPath'];
+    _backPhotoPath = json['BackPhotoPath'];
+    _keyPhotoPath = json['KeyPhotoPath'];
+    _screenPhotoPath = json['ScreenPhotoPath'];
   }
   num? _misAssetId;
   String? _assetNo;
@@ -165,6 +177,11 @@ class MisAssetModel {
   String? _remarks;
   String? _businessUnitName;
   String? _employeeIdcardNo;
+  String? _frontPhotoPath;
+  String? _backPhotoPath;
+  String? _keyPhotoPath;
+  String? _screenPhotoPath;
+
   MisAssetModel copyWith({
     num? misAssetId,
     String? assetNo,
@@ -206,6 +223,10 @@ class MisAssetModel {
     String? remarks,
     String? businessUnitName,
     String? employeeIdcardNo,
+    String? frontPhotoPath,
+    String? backPhotoPath,
+    String? keyPhotoPath,
+    String? screenPhotoPath,
   }) =>
       MisAssetModel(
         misAssetId: misAssetId ?? _misAssetId,
@@ -248,6 +269,10 @@ class MisAssetModel {
         remarks: remarks ?? _remarks,
         businessUnitName: businessUnitName ?? _businessUnitName,
         employeeIdcardNo: employeeIdcardNo ?? _employeeIdcardNo,
+        frontPhotoPath: frontPhotoPath ?? _frontPhotoPath,
+        backPhotoPath: backPhotoPath ?? _backPhotoPath,
+        keyPhotoPath: keyPhotoPath ?? _keyPhotoPath,
+        screenPhotoPath: screenPhotoPath ?? _screenPhotoPath,
       );
   num? get misAssetId => _misAssetId;
   String? get assetNo => _assetNo;
@@ -289,6 +314,10 @@ class MisAssetModel {
   String? get remarks => _remarks;
   String? get businessUnitName => _businessUnitName;
   String? get employeeIdcardNo => _employeeIdcardNo;
+  String? get frontPhotoPath => _frontPhotoPath;
+  String? get backPhotoPath => _backPhotoPath;
+  String? get keyPhotoPath => _keyPhotoPath;
+  String? get screenPhotoPath => _screenPhotoPath;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -332,6 +361,10 @@ class MisAssetModel {
     map['Remarks'] = _remarks;
     map['BusinessUnitName'] = _businessUnitName;
     map['EmployeeIdcardNo'] = _employeeIdcardNo;
+    map['FrontPhotoPath'] = _frontPhotoPath;
+    map['BackPhotoPath'] = _backPhotoPath;
+    map['KeyPhotoPath'] = _keyPhotoPath;
+    map['ScreenPhotoPath'] = _screenPhotoPath;
 
     return map;
   }

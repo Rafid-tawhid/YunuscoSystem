@@ -1,10 +1,13 @@
 // screens/mis_assets_screen.dart
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/mis_asset_model.dart';
 import '../../providers/riverpods/production_provider.dart';
+import 'mis_asset_entry.dart';
 
 class MisAssetsScreen extends ConsumerWidget {
   const MisAssetsScreen({super.key});
@@ -21,6 +24,14 @@ class MisAssetsScreen extends ConsumerWidget {
         title: const Text('MIS Assets'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, CupertinoPageRoute(builder: (context)=>MisAssetInventoryScreen()));
+          }, icon: Icon(Icons.add)),
+          IconButton(onPressed: (){
+            ref.invalidate(allMisAssetsProvider);
+          }, icon: Icon(Icons.refresh)),
+        ],
       ),
       body: Column(
         children: [
@@ -176,10 +187,7 @@ class MisAssetsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => ref.invalidate(allMisAssetsProvider),
-        child: const Icon(Icons.refresh),
-      ),
+
     );
   }
 }
@@ -278,77 +286,370 @@ class MisAssetCard extends StatelessWidget {
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       elevation: 2.0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header row with Asset No and Status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  asset.assetNo ?? 'N/A',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(asset.status),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    asset.status ?? 'Unknown',
+      child: InkWell(
+        onTap: () => _showAssetDetails(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row with Asset No and Status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    asset.assetNo ?? 'N/A',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
                     ),
                   ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(asset.status),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      asset.status ?? 'Unknown',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Minimal essential info
+              _buildInfoRow('Employee', asset.employeeName),
+              _buildInfoRow('Department', asset.department),
+              _buildInfoRow('Asset Type', asset.assetType),
+
+              const SizedBox(height: 8),
+
+              // Technical summary chips
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  if (asset.processor != null)
+                    _buildMiniChip('CPU', asset.processor!),
+                  if (asset.ram != null)
+                    _buildMiniChip('RAM', asset.ram!),
+                  if (asset.hdd != null)
+                    _buildMiniChip('HDD', asset.hdd!),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              // Hint for tap
+              const Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'Tap for details →',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // Employee Information
-            _buildInfoRow('Employee', asset.employeeName),
-            _buildInfoRow('Employee ID', asset.employeeIdcardNo),
-            _buildInfoRow('Department', asset.department),
-            _buildInfoRow('Designation', asset.designation),
-
-            const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            // Asset Details
-            _buildInfoRow('Asset Type', asset.assetType),
-            _buildInfoRow('Host Name', asset.hostName),
-            _buildInfoRow('IP Address', asset.ipAddress),
-            _buildInfoRow('Manufacturer', asset.manufacturer),
-            _buildInfoRow('Model', asset.model),
-
-            const SizedBox(height: 8),
-
-            // Technical Details in a row
-            Wrap(
-              spacing: 16,
-              runSpacing: 8,
-              children: [
-                if (asset.processor != null)
-                  _buildChip('Processor', asset.processor!),
-                if (asset.ram != null)
-                  _buildChip('RAM', asset.ram!),
-                if (asset.hdd != null)
-                  _buildChip('HDD', asset.hdd!),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  void _showAssetDetails(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      asset.assetNo ?? 'N/A',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(asset.status),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        asset.status ?? 'Unknown',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Photo gallery if available
+              if (_hasPhotos())
+                _buildPhotoSection(),
+
+              const SizedBox(height: 16),
+
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Employee Information
+                      _buildSectionTitle('Employee Information'),
+                      _buildDetailRow('Employee Name', asset.employeeName),
+                      _buildDetailRow('Employee ID', asset.employeeIdcardNo),
+                      _buildDetailRow('Department', asset.department),
+                      _buildDetailRow('Section', asset.section),
+                      _buildDetailRow('Designation', asset.designation),
+                      _buildDetailRow('Location', asset.location),
+                      _buildDetailRow('Business Unit', asset.businessUnitName),
+
+                      const SizedBox(height: 16),
+                      _buildSectionDivider(),
+
+                      // Asset Details
+                      _buildSectionTitle('Asset Details'),
+                      _buildDetailRow('Asset Type', asset.assetType),
+                      _buildDetailRow('Host Name', asset.hostName),
+                      _buildDetailRow('IP Address', asset.ipAddress),
+                      _buildDetailRow('IP Address 2', asset.ipAddress2),
+                      _buildDetailRow('IA Group', asset.iaGroup),
+                      _buildDetailRow('AD Name', asset.adName),
+                      _buildDetailRow('Unit', asset.unit),
+                      _buildDetailRow('Serial No/MAC', asset.serialNoOrMac),
+
+                      const SizedBox(height: 16),
+                      _buildSectionDivider(),
+
+                      // Hardware Details
+                      _buildSectionTitle('Hardware Details'),
+                      _buildDetailRow('Manufacturer', asset.manufacturer),
+                      _buildDetailRow('Model', asset.model),
+                      _buildDetailRow('Motherboard', asset.mBoard),
+                      _buildDetailRow('Processor', asset.processor),
+                      _buildDetailRow('Processor Gen', asset.processorGeneration),
+                      _buildDetailRow('RAM', asset.ram),
+                      _buildDetailRow('HDD', asset.hdd),
+                      _buildDetailRow('Speed', asset.speed),
+
+                      const SizedBox(height: 16),
+                      _buildSectionDivider(),
+
+                      // Software Details
+                      _buildSectionTitle('Software Details'),
+                      _buildDetailRow('Installed OS', asset.installedOs),
+                      _buildDetailRow('OS License', asset.licenseOs),
+                      _buildDetailRow('OS Serial No', asset.serialNoOfOs),
+                      _buildDetailRow('Antivirus License', asset.antivirusLicense),
+                      _buildDetailRow('Office License', asset.officeLicense),
+                      _buildDetailRow('Installed Software', asset.installedSoftware),
+                      _buildDetailRow('Removed Software', asset.removedSoftware),
+
+                      const SizedBox(height: 16),
+                      _buildSectionDivider(),
+
+                      // Purchase & Warranty
+                      _buildSectionTitle('Purchase & Warranty'),
+                      _buildDetailRow('Purchase Date', asset.dateOfPurchase),
+                      _buildDetailRow('Purchase Price', asset.purchasePrice?.toString()),
+                      _buildDetailRow('Supplier', asset.supplier),
+                      _buildDetailRow('Warranty', asset.warranty),
+
+                      const SizedBox(height: 16),
+                      _buildSectionDivider(),
+
+                      // Additional Info
+                      _buildSectionTitle('Additional Information'),
+                      _buildDetailRow('Transfer Date', asset.transferDate?.toString()),
+                      _buildDetailRow('Remarks', asset.remarks),
+
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoSection() {
+    return SizedBox(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        children: [
+          if (asset.frontPhotoPath != null && asset.frontPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Front', asset.frontPhotoPath!),
+          if (asset.backPhotoPath != null && asset.backPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Back', asset.backPhotoPath!),
+          if (asset.keyPhotoPath != null && asset.keyPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Key', asset.keyPhotoPath!),
+          if (asset.screenPhotoPath != null && asset.screenPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Screen', asset.screenPhotoPath!),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoItem(String label, String path) {
+    return Container(
+      width: 120,
+      margin: const EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Image.network(
+                '${AppConstants.imageUrl}/$path',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.photo, color: Colors.grey),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _hasPhotos() {
+    return (asset.frontPhotoPath != null && asset.frontPhotoPath!.isNotEmpty) ||
+        (asset.backPhotoPath != null && asset.backPhotoPath!.isNotEmpty) ||
+        (asset.keyPhotoPath != null && asset.keyPhotoPath!.isNotEmpty) ||
+        (asset.screenPhotoPath != null && asset.screenPhotoPath!.isNotEmpty);
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Colors.blue,
+      ),
+    );
+  }
+
+  Widget _buildSectionDivider() {
+    return Divider(color: Colors.grey[300]);
+  }
+
+  Widget _buildDetailRow(String label, String? value) {
+    if (value == null || value.isEmpty) return const SizedBox();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -362,22 +663,45 @@ class MisAssetCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 100,
+            width: 80,
             child: Text(
               '$label:',
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
                 color: Colors.grey,
+                fontSize: 12,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w400),
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMiniChip(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.blue[100]!),
+      ),
+      child: Text(
+        '$label: $value',
+        style: TextStyle(
+          fontSize: 10,
+          color: Colors.blue[800],
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
