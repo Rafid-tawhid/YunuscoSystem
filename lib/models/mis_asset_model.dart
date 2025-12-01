@@ -2,6 +2,7 @@ class MisAssetModel {
   MisAssetModel({
     num? misAssetId,
     String? assetNo,
+    String? assetDetailID,
     String? assetType,
     String? hostName,
     String? ipAddress,
@@ -47,6 +48,7 @@ class MisAssetModel {
   }) {
     _misAssetId = misAssetId;
     _assetNo = assetNo;
+    _assetDetailID = assetDetailID;
     _assetType = assetType;
     _hostName = hostName;
     _ipAddress = ipAddress;
@@ -93,52 +95,54 @@ class MisAssetModel {
 
   MisAssetModel.fromJson(dynamic json) {
     _misAssetId = json['MisAssetId'];
-    _assetNo = json['AssetNo'];
-    _assetType = json['AssetType'];
-    _hostName = json['HostName'];
-    _ipAddress = json['IpAddress'];
-    _ipAddress2 = json['IpAddress2'];
-    _iaGroup = json['IaGroup'];
-    _status = json['Status'];
-    _employeeName = json['EmployeeName'];
-    _department = json['Department'];
-    _section = json['Section'];
-    _location = json['Location'];
-    _userName = json['UserName'];
-    _designation = json['Designation'];
-    _adName = json['AdName'];
-    _unit = json['Unit'];
-    _serialNoOrMac = json['SerialNoOrMac'];
-    _manufacturer = json['Manufacturer'];
-    _model = json['Model'];
-    _mBoard = json['MBoard'];
-    _processor = json['Processor'];
-    _processorGeneration = json['ProcessorGeneration'];
+    _assetNo = json['AssetNo'].toString();
+    _assetDetailID = json['AssetDetailID'].toString();
+    _assetType = json['AssetType'].toString();
+    _hostName = json['HostName'].toString();
+    _ipAddress = json['IpAddress'].toString();
+    _ipAddress2 = json['IpAddress2'].toString();
+    _iaGroup = json['IaGroup'].toString();
+    _status = json['Status'].toString();
+    _employeeName = json['EmployeeName'].toString();
+    _department = json['Department'].toString();
+    _section = json['Section'].toString();
+    _location = json['Location'].toString();
+    _userName = json['UserName'].toString();
+    _designation = json['Designation'].toString();
+    _adName = json['AdName'].toString();
+    _unit = json['Unit'].toString();
+    _serialNoOrMac = json['SerialNoOrMac'].toString();
+    _manufacturer = json['Manufacturer'].toString();
+    _model = json['Model'].toString();
+    _mBoard = json['MBoard'].toString();
+    _processor = json['Processor'].toString();
+    _processorGeneration = json['ProcessorGeneration'].toString();
     _purchasePrice = json['PurchasePrice'];
-    _officeLicense = json['OfficeLicense'];
-    _removedSoftware = json['RemovedSoftware'];
-    _speed = json['Speed'];
-    _hdd = json['HDD'];
-    _ram = json['RAM'];
-    _dateOfPurchase = json['DateOfPurchase'];
-    _supplier = json['Supplier'];
-    _warranty = json['Warranty'];
-    _installedOs = json['InstalledOs'];
-    _licenseOs = json['LicenseOs'];
-    _serialNoOfOs = json['SerialNoOfOs'];
-    _antivirusLicense = json['AntivirusLicense'];
-    _installedSoftware = json['InstalledSoftware'];
-    _transferDate = json['TransferDate'];
-    _remarks = json['Remarks'];
-    _businessUnitName = json['BusinessUnitName'];
-    _employeeIdcardNo = json['EmployeeIdcardNo'];
-    _frontPhotoPath = json['FrontPhotoPath'];
-    _backPhotoPath = json['BackPhotoPath'];
-    _keyPhotoPath = json['KeyPhotoPath'];
-    _screenPhotoPath = json['ScreenPhotoPath'];
+    _officeLicense = json['OfficeLicense'].toString();
+    _removedSoftware = json['RemovedSoftware'].toString();
+    _speed = json['Speed'].toString();
+    _hdd = json['HDD'].toString();
+    _ram = json['RAM'].toString();
+    _dateOfPurchase = json['DateOfPurchase'].toString();
+    _supplier = json['Supplier'].toString();
+    _warranty = json['Warranty'].toString();
+    _installedOs = json['InstalledOs'].toString();
+    _licenseOs = json['LicenseOs'].toString();
+    _serialNoOfOs = json['SerialNoOfOs'].toString();
+    _antivirusLicense = json['AntivirusLicense'].toString();
+    _installedSoftware = json['InstalledSoftware'].toString();
+    _transferDate = json['TransferDate'].toString();
+    _remarks = json['Remarks'].toString();
+    _businessUnitName = json['BusinessUnitName'].toString();
+    _employeeIdcardNo = json['EmployeeIdcardNo'].toString();
+    _frontPhotoPath = json['FrontPhotoPath'].toString();
+    _backPhotoPath = json['BackPhotoPath'].toString();
+    _keyPhotoPath = json['KeyPhotoPath'].toString();
+    _screenPhotoPath = json['ScreenPhotoPath'].toString();
   }
   num? _misAssetId;
   String? _assetNo;
+  String? _assetDetailID;
   String? _assetType;
   String? _hostName;
   String? _ipAddress;
@@ -186,6 +190,7 @@ class MisAssetModel {
     num? misAssetId,
     String? assetNo,
     String? assetType,
+    String? assetDetailID,
     String? hostName,
     String? ipAddress,
     String? ipAddress2,
@@ -231,6 +236,7 @@ class MisAssetModel {
       MisAssetModel(
         misAssetId: misAssetId ?? _misAssetId,
         assetNo: assetNo ?? _assetNo,
+        assetDetailID: assetDetailID ?? _assetDetailID,
         assetType: assetType ?? _assetType,
         hostName: hostName ?? _hostName,
         ipAddress: ipAddress ?? _ipAddress,
@@ -276,6 +282,7 @@ class MisAssetModel {
       );
   num? get misAssetId => _misAssetId;
   String? get assetNo => _assetNo;
+  String? get assetDetailID => _assetDetailID;
   String? get assetType => _assetType;
   String? get hostName => _hostName;
   String? get ipAddress => _ipAddress;
@@ -323,6 +330,7 @@ class MisAssetModel {
     final map = <String, dynamic>{};
     map['MisAssetId'] = _misAssetId;
     map['AssetNo'] = _assetNo;
+    map['AssetDetailID'] = _assetDetailID;
     map['AssetType'] = _assetType;
     map['HostName'] = _hostName;
     map['IpAddress'] = _ipAddress;

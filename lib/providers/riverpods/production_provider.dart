@@ -139,6 +139,7 @@ class ErrorSummaryNotifier extends StateNotifier<List<ErrorSummaryModel>> {
 }
 
 //rafid nov 29
+
 // Separate provider for all MIS assets
 final allMisAssetsProvider = FutureProvider<List<MisAssetModel>>((ref) async {
   final apiService = ref.read(apiServiceProvider);
@@ -163,6 +164,7 @@ final misAssetSearchQueryProvider = StateProvider<String>((ref) => '');
 final filteredMisAssetsProvider = Provider<List<MisAssetModel>>((ref) {
   final searchQuery = ref.watch(misAssetSearchQueryProvider);
   final assetsAsync = ref.watch(allMisAssetsProvider);
+
 
   return assetsAsync.when(
     data: (assets) {

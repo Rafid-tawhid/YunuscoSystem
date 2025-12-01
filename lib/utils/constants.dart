@@ -16,6 +16,7 @@ class AppConstants {
   static final  baseUrl = "http://202.74.243.118:8090/"; //real public
 
   static const String imageUrl = "http://192.168.15.6/api/inventoryapi/";
+  //static const String imageUrl = "http://202.74.243.118:1726/api/inventoryapi/";
 //
 
  // static const String apiKey = "AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY";

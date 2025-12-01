@@ -434,7 +434,7 @@ class MisAssetCard extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Photo gallery if available
-              if (_hasPhotos())
+             // if (_hasPhotos())
                 _buildPhotoSection(),
 
               const SizedBox(height: 16),
@@ -535,66 +535,72 @@ class MisAssetCard extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         children: [
-          if (asset.frontPhotoPath != null && asset.frontPhotoPath!.isNotEmpty)
-            _buildPhotoItem('Front', asset.frontPhotoPath!),
-          if (asset.backPhotoPath != null && asset.backPhotoPath!.isNotEmpty)
-            _buildPhotoItem('Back', asset.backPhotoPath!),
-          if (asset.keyPhotoPath != null && asset.keyPhotoPath!.isNotEmpty)
-            _buildPhotoItem('Key', asset.keyPhotoPath!),
-          if (asset.screenPhotoPath != null && asset.screenPhotoPath!.isNotEmpty)
-            _buildPhotoItem('Screen', asset.screenPhotoPath!),
+         // if (asset.frontPhotoPath != null && asset.frontPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Front',asset, asset.frontPhotoPath??''),
+         // if (asset.backPhotoPath != null && asset.backPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Back',asset, asset.backPhotoPath??''),
+         // if (asset.keyPhotoPath != null && asset.keyPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Key',asset, asset.keyPhotoPath??''),
+         // if (asset.screenPhotoPath != null && asset.screenPhotoPath!.isNotEmpty)
+            _buildPhotoItem('Screen',asset, asset.screenPhotoPath??''),
         ],
       ),
     );
   }
 
-  Widget _buildPhotoItem(String label, String path) {
-    return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
-              ),
-              child: Image.network(
-                '${AppConstants.imageUrl}/$path',
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.photo, color: Colors.grey),
+  Widget _buildPhotoItem(String label,MisAssetModel data, String path) {
+    // debugPrint('IMAGES: http://202.74.243.118:1726/api/inventoryapiGetMisAssedPhoto?AssetDetailId=${asset.assetDetailID}&fileName=$path');
+    return GestureDetector(
+      onTap: (){
+        debugPrint('http://202.74.243.118:1726/api/inventoryapi/GetMisAssedPhoto?AssetDetailId=${asset.assetDetailID}&fileName=$path');
+      },
+      child: Container(
+        width: 120,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                child: Image.network(
+                  'http://202.74.243.118:1726/api/inventoryapi/GetMisAssedPhoto?AssetDetailId=${asset.assetDetailID}&fileName=$path',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.photo, color: Colors.grey),
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
