@@ -12,6 +12,7 @@ import '../../models/mis_asset_model.dart';
 import '../../models/production_qc_model.dart';
 import '../../models/qc_difference_model.dart';
 import 'employee_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final qcDataProvider =
     StateNotifierProvider<QcDataNotifier, List<ProductionQcModel>>((ref) {
@@ -194,3 +195,26 @@ List<MisAssetModel> getFilteredMisAssets(
         asset.assetNo?.toLowerCase().contains(lowerQuery) == true;
   }).toList();
 }
+
+
+// providers/machine_report_provider.dart
+
+
+final machineReportsProvider = StreamProvider<List<Map<String, dynamic>>>((ref) {
+  final firestore = FirebaseFirestore.instance;
+
+  return firestore
+      .collection('machine_breakdown')
+      .orderBy('reported_at', descending: true)
+      .snapshots()
+      .map((snapshot) => snapshot.docs.map((doc) {
+    final data = doc.data();
+    return {
+      'id': doc.id,
+      ...data,
+    };
+  }).toList());
+});
+
+
+

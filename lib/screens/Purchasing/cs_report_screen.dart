@@ -133,7 +133,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
   void _confirmSelection(List<CsRequisationModel> selectedItems) {
     // Handle confirmation logic
     selectedItems.forEach((e){
-      debugPrint('product Id ${e.productId} :CS ${e.code}');
+      debugPrint('product Id :${e.productId}, CS :${e.code}, Supplier :${e.supplierName}');
     });
     // Navigate to next screen or save data
   }

@@ -59,6 +59,9 @@ class AppConstants {
         color: Colors.black,
         fontWeight: FontWeight.normal,
       );
+
+
+
 }
 
 TextStyle customTextStyle(double size, Color color, FontWeight weight) =>
@@ -67,6 +70,8 @@ TextStyle customTextStyle(double size, Color color, FontWeight weight) =>
       color: color,
       fontWeight: weight,
     ); //
+
+
 List<Menu> fullModuleList = [
   Menu(7, 'assets/images/purchase.png', 'Purchasing', false), // ID matched from moduleList
   Menu(51, 'assets/images/notification.png', 'Notification', false), // ID matched from moduleList

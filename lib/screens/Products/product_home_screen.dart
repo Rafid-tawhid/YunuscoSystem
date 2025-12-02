@@ -20,6 +20,7 @@ import '../../models/production_qc_model.dart';
 import '../../providers/riverpods/production_provider.dart';
 import 'error_summary.dart';
 import 'get_all_style_screen.dart';
+import 'machine_problem_request.dart';
 import 'widgets/buyers_screen.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -162,6 +163,19 @@ class ProductHomeScreen extends ConsumerWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => ErrorSummaryScreen()),
+          );
+        },
+      ),
+
+      DashboardMenuItem(
+        name: 'Machine\nBreakdown',
+        icon: Icons.insights,
+        cardColor: const Color(0xFFC4B0EF), // Light orange
+        iconColor: Colors.purple, // Deep orange
+        onTap: () async {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => MachineProblemScreen()),
           );
         },
       ),

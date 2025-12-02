@@ -992,5 +992,37 @@ class DashboardHelpers {
   }
 
 
+  static Future<DateTime?> getTodaysTimeFromUser(BuildContext context) async {
+    // Get today's date
+    DateTime today = DateTime.now();
 
+    // Get time from user
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (selectedTime != null) {
+      // Combine today's date with selected time
+      return DateTime(
+        today.year,
+        today.month,
+        today.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
+    }
+
+    return null;
+  }
+
+
+}
+
+class MachineBreakdownStatus {
+  static const String pending = 'pending';
+  static const String pending_maintance = 'Pending Maintenance';
+  static const String in_progress = 'In Progress';
+  static const String resolved = 'Resolved';
+  static const String complete = 'Complete';
 }
