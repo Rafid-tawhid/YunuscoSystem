@@ -531,6 +531,7 @@ class _MachineProblemScreenState extends State<MachineProblemScreen> {
     }
   }
 
+  //
 // Function to save problem report
   Future<void> saveProblemReport() async {
     // Create minimal JSON with essential info only
