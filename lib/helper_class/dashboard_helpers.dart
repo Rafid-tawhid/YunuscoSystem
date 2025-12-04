@@ -1018,11 +1018,11 @@ class DashboardHelpers {
 
 
 }
-
+//'Completed' OR [Status]='Resolved' OR [Status]='In Progress' OR [Status]='Awaiting' OR [Status]='Reported'
 class MachineBreakdownStatus {
-  static const String pending = 'pending';
-  static const String pending_maintance = 'Pending Maintenance';
+  static const String reported = 'Reported';
+  static const String awaiting = 'Awaiting';
   static const String in_progress = 'In Progress';
   static const String resolved = 'Resolved';
-  static const String complete = 'Complete';
+  static const String completed = 'Completed';
 }

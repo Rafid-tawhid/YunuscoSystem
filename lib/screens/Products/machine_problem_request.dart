@@ -1,570 +1,520 @@
-import 'package:flutter/cupertino.dart';
+// lib/screens/machine_repair_screen.dart
 import 'package:flutter/material.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
-import 'package:yunusco_group/helper_class/firebase_helpers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/utils/colors.dart';
-import 'dart:convert';
-
+import '../../models/machine_breakdown_dropdown.dart';
+import '../../providers/riverpods/production_provider.dart';
 import 'machine_problem_list.dart';
 
-class MachineProblemScreen extends StatefulWidget {
-  const MachineProblemScreen({super.key});
+class MachineRepairScreen extends ConsumerStatefulWidget {
+  const MachineRepairScreen({super.key});
 
   @override
-  State<MachineProblemScreen> createState() => _MachineProblemScreenState();
+  ConsumerState<MachineRepairScreen> createState() => _MachineRepairScreenState();
 }
 
-class _MachineProblemScreenState extends State<MachineProblemScreen> {
-  // Sample data
-  final List<Map<String, dynamic>> allProblems = [
-    {
-      'problem': 'Needle Breakage',
-      'problem_code': 'NB001',
-      'officer': 'Rajesh Kumar',
-      'department': 'Production Line-A',
-      'maintenance_person': 'Anil Sharma',
-      'skill_required': 'Needle Specialist',
-      'duration_min': 15,
-      'priority': 'High',
-      'description': 'Frequent breaking of needles during operation',
-      'solution': 'Replace needle, check alignment, adjust tension'
-    },
-    {
-      'problem': 'Thread Breakage',
-      'problem_code': 'TB002',
-      'officer': 'Rajesh Kumar',
-      'department': 'Production Line-A',
-      'maintenance_person': 'Priya Patel',
-      'skill_required': 'Threading Expert',
-      'duration_min': 20,
-      'priority': 'Medium',
-      'description': 'Thread breaks frequently during sewing',
-      'solution': 'Check thread quality, adjust tension, clean guides'
-    },
-    {
-      'problem': 'Motor Overheating',
-      'problem_code': 'MO004',
-      'officer': 'Sunita Verma',
-      'department': 'Production Line-B',
-      'maintenance_person': 'Vikram Singh',
-      'skill_required': 'Electrical Engineer',
-      'duration_min': 45,
-      'priority': 'High',
-      'description': 'Motor gets hot and shuts down automatically',
-      'solution': 'Clean ventilation, check voltage, lubricate bearings'
-    },
-    {
-      'problem': 'Bobbin Case Jam',
-      'problem_code': 'BC005',
-      'officer': 'Amit Joshi',
-      'department': 'Production Line-C',
-      'maintenance_person': 'Anil Sharma',
-      'skill_required': 'Mechanical Repair',
-      'duration_min': 25,
-      'priority': 'Medium',
-      'description': 'Bobbin case gets stuck and doesn\'t rotate',
-      'solution': 'Clean bobbin area, replace if damaged, check spring'
-    },
-    {
-      'problem': 'Oil Leakage',
-      'problem_code': 'OL007',
-      'officer': 'Neha Gupta',
-      'department': 'Production Line-D',
-      'maintenance_person': 'Neha Reddy',
-      'skill_required': 'Lubrication Expert',
-      'duration_min': 15,
-      'priority': 'Low',
-      'description': 'Oil leaks from machine during operation',
-      'solution': 'Check seals, replace gaskets, clean excess oil'
-    },
-  ];
+class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
+  // Local form state
+  //final MachineRepairForm _formData = MachineRepairForm();
 
-  String? selectedProblem;
-  Map<String, dynamic>? selectedProblemDetails;
+  // Text controllers
+  final _machineCodesController = TextEditingController();
+  final _problemTaskCodesController = TextEditingController();
+  final _machineTypeController = TextEditingController();
+  Operations? _selectedOperation;
+  ProductionLines? _productionLines;
+  Employees? _employees;
+  Tasks? _tasks;
+
+  @override
+  void dispose() {
+    _machineCodesController.dispose();
+    _problemTaskCodesController.dispose();
+    _machineTypeController.dispose();
+    super.dispose();
+  }
+
+  void _retryLoading() {
+    ref.invalidate(machineDropdownDataProvider);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final dropdownDataAsync = ref.watch(machineDropdownDataProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Machine Problem Reporting'),
+        title: const Text('Machine Repair Information'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>MachineBreakdownListScreen()));
+          }, icon: Icon(Icons.list)),
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) => MachineProblemList()));
-              },
-              icon: Icon(Icons.list))
+            icon: const Icon(Icons.refresh),
+            onPressed: _retryLoading,
+            tooltip: 'Refresh data',
+          ),
         ],
       ),
-      body: Padding(
+      body: dropdownDataAsync.when(
+        data: (dropdownData) {
+          return _buildForm(dropdownData);
+        },
+        loading: () => _buildLoadingState(),
+        error: (error, stackTrace) => _buildErrorState(error, stackTrace),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            strokeWidth: 3,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Loading Maintenance Data...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error, StackTrace stackTrace) {
+    String errorMessage = 'An error occurred';
+
+    if (error is Exception) {
+      errorMessage = error.toString().replaceAll('Exception: ', '');
+    }
+
+    return Center(
+      child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Dropdown Section
-             Card(
-                color: Colors.white,
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Select Problem',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: selectedProblem,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          hintText: 'Choose a problem',
-                          prefixIcon: const Icon(Icons.bug_report_outlined),
-                        ),
-                        items:
-                            allProblems.map<DropdownMenuItem<String>>((problem) {
-                          return DropdownMenuItem<String>(
-                            value: problem['problem'],
-                            child: Text(problem['problem']),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedProblem = value;
-                            selectedProblemDetails = allProblems.firstWhere(
-                              (problem) => problem['problem'] == value,
-                            );
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a problem';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-
+            Icon(
+              Icons.error_outline,
+              color: Colors.red[400],
+              size: 70,
+            ),
             const SizedBox(height: 20),
-
-            // Problem Details Section
-            if (selectedProblemDetails != null)
-              Card(
-                elevation: 4,
-                color: _getPriorityColor(selectedProblemDetails!['priority']),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            _getPriorityIcon(
-                                selectedProblemDetails!['priority']),
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            selectedProblemDetails!['problem'],
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-
-                      // Problem Details
-                      _buildDetailRow('Problem Code:',
-                          selectedProblemDetails!['problem_code']),
-                      _buildDetailRow('Officer In-charge:',
-                          selectedProblemDetails!['officer']),
-                      _buildDetailRow(
-                          'Department:', selectedProblemDetails!['department']),
-                      _buildDetailRow('Maintenance Person:',
-                          selectedProblemDetails!['maintenance_person']),
-                      _buildDetailRow('Skill Required:',
-                          selectedProblemDetails!['skill_required']),
-                      _buildDetailRow('Estimated Time:',
-                          '${selectedProblemDetails!['duration_min']} minutes'),
-                      _buildDetailRow(
-                          'Priority:', selectedProblemDetails!['priority']),
-
-                      const SizedBox(height: 20),
-
-                      // Description Card
-                      Card(
-                        color: Colors.white.withOpacity(0.9),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Description:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blueGrey,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(selectedProblemDetails!['description']),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // Solution Card
-                      Card(
-                        color: Colors.white.withOpacity(0.9),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Suggested Solution:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blueGrey,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(selectedProblemDetails!['solution']),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            Text(
+              'Oops! Something went wrong',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.red[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 15),
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Text(
+                errorMessage,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 25),
+            ElevatedButton.icon(
+              onPressed: _retryLoading,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: myColors.primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 15,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-
-            const SizedBox(height: 20),
-
-            // Submit Button
-            if (selectedProblemDetails != null)
-              Center(
-                child: ElevatedButton(
-                  onPressed: _submitProblem,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    minimumSize: const Size(200, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.send, color: Colors.white),
-                      SizedBox(width: 10),
-                      Text(
-                        'Submit Problem Report',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              icon: const Icon(Icons.refresh, size: 20),
+              label: const Text(
+                'Retry Loading Data',
+                style: TextStyle(fontSize: 16),
               ),
-
-            // Empty State
-            if (selectedProblemDetails == null)
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.engineering,
-                        size: 100,
-                        color: Colors.blueGrey[300],
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Select a problem from the dropdown\n to view details and submit',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.blueGrey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: Row(
+  Widget _buildForm(MachineBreakdownDropdown dropdownData) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 150,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
+
+          // Maintenance Type Dropdown (Tasks)
+          _buildTaskDropdown(
+            label: 'Maintenance Type # :',
+            tasks: dropdownData.tasks ?? [],
+            selectedTask: _tasks,
+            onChanged: (task) {
+              setState(() {
+                _tasks = task;
+              });
+            },
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                color: Colors.white,
-              ),
-            ),
+          const SizedBox(height: 16),
+
+          // Process Name (Operations) and Work End Time Row
+          _buildOperationDropdown(
+            label: 'Process Name # :',
+            operations: dropdownData.operations ?? [],
+            selectedOperation: _selectedOperation,
+            onChanged: (operation) {
+              setState(() {
+                _selectedOperation = operation;
+              });
+            },
           ),
+          const SizedBox(height: 16),
+
+          _buildProductionLineDropdown(
+            label: 'Line # :',
+            lines: dropdownData.productionLines ?? [],
+            selectedLine: _productionLines,
+            onChanged: (line) {
+              setState(() {
+                _productionLines = line;
+              });
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // Machine Codes and Employee Name Row
+          _buildEmployeeDropdown(
+            label: 'Employee Name # :',
+            employees: dropdownData.employees ?? [],
+            selectedEmployee: _employees,
+            onChanged: (employee) {
+              setState(() {
+                _employees = employee;
+              });
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Machine Codes # :',
+            controller: _machineCodesController,
+            hintText: 'Enter Machine Codes',
+            onChanged: (value) {
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // Problem Task Codes
+          _buildTextField(
+            label: 'Problem Task Codes # :',
+            controller: _problemTaskCodesController,
+            hintText: 'Enter Problem Task Codes',
+            maxLines: 1,
+            onChanged: (value) {
+            },
+          ),
+          const SizedBox(height: 32),
+
+          // Action Buttons
+          _buildActionButtons(),
         ],
       ),
     );
   }
 
-  Color _getPriorityColor(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'high':
-        return Colors.red[800]!;
-      case 'medium':
-        return Colors.orange[800]!;
-      case 'low':
-        return Colors.blue[800]!;
-      default:
-        return Colors.blueGrey[800]!;
-    }
+  Widget _buildTaskDropdown({
+    required String label,
+    required List<Tasks> tasks,
+    required Tasks? selectedTask,
+    required Function(Tasks?) onChanged,
+  }) {
+    return _buildGenericDropdown<Tasks>(
+      label: label,
+      value: selectedTask,
+      items: tasks,
+      displayText: (task) => '${task.taskName} (${task.taskCode})',
+      hintText: 'Select Task',
+      onChanged: onChanged,
+    );
   }
 
-  IconData _getPriorityIcon(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'high':
-        return Icons.error_outline;
-      case 'medium':
-        return Icons.warning_outlined;
-      case 'low':
-        return Icons.info_outline;
-      default:
-        return Icons.help_outline;
-    }
+
+  Widget _buildOperationDropdown({
+    required String label,
+    required List<Operations> operations,
+    required Operations? selectedOperation,
+    required Function(Operations?) onChanged,
+  }) {
+    return _buildGenericDropdown<Operations>(
+      label: label,
+      value: selectedOperation,
+      items: operations,
+      displayText: (operation) => operation.operationName ?? 'Unknown',
+      hintText: 'Select Operation',
+      onChanged: onChanged,
+    );
   }
 
-  void _submitProblem() {
-    if (selectedProblemDetails != null) {
-      // Modern Material Design Dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+  Widget _buildProductionLineDropdown({
+    required String label,
+    required List<ProductionLines> lines,
+    required ProductionLines? selectedLine,
+    required Function(ProductionLines?) onChanged,
+  }) {
+    return _buildGenericDropdown<ProductionLines>(
+      label: label,
+      value: selectedLine,
+      items: lines,
+      displayText: (line) => line.name ?? line.shortName ?? 'Unknown',
+      hintText: 'Select Production Line',
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildEmployeeDropdown({
+    required String label,
+    required List<Employees> employees,
+    required Employees? selectedEmployee,
+    required Function(Employees?) onChanged,
+  }) {
+    return _buildGenericDropdown<Employees>(
+      label: label,
+      value: selectedEmployee,
+      items: employees,
+      displayText: (employee) => '${employee.employeeName} (${employee.employeeCode})',
+      hintText: 'Select Employee',
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildGenericDropdown<T>({
+    required String label,
+    required T? value,
+    required List<T> items,
+    required String Function(T) displayText,
+    required String hintText,
+    required Function(T?) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
           ),
-          elevation: 8,
-          title: Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.task, color: Colors.blue, size: 28),
-                const SizedBox(width: 12),
-                const Text(
-                  'Submit Problem Report',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueGrey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Problem Summary
-              Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0,
-                            vertical: 4.0,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getPriorityColor(
-                                selectedProblemDetails!['priority']),
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: Text(
-                            selectedProblemDetails!['priority'],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      selectedProblemDetails!['problem'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Assigned to: ${selectedProblemDetails!['maintenance_person']}',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Confirmation Text
-              const Text(
-                'Are you sure you want to submit this problem report?',
-                style: TextStyle(
-                  color: Colors.blueGrey,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              // Notification Info
-              Row(
-                children: [
-                  Icon(Icons.notifications_active,
-                      color: Colors.orange[600], size: 18),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      'Notifications will be sent to concerned staff',
-                      style: TextStyle(
-                        color: Colors.orange[600],
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          actions: [
-            // Cancel Button
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.grey[700],
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: const Text('CANCEL'),
-            ),
-
-            // Submit Button
-            ElevatedButton(
-              onPressed: () {
-                saveProblemReport();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text('SUBMIT'),
-            ),
-          ],
         ),
-      );
-    }
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<T>(
+              value: value,
+              isExpanded: true,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              hint: Text(
+                hintText,
+                style: TextStyle(color: Colors.grey[500]),
+              ),
+              items: items.map((T item) {
+                return DropdownMenuItem<T>(
+                  value: item,
+                  child: Text(
+                    displayText(item),
+                    style: const TextStyle(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
+              onChanged: onChanged,
+              icon: const Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  //
-// Function to save problem report
-  Future<void> saveProblemReport() async {
-    // Create minimal JSON with essential info only
-    Map<String, dynamic> problemReport = {
-      // Basic Problem Info
-      'problem': selectedProblemDetails!['problem'],
-      'problem_code': selectedProblemDetails!['problem_code'],
-      'priority': selectedProblemDetails!['priority'],
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required String hintText,
+    int maxLines = 1,
+    required Function(String) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.blue),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: maxLines > 1 ? 16 : 0,
+            ),
+          ),
+          maxLines: maxLines,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
 
-      // People Involved
-      'officer': selectedProblemDetails!['officer'],
-      'maintenance_person': selectedProblemDetails!['maintenance_person'],
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _submitForm,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: myColors.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 2,
+            ),
+            icon: const Icon(Icons.save, size: 20),
+            label: const Text(
+              'Submit Repair',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-      // Timestamps
-      'reported_at': DateTime.now().toIso8601String(),
-      'ticket_id': 'TICKET-${DateTime.now().millisecondsSinceEpoch}',
+  void _submitForm() {
+    // Update form data from controllers
+    // _formData.machineCodes = _machineCodesController.text;
+    // _formData.problemTaskCodes = _problemTaskCodesController.text;
+    // _formData.machineType = _machineTypeController.text;
 
-      // Simple Status
-      'status': 'pending',
-    };
+    //         public int MaintenanceId { get; set; }
+    //         public string MaintenanceName { get; set; }
+    //         public string MaintenanceDate { get; set; }
+    //         public string IdCardNo { get; set; }
+    //         public string FullName { get; set; }
+    //         public string OperationName { get; set; }
+    //         public string LineName { get; set; }
+    //         public string MachineType { get; set; }
+    //         public string MachineNo { get; set; }
+    //         public string TaskCode { get; set; }
+    //         public string ReportedTime { get; set; }
+    //         public string MechanicInfoTime { get; set; }
+    //         public string WorkStartTime { get; set; }
+    //         public string DelayTime { get; set; }  // Changed from int? to string
+    //         public string WorkEndTime { get; set; }
+    //         public string MechanicWorkTime { get; set; }  // Changed from int? to string
+    //         public string BreakdownDescription { get; set; }
+    //         public string BreakdownDateTime { get; set; }
+    //         public string Status { get; set; }
 
-    // Save/Print
-    print('SUBMITTED REPORT: $problemReport');
-    FirebaseService firebaseService = FirebaseService();
-    var result = await firebaseService.saveMachineProblemReport(problemReport);
-    if (result) {
-      Navigator.pop(context);
-      DashboardHelpers.showSnakBar(
-          context: context, message: 'Problem report submitted successfully!');
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => MachineProblemList()));
-      });
+    // Validation
+    if (_tasks == null) {
+      _showError('Please select task type');
+      return;
     }
+
+    if (_selectedOperation== null) {
+      _showError('Please select process name');
+      return;
+    }
+
+    if (_productionLines == null) {
+      _showError('Please select production line');
+      return;
+    }
+
+    if (_employees == null) {
+      _showError('Please select employee');
+      return;
+    }
+
+    if (_machineCodesController.text.isEmpty) {
+      _showError('Please enter machine codes');
+      return;
+    }
+    if (_problemTaskCodesController.text.isEmpty) {
+      _showError('Please enter task codes');
+      return;
+    }
+    var data={
+      // taskId: _tasks!.taskId!,
+      // operationId: _selectedOperation!.operationId!,
+      // lineId: _productionLines!.lineId!,
+      // employeeId: _employees!.employeeId!,
+      // machineCodes: _machineCodesController.text,
+      // problemTaskCodes: _problemTaskCodesController.text,
+    };
+    ref.read(submitMachineReportProvider);
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Repair information submitted successfully!'),
+        backgroundColor: Colors.green[600],
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 }

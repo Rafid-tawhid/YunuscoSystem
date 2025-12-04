@@ -175,7 +175,7 @@ class ProductHomeScreen extends ConsumerWidget {
         onTap: () async {
           Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => MachineProblemScreen()),
+            CupertinoPageRoute(builder: (context) => MachineRepairScreen()),
           );
         },
       ),

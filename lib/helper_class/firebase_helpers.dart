@@ -183,20 +183,7 @@ class FirebaseService {
     });
   }
 
-  Future<bool> saveMachineProblemReport(Map<String, dynamic> problemReport) async {
-    try {
-      final docRef = _firestore.collection('machine_breakdown').doc();
-      problemReport['id'] = docRef.id;
-      problemReport['createdAt'] = FieldValue.serverTimestamp(); // Add server timestamp
 
-      await _firestore.collection('machine_breakdown').doc(docRef.id).set(problemReport);
-      return true; // Success
-    } catch (e) {
-      print('Error saving machine problem report: $e');
-      // You can add more specific error handling here if needed
-      return false; // Failure
-    }
-  }
 
   Future<String?> fetchUserRole(String userId) async {
     try {
@@ -213,39 +200,6 @@ class FirebaseService {
     } catch (e) {
       print('Error fetching user role: $e');
       return null;
-    }
-  }
-
-  Future<bool> updateMachineProblemReport(String id, String status) async {
-    try {
-      // Determine which timestamp field to update based on status
-      Map<String, dynamic> updateData = {
-        'status': status,
-      };
-
-      // Add appropriate timestamp field based on the new status
-      if (status == MachineBreakdownStatus.pending_maintance) {
-        updateData['assignedAt'] = FieldValue.serverTimestamp();
-      }
-      else if (status == MachineBreakdownStatus.in_progress) {
-        updateData['startedAt'] = FieldValue.serverTimestamp();
-      }
-      else if (status == MachineBreakdownStatus.resolved) {
-        updateData['resolvedAt'] = FieldValue.serverTimestamp();
-      }
-      else if (status == MachineBreakdownStatus.complete) {
-        updateData['completedAt'] = FieldValue.serverTimestamp();
-      }
-      else if (status == MachineBreakdownStatus.pending) {
-        updateData['reportedAt'] = FieldValue.serverTimestamp();
-        // Or you might want 'createdAt' if this is when the report was first made
-      }
-
-      await _firestore.collection('machine_breakdown').doc(id).update(updateData);
-      return true; // Success
-    } catch (e) {
-      print('Error updating machine problem report: $e');
-      return false; // Failure
     }
   }
 

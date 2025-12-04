@@ -2,12 +2,15 @@
 
 // Provider for Production QC Data
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/models/error_summery_model.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
+import '../../models/machine_breakdown_dropdown.dart';
+import '../../models/machine_breakdown_model.dart';
 import '../../models/mis_asset_model.dart';
 import '../../models/production_qc_model.dart';
 import '../../models/qc_difference_model.dart';
@@ -200,21 +203,143 @@ List<MisAssetModel> getFilteredMisAssets(
 // providers/machine_report_provider.dart
 
 
-final machineReportsProvider = StreamProvider<List<Map<String, dynamic>>>((ref) {
-  final firestore = FirebaseFirestore.instance;
 
-  return firestore
-      .collection('machine_breakdown')
-      .orderBy('reported_at', descending: true)
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) {
-    final data = doc.data();
-    return {
-      'id': doc.id,
-      ...data,
-    };
-  }).toList());
+////
+
+final machineDropdownDataProvider = FutureProvider<MachineBreakdownDropdown>((ref) async {
+  try {
+    final apiService = ref.read(apiServiceProvider);
+    final response = await apiService.getData('api/Production/GetMaintenanceDropdowns');
+
+    if (response != null && response['Data'] != null) {
+      return MachineBreakdownDropdown.fromJson(response['Data']);
+    } else {
+      throw Exception('No data received from server');
+    }
+  } catch (e, stackTrace) {
+    debugPrint('Dropdown data error: $e');
+    debugPrint('Stack trace: $stackTrace');
+    throw Exception('Failed to load dropdown data: ${e.toString()}');
+  }
+});
+
+
+// dec 4
+
+final submitMachineReportProvider = Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
+  final apiService = ref.read(apiServiceProvider);
+
+  return (Map<String, dynamic> reportData) async {
+    try {
+      final response = await apiService.postData(
+          'api/Production/UpdateMachineBreakdown',
+          reportData
+      );
+
+      if (response != null) {
+        return response;
+      } else {
+        throw Exception('No response from server');
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Submit report error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      throw Exception('Failed to submit report: ${e.toString()}');
+    }
+  };
 });
 
 
 
+// dec 4
+
+
+final machineBreakdownListProvider = FutureProvider<List<MachineBreakdownModel>>((ref) async {
+  try {
+    final apiService = ref.read(apiServiceProvider);
+    final response = await apiService.getData('api/Production/GetAllMachineBreakdown');
+
+    if (response != null) {
+      List<MachineBreakdownModel> dataList = [];
+      for(var i in response){
+        dataList.add(MachineBreakdownModel.fromJson(i));
+      }
+      return dataList;
+    } else {
+      throw Exception('No data received from server');
+    }
+  } catch (e, stackTrace) {
+    debugPrint('Machine breakdown list error: $e');
+    debugPrint('Stack trace: $stackTrace');
+    throw Exception('Failed to load machine breakdowns: ${e.toString()}');
+  }
+});
+
+
+// Provider for search/filter functionality
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+final filteredBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
+  final breakdownsAsync = ref.watch(machineBreakdownListProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+
+  return breakdownsAsync.when(
+    data: (breakdowns) {
+      if (searchQuery.isEmpty) {
+        return breakdowns;
+      }
+
+      final query = searchQuery.toLowerCase();
+      return breakdowns.where((breakdown) {
+        return breakdown.maintenanceName?.toLowerCase().contains(query) == true ||
+            breakdown.operationName?.toLowerCase().contains(query) == true ||
+            breakdown.lineName?.toLowerCase().contains(query) == true ||
+            breakdown.machineType?.toLowerCase().contains(query) == true ||
+            breakdown.fullName?.toLowerCase().contains(query) == true ||
+            breakdown.taskCode?.toLowerCase().contains(query) == true ||
+            breakdown.status?.toLowerCase().contains(query) == true;
+      }).toList();
+    },
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
+
+// Provider for sorting
+enum SortOption { newestFirst, oldestFirst, byStatus, byMachine }
+
+final sortProvider = StateProvider<SortOption>((ref) => SortOption.newestFirst);
+
+final sortedBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
+  final filteredBreakdowns = ref.watch(filteredBreakdownsProvider);
+  final sortOption = ref.watch(sortProvider);
+
+  List<MachineBreakdownModel> sortedList = List.from(filteredBreakdowns);
+
+  switch (sortOption) {
+    case SortOption.newestFirst:
+      sortedList.sort((a, b) {
+        final dateA = DateTime.tryParse(a.createdDate ?? '');
+        final dateB = DateTime.tryParse(b.createdDate ?? '');
+        if (dateA == null || dateB == null) return 0;
+        return dateB.compareTo(dateA);
+      });
+      break;
+    case SortOption.oldestFirst:
+      sortedList.sort((a, b) {
+        final dateA = DateTime.tryParse(a.createdDate ?? '');
+        final dateB = DateTime.tryParse(b.createdDate ?? '');
+        if (dateA == null || dateB == null) return 0;
+        return dateA.compareTo(dateB);
+      });
+      break;
+    case SortOption.byStatus:
+      sortedList.sort((a, b) => (a.status ?? '').compareTo(b.status ?? ''));
+      break;
+    case SortOption.byMachine:
+      sortedList.sort((a, b) => (a.machineType ?? '').compareTo(b.machineType ?? ''));
+      break;
+  }
+
+  return sortedList;
+});
