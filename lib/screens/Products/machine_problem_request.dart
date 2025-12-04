@@ -496,7 +496,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
       // machineCodes: _machineCodesController.text,
       // problemTaskCodes: _problemTaskCodesController.text,
     };
-    ref.read(submitMachineReportProvider);
+
 
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(

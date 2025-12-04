@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../../../models/machine_breakdown_model.dart';
+import '../../../providers/riverpods/production_provider.dart';
 
 // lib/utils/status_utils.dart
 class StatusFlow {
@@ -137,86 +138,74 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
     }
   }
 
-  void _processUpdate() {
-    // Prepare update data
-//        "MaintenanceId": 6,
-//         "MaintenanceName": "Electrical Panel Cooling Fan",
-//         "MaintenanceDate": "2024-01-24",
-//         "IdCardNo": "EMP05623",
-//         "FullName": "Chen Wei",
-//         "OperationName": "Assembly Line",
-//         "LineName": "Line 5",
-//         "MachineType": "Robotic Arm",
-//         "MachineNo": "ROB-118",
-//         "TaskCode": null,
-//         "ReportedTime": null,
-//         "MechanicInfoTime": null,
-//         "WorkStartTime": "Jan 24 2024  1:00PM",
-//         "DelayTime": null,
-//         "WorkEndTime": "Jan 24 2024  2:30PM",
-//         "MechanicWorkTime": "90",
-//         "BreakdownDescription": "Cooling fan in main electrical panel stopped working. Panel temperature reached 65°C. Replaced fan with spare unit.",
-//         "BreakdownDateTime": "Jan 24 2024 12:15PM",
-//         "Status": "Resolved",
-//         "CreatedDate": "2025-12-03T11:31:59.167",
-//         "UpdatedDate": "2025-12-03T11:31:59.167"
-
-
-  if(widget.breakdown.status==MachineBreakdownStatus.reported){
-        // Show error
-        var data={
-          "MaintenanceId": widget.breakdown.maintenanceId,
-          "Updates": {
-            "Status": _nextStatus,
-            "MechanicInfoTime":_selectedAttendTime,
-            "TaskCode":_notesController.text,
-            "MaintenanceDate":_selectedDate,
-          }
-        };
-        debugPrint('Update Data: $data');
-
-    }
-  if(widget.breakdown.status==MachineBreakdownStatus.awaiting){
-        // Show error
-        var data={
-          "MaintenanceId": widget.breakdown.maintenanceId,
-          "Updates": {
-            "Status": _nextStatus,
-            "WorkStartTime":_selectedAttendTime
-          }
-        };
-        debugPrint('Update Data: $data');
-
-    }
-  if(widget.breakdown.status==MachineBreakdownStatus.in_progress){
-        // Show error
-        var data={
-          "MaintenanceId": widget.breakdown.maintenanceId,
-          "Updates": {
-            "Status": _nextStatus,
-            "WorkEndTime":_selectedAttendTime
-          }
-        };
-        debugPrint('Update Data: $data');
-
+  Future<void> _processUpdate() async {
+    num? maintenanceId = widget.breakdown.maintenanceId;
+    if (maintenanceId == null) {
+      debugPrint("⛔ MaintenanceId is null – update aborted");
+      return;
     }
 
-  if(widget.breakdown.status==MachineBreakdownStatus.resolved){
-        // Show error
-        var data={
-          "MaintenanceId": widget.breakdown.maintenanceId,
-          "Updates": {
-            "Status": _nextStatus,
-            "WorkEndTime":_selectedAttendTime
-          }
-        };
-        debugPrint('Update Data: $data');
+    Map<String, dynamic> updates = {};
 
+    // Convert current time to string (hh:mm a format)
+    String nowTimeString = TimeOfDay.now().format(context);
+
+    switch (widget.breakdown.status) {
+      case MachineBreakdownStatus.reported:
+        updates = {
+          "Status": _nextStatus,
+          "MechanicInfoTime": _selectedAttendTime,
+          "TaskCode": _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          "MaintenanceDate": _selectedDate ?? _selectedDate,
+        };
+        break;
+
+      case MachineBreakdownStatus.awaiting:
+        updates = {
+          "Status": _nextStatus,
+          "WorkStartTime": nowTimeString,
+          "MaintenanceDate": _selectedDate ?? _selectedDate,
+        };
+        break;
+
+      case MachineBreakdownStatus.in_progress:
+        updates = {
+          "Status": _nextStatus,
+          "WorkResolvedTime": nowTimeString,
+        };
+        break;
+
+      case MachineBreakdownStatus.resolved:
+        updates = {
+          "Status": _nextStatus,
+          "WorkEndTime": nowTimeString,
+        };
+        break;
+
+      default:
+        debugPrint("⚠ No matching status case, sending only status update");
+        updates = {"Status": _nextStatus};
     }
 
-    // Close bottom sheet with data
+    final data = {
+      "MaintenanceId": maintenanceId,
+      "Updates": updates,
+    };
+
+    debugPrint("✅ Update Payload: $data");
+
+    final submitFunction = ref.read(submitMachineReportProvider);
+
+    // Call the function with your data
+    final response = await submitFunction(data);
+
+    debugPrint('Return Response ${response}');
+
+    // TODO: Call API with payload here if needed later
+
     Navigator.pop(context);
   }
+
 
   Widget _buildStatusInfo() {
     final currentStatus = widget.breakdown.status ?? 'Reported';
