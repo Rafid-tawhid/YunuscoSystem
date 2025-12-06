@@ -343,3 +343,30 @@ final sortedBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
 
   return sortedList;
 });
+
+
+//submitMachineRepair
+
+final submitMachineRepair = Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
+  final apiService = ref.read(apiServiceProvider);
+
+  return (Map<String, dynamic> data) async {
+    try {
+      final response = await apiService.postData(
+          'api/Production/AddMachineBreakdown',
+          data
+      );
+
+      if (response != null) {
+        return response;
+      } else {
+        throw Exception('No response from server');
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Submit report error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      throw Exception('Failed to submit report: ${e.toString()}');
+    }
+  };
+});
+

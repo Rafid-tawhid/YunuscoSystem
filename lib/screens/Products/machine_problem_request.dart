@@ -1,6 +1,7 @@
 // lib/screens/machine_repair_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../models/machine_breakdown_dropdown.dart';
 import '../../providers/riverpods/production_provider.dart';
@@ -433,7 +434,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
     );
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     // Update form data from controllers
     // _formData.machineCodes = _machineCodesController.text;
     // _formData.problemTaskCodes = _problemTaskCodesController.text;
@@ -489,23 +490,43 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
       return;
     }
     var data={
-      // taskId: _tasks!.taskId!,
-      // operationId: _selectedOperation!.operationId!,
-      // lineId: _productionLines!.lineId!,
-      // employeeId: _employees!.employeeId!,
-      // machineCodes: _machineCodesController.text,
-      // problemTaskCodes: _problemTaskCodesController.text,
+        "MaintenanceName": _tasks?.taskName ?? '',
+        "IdCardNo": _employees!.employeeCode ?? '',
+        "FullName": _employees!.employeeName??'',
+        "OperationName": _selectedOperation!.operationName,
+        "LineName": _productionLines!.name,
+        "MachineType": "Robotic Arm",
+        "MachineNo": _machineCodesController.text,
+        "TaskCode": _problemTaskCodesController.text,
+        "ReportedTime": DateTime.now().toString(),
+        "Status": MachineBreakdownStatus.reported
     };
 
+    final submitFunction = ref.read(submitMachineRepair);
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Repair information submitted successfully!'),
-        backgroundColor: Colors.green[600],
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    // Call the function with your data
+    final response = await submitFunction(data);
+    if(response['id']!=null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Repair information submitted successfully!'),
+          backgroundColor: Colors.green[600],
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      // Clear form
+      setState(() {
+        _tasks = null;
+        _selectedOperation = null;
+        _productionLines = null;
+        _employees = null;
+        _machineCodesController.clear();
+        _problemTaskCodesController.clear();
+      });
+    }
+
+
+
   }
 
   void _showError(String message) {

@@ -33,7 +33,8 @@ class StatusFlow {
   }
 
   static bool canUserUpdate(String currentStatus) {
-    return currentStatus == MachineBreakdownStatus.reported; // Only when reported
+    return currentStatus ==
+        MachineBreakdownStatus.reported; // Only when reported
   }
 
   static bool isFinalStatus(String status) {
@@ -58,7 +59,6 @@ class StatusFlow {
   }
 }
 
-
 class UpdateStatusBottomSheet extends ConsumerStatefulWidget {
   final MachineBreakdownModel breakdown;
 
@@ -68,10 +68,12 @@ class UpdateStatusBottomSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<UpdateStatusBottomSheet> createState() => _UpdateStatusBottomSheetState();
+  ConsumerState<UpdateStatusBottomSheet> createState() =>
+      _UpdateStatusBottomSheetState();
 }
 
-class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomSheet> {
+class _UpdateStatusBottomSheetState
+    extends ConsumerState<UpdateStatusBottomSheet> {
   final _notesController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -85,7 +87,8 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
   void initState() {
     super.initState();
     // Calculate next status based on current status
-    _nextStatus = StatusFlow.getNextStatus(widget.breakdown.status ?? 'Reported');
+    _nextStatus =
+        StatusFlow.getNextStatus(widget.breakdown.status ?? 'Reported');
 
     // Set default date/time to now
     _selectedDate = DateTime.now();
@@ -116,12 +119,12 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
   Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime:TimeOfDay.now(),
+      initialTime: TimeOfDay.now(),
     );
 
     if (picked != null) {
       setState(() {
-        _selectedAttendTime=picked;
+        _selectedAttendTime = picked;
       });
     }
   }
@@ -154,9 +157,17 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
       case MachineBreakdownStatus.reported:
         updates = {
           "Status": _nextStatus,
-          "MechanicInfoTime": _selectedAttendTime,
-          "TaskCode": _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
-          "MaintenanceDate": _selectedDate ?? _selectedDate,
+          "MechanicInfoTime": DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+            _selectedAttendTime!.hour,
+            _selectedAttendTime!.minute,
+          ).toString(),
+          "TaskCode": _notesController.text.trim().isEmpty
+              ? null
+              : _notesController.text.trim(),
+          "MaintenanceDate": DateTime.now().toString(),
         };
         break;
 
@@ -164,21 +175,21 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
         updates = {
           "Status": _nextStatus,
           "WorkStartTime": nowTimeString,
-          "MaintenanceDate": _selectedDate ?? _selectedDate,
+          "MaintenanceDate": DateTime.now().toString(),
         };
         break;
 
       case MachineBreakdownStatus.in_progress:
         updates = {
           "Status": _nextStatus,
-          "WorkResolvedTime": nowTimeString,
+          "WorkResolvedTime": DateTime.now().toString(),
         };
         break;
 
       case MachineBreakdownStatus.resolved:
         updates = {
           "Status": _nextStatus,
-          "WorkEndTime": nowTimeString,
+          "WorkEndTime": DateTime.now().toString(),
         };
         break;
 
@@ -199,13 +210,12 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
     // Call the function with your data
     final response = await submitFunction(data);
 
-    debugPrint('Return Response ${response}');
-
-    // TODO: Call API with payload here if needed later
-
-    Navigator.pop(context);
+    if (response['Success']) {
+      ref.invalidate(machineBreakdownListProvider);
+      Navigator.pop(context);
+      DashboardHelpers.showAlert(msg: 'Status updated successfully');
+    }
   }
-
 
   Widget _buildStatusInfo() {
     final currentStatus = widget.breakdown.status ?? 'Reported';
@@ -298,9 +308,6 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
               ),
             ],
           ),
-
-
-
         ],
       ),
     );
@@ -376,7 +383,8 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
             ),
             Container(
               height: 3,
-              width: (MediaQuery.of(context).size.width - 60) * ((currentIndex + 1) / StatusFlow.flow.length),
+              width: (MediaQuery.of(context).size.width - 60) *
+                  ((currentIndex + 1) / StatusFlow.flow.length),
               margin: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
                 color: StatusFlow.getStatusColor(currentStatus),
@@ -391,7 +399,8 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
 
   @override
   Widget build(BuildContext context) {
-    final canUserUpdate = StatusFlow.canUserUpdate(widget.breakdown.status ?? '');
+    final canUserUpdate =
+        StatusFlow.canUserUpdate(widget.breakdown.status ?? '');
 
     return Container(
       padding: EdgeInsets.only(
@@ -432,7 +441,8 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: StatusFlow.getStatusColor(widget.breakdown.status).withOpacity(0.1),
+                    color: StatusFlow.getStatusColor(widget.breakdown.status)
+                        .withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -502,7 +512,6 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
                       isRequired: true,
                     ),
                   ),
-
                 ],
               ),
               const SizedBox(height: 16),
@@ -701,9 +710,7 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    time != null
-                        ? time.format(context)
-                        : 'Select Time',
+                    time != null ? time.format(context) : 'Select Time',
                     style: TextStyle(
                       color: time != null ? Colors.black87 : Colors.grey[500],
                       fontSize: 16,
@@ -815,26 +822,27 @@ class _UpdateStatusBottomSheetState extends ConsumerState<UpdateStatusBottomShee
             ),
             child: _isLoading
                 ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
                 : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.arrow_forward, size: 20),
-                const SizedBox(width: 8),
-                Text(_nextStatus,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.arrow_forward, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        _nextStatus,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       ],
