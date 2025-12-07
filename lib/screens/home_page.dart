@@ -13,6 +13,7 @@ import 'package:yunusco_group/service_class/notofication_helper.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../common_widgets/drawer.dart';
+import '../common_widgets/version_control_widgets.dart';
 import '../providers/auth_provider.dart';
 import '../providers/hr_provider.dart';
 import 'Notification/tna_notification_screen.dart';
@@ -45,10 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
   double _scrollPosition = 0; // List<Menu> menus = [];
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  String version='';
   @override
   void initState() {
     super.initState();
     _getModules();
+    _checkForNewVersion();
     if (Platform.isAndroid) {
       NotificationServices.setupPushNotifications(context);
       NotificationServices.initializeNotifications();
@@ -60,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
             50; // Adjust this value for when the logo should appear
       });
     });
+    getVersions();
   }
 
   @override
@@ -76,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context)  {
     return Scaffold(
       drawer: MyDrawer(),
       appBar: AppBar(
@@ -163,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _scrollController,
           child: Column(
             children: [
+              UpdateWidget(),
               Image.asset(
                 'assets/images/icon.png',
                 height: 120,
@@ -264,6 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await hp.getAllDocAppointment(); //go to different screen depending on designation
         if (DashboardHelpers.currentUser!.designation == 'Medical Officer') {
           Navigator.push(context,
+
               MaterialPageRoute(builder: (context) => AppointmentListScreen()));
         } else {
           Navigator.push(context,
@@ -281,6 +287,14 @@ class _HomeScreenState extends State<HomeScreen> {
         DashboardHelpers.showAlert(msg: 'Not Available');
         return;
     }
+  }
+
+  void _checkForNewVersion() {
+
+  }
+
+  Future<void> getVersions() async {
+    version=await getVersion();
   }
 }
 

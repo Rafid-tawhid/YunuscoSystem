@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/screens/Products/widgets/update_status_bottomsheet.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
+import '../../helper_class/dashboard_helpers.dart';
 import '../../models/machine_breakdown_model.dart';
 import '../../providers/riverpods/production_provider.dart';
 import 'machine_problem_request.dart';
@@ -346,137 +347,441 @@ class MachineBreakdownListScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBreakdownCard(MachineBreakdownModel breakdown,BuildContext context) {
+  Widget _buildBreakdownCard(MachineBreakdownModel breakdown, BuildContext context) {
     Color statusColor = StatusFlow.getStatusColor(breakdown.status);
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () {
-          _showUpdateBottomSheet(breakdown,context);
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header row with ID and status
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'ID: ${breakdown.maintenanceId ?? 'N/A'}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Card(
+        elevation: 2,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.grey.shade200),
+        ),
+        child: InkWell(
+          onTap: () => _showUpdateBottomSheet(breakdown, context),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top row: ID, Status, and Quick Status Indicator
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ID with priority indicator
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: statusColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                              'ID: ${breakdown.maintenanceId ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: statusColor.withOpacity(0.3)),
-                    ),
-                    child: Text(
-                      breakdown.status ?? 'Unknown',
-                      style: TextStyle(
-                        color: statusColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+
+                    // Status Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: statusColor.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _getStatusIcon(breakdown.status),
+                            size: 14,
+                            color: statusColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            breakdown.status ?? 'Unknown',
+                            style: TextStyle(
+                              color: statusColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Machine Info - Compact horizontal layout
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
+                  child: Row(
+                    children: [
+                      // Machine Icon
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[100],
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.business_center,
+                          size: 16,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
 
-              // Machine Info
-              _buildInfoRow(
-                icon: Icons.business_center,
-                label: 'Machine',
-                value: '${breakdown.machineType ?? 'N/A'} - ${breakdown.machineNo ?? 'N/A'}',
-              ),
+                      // Machine Details
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${breakdown.machineType ?? 'Machine'} - ${breakdown.machineNo ?? 'N/A'}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Icon(Icons.line_style, size: 12, color: Colors.grey[600]),
+                                const SizedBox(width: 4),
+                                Text(
+                                  breakdown.lineName ?? 'No Line',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Icon(Icons.settings, size: 12, color: Colors.grey[600]),
+                                const SizedBox(width: 4),
+                                Text(
+                                  breakdown.operationName ?? 'No Operation',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-              // Line and Operation
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildInfoRow(
-                      icon: Icons.line_style,
-                      label: 'Line',
-                      value: breakdown.lineName ?? 'N/A',
+                const SizedBox(height: 12),
+
+                // Details Grid - 2x2 layout
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  childAspectRatio: 3.5,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  children: [
+                    _buildDetailItem(
+                      icon: Icons.person,
+                      title: 'Employee',
+                      value: breakdown.fullName ?? 'N/A',
+                      color: Colors.green,
                     ),
-                  ),
-                  Expanded(
-                    child: _buildInfoRow(
-                      icon: Icons.settings,
-                      label: 'Operation',
-                      value: breakdown.operationName ?? 'N/A',
-                    ),
-                  ),
-                ],
-              ),
-
-              // Task and Reported Time
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildInfoRow(
+                    _buildDetailItem(
                       icon: Icons.task,
-                      label: 'Task',
+                      title: 'Task',
                       value: breakdown.taskCode ?? 'N/A',
+                      color: Colors.orange,
                     ),
-                  ),
-                  Expanded(
-                    child: _buildInfoRow(
+                    _buildDetailItem(
                       icon: Icons.access_time,
-                      label: 'Reported',
-                      value: breakdown.reportedTime ?? 'N/A',
+                      title: 'Reported',
+                      value: breakdown.reportedTime?.split(' ').last ?? 'N/A',
+                      color: Colors.purple,
+                    ),
+                    _buildDetailItem(
+                      icon: Icons.calendar_today,
+                      title: 'Updated',
+                      value: _formatRelativeDate(breakdown.updatedDate),
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+
+                // Timeline Progress Bar (if in progress)
+                if (breakdown.status == MachineBreakdownStatus.in_progress ||
+                    breakdown.status == MachineBreakdownStatus.resolved)
+                  _buildProgressTimeline(breakdown),
+
+                // Action Button Row
+                if (!StatusFlow.isFinalStatus(breakdown.status ?? ''))
+                  Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _showUpdateBottomSheet(breakdown, context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              side: BorderSide(color: statusColor),
+                            ),
+                            icon: Icon(
+                              Icons.arrow_forward,
+                              size: 16,
+                              color: statusColor,
+                            ),
+                            label: Text(
+                              'Update to ${StatusFlow.getNextStatus(breakdown.status ?? '')}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: statusColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-
-              // Employee
-              _buildInfoRow(
-                icon: Icons.person,
-                label: 'Employee',
-                value: breakdown.fullName ?? 'N/A',
-              ),
-
-              // Dates
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildInfoRow(
-                      icon: Icons.date_range,
-                      label: 'Created',
-                      value: _formatDate(breakdown.createdDate),
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildInfoRow(
-                      icon: Icons.update,
-                      label: 'Updated',
-                      value: _formatDate(breakdown.updatedDate),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Timeline if available
-              if (breakdown.workStartTime != null && breakdown.workEndTime != null)
-                _buildTimelineInfo(breakdown),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+// Helper widget for detail items
+  Widget _buildDetailItem({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 14, color: color),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey[600],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[800],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+// Progress timeline for active breakdowns
+  Widget _buildProgressTimeline(MachineBreakdownModel breakdown) {
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Progress',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              if (breakdown.delayTime != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[100],
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.timer, size: 10, color: Colors.orange),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Delay: ${breakdown.delayTime}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (breakdown.workStartTime != null || breakdown.workEndTime != null)
+            Column(
+              children: [
+                if (breakdown.workStartTime != null)
+                  _buildTimelineRow('Started', breakdown.workStartTime!, Icons.play_arrow, Colors.green),
+                if (breakdown.mechanicWorkTime != null)
+                  _buildTimelineRow('Work Time', '${breakdown.mechanicWorkTime} min', Icons.timer, Colors.blue),
+                if (breakdown.workEndTime != null)
+                  _buildTimelineRow('Ended', breakdown.workEndTime!, Icons.check_circle, Colors.green),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineRow(String label, String value, IconData icon, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+// Helper methods
+  IconData _getStatusIcon(String? status) {
+    switch (status) {
+      case MachineBreakdownStatus.reported:
+        return Icons.report;
+      case MachineBreakdownStatus.awaiting:
+        return Icons.hourglass_empty;
+      case MachineBreakdownStatus.in_progress:
+        return Icons.build;
+      case MachineBreakdownStatus.resolved:
+        return Icons.check_circle;
+      case MachineBreakdownStatus.completed:
+        return Icons.done_all;
+      default:
+        return Icons.help;
+    }
+  }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _formatRelativeDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+
+      if (difference.inDays > 0) {
+        return '${difference.inDays}d ago';
+      } else if (difference.inHours > 0) {
+        return '${difference.inHours}h ago';
+      } else if (difference.inMinutes > 0) {
+        return '${difference.inMinutes}m ago';
+      }
+      return 'Just now';
+    } catch (e) {
+      return dateString;
+    }
   }
 
   void _showUpdateBottomSheet(MachineBreakdownModel breakdown,BuildContext context) {
@@ -549,68 +854,4 @@ class MachineBreakdownListScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTimelineInfo(MachineBreakdownModel breakdown) {
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Timeline',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 8),
-          _buildTimelineRow('Start', breakdown.workStartTime),
-          _buildTimelineRow('Delay', breakdown.delayTime),
-          _buildTimelineRow('End', breakdown.workEndTime),
-          _buildTimelineRow('Total Work', breakdown.mechanicWorkTime),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimelineRow(String label, dynamic time) {
-    if (time == null) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12),
-          ),
-          Text(
-            time.toString(),
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue[700],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-
-  String _formatDate(String? dateString) {
-    if (dateString == null || dateString.isEmpty) return 'N/A';
-    try {
-      final date = DateTime.parse(dateString);
-      return '${date.day}/${date.month}/${date.year}';
-    } catch (e) {
-      return dateString;
-    }
-  }
 }

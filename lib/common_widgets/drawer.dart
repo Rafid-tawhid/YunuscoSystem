@@ -4,6 +4,7 @@ import 'package:yunusco_group/screens/Profile/change_password_screen.dart';
 import '../helper_class/dashboard_helpers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/riverpods/testing.dart';
+import '../screens/Accounts/version_Screen.dart';
 import '../screens/Profile/capture_nid_info.dart';
 import '../screens/Profile/user_access_type.dart';
 import '../screens/Purchasing/new_req_list_screen.dart';
@@ -112,6 +113,14 @@ class MyDrawer extends StatelessWidget {
                   ),
                 );
               }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings, color: Colors.black54),
+            title: const Text('Versions'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => VersionsScreen()));
             },
           ),
           const Divider(),

@@ -150,52 +150,77 @@ class RequisitionCard extends StatelessWidget {
       },
       child: Card(
         color: Colors.white,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        elevation: 2,
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          title: Column(
+        elevation: 3,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                requisition.purchaseRequisitionCode ?? '',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              // Left Side Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header: Code + User Name
+                    Text(
+                      requisition.purchaseRequisitionCode ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      requisition.userName ?? '',
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 14,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+                    Divider(height: 1, thickness: .6, color: Colors.grey[300]),
+                    const SizedBox(height: 12),
+
+                    // Additional Info
+                    Text(
+                      'Purchase Type: ${requisition.purchaseType}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Product Type: ${requisition.type}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                requisition.userName ?? '',
-                style: TextStyle(color: Colors.grey[700], fontSize: 14),
-              ),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              Row(
+
+              // Right Side Trailing Information
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  _buildChip(requisition.purchaseType ?? '',
-                      Colors.blue[100]!, Colors.blue[800]!),
-                  const SizedBox(width: 8),
-                  _buildChip(requisition.type ?? '',
-                      Colors.green[100]!, Colors.green[800]!),
+                  Text(
+                    requisition.code ?? '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    requisition.createdDate ?? '',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
-              ),
-            ],
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                requisition.code ?? '',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                requisition.createdDate ?? '',
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
-              ),
+              )
             ],
           ),
         ),
@@ -203,18 +228,6 @@ class RequisitionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildChip(String label, Color backgroundColor, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(color: textColor, fontSize: 12),
-      ),
-    );
-  }
+
 }
 

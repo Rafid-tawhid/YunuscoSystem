@@ -9,6 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/emp_performance_rating_model.dart';
 
+
+
+final apiServiceProvider=Provider((ref)=>ApiService());
+
 final staffProvider =StateNotifierProvider<StaffNotifier,List<MembersModel>>((ref){
 
   return StaffNotifier();
@@ -95,7 +99,7 @@ class EmployeeSingleNotifier extends StateNotifier<AsyncValue<List<EmpSingleEval
     }
   }
 }
-final apiServiceProvider=Provider((ref)=>ApiService());
+
 
 final employerSingleEvaluationList=StateNotifierProvider<EmployeeSingleNotifier,AsyncValue<List<EmpSingleEvaluationModel>>>((ref){
   final service=ref.read(apiServiceProvider);

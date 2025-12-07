@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 class SupplierSelectionScreen extends StatefulWidget {
   final List<CsRequisationModel> requisitions;
 
-  const SupplierSelectionScreen({Key? key, required this.requisitions}) : super(key: key);
+  const SupplierSelectionScreen({super.key, required this.requisitions});
 
   @override
   State<SupplierSelectionScreen> createState() => _SupplierSelectionScreenState();
@@ -24,7 +24,7 @@ class SupplierSelectionScreen extends StatefulWidget {
 
 class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
   List<ProductGroup> _productGroups = [];
-  Map<String, String> _selectedSuppliers = {}; // productName -> supplierName
+  final Map<String, String> _selectedSuppliers = {}; // productName -> supplierName
 
   @override
   void initState() {
@@ -131,10 +131,18 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
 
   //
   void _confirmSelection(List<CsRequisationModel> selectedItems) {
+    List<Map<String,dynamic>> items=[];
     // Handle confirmation logic
-    selectedItems.forEach((e){
-      debugPrint('product Id :${e.productId}, CS :${e.code}, Supplier :${e.supplierName}');
-    });
+   for (var e in selectedItems) {
+     items.add({
+        'productId':e.productId,
+        'code':e.code,
+        'supplierName':e.supplierName,
+        'supplierId':e.supplierId,
+     });
+
+    }
+    debugPrint('selected item: ${items}');
     // Navigate to next screen or save data
   }
 
