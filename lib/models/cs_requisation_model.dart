@@ -137,7 +137,7 @@ class CsRequisationModel {
     _taxP = json['TaxP'];
     _vatP = json['VatP'];
     _supplierChose = json['SupplierChose'];
-    _supplierId = json['supplierId'];
+    _supplierId = json['SupplierId'].toString();
   }
   String? _code;
   num? _productId;

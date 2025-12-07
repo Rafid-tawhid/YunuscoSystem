@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/common_widgets/text_fields.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../helper_class/pdf_service.dart';
@@ -80,6 +81,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
   void _showSummaryBottomSheet(List<CsRequisationModel> selectedItems) {
     final totalValue = selectedItems.fold(0.0, (sum, item) => sum + (item.rate ?? 0) * (item.csQty ?? 0));
     final currency = selectedItems.isNotEmpty ? selectedItems.first.currencyName : '';
+    TextEditingController _notesController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
@@ -87,43 +89,61 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
       isScrollControlled: true,
       builder: (context) => Container(
         padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Selected Suppliers Summary', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 16),
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height/1.5,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Selected Suppliers Summary', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                SizedBox(height: 16),
 
-            // Selected items list
-            ...selectedItems
-                .map((item) => ListTile(
-                      leading: Icon(Icons.check_circle, color: Colors.green),
-                      title: Text(item.productName ?? ''),
-                      subtitle: Text('${item.supplierName} - $currency ${item.rate}'),
-                      trailing: Text('${currency} ${((item.rate ?? 0) * (item.csQty ?? 0)).toStringAsFixed(2)}'),
-                    ))
-                .toList(),
+                // Selected items list
+                ...selectedItems
+                    .map((item) => ListTile(
+                          leading: Icon(Icons.check_circle, color: Colors.green),
+                          title: Text(item.productName ?? ''),
+                          subtitle: Text('${item.supplierName} - $currency ${item.rate}'),
+                          trailing: Text('${currency} ${((item.rate ?? 0) * (item.csQty ?? 0)).toStringAsFixed(2)}'),
+                        )),
 
-            Divider(),
+                Divider(),
 
-            // Total
-            ListTile(
-              title: Text('Grand Total', style: TextStyle(fontWeight: FontWeight.bold)),
-              trailing: Text('$currency ${totalValue.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                // Total
+                ListTile(
+                  title: Text('Grand Total', style: TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: Text('$currency ${totalValue.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                ),
+
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _notesController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Additional Notes',
+                    border: OutlineInputBorder(),
+                  ),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: myColors.primaryColor),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _confirmSelection(selectedItems);
+                  },
+                  child: Text(
+                    'Confirm Selection',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
             ),
-
-            SizedBox(height: 16),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: myColors.primaryColor),
-              onPressed: () {
-                Navigator.pop(context);
-                _confirmSelection(selectedItems);
-              },
-              child: Text(
-                'Confirm Selection',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
