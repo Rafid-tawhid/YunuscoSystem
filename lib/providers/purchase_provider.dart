@@ -72,6 +72,7 @@ class PurchaseProvider extends ChangeNotifier {
       batch.set(docRef, detail);
     }
 
+
     await batch.commit();
   }
 
@@ -327,3 +328,5 @@ class PurchaseProvider extends ChangeNotifier {
 
 
 }
+
+//

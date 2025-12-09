@@ -60,34 +60,55 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
           if (widget.csCode != null)
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: myColors.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: myColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    onPressed: () async {
+                      DashboardHelpers.openUrl('http://202.74.243.118:1726/Inventory/Inventory/CSStatusReport?Code=${widget.csCode}');
+                    },
+                    child: Text(
+                      'Report',
+                      style: customTextStyle(14, Colors.white, FontWeight.bold),
+                    ),
                   ),
-                ),
-                onPressed: () async {
-                  var pp = context.read<ProductProvider>();
-                  if (await pp.getSingleCSInfoByCode(widget.csCode)) {
-                    if (pp.csRequisationList.isNotEmpty) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SupplierSelectionScreen(
-                            requisitions: pp.csRequisationList,
-                          ),
-                        ),
-                      );
-                    } else {
-                      DashboardHelpers.showAlert(msg: 'No CS Found');
-                    }
-                  }
-                },
-                child: Text(
-                  'CS',
-                  style: customTextStyle(14, Colors.white, FontWeight.bold),
-                ),
+                  SizedBox(width: 8,),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: myColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    onPressed: () async {
+                      var pp = context.read<ProductProvider>();
+                      if (await pp.getSingleCSInfoByCode(widget.csCode)) {
+                        if (pp.csRequisationList.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SupplierSelectionScreen(
+                                requisitions: pp.csRequisationList,
+                              ),
+                            ),
+                          );
+                        } else {
+                          DashboardHelpers.showAlert(msg: 'No CS Found');
+                        }
+                      }
+                    },
+                    child: Text(
+                      'CS',
+                      style: customTextStyle(14, Colors.white, FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             ),
 

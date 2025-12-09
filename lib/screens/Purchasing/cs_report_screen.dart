@@ -162,7 +162,7 @@ class _SupplierSelectionScreenState extends State<SupplierSelectionScreen> {
      });
 
     }
-    debugPrint('selected item: ${items}');
+    debugPrint('selected item: $items');
     // Navigate to next screen or save data
   }
 

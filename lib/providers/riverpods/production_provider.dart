@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/models/error_summery_model.dart';
+import 'package:yunusco_group/models/product_history_model.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
@@ -169,7 +170,6 @@ final filteredMisAssetsProvider = Provider<List<MisAssetModel>>((ref) {
   final searchQuery = ref.watch(misAssetSearchQueryProvider);
   final assetsAsync = ref.watch(allMisAssetsProvider);
 
-
   return assetsAsync.when(
     data: (assets) {
       if (searchQuery.isEmpty) return assets;
@@ -199,17 +199,16 @@ List<MisAssetModel> getFilteredMisAssets(
   }).toList();
 }
 
-
 // providers/machine_report_provider.dart
-
-
 
 ////
 
-final machineDropdownDataProvider = FutureProvider<MachineBreakdownDropdown>((ref) async {
+final machineDropdownDataProvider =
+    FutureProvider<MachineBreakdownDropdown>((ref) async {
   try {
     final apiService = ref.read(apiServiceProvider);
-    final response = await apiService.getData('api/Production/GetMaintenanceDropdowns');
+    final response =
+        await apiService.getData('api/Production/GetMaintenanceDropdowns');
 
     if (response != null && response['Data'] != null) {
       return MachineBreakdownDropdown.fromJson(response['Data']);
@@ -223,18 +222,16 @@ final machineDropdownDataProvider = FutureProvider<MachineBreakdownDropdown>((re
   }
 });
 
-
 // dec 4
 
-final submitMachineReportProvider = Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
+final submitMachineReportProvider =
+    Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
   final apiService = ref.read(apiServiceProvider);
 
   return (Map<String, dynamic> reportData) async {
     try {
       final response = await apiService.postData(
-          'api/Production/UpdateMachineBreakdown',
-          reportData
-      );
+          'api/Production/UpdateMachineBreakdown', reportData);
 
       if (response != null) {
         return response;
@@ -249,19 +246,18 @@ final submitMachineReportProvider = Provider<Future<dynamic> Function(Map<String
   };
 });
 
-
-
 // dec 4
 
-
-final machineBreakdownListProvider = FutureProvider<List<MachineBreakdownModel>>((ref) async {
+final machineBreakdownListProvider =
+    FutureProvider<List<MachineBreakdownModel>>((ref) async {
   try {
     final apiService = ref.read(apiServiceProvider);
-    final response = await apiService.getData('api/Production/GetAllMachineBreakdown');
+    final response =
+        await apiService.getData('api/Production/GetAllMachineBreakdown');
 
     if (response != null) {
       List<MachineBreakdownModel> dataList = [];
-      for(var i in response){
+      for (var i in response) {
         dataList.add(MachineBreakdownModel.fromJson(i));
       }
       return dataList;
@@ -274,7 +270,6 @@ final machineBreakdownListProvider = FutureProvider<List<MachineBreakdownModel>>
     throw Exception('Failed to load machine breakdowns: ${e.toString()}');
   }
 });
-
 
 // Provider for search/filter functionality
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -291,7 +286,8 @@ final filteredBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
 
       final query = searchQuery.toLowerCase();
       return breakdowns.where((breakdown) {
-        return breakdown.maintenanceName?.toLowerCase().contains(query) == true ||
+        return breakdown.maintenanceName?.toLowerCase().contains(query) ==
+                true ||
             breakdown.operationName?.toLowerCase().contains(query) == true ||
             breakdown.lineName?.toLowerCase().contains(query) == true ||
             breakdown.machineType?.toLowerCase().contains(query) == true ||
@@ -337,25 +333,24 @@ final sortedBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
       sortedList.sort((a, b) => (a.status ?? '').compareTo(b.status ?? ''));
       break;
     case SortOption.byMachine:
-      sortedList.sort((a, b) => (a.machineType ?? '').compareTo(b.machineType ?? ''));
+      sortedList
+          .sort((a, b) => (a.machineType ?? '').compareTo(b.machineType ?? ''));
       break;
   }
 
   return sortedList;
 });
 
-
 //submitMachineRepair
 
-final submitMachineRepair = Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
+final submitMachineRepair =
+    Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
   final apiService = ref.read(apiServiceProvider);
 
   return (Map<String, dynamic> data) async {
     try {
-      final response = await apiService.postData(
-          'api/Production/AddMachineBreakdown',
-          data
-      );
+      final response =
+          await apiService.postData('api/Production/AddMachineBreakdown', data);
 
       if (response != null) {
         return response;
@@ -370,3 +365,30 @@ final submitMachineRepair = Provider<Future<dynamic> Function(Map<String, dynami
   };
 });
 
+//api/Production/GetPurchaseComparisonReport?fromDate=2024-01-01&toDate=2024-01-31
+//api/Production/GetPurchaseComparisonReport?requisitionCode=${reqCode}
+
+final productHistoryListProvider =
+    FutureProvider.family<List<ProductHistoryModel>, String>(
+  (ref, productId) async {
+    try {
+      List<ProductHistoryModel> productList = [];
+      final apiService = ref.read(apiServiceProvider);
+
+      final endpoint =
+          'api/Production/GetPurchaseComparisonReport?productId=$productId';
+
+      final response = await apiService.getData(endpoint);
+      for (var i in response['data']) {
+        productList.add(ProductHistoryModel.fromJson(i));
+      }
+      debugPrint('productList ${productList.length}');
+      return productList;
+    } catch (e, stackTrace) {
+      debugPrint('❌ ERROR fetching product history for productId: $productId');
+      debugPrint('Error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      return [];
+    }
+  },
+);

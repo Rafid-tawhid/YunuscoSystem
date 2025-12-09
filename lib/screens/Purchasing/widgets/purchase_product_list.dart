@@ -43,6 +43,8 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: _isSearching
             ? TextField(
                 controller: _searchController,

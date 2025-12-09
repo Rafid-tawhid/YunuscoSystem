@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yunusco_group/screens/Inventory/product_history_screen.dart';
 import 'package:yunusco_group/screens/Products/garments_requisation_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
@@ -44,6 +45,15 @@ class InventoryHomeScreen extends StatelessWidget {
         iconColor: const Color(0xFFD97FF1),
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>ComperativeStatementList()));
+        }, // dummy
+      ),
+      DashboardMenuItem(
+        name: 'Purchase\nHistory',
+        icon: Icons.file_copy_outlined,
+        cardColor: const Color(0xFFEEDDF8),
+        iconColor: const Color(0xFF71A8FF),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductHistoryScreen()));
         }, // dummy
       ),
       DashboardMenuItem(
