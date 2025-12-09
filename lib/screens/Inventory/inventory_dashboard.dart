@@ -71,6 +71,7 @@ class InventoryHomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Inventory Menu',
+
           style: customTextStyle(18, Colors.white, FontWeight.w600),
         ),
         centerTitle: true,
