@@ -18,9 +18,10 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
 import '../../models/production_qc_model.dart';
 import '../../providers/riverpods/production_provider.dart';
+import 'Machine/machine_qr_scanner.dart';
 import 'error_summary.dart';
 import 'get_all_style_screen.dart';
-import 'machine_problem_request.dart';
+import 'Machine/machine_problem_request.dart';
 import 'widgets/buyers_screen.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -173,9 +174,10 @@ class ProductHomeScreen extends ConsumerWidget {
         cardColor: const Color(0xFFC4B0EF), // Light orange
         iconColor: Colors.purple, // Deep orange
         onTap: () async {
+
           Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => MachineRepairScreen()),
+            CupertinoPageRoute(builder: (context) => BeautifulQRScannerScreen()),
           );
         },
       ),

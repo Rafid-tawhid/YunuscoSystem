@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
-import '../../models/machine_breakdown_dropdown.dart';
-import '../../providers/riverpods/production_provider.dart';
+import '../../../models/machine_breakdown_dropdown.dart';
+import '../../../providers/riverpods/production_provider.dart';
 import 'machine_problem_list.dart';
 
 class MachineRepairScreen extends ConsumerStatefulWidget {

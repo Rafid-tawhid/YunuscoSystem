@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/screens/Products/widgets/update_status_bottomsheet.dart';
 import 'package:yunusco_group/utils/colors.dart';
 
-import '../../helper_class/dashboard_helpers.dart';
-import '../../models/machine_breakdown_model.dart';
-import '../../providers/riverpods/production_provider.dart';
+import '../../../helper_class/dashboard_helpers.dart';
+import '../../../models/machine_breakdown_model.dart';
+import '../../../providers/riverpods/production_provider.dart';
 import 'machine_problem_request.dart';
 
 class MachineBreakdownListScreen extends ConsumerWidget {

@@ -87,7 +87,6 @@ dev_dependencies:
   firebase_auth: ^6.0.1
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
-  qr_flutter: ^4.1.0
   barcode_widget: ^2.0.2
   printing: ^5.14.2
   carousel_slider: ^5.1.1
@@ -105,6 +104,7 @@ dev_dependencies:
   webview_flutter_plus: ^0.4.19
   syncfusion_flutter_charts: ^31.2.10
   vector_math: ^2.2.0
+  mobile_scanner: ^7.1.3
 
 
 
