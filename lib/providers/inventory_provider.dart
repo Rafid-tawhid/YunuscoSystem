@@ -80,7 +80,7 @@ class InventoryPorvider extends ChangeNotifier {
 
   Future<void> getAllCs() async{
     setLoading(true);
-    var data=await apiService.getData('api/inventory/InvCSSList?pageIndex=1&pageSize=10000');
+    var data=await apiService.getData('api/inventory/InvCSSList?pageIndex=1&pageSize=100000');
     setLoading(false);
     if(data!=null){
       _requisitions.clear();

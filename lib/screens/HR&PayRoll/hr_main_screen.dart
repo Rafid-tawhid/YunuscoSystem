@@ -217,46 +217,53 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
 
       DashboardMenuItem(
         name: 'IT Ticket',
-        icon: Icons.wallet,
-        cardColor: Colors.green.shade100,
-        iconColor: Colors.greenAccent.shade700,
+        icon: Icons.support_agent, // More relevant for IT support
+        cardColor: Colors.blue.shade50, // Soft blue for tech/IT
+        iconColor: Colors.blue.shade700, // Deeper blue for contrast
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => UrlLauncherScreen()));
+              context,
+              MaterialPageRoute(builder: (context) => UrlLauncherScreen())
+          );
         },
       ),
 
       DashboardMenuItem(
         name: 'NID Extractor',
-        icon: Icons.add_card_outlined,
-        cardColor: Colors.white,
-        iconColor: Colors.purple.shade700,
+        icon: Icons.badge_outlined, // More specific for ID/documents
+        cardColor: Colors.purple.shade50, // Light purple
+        iconColor: Colors.purple.shade700, // Dark purple
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NidExtractorScreen()));
-
+              context,
+              MaterialPageRoute(builder: (context) => NidExtractorScreen())
+          );
         },
       ),
+
       DashboardMenuItem(
         name: 'Management\nAppointment',
-        icon: Icons.notifications_active,
-        cardColor: Color(0x69A2FDFF),
-        iconColor: Colors.white,
+        icon: Icons.business_center, // Represents management/business
+        cardColor: Colors.orange.shade50, // Soft orange
+        iconColor: Colors.orange.shade800, // Dark orange for visibility
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AppointmentListScreen()));
-
+              context,
+              MaterialPageRoute(builder: (context) => AppointmentListScreen())
+          );
         },
       ),
 
       DashboardMenuItem(
         name: 'Appointment',
-        icon: Icons.airplanemode_active_outlined,
-        cardColor: Colors.green,
-        iconColor: Colors.white,
+        icon: Icons.calendar_today, // Standard appointment icon
+        cardColor: Colors.green.shade50, // Light green
+        iconColor: Colors.green.shade700, // Dark green
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NetworkSearchingScreen()));
+              context,
+              MaterialPageRoute(builder: (context) => NetworkSearchingScreen())
+          );
         },
       ),
     ];

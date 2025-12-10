@@ -24,6 +24,7 @@ class EnhancedRequisitionDialog extends StatefulWidget {
 
 class _EnhancedRequisitionDialogState extends State<EnhancedRequisitionDialog> {
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _notes = TextEditingController();
   String? _errorText;
   bool _isValid = false;
 
@@ -82,6 +83,7 @@ class _EnhancedRequisitionDialogState extends State<EnhancedRequisitionDialog> {
         "ProductId": widget.model.productId.toString(),
         "OldQty": widget.model.actualReqQty!.toInt().toString(),
         "NewQty": acceptedNumber.toString(),
+        "Notes": _notes.text.trim(),
         "IsMgnt" : DashboardHelpers.currentUser!.department=='15'?true:false
       };
 
@@ -172,6 +174,16 @@ class _EnhancedRequisitionDialogState extends State<EnhancedRequisitionDialog> {
               ),
               keyboardType: TextInputType.number,
               onChanged: _validateInput,
+            ),
+            SizedBox(height: 8,),
+            TextField(
+              controller: _notes,
+              decoration: InputDecoration(
+                labelText: 'Notes (Optional)',
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.note_alt_sharp)
+              ),
+              keyboardType: TextInputType.text,
             ),
 
             const SizedBox(height: 10),

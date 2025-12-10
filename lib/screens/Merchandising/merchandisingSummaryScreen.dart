@@ -33,6 +33,8 @@ class _MerchandisingSummaryScreenState
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: const Text('Summary Chart'),
         actions: [
           IconButton(

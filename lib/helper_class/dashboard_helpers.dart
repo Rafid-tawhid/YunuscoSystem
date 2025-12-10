@@ -15,8 +15,6 @@ import '../models/user_model.dart';
 import '../screens/login_screen.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:intl/date_time_patterns.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 

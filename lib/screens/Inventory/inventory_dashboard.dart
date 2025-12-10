@@ -50,8 +50,8 @@ class InventoryHomeScreen extends StatelessWidget {
       DashboardMenuItem(
         name: 'Purchase\nHistory',
         icon: Icons.file_copy_outlined,
-        cardColor: const Color(0xFFEEDDF8),
-        iconColor: const Color(0xFF71A8FF),
+        cardColor: Colors.blue.shade50,
+        iconColor: Colors.blue.shade700,
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductHistoryScreen()));
         }, // dummy
@@ -59,8 +59,8 @@ class InventoryHomeScreen extends StatelessWidget {
       DashboardMenuItem(
         name: 'MIS\nAssets',
         icon: Icons.videogame_asset,
-        cardColor: const Color(0xFFFFFFFF),
-        iconColor: const Color(0xFFA6F688),
+        cardColor: Colors.orange.shade50, // Soft orange
+        iconColor: Colors.orange.shade800,
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>MisAssetsScreen()));
         }, // dummy

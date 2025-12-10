@@ -454,18 +454,18 @@ class ProductHistoryScreen extends ConsumerWidget {
 
   Widget _buildHistoryCard(ProductHistoryModel item) {
     return Card(
-      elevation: 3,
+      elevation: 2,
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header row with Product Name and Status
+            // Header with product name and status
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -476,23 +476,22 @@ class ProductHistoryScreen extends ConsumerWidget {
                       Text(
                         item.productName ?? 'Unknown Product',
                         style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.blueGrey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
                       if (item.requisitionCode != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Text(
-                            'Req: ${item.requisitionCode!}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
+                        const SizedBox(height: 4),
+                      Text(
+                        'Requisition: ${item.requisitionCode!}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
                         ),
+                      ),
                     ],
                   ),
                 ),
@@ -505,7 +504,7 @@ class ProductHistoryScreen extends ConsumerWidget {
                   child: Text(
                     item.purchaseStatus ?? 'Unknown',
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
@@ -515,391 +514,452 @@ class ProductHistoryScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
-            // Top row: Codes and Dates
+            // Codes section
             Row(
               children: [
-                // GRN Code
                 if (item.grnCode != null && item.grnCode!.isNotEmpty)
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'GRN Code',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.grnCode!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // PO Code
-                if (item.purchaseOrderCode != null && item.purchaseOrderCode!.isNotEmpty)
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'PO Code',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.purchaseOrderCode!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Main metrics row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // Requisition Quantity
-                Column(
-                  children: [
-                    Text(
-                      'Requisition',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        '${item.requisitionQty ?? 0}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'GRN Code',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.grnCode!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      item.unitName ?? '',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Arrow indicator
-                Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: Colors.grey.shade400,
-                      size: 24,
-                    ),
-                  ],
-                ),
-
-                // Purchase Quantity
-                Column(
-                  children: [
-                    Text(
-                      'Purchased',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  ),
+                if (item.grnCode != null && item.purchaseOrderCode != null)
+                  const SizedBox(width: 8),
+                if (item.purchaseOrderCode != null && item.purchaseOrderCode!.isNotEmpty)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        '${item.purchaseQty ?? 0}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'PO Code',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.purchaseOrderCode!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      item.unitName ?? '',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Left to Purchase
-                Column(
-                  children: [
-                    Text(
-                      'Left',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${item.leftToPurchase ?? 0}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      item.unitName ?? '',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Price information row
+            // Main quantities row
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey.shade200),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Unit Price',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      Text(
-                        '৳${item.purchasePrice ?? 0}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple,
-                        ),
-                      ),
-                    ],
+                  _buildQuantityCard(
+                    'Requisition',
+                    '${item.requisitionQty ?? 0}',
+                    Colors.blue.shade700,
+                    item.unitName ?? '',
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Total Amount',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      Text(
-                        '৳${item.totalAmount ?? 0}',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.grey,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Per ${item.unitName ?? 'Unit'}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Icon(
-                        Icons.currency_exchange,
-                        color: Colors.green.shade500,
-                        size: 24,
-                      ),
-                    ],
+                  _buildQuantityCard(
+                    'Purchased',
+                    '${item.purchaseQty ?? 0}',
+                    Colors.green.shade700,
+                    item.unitName ?? '',
+                  ),
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.grey,
+                  ),
+                  _buildQuantityCard(
+                    'Remaining',
+                    '${item.leftToPurchase ?? 0}',
+                    Colors.orange.shade700,
+                    item.unitName ?? '',
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
 
-            // Dates row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Created Date
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.date_range,
-                        size: 16,
-                        color: Colors.blue.shade700,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Created Date',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        Text(
-                          item.createdDate ?? 'N/A',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-
-                // Purchase Date
-                if (item.purchaseDate != null)
+            // Price information
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.shopping_cart_checkout,
-                          size: 16,
-                          color: Colors.green.shade700,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Purchase Date',
+                            'Unit Price',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '৳${item.purchasePrice ?? 0}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.purple,
+                            ),
+                          ),
+                          Text(
+                            '/ ${item.unitName ?? 'unit'}',
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey.shade600,
                             ),
                           ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
                           Text(
-                            item.purchaseDate!,
+                            'Total Amount',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '৳${item.totalAmount ?? 0}',
                             style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.green,
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
-              ],
-            ),
+                  const SizedBox(height: 8),
 
-            // Progress bar for purchase completion
-            if (item.requisitionQty != null && item.requisitionQty! > 0 && item.purchaseQty != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Progress bar
+                  if (item.requisitionQty != null && item.requisitionQty! > 0 && item.purchaseQty != null)
+                    Column(
                       children: [
-                        Text(
-                          'Purchase Progress',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade700,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Progress',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            Text(
+                              '${((item.purchaseQty! / item.requisitionQty!) * 100).toStringAsFixed(0)}%',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          '${((item.purchaseQty! / item.requisitionQty!) * 100).toStringAsFixed(1)}%',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
-                          ),
+                        const SizedBox(height: 6),
+                        LinearProgressIndicator(
+                          value: item.purchaseQty! / item.requisitionQty!,
+                          backgroundColor: Colors.grey.shade300,
+                          color: _getStatusColor(item.purchaseStatus),
+                          minHeight: 6,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
-                    LinearProgressIndicator(
-                      value: item.purchaseQty! / item.requisitionQty!,
-                      backgroundColor: Colors.grey.shade300,
-                      color: _getStatusColor(item.purchaseStatus),
-                      minHeight: 6,
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                  ],
-                ),
+                ],
               ),
+            ),
+            const SizedBox(height: 12),
+
+            // Dates row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildDateItem(
+                  Icons.calendar_today,
+                  'Created',
+                  item.createdDate ?? 'N/A',
+                ),
+                if (item.purchaseDate != null)
+                  _buildDateItem(
+                    Icons.shopping_cart,
+                    'Purchased',
+                    item.purchaseDate!,
+                  ),
+              ],
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuantityCard(String title, String value, Color color, String unit) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+        Text(
+          unit,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateItem(IconData icon, String title, String date) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Colors.grey.shade600,
+        ),
+        const SizedBox(width: 6),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            Text(
+              date,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+// Helper widget for metric cards
+  Widget _buildMetricCard({
+    required String title,
+    required String value,
+    required String unit,
+    required Color color,
+    required IconData icon,
+  }) {
+    return Column(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+            border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: color,
+          ),
+        ),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          unit,
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey.shade500,
+          ),
+        ),
+      ],
+    );
+  }
+
+// Helper widget for arrow indicator
+  Widget _buildArrowIndicator() {
+    return Column(
+      children: [
+        const SizedBox(height: 22),
+        Icon(
+          Icons.arrow_forward,
+          color: Colors.grey.shade400,
+          size: 20,
+        ),
+      ],
+    );
+  }
+
+// Helper widget for code information
+  Widget _buildCodeInfo(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF2C3E50),
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+// Helper widget for date information
+  Widget _buildDateInfo({
+    required IconData icon,
+    required String title,
+    required String date,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
