@@ -168,6 +168,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                     // Action Button
                     _scannedResult != null?  Row(
                       children: [
+                        SizedBox(width: 8,),
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _scannedResult != null ? _resetScanner : null,
@@ -177,7 +178,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                               style: TextStyle(fontSize: 16),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.shade600,
+                              backgroundColor: Colors.transparent,
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                               shape: RoundedRectangleBorder(
@@ -186,6 +187,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(width: 8,),
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
@@ -197,7 +199,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                               style: TextStyle(fontSize: 16),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue.shade600,
+                              backgroundColor: Colors.green.shade600,
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                               shape: RoundedRectangleBorder(
@@ -206,6 +208,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(width: 8,),
                       ],
                     )
                         :
