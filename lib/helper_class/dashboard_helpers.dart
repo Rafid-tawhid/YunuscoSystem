@@ -1010,7 +1010,6 @@ class DashboardHelpers {
         selectedTime.minute,
       );
     }
-
     return null;
   }
 

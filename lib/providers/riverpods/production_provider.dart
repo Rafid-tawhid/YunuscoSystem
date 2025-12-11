@@ -224,8 +224,7 @@ final machineDropdownDataProvider =
 
 // dec 4
 
-final submitMachineReportProvider =
-    Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
+final submitMachineReportProvider = Provider<Future<dynamic> Function(Map<String, dynamic>)>((ref) {
   final apiService = ref.read(apiServiceProvider);
 
   return (Map<String, dynamic> reportData) async {
@@ -253,13 +252,15 @@ final machineBreakdownListProvider =
   try {
     final apiService = ref.read(apiServiceProvider);
     final response =
-        await apiService.getData('api/Production/GetAllMachineBreakdown');
+        await apiService.getData('api/Manufacturing/RequisitionList');
 
     if (response != null) {
       List<MachineBreakdownModel> dataList = [];
-      for (var i in response) {
+      for (var i in response['returnvalue']) {
         dataList.add(MachineBreakdownModel.fromJson(i));
       }
+
+      debugPrint('dataList ${dataList.length}');
       return dataList;
     } else {
       throw Exception('No data received from server');
@@ -274,72 +275,9 @@ final machineBreakdownListProvider =
 // Provider for search/filter functionality
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-final filteredBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
-  final breakdownsAsync = ref.watch(machineBreakdownListProvider);
-  final searchQuery = ref.watch(searchQueryProvider);
-
-  return breakdownsAsync.when(
-    data: (breakdowns) {
-      if (searchQuery.isEmpty) {
-        return breakdowns;
-      }
-
-      final query = searchQuery.toLowerCase();
-      return breakdowns.where((breakdown) {
-        return breakdown.maintenanceName?.toLowerCase().contains(query) ==
-                true ||
-            breakdown.operationName?.toLowerCase().contains(query) == true ||
-            breakdown.lineName?.toLowerCase().contains(query) == true ||
-            breakdown.machineType?.toLowerCase().contains(query) == true ||
-            breakdown.fullName?.toLowerCase().contains(query) == true ||
-            breakdown.taskCode?.toLowerCase().contains(query) == true ||
-            breakdown.status?.toLowerCase().contains(query) == true;
-      }).toList();
-    },
-    loading: () => [],
-    error: (_, __) => [],
-  );
-});
 
 // Provider for sorting
-enum SortOption { newestFirst, oldestFirst, byStatus, byMachine }
 
-final sortProvider = StateProvider<SortOption>((ref) => SortOption.newestFirst);
-
-final sortedBreakdownsProvider = Provider<List<MachineBreakdownModel>>((ref) {
-  final filteredBreakdowns = ref.watch(filteredBreakdownsProvider);
-  final sortOption = ref.watch(sortProvider);
-
-  List<MachineBreakdownModel> sortedList = List.from(filteredBreakdowns);
-
-  switch (sortOption) {
-    case SortOption.newestFirst:
-      sortedList.sort((a, b) {
-        final dateA = DateTime.tryParse(a.createdDate ?? '');
-        final dateB = DateTime.tryParse(b.createdDate ?? '');
-        if (dateA == null || dateB == null) return 0;
-        return dateB.compareTo(dateA);
-      });
-      break;
-    case SortOption.oldestFirst:
-      sortedList.sort((a, b) {
-        final dateA = DateTime.tryParse(a.createdDate ?? '');
-        final dateB = DateTime.tryParse(b.createdDate ?? '');
-        if (dateA == null || dateB == null) return 0;
-        return dateA.compareTo(dateB);
-      });
-      break;
-    case SortOption.byStatus:
-      sortedList.sort((a, b) => (a.status ?? '').compareTo(b.status ?? ''));
-      break;
-    case SortOption.byMachine:
-      sortedList
-          .sort((a, b) => (a.machineType ?? '').compareTo(b.machineType ?? ''));
-      break;
-  }
-
-  return sortedList;
-});
 
 //submitMachineRepair
 
@@ -350,7 +288,7 @@ final submitMachineRepair =
   return (Map<String, dynamic> data) async {
     try {
       final response =
-          await apiService.postData('api/Production/AddMachineBreakdown', data);
+          await apiService.postData('api/Manufacturing/SaveMachineRepair', data);
 
       if (response != null) {
         return response;

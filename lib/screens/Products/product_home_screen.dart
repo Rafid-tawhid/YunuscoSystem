@@ -18,6 +18,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
 import '../../models/production_qc_model.dart';
 import '../../providers/riverpods/production_provider.dart';
+import 'Machine/machine_problem_list.dart';
 import 'Machine/machine_qr_scanner.dart';
 import 'error_summary.dart';
 import 'get_all_style_screen.dart';
@@ -141,7 +142,6 @@ class ProductHomeScreen extends ConsumerWidget {
           );
         },
       ),
-
       DashboardMenuItem(
         name: 'QC\nSummary',
         icon: Icons.analytics,
@@ -154,7 +154,6 @@ class ProductHomeScreen extends ConsumerWidget {
           );
         },
       ),
-
       DashboardMenuItem(
         name: 'Error\nSummary',
         icon: Icons.insights,
@@ -167,7 +166,6 @@ class ProductHomeScreen extends ConsumerWidget {
           );
         },
       ),
-
       DashboardMenuItem(
         name: 'Machine\nBreakdown',
         icon: Icons.insights,
@@ -177,7 +175,7 @@ class ProductHomeScreen extends ConsumerWidget {
 
           Navigator.push(
             context,
-            CupertinoPageRoute(builder: (context) => BeautifulQRScannerScreen()),
+            CupertinoPageRoute(builder: (context) => MachineBreakdownListScreen()),
           );
         },
       ),

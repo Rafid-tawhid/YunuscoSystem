@@ -8,7 +8,8 @@ import '../../../providers/riverpods/production_provider.dart';
 import 'machine_problem_list.dart';
 
 class MachineRepairScreen extends ConsumerStatefulWidget {
-  const MachineRepairScreen({super.key});
+  List<String> machineInfo;
+  MachineRepairScreen({super.key, this.machineInfo = const []});
 
   @override
   ConsumerState<MachineRepairScreen> createState() => _MachineRepairScreenState();
@@ -46,7 +47,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Machine Repair Information'),
+        title: const Text('Machine Breakdown'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
         actions: [
@@ -169,33 +170,80 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Parsed names
+          if(widget.machineInfo.isNotEmpty)Column(
+            children: [
+              Text(
+                'Machine Info:',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blue.shade700,
+                ),
+              ),
+              SizedBox(height: 8),
 
-          // Maintenance Type Dropdown (Tasks)
-          _buildTaskDropdown(
-            label: 'Maintenance Type # :',
-            tasks: dropdownData.tasks ?? [],
-            selectedTask: _tasks,
-            onChanged: (task) {
-              setState(() {
-                _tasks = task;
-              });
-            },
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: widget.machineInfo
+                      .asMap()
+                      .entries
+                      .map((entry) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: entry.key < 1 // only first element gets bottom border
+                              ? BorderSide(color: Colors.blue.shade100)
+                              : BorderSide.none,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${entry.key + 1}', // numbers will be 1,2 for the last 2 elements
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              entry.value,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.blue.shade900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
 
-          // Process Name (Operations) and Work End Time Row
-          _buildOperationDropdown(
-            label: 'Process Name # :',
-            operations: dropdownData.operations ?? [],
-            selectedOperation: _selectedOperation,
-            onChanged: (operation) {
-              setState(() {
-                _selectedOperation = operation;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-
+          SizedBox(height: 8),
           _buildProductionLineDropdown(
             label: 'Line # :',
             lines: dropdownData.productionLines ?? [],
@@ -206,39 +254,8 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
               });
             },
           ),
-          const SizedBox(height: 16),
 
-          // Machine Codes and Employee Name Row
-          _buildEmployeeDropdown(
-            label: 'Employee Name # :',
-            employees: dropdownData.employees ?? [],
-            selectedEmployee: _employees,
-            onChanged: (employee) {
-              setState(() {
-                _employees = employee;
-              });
-            },
-          ),
           const SizedBox(height: 16),
-          _buildTextField(
-            label: 'Machine Codes # :',
-            controller: _machineCodesController,
-            hintText: 'Enter Machine Codes',
-            onChanged: (value) {
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Problem Task Codes
-          _buildTextField(
-            label: 'Problem Task Codes # :',
-            controller: _problemTaskCodesController,
-            hintText: 'Enter Problem Task Codes',
-            maxLines: 1,
-            onChanged: (value) {
-            },
-          ),
-          const SizedBox(height: 32),
 
           // Action Buttons
           _buildActionButtons(),
@@ -435,78 +452,19 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
   }
 
   Future<void> _submitForm() async {
-    // Update form data from controllers
-    // _formData.machineCodes = _machineCodesController.text;
-    // _formData.problemTaskCodes = _problemTaskCodesController.text;
-    // _formData.machineType = _machineTypeController.text;
 
-    //         public int MaintenanceId { get; set; }
-    //         public string MaintenanceName { get; set; }
-    //         public string MaintenanceDate { get; set; }
-    //         public string IdCardNo { get; set; }
-    //         public string FullName { get; set; }
-    //         public string OperationName { get; set; }
-    //         public string LineName { get; set; }
-    //         public string MachineType { get; set; }
-    //         public string MachineNo { get; set; }
-    //         public string TaskCode { get; set; }
-    //         public string ReportedTime { get; set; }
-    //         public string MechanicInfoTime { get; set; }
-    //         public string WorkStartTime { get; set; }
-    //         public string DelayTime { get; set; }  // Changed from int? to string
-    //         public string WorkEndTime { get; set; }
-    //         public string MechanicWorkTime { get; set; }  // Changed from int? to string
-    //         public string BreakdownDescription { get; set; }
-    //         public string BreakdownDateTime { get; set; }
-    //         public string Status { get; set; }
 
-    // Validation
-    if (_tasks == null) {
-      _showError('Please select task type');
-      return;
-    }
-
-    if (_selectedOperation== null) {
-      _showError('Please select process name');
-      return;
-    }
-
-    if (_productionLines == null) {
-      _showError('Please select production line');
-      return;
-    }
-
-    if (_employees == null) {
-      _showError('Please select employee');
-      return;
-    }
-
-    if (_machineCodesController.text.isEmpty) {
-      _showError('Please enter machine codes');
-      return;
-    }
-    if (_problemTaskCodesController.text.isEmpty) {
-      _showError('Please enter task codes');
-      return;
-    }
     var data={
-        "MaintenanceName": _tasks?.taskName ?? '',
-        "IdCardNo": _employees!.employeeCode ?? '',
-        "FullName": _employees!.employeeName??'',
-        "OperationName": _selectedOperation!.operationName,
-        "LineName": _productionLines!.name,
-        "MachineType": "Robotic Arm",
-        "MachineNo": _machineCodesController.text,
-        "TaskCode": _problemTaskCodesController.text,
-        "ReportedTime": DateTime.now().toString(),
-        "Status": MachineBreakdownStatus.reported
+      "machineId": widget.machineInfo[0],
+      "machineTypeId": widget.machineInfo[1],
+      "lineId": _productionLines!.lineId
     };
 
     final submitFunction = ref.read(submitMachineRepair);
 
     // Call the function with your data
     final response = await submitFunction(data);
-    if(response['id']!=null){
+    if(response['Success']){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Repair information submitted successfully!'),
@@ -514,15 +472,9 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
           duration: const Duration(seconds: 2),
         ),
       );
-      // Clear form
-      setState(() {
-        _tasks = null;
-        _selectedOperation = null;
-        _productionLines = null;
-        _employees = null;
-        _machineCodesController.clear();
-        _problemTaskCodesController.clear();
-      });
+
+      Navigator.pop(context);
+      Navigator.pop(context);
     }
 
 

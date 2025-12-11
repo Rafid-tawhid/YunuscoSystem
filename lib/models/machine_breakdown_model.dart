@@ -1,181 +1,77 @@
 class MachineBreakdownModel {
   MachineBreakdownModel({
-      num? maintenanceId, 
+      num? repairId, 
+      String? requisitionCode, 
       String? maintenanceName, 
-      dynamic maintenanceDate, 
-      String? idCardNo, 
-      String? fullName, 
-      String? operationName, 
+      String? sectionName, 
       String? lineName, 
-      String? machineType, 
-      String? machineNo, 
-      String? taskCode, 
-      String? reportedTime, 
-      dynamic mechanicInfoTime, 
-      dynamic workStartTime, 
-      dynamic delayTime, 
-      dynamic workEndTime, 
-      dynamic mechanicWorkTime, 
-      dynamic breakdownDescription, 
-      dynamic breakdownDateTime, 
-      String? status, 
+      String? machineName, 
       String? createdDate, 
-      String? updatedDate,}){
-    _maintenanceId = maintenanceId;
+      String? swingMachineTypeName,}){
+    _repairId = repairId;
+    _requisitionCode = requisitionCode;
     _maintenanceName = maintenanceName;
-    _maintenanceDate = maintenanceDate;
-    _idCardNo = idCardNo;
-    _fullName = fullName;
-    _operationName = operationName;
+    _sectionName = sectionName;
     _lineName = lineName;
-    _machineType = machineType;
-    _machineNo = machineNo;
-    _taskCode = taskCode;
-    _reportedTime = reportedTime;
-    _mechanicInfoTime = mechanicInfoTime;
-    _workStartTime = workStartTime;
-    _delayTime = delayTime;
-    _workEndTime = workEndTime;
-    _mechanicWorkTime = mechanicWorkTime;
-    _breakdownDescription = breakdownDescription;
-    _breakdownDateTime = breakdownDateTime;
-    _status = status;
+    _machineName = machineName;
     _createdDate = createdDate;
-    _updatedDate = updatedDate;
+    _swingMachineTypeName = swingMachineTypeName;
 }
 
   MachineBreakdownModel.fromJson(dynamic json) {
-    _maintenanceId = json['MaintenanceId'];
+    _repairId = json['RepairId'];
+    _requisitionCode = json['RequisitionCode'];
     _maintenanceName = json['MaintenanceName'];
-    _maintenanceDate = json['MaintenanceDate'];
-    _idCardNo = json['IdCardNo'];
-    _fullName = json['FullName'];
-    _operationName = json['OperationName'];
+    _sectionName = json['SectionName'];
     _lineName = json['LineName'];
-    _machineType = json['MachineType'];
-    _machineNo = json['MachineNo'];
-    _taskCode = json['TaskCode'];
-    _reportedTime = json['ReportedTime'];
-    _mechanicInfoTime = json['MechanicInfoTime'];
-    _workStartTime = json['WorkStartTime'];
-    _delayTime = json['DelayTime'];
-    _workEndTime = json['WorkEndTime'];
-    _mechanicWorkTime = json['MechanicWorkTime'];
-    _breakdownDescription = json['BreakdownDescription'];
-    _breakdownDateTime = json['BreakdownDateTime'];
-    _status = json['Status'];
+    _machineName = json['MachineName'];
     _createdDate = json['CreatedDate'];
-    _updatedDate = json['UpdatedDate'];
+    _swingMachineTypeName = json['SwingMachineTypeName'];
   }
-  num? _maintenanceId;
+  num? _repairId;
+  String? _requisitionCode;
   String? _maintenanceName;
-  dynamic _maintenanceDate;
-  String? _idCardNo;
-  String? _fullName;
-  String? _operationName;
+  String? _sectionName;
   String? _lineName;
-  String? _machineType;
-  String? _machineNo;
-  String? _taskCode;
-  String? _reportedTime;
-  dynamic _mechanicInfoTime;
-  dynamic _workStartTime;
-  dynamic _delayTime;
-  dynamic _workEndTime;
-  dynamic _mechanicWorkTime;
-  dynamic _breakdownDescription;
-  dynamic _breakdownDateTime;
-  String? _status;
+  String? _machineName;
   String? _createdDate;
-  String? _updatedDate;
-MachineBreakdownModel copyWith({  num? maintenanceId,
+  String? _swingMachineTypeName;
+MachineBreakdownModel copyWith({  num? repairId,
+  String? requisitionCode,
   String? maintenanceName,
-  dynamic maintenanceDate,
-  String? idCardNo,
-  String? fullName,
-  String? operationName,
+  String? sectionName,
   String? lineName,
-  String? machineType,
-  String? machineNo,
-  String? taskCode,
-  String? reportedTime,
-  dynamic mechanicInfoTime,
-  dynamic workStartTime,
-  dynamic delayTime,
-  dynamic workEndTime,
-  dynamic mechanicWorkTime,
-  dynamic breakdownDescription,
-  dynamic breakdownDateTime,
-  String? status,
+  String? machineName,
   String? createdDate,
-  String? updatedDate,
-}) => MachineBreakdownModel(  maintenanceId: maintenanceId ?? _maintenanceId,
+  String? swingMachineTypeName,
+}) => MachineBreakdownModel(  repairId: repairId ?? _repairId,
+  requisitionCode: requisitionCode ?? _requisitionCode,
   maintenanceName: maintenanceName ?? _maintenanceName,
-  maintenanceDate: maintenanceDate ?? _maintenanceDate,
-  idCardNo: idCardNo ?? _idCardNo,
-  fullName: fullName ?? _fullName,
-  operationName: operationName ?? _operationName,
+  sectionName: sectionName ?? _sectionName,
   lineName: lineName ?? _lineName,
-  machineType: machineType ?? _machineType,
-  machineNo: machineNo ?? _machineNo,
-  taskCode: taskCode ?? _taskCode,
-  reportedTime: reportedTime ?? _reportedTime,
-  mechanicInfoTime: mechanicInfoTime ?? _mechanicInfoTime,
-  workStartTime: workStartTime ?? _workStartTime,
-  delayTime: delayTime ?? _delayTime,
-  workEndTime: workEndTime ?? _workEndTime,
-  mechanicWorkTime: mechanicWorkTime ?? _mechanicWorkTime,
-  breakdownDescription: breakdownDescription ?? _breakdownDescription,
-  breakdownDateTime: breakdownDateTime ?? _breakdownDateTime,
-  status: status ?? _status,
+  machineName: machineName ?? _machineName,
   createdDate: createdDate ?? _createdDate,
-  updatedDate: updatedDate ?? _updatedDate,
+  swingMachineTypeName: swingMachineTypeName ?? _swingMachineTypeName,
 );
-  num? get maintenanceId => _maintenanceId;
+  num? get repairId => _repairId;
+  String? get requisitionCode => _requisitionCode;
   String? get maintenanceName => _maintenanceName;
-  dynamic get maintenanceDate => _maintenanceDate;
-  String? get idCardNo => _idCardNo;
-  String? get fullName => _fullName;
-  String? get operationName => _operationName;
+  String? get sectionName => _sectionName;
   String? get lineName => _lineName;
-  String? get machineType => _machineType;
-  String? get machineNo => _machineNo;
-  String? get taskCode => _taskCode;
-  String? get reportedTime => _reportedTime;
-  dynamic get mechanicInfoTime => _mechanicInfoTime;
-  dynamic get workStartTime => _workStartTime;
-  dynamic get delayTime => _delayTime;
-  dynamic get workEndTime => _workEndTime;
-  dynamic get mechanicWorkTime => _mechanicWorkTime;
-  dynamic get breakdownDescription => _breakdownDescription;
-  dynamic get breakdownDateTime => _breakdownDateTime;
-  String? get status => _status;
+  String? get machineName => _machineName;
   String? get createdDate => _createdDate;
-  String? get updatedDate => _updatedDate;
+  String? get swingMachineTypeName => _swingMachineTypeName;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['MaintenanceId'] = _maintenanceId;
+    map['RepairId'] = _repairId;
+    map['RequisitionCode'] = _requisitionCode;
     map['MaintenanceName'] = _maintenanceName;
-    map['MaintenanceDate'] = _maintenanceDate;
-    map['IdCardNo'] = _idCardNo;
-    map['FullName'] = _fullName;
-    map['OperationName'] = _operationName;
+    map['SectionName'] = _sectionName;
     map['LineName'] = _lineName;
-    map['MachineType'] = _machineType;
-    map['MachineNo'] = _machineNo;
-    map['TaskCode'] = _taskCode;
-    map['ReportedTime'] = _reportedTime;
-    map['MechanicInfoTime'] = _mechanicInfoTime;
-    map['WorkStartTime'] = _workStartTime;
-    map['DelayTime'] = _delayTime;
-    map['WorkEndTime'] = _workEndTime;
-    map['MechanicWorkTime'] = _mechanicWorkTime;
-    map['BreakdownDescription'] = _breakdownDescription;
-    map['BreakdownDateTime'] = _breakdownDateTime;
-    map['Status'] = _status;
+    map['MachineName'] = _machineName;
     map['CreatedDate'] = _createdDate;
-    map['UpdatedDate'] = _updatedDate;
+    map['SwingMachineTypeName'] = _swingMachineTypeName;
     return map;
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
 import 'machine_problem_request.dart'; // Add this package
 
 class BeautifulQRScannerScreen extends StatefulWidget {
@@ -94,6 +93,11 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
                 centerTitle: true,
+                actions: [
+                  IconButton(onPressed: (){
+                    Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen()));
+                  }, icon: Icon(Icons.list))
+                ],
               ),
 
               Expanded(
@@ -191,7 +195,8 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen()));
+                              //_parsedNames.removeRange(0, 2);
+                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen(machineInfo: _parsedNames,)));
                             },
                             icon: Icon(Icons.qr_code_scanner),
                             label: Text(
@@ -326,37 +331,37 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
               ),
             ],
           ),
-          SizedBox(height: 12),
-
-          // Original string
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Original String:',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  _scannedResult!,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // SizedBox(height: 12),
+          //
+          // // Original string
+          // Container(
+          //   padding: EdgeInsets.all(12),
+          //   decoration: BoxDecoration(
+          //     color: Colors.grey.shade50,
+          //     borderRadius: BorderRadius.circular(8),
+          //   ),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text(
+          //         'Original String:',
+          //         style: TextStyle(
+          //           fontSize: 12,
+          //           color: Colors.grey.shade600,
+          //           fontWeight: FontWeight.w500,
+          //         ),
+          //       ),
+          //       SizedBox(height: 4),
+          //       Text(
+          //         _scannedResult!,
+          //         style: TextStyle(
+          //           fontSize: 14,
+          //           color: Colors.black87,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           SizedBox(height: 16),
 
