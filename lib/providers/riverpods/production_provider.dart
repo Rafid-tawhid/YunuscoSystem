@@ -8,11 +8,14 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/models/error_summery_model.dart';
 import 'package:yunusco_group/models/product_history_model.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
+import 'package:yunusco_group/providers/riverpods/management_provider.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../../models/machine_breakdown_dropdown.dart';
 import '../../models/machine_breakdown_model.dart';
+import '../../models/maintanance_type_model.dart';
 import '../../models/mis_asset_model.dart';
+import '../../models/process_name_model.dart';
 import '../../models/production_qc_model.dart';
 import '../../models/qc_difference_model.dart';
 import 'employee_provider.dart';
@@ -329,4 +332,47 @@ final productHistoryListProvider =
       return [];
     }
   },
+);
+
+
+
+
+//dec 13
+
+// AsyncNotifier for state management
+class MaintenanceTypeNotifier extends AsyncNotifier<List<MaintananceTypeModel>> {
+  @override
+  Future<List<MaintananceTypeModel>> build() async {
+    List <MaintananceTypeModel> maintenanceTypes = [];
+    // Initial load
+    var response= await ref.read(apiServiceProvider).getData('api/Manufacturing/GetMaintenanceType');
+    for(var i in response['returnvalue']){
+      maintenanceTypes.add(MaintananceTypeModel.fromJson(i));
+    }
+    return maintenanceTypes;
+  }
+}
+
+// Provider for the notifier
+final maintenanceTypeProvider = AsyncNotifierProvider<MaintenanceTypeNotifier, List<MaintananceTypeModel>>(
+      () => MaintenanceTypeNotifier(),
+);
+
+
+class ProcessNameNotifier extends AsyncNotifier<List<ProcessNameModel>> {
+  @override
+  Future<List<ProcessNameModel>> build() async {
+    List <ProcessNameModel> processNameList = [];
+    // Initial load
+    var response= await ref.read(apiServiceProvider).getData('api/Manufacturing/GetProcessNameAsync');
+    for(var i in response['returnvalue']){
+      processNameList.add(ProcessNameModel.fromJson(i));
+    }
+    return processNameList;
+  }
+}
+
+// Provider for the notifier
+final processNameProvider = AsyncNotifierProvider<ProcessNameNotifier, List<ProcessNameModel>>(
+      () => ProcessNameNotifier(),
 );

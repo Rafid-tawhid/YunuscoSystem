@@ -1,12 +1,14 @@
 // lib/screens/machine_breakdown_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/common_widgets/custom_button.dart';
 import 'package:yunusco_group/screens/Products/Machine/machine_qr_scanner.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../../helper_class/dashboard_helpers.dart';
 import '../../../models/machine_breakdown_model.dart';
 import '../../../providers/riverpods/production_provider.dart';
 import 'machine_problem_request.dart';
+import 'machine_repair_screen.dart';
 
 class MachineBreakdownListScreen extends ConsumerWidget {
   const MachineBreakdownListScreen({super.key});
@@ -37,7 +39,9 @@ class MachineBreakdownListScreen extends ConsumerWidget {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           Expanded(
             child: breakdownsAsync.when(
               data: (breakdowns) {
@@ -72,12 +76,7 @@ class MachineBreakdownListScreen extends ConsumerWidget {
                 minimumSize: const Size.fromHeight(50),
               ),
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const MachineProblemRequestScreen(),
-                //   ),
-                // );
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>BeautifulQRScannerScreen()));
               },
             ),
           ),
@@ -119,15 +118,23 @@ class MachineBreakdownCard extends StatelessWidget {
             children: [
               // Machine Name
               if (breakdown.machineName != null && breakdown.machineName!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    breakdown.machineName!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        breakdown.machineName!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
-                  ),
+                    Spacer(),
+                    IconButton(onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>MachineProblemRequestScreen(breakdownModel: breakdown,)));
+                    }, icon: Icon(Icons.edit))
+                  ],
                 ),
 
               // Requisition Code
@@ -159,6 +166,8 @@ class MachineBreakdownCard extends StatelessWidget {
       ),
     );
   }
+
+
 
   Widget _buildRow(String label, String value) {
     return Padding(

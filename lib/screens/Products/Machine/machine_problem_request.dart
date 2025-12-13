@@ -244,6 +244,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
           ),
 
           SizedBox(height: 8),
+
           _buildProductionLineDropdown(
             label: 'Line # :',
             lines: dropdownData.productionLines ?? [],
@@ -313,21 +314,6 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
     );
   }
 
-  Widget _buildEmployeeDropdown({
-    required String label,
-    required List<Employees> employees,
-    required Employees? selectedEmployee,
-    required Function(Employees?) onChanged,
-  }) {
-    return _buildGenericDropdown<Employees>(
-      label: label,
-      value: selectedEmployee,
-      items: employees,
-      displayText: (employee) => '${employee.employeeName} (${employee.employeeCode})',
-      hintText: 'Select Employee',
-      onChanged: onChanged,
-    );
-  }
 
   Widget _buildGenericDropdown<T>({
     required String label,
@@ -382,47 +368,6 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-    int maxLines = 1,
-    required Function(String) onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hintText,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.blue),
-            ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: maxLines > 1 ? 16 : 0,
-            ),
-          ),
-          maxLines: maxLines,
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
 
   Widget _buildActionButtons() {
     return Row(
