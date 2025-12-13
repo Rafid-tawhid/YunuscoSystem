@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/utils/constants.dart';
-
 import '../../models/buyer_order_details_model.dart';
 import '../../providers/merchandising_provider.dart';
 import '../../utils/colors.dart';
@@ -20,10 +19,10 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((v) {
-      getData();
-    });
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
   }
 
   @override
@@ -32,235 +31,514 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
     super.dispose();
   }
 
+  Future<void> _loadData() async {
+    final provider = context.read<MerchandisingProvider>();
+    await provider.getAllBuyerOrders();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context),
-      body: Column(
-        children: [
-          Expanded(
-            child: Consumer<MerchandisingProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (provider.allBuyerOrderList.isEmpty) {
-                  return const Center(child: Text('No orders found'));
-                }
-                return ListView.builder(
-                  itemCount: provider.allBuyerOrderList.length,
-                  itemBuilder: (context, index) {
-                    final order = provider.allBuyerOrderList[index];
-                    return _buildOrderCard(context, order);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
+      body: Consumer<MerchandisingProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (provider.allBuyerOrderList.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No Orders Found',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Start by creating a new buyer order',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final orders = _isSearching && _searchController.text.isNotEmpty
+              ? provider.allBuyerOrderList
+              .where((order) =>
+          (order.buyerName ?? '')
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()) ||
+              (order.merMasterBuyerOrder?.orderNumber ?? '')
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase()) ||
+              (order.merMasterBuyerOrder?.masterOrderCode ?? '')
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase()))
+              .toList()
+              : provider.allBuyerOrderList;
+
+          if (orders.isEmpty) {
+            return Center(
+              child: Text(
+                'No results found for "${_searchController.text}"',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              final order = orders[index];
+              return _buildOrderCard(order);
+            },
+          );
+        },
       ),
     );
   }
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
+      backgroundColor: myColors.primaryColor,
+      foregroundColor: Colors.white,
       title: _isSearching
           ? TextField(
-              controller: _searchController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                hintText: 'Search orders...',
-                border: InputBorder.none,
-                hintStyle: TextStyle(color: Colors.black),
-              ),
-              style: const TextStyle(color: Colors.black),
-              onChanged: (value) {
-                context.read<MerchandisingProvider>().searchOrders(value);
-              },
-            )
-          : const Text('Buyer Orders'),
+        controller: _searchController,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: 'Search orders...',
+          border: InputBorder.none,
+          hintStyle: TextStyle(color: Colors.grey[600]),
+          prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+        ),
+        style: const TextStyle(color: Colors.black, fontSize: 16),
+        onChanged: (_) => setState(() {}),
+      )
+          : Row(
+        children: [
+          const Icon(Icons.inventory_2_outlined),
+          const SizedBox(width: 8),
+          const Text('Buyer Orders'),
+          const Spacer(),
+          Consumer<MerchandisingProvider>(
+            builder: (context, provider, child) {
+              return Text(
+                '${provider.allBuyerOrderList.length} Orders',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       actions: [
-        _isSearching
-            ? IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  setState(() {
-                    _isSearching = false;
-                    _searchController.clear();
-                    context.read<MerchandisingProvider>().searchOrders('');
-                  });
-                },
-              )
-            : IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {
-                  setState(() {
-                    _isSearching = true;
-                  });
-                },
-              ),
+        if (!_isSearching)
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearching = true;
+              });
+            },
+          ),
+        if (_isSearching)
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              setState(() {
+                _isSearching = false;
+                _searchController.clear();
+              });
+            },
+          ),
+        if (!_isSearching)
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              _loadData();
+            },
+          ),
       ],
     );
   }
 
-  Widget _buildOrderCard(BuildContext context, BuyerOrderDetailsModel order) {
-    final isPending = order.finalStatus?.toLowerCase() == 'pending';
-    final isExpanded = ValueNotifier<bool>(false);
+  Widget _buildOrderCard(BuyerOrderDetailsModel order) {
+    final merOrder = order.merMasterBuyerOrder;
+    final isLocked = merOrder?.isLock == true;
+    final isSubmitted = merOrder?.submit == true;
 
-    return ValueListenableBuilder<bool>(
-      valueListenable: isExpanded,
-      builder: (context, expanded, _) {
-        return Card(
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: InkWell(
-            onTap: () => isExpanded.value = !expanded,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
+    return Card(
+      elevation: 2,
+      color: Colors.white,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: () {
+          // Navigate to order details screen
+          // Navigator.push(context, MaterialPageRoute(
+          //   builder: (context) => BuyerOrderDetailScreen(order: order),
+          // ));
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with order code and status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Compact Header (Always visible)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          merOrder?.masterOrderCode ?? 'N/A',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          order.buyerName ?? 'No Buyer Name',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      _buildStatusChip(merOrder?.approvalStatus),
+                      const SizedBox(height: 4),
+                      Row(
                         children: [
-                          Text(
-                            order.masterOrderCode ?? 'No Code',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          if (isLocked)
+                            Icon(
+                              Icons.lock,
+                              size: 16,
+                              color: Colors.orange[700],
                             ),
-                          ),
-                          Text(
-                            order.buyerName ?? 'No Buyer',
-                            style: const TextStyle(fontSize: 14),
-                          ),
+                          if (isSubmitted)
+                            Icon(
+                              Icons.send,
+                              size: 16,
+                              color: Colors.green[700],
+                            ),
                         ],
-                      ),
-                      Chip(
-                        label: Text(order.finalStatus ?? 'N/A'),
-                        backgroundColor: _getStatusColor(order.finalStatus),
                       ),
                     ],
                   ),
-
-                  // Expandable Details
-                  if (expanded) ...[
-                    const SizedBox(height: 12),
-                    const Divider(),
-                    const SizedBox(height: 8),
-
-                    _buildDetailRow('Style', order.styleName),
-                    _buildDetailRow('Category', order.catagoryName),
-                    _buildDetailRow('Quantity', '${order.totalOrderQty}'),
-                    _buildDetailRow('Total Value', '\$ ${order.totalValue}'),
-                    _buildDetailRow('Created', _formatDate(order.createdDate)),
-
-                    const SizedBox(height: 12),
-
-                    // Action Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            // View details action
-                          },
-                          child: Text(
-                            'VIEW',
-                            style: customTextStyle(
-                                14, myColors.grey, FontWeight.w600),
-                          ),
-                        ),
-                        if (isPending) ...[
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                            onPressed: () {
-                              // Reject action
-                            },
-                            child: Text(
-                              'REJECT',
-                              style: customTextStyle(
-                                  14, Colors.white, FontWeight.w600),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                            ),
-                            onPressed: () {
-                              // Accept action
-                            },
-                            child: Text(
-                              'ACCEPT',
-                              style: customTextStyle(
-                                  14, Colors.white, FontWeight.w600),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
                 ],
               ),
-            ),
+
+              const SizedBox(height: 16),
+
+              // Order Details
+              _buildDetailRow(
+                icon: Icons.numbers,
+                label: 'Order Number',
+                value: merOrder?.orderNumber ?? 'N/A',
+              ),
+              _buildDetailRow(
+                icon: Icons.date_range,
+                label: 'Order Date',
+                value: _formatDate(merOrder?.orderDate),
+              ),
+              _buildDetailRow(
+                icon: Icons.person,
+                label: 'Submitted To',
+                value: merOrder?.submitToName ?? 'N/A',
+              ),
+              _buildDetailRow(
+                icon: Icons.category,
+                label: 'Order Type',
+                value: _getOrderType(merOrder?.orderType),
+              ),
+              _buildDetailRow(
+                icon: Icons.attach_money,
+                label: 'LC Value',
+                value: merOrder?.lcvalue != null
+                    ? '\$${merOrder!.lcvalue!.toStringAsFixed(2)}'
+                    : 'N/A',
+              ),
+              _buildDetailRow(
+                icon: Icons.confirmation_number,
+                label: 'LC Number',
+                value: merOrder?.mlcnumber ?? 'N/A',
+              ),
+              _buildDetailRow(
+                icon: Icons.safety_check,
+                label: 'Season',
+                value: merOrder?.season?.toString() ?? 'N/A',
+              ),
+              _buildDetailRow(
+                icon: Icons.flag,
+                label: 'Export Country',
+                value: merOrder?.exportCountry?.toString() ?? 'N/A',
+              ),
+
+              const SizedBox(height: 16),
+
+              // Buyer Info Section
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Buyer Information',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildBuyerInfoRow('Name', order.fullName),
+                    _buildBuyerInfoRow('Designation', order.designationName),
+                    _buildBuyerInfoRow('Department', order.departmentName),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        // View full details
+                      },
+                      icon: const Icon(Icons.visibility, size: 16),
+                      label: const Text('View Details'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.blue,
+                        side: const BorderSide(color: Colors.blue),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (merOrder?.approvalStatus?.toLowerCase() == 'pending')
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          // Approve action
+                        },
+                        icon: const Icon(Icons.check, size: 16),
+                        label: const Text('Approve'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-// Helper Widgets
-  Widget _buildDetailRow(String label, String? value) {
+  Widget _buildStatusChip(String? status) {
+    final statusText = status?.toLowerCase() ?? 'unknown';
+    Color color;
+    Color textColor;
+
+    switch (statusText) {
+      case 'approved':
+        color = Colors.green[100]!;
+        textColor = Colors.green[800]!;
+        break;
+      case 'pending':
+        color = Colors.orange[100]!;
+        textColor = Colors.orange[800]!;
+        break;
+      case 'rejected':
+        color = Colors.red[100]!;
+        textColor = Colors.red[800]!;
+        break;
+      case 'submitted':
+        color = Colors.blue[100]!;
+        textColor = Colors.blue[800]!;
+        break;
+      default:
+        color = Colors.grey[200]!;
+        textColor = Colors.grey[800]!;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        status?.toUpperCase() ?? 'UNKNOWN',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Text(
-            '$label: ',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Icon(
+            icon,
+            size: 18,
+            color: Colors.grey[600],
           ),
-          Text(value ?? 'N/A'),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.end,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  String _formatDate(String? date) {
-    if (date == null) return 'N/A';
+  Widget _buildBuyerInfoRow(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value ?? 'N/A',
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
     try {
-      return DateFormat('dd MMM yyyy').format(DateTime.parse(date));
+      final date = DateTime.parse(dateString);
+      return DateFormat('dd MMM yyyy').format(date);
     } catch (e) {
       return 'Invalid Date';
     }
   }
 
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'approved':
-        return Colors.green[100]!;
-      case 'pending':
-        return Colors.orange[100]!;
-      case 'rejected':
-        return Colors.red[100]!;
+  String _getOrderType(num? orderType) {
+    if (orderType == null) return 'N/A';
+    switch (orderType) {
+      case 1:
+        return 'Regular';
+      case 2:
+        return 'Sample';
+      case 3:
+        return 'Development';
       default:
-        return Colors.grey[200]!;
+        return 'Unknown';
     }
   }
 
-// Helper function for status colors
-
-  void getData() async {
-    var mp = context.read<MerchandisingProvider>();
-    mp.setLoading(true);
-    await mp.getAllBuyerOrders();
-    mp.setLoading(false);
+  String _getQuantityType(String? qtyType) {
+    if (qtyType == null) return 'N/A';
+    switch (qtyType.toLowerCase()) {
+      case 'pcs':
+        return 'Pieces';
+      case 'kg':
+        return 'Kilograms';
+      case 'm':
+        return 'Meters';
+      default:
+        return qtyType;
+    }
   }
 }

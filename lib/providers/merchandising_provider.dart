@@ -31,12 +31,11 @@ class MerchandisingProvider extends ChangeNotifier {
   List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
 
   Future<bool> getAllBuyerOrders() async {
-    var data = await apiService.getData(
-        'api/Merchandising/BuyerOrderAppListDateRange?fromDate=2025-01-01&toDate=2025-07-21');
+    var data = await apiService.getData('api/Merchandising/BuyerOrder');
     //var data=await apiService.getData('api/Merchandising/BuyerOrderAppList');
     if (data != null) {
       _allBuyerOrderList.clear();
-      for (var i in data['result']['Result']) {
+      for (var i in data['result']) {
         _allBuyerOrderList.add(BuyerOrderDetailsModel.fromJson(i));
       }
       _filteredBuyerOrderList = _allBuyerOrderList;
@@ -48,27 +47,7 @@ class MerchandisingProvider extends ChangeNotifier {
     }
   }
 
-  //search
-  void searchOrders(String query) {
-    if (query.isEmpty) {
-      _filteredBuyerOrderList = _allBuyerOrderList;
-    } else {
-      _filteredBuyerOrderList = _allBuyerOrderList.where((order) {
-        return (order.masterOrderCode
-                    ?.toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false) ||
-            (order.styleName?.toString().contains(query) ?? false) ||
-            (order.buyerName?.toLowerCase().contains(query.toLowerCase()) ??
-                false) ||
-            (order.masterOrderCode
-                    ?.toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false);
-      }).toList();
-    }
-    notifyListeners();
-  }
+
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
