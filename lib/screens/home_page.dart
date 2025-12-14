@@ -250,8 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(context,
             CupertinoPageRoute(builder: (context) => HrMainMenuScreen()));
       case 14:
-        Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => MasterLCListScreen()));
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => MasterLCListScreen()));
       case 4: //Navigator.push(context, CupertinoPageRoute(builder: (context) => PfListScreen()));
         Navigator.push(context,
             CupertinoPageRoute(builder: (context) => AccountMenuScreen()));

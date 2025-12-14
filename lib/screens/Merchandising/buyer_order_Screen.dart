@@ -40,6 +40,7 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
       appBar: _buildAppBar(context),
       body: Consumer<MerchandisingProvider>(
         builder: (context, provider, child) {
@@ -132,10 +133,10 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
         decoration: InputDecoration(
           hintText: 'Search orders...',
           border: InputBorder.none,
-          hintStyle: TextStyle(color: Colors.grey[600]),
-          prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+          hintStyle: TextStyle(color: Colors.white),
+          prefixIcon: Icon(Icons.search, color: Colors.white),
         ),
-        style: const TextStyle(color: Colors.black, fontSize: 16),
+        style: const TextStyle(color: Colors.white, fontSize: 16),
         onChanged: (_) => setState(() {}),
       )
           : Row(
@@ -329,7 +330,7 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Buyer Information',
+                      'Creator Information',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
