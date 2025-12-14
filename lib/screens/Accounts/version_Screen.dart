@@ -118,14 +118,23 @@ class VersionItem extends StatelessWidget {
           ],
         ),
         trailing: version.link != null
-            ? IconButton(
-          icon: const Icon(Icons.download),
-          onPressed: () => _downloadVersion(version.link!),
-        )
+            ? Row(
+          mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                          icon: const Icon(Icons.download),
+                          onPressed: () => _downloadVersion(version.link!),
+                        ),
+                IconButton(
+                          icon: const Icon(Icons.share),
+                          onPressed: () => shareLink(version.link!),
+                        ),
+              ],
+            )
             : null,
-        onTap: version.link != null
-            ? () => _downloadVersion(version.link!)
-            : null,
+        // onTap: version.link != null
+        //     ? () => _downloadVersion(version.link!)
+        //     : null,
       ),
     );
   }
@@ -134,6 +143,18 @@ class VersionItem extends StatelessWidget {
     final uri = Uri.parse(link);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+
+  Future<void> shareLink(String url) async {
+    final text = Uri.encodeComponent('Yunusco ERP App\n$url');
+    final whatsappUrl = Uri.parse('https://wa.me/?text=$text');
+
+    if (await canLaunchUrl(whatsappUrl)) {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'WhatsApp not installed';
     }
   }
 }

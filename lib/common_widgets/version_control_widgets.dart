@@ -107,8 +107,3 @@ class VersionChecker {
 
 
 const platform = MethodChannel('app.version.channel');
-
-Future<String> getVersion() async {
-final version = await platform.invokeMethod('getVersion');
-return version;
-}

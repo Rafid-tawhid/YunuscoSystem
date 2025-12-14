@@ -44,14 +44,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showLogo = false;
   double _scrollPosition = 0; // List<Menu> menus = [];
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   String version='';
   @override
   void initState() {
     super.initState();
     _getModules();
-    _checkForNewVersion();
     if (Platform.isAndroid) {
       NotificationServices.setupPushNotifications(context);
       NotificationServices.initializeNotifications();
@@ -63,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
             50; // Adjust this value for when the logo should appear
       });
     });
-    getVersions();
+   // getVersions();
   }
 
   @override
@@ -289,13 +287,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _checkForNewVersion() {
 
-  }
-
-  Future<void> getVersions() async {
-    version=await getVersion();
-  }
+  // Future<void> getVersions() async {
+  //   version=await getVersion();
+  // }
 }
 
 class Menu {

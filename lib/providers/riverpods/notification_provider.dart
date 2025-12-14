@@ -58,12 +58,14 @@ class TnaNotificationNotifier extends StateNotifier<List<TnaNotificationModel>>{
 ///AppVersion
 // Provider for user data
 final versionCheckProvider = FutureProvider<List<AppVersion>>((ref) async {
+  debugPrint('Triggering version check...');
   List<AppVersion> versionList=[];
   final apiService = ref.watch(apiServiceProvider);
 
   // Call API to fetch data
   var data= await apiService.getData('api/Production/GetAppVersions');
 
+  debugPrint('Version data fetched: $data');
   if (data != null) {
     for (var i in data) {
       versionList.add(AppVersion.fromJson(i));
