@@ -266,7 +266,6 @@ class _HomeScreenState extends State<HomeScreen> {
         await hp.getAllDocAppointment(); //go to different screen depending on designation
         if (DashboardHelpers.currentUser!.designation == 'Medical Officer') {
           Navigator.push(context,
-
               MaterialPageRoute(builder: (context) => AppointmentListScreen()));
         } else {
           Navigator.push(context,

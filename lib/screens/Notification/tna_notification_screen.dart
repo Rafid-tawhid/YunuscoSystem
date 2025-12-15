@@ -480,7 +480,6 @@ class _TnaNotificationScreenState extends ConsumerState<TnaNotificationScreen> {
 
   Color _getNotificationColor(TnaNotificationModel notification) {
     final sent = notification.isSent ?? false;
-
     if (sent == true) return Colors.green;
     if (sent !=true) return Colors.orange;
     return Colors.blue;
