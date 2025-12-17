@@ -6,7 +6,7 @@ import 'package:yunusco_group/providers/management_provider.dart';
 import 'package:yunusco_group/screens/Management/shipment_info_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/kaizan_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_departments.dart';
-import 'package:yunusco_group/screens/Management/widgets/show_lines.dart';
+import 'package:yunusco_group/screens/Products/linewise_manpower.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_sections.dart';
 import 'package:yunusco_group/screens/Management/widgets/unit_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -123,18 +123,6 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
             ? () => Navigator.push(
           context,
           CupertinoPageRoute(builder: (context) => SectionScreen()),
-        )
-            : () {},
-      ),
-      DashboardMenuItem(
-        name: "Lines",
-        icon: Icons.schema_rounded,
-        cardColor: Colors.pink.shade50,
-        iconColor: Colors.pink.shade700,
-        onTap: dropdownInfo?.lines?.isNotEmpty == true
-            ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => LineScreen()),
         )
             : () {},
       ),

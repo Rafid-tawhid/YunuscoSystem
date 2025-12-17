@@ -6,6 +6,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/qc_difference_model.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/screens/Products/hourly_sewing_status.dart';
 import 'package:yunusco_group/screens/Products/production_dashboard.dart';
 import 'package:yunusco_group/screens/Products/production_efficiency_screen.dart';
 import 'package:yunusco_group/screens/Products/production_qc_screen.dart';
@@ -23,6 +24,7 @@ import 'Machine/machine_qr_scanner.dart';
 import 'error_summary.dart';
 import 'get_all_style_screen.dart';
 import 'Machine/machine_problem_request.dart';
+import 'linewise_manpower.dart';
 import 'widgets/buyers_screen.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,6 +52,18 @@ class ProductHomeScreen extends ConsumerWidget {
         },
       ),
       DashboardMenuItem(
+        name: "Linewise\nManpower",
+        icon: Icons.schema_rounded,
+        cardColor: Colors.orange.shade50,
+        iconColor: Colors.orange.shade700,
+        onTap: () {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => LinewiseManpowerScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
         name: 'Production\nEfficiency',
         icon: Icons.trending_up,
         cardColor: const Color(0xFFE8F5E9), // Light green
@@ -62,6 +76,19 @@ class ProductHomeScreen extends ConsumerWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => ProductionEfficiencyScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
+        name: 'Hourly\nSewing',
+        icon: Icons.calendar_today,
+        cardColor: Colors.green.shade50, // Light red
+        iconColor: Colors.green.shade700, // Dark red
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const HourlySewingStatusScreen()),
           );
         },
       ),
@@ -168,11 +195,10 @@ class ProductHomeScreen extends ConsumerWidget {
       ),
       DashboardMenuItem(
         name: 'Machine\nBreakdown',
-        icon: Icons.insights,
-        cardColor: const Color(0xFFC4B0EF), // Light orange
-        iconColor: Colors.purple, // Deep orange
+        icon: Icons.settings,
+        cardColor: Colors.grey.shade50, // Light orange
+        iconColor: Colors.grey.shade700, // Deep orange
         onTap: () async {
-
           Navigator.push(
             context,
             CupertinoPageRoute(builder: (context) => MachineBreakdownListScreen()),

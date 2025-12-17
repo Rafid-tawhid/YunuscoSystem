@@ -151,7 +151,7 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                 '${provider.allBuyerOrderList.length} Orders',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
               );
@@ -354,6 +354,9 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         // View full details
+                        //BuyerOrderBreakdown
+                        var provider = context.read<MerchandisingProvider>();
+                       // provider.getAllBuyerOrderDetails(order.);
                       },
                       icon: const Icon(Icons.visibility, size: 16),
                       label: const Text('View Details'),

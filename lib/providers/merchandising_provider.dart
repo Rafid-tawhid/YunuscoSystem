@@ -48,6 +48,14 @@ class MerchandisingProvider extends ChangeNotifier {
   }
 
 
+  Future<bool> getAllBuyerOrderDetails(String id) async {
+    var data = await apiService.getData('api/Merchandising/BuyerOrderBreakdown/$id');
+    //var data=await apiService.getData('api/Merchandising/BuyerOrderAppList');
+    debugPrint('Buyer Order Details Data: $data');
+      return true;
+  }
+
+
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;

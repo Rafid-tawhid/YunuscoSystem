@@ -4,6 +4,7 @@ import 'package:yunusco_group/screens/Products/garments_requisation_screen.dart'
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
+import 'chalan_report_Screen.dart';
 import 'comperative_statement_list.dart';
 import 'inventory_screen.dart';
 import 'mis_asset_inventory.dart';
@@ -63,6 +64,15 @@ class InventoryHomeScreen extends StatelessWidget {
         iconColor: Colors.orange.shade800,
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>MisAssetsScreen()));
+        }, // dummy
+      ),
+      DashboardMenuItem(
+        name: 'Chalan\nReport',
+        icon: Icons.document_scanner,
+        cardColor: Colors.yellow.shade50, // Soft orange
+        iconColor: Colors.yellow.shade800,
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ChalanScanScreen()));
         }, // dummy
       ),
     ];

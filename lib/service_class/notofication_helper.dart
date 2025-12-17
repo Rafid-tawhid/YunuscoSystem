@@ -40,8 +40,7 @@ class NotificationServices {
         provisional: true,
       );
 
-      debugPrint(
-          'Notification permission status: ${settings.authorizationStatus}');
+      debugPrint('Notification permission status: ${settings.authorizationStatus}');
 
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
         await _openAppSettingsOrShowRationale(context);
@@ -63,8 +62,7 @@ class NotificationServices {
       });
 
       FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-      FirebaseMessaging.onMessageOpenedApp
-          .listen(_handleBackgroundMessageClick);
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessageClick);
 
       if (Platform.isIOS || Platform.isMacOS) {
         await firebaseMessaging.setForegroundNotificationPresentationOptions(
@@ -124,8 +122,7 @@ class NotificationServices {
       SharedPreferences pref = await SharedPreferences.getInstance();
       pref.remove('token');
       AppConstants.token = '';
-      Navigator.pushReplacement(
-          ctx, MaterialPageRoute(builder: (ctx) => const LoginScreen()));
+      Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (ctx) => const LoginScreen()));
     }
   }
 

@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/models/error_summery_model.dart';
+import 'package:yunusco_group/models/hourly_sweing_model.dart';
 import 'package:yunusco_group/models/product_history_model.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
-import 'package:yunusco_group/providers/riverpods/management_provider.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
-
+import '../../models/linewise_manpower_model.dart';
 import '../../models/machine_breakdown_dropdown.dart';
 import '../../models/machine_breakdown_model.dart';
 import '../../models/maintanance_type_model.dart';
@@ -19,7 +19,6 @@ import '../../models/process_name_model.dart';
 import '../../models/production_qc_model.dart';
 import '../../models/qc_difference_model.dart';
 import 'employee_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 final qcDataProvider =
     StateNotifierProvider<QcDataNotifier, List<ProductionQcModel>>((ref) {
@@ -376,3 +375,42 @@ class ProcessNameNotifier extends AsyncNotifier<List<ProcessNameModel>> {
 final processNameProvider = AsyncNotifierProvider<ProcessNameNotifier, List<ProcessNameModel>>(
       () => ProcessNameNotifier(),
 );
+
+
+//dec 17
+final lineWiseManPower = FutureProvider<List<LinewiseManpowerModel>>((ref) async {
+
+  final service = ref.read(apiServiceProvider);
+
+  final data =
+  await service.getData('api/Production/LineWiseManpowerSetup');
+
+  List<LinewiseManpowerModel> manPowerList = [];
+
+  if (data != null && data['data'] != null) {
+    for (var i in data['data']) {
+      manPowerList.add(LinewiseManpowerModel.fromJson(i));
+    }
+  }
+
+  debugPrint('manPowerList ${manPowerList.length}');
+  return manPowerList;
+});
+
+
+
+final hourlySewingStatusProvider = FutureProvider.family<List<HourlySweingModel>, String>((ref, date) async {
+  final service = ref.read(apiServiceProvider);
+
+  final data = await service.getData(
+    'api/Production/SWHourlySewingStatus?productionDate=$date',
+  );
+
+  if (data != null && data['data'] != null) {
+    return (data['data'] as List)
+        .map((e) => HourlySweingModel.fromJson(e))
+        .toList();
+  }
+  return [];
+});
+
