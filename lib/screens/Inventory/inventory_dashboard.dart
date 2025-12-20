@@ -4,6 +4,7 @@ import 'package:yunusco_group/screens/Products/garments_requisation_screen.dart'
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../../common_widgets/dashboard_item_card.dart';
+import 'acessories_requisition_list.dart';
 import 'chalan_report_Screen.dart';
 import 'comperative_statement_list.dart';
 import 'inventory_screen.dart';
@@ -64,6 +65,15 @@ class InventoryHomeScreen extends StatelessWidget {
         iconColor: Colors.orange.shade800,
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>MisAssetsScreen()));
+        }, // dummy
+      ),
+      DashboardMenuItem(
+        name: 'Accessories\nRequisition',
+        icon: Icons.dataset,
+        cardColor: Colors.purple.shade50, // Soft orange
+        iconColor: Colors.purple.shade800,
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>AccessoriesIssuesScreen()));
         }, // dummy
       ),
       DashboardMenuItem(

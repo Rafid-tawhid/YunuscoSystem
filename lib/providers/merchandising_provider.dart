@@ -5,6 +5,7 @@ import 'package:yunusco_group/models/purchase_approval_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../models/bom_model.dart';
+import '../models/buyer_order_breakdown.dart';
 import '../models/buyer_order_details_model.dart';
 import '../models/costing_approval_list_model.dart';
 import '../models/work_order_model.dart';
@@ -27,8 +28,7 @@ class MerchandisingProvider extends ChangeNotifier {
   }
 
   final List<BuyerOrderDetailsModel> _allBuyerOrderList = [];
-  List<BuyerOrderDetailsModel> _filteredBuyerOrderList = [];
-  List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
+
 
   Future<bool> getAllBuyerOrders() async {
     var data = await apiService.getData('api/Merchandising/BuyerOrder');
@@ -48,10 +48,23 @@ class MerchandisingProvider extends ChangeNotifier {
   }
 
 
+
+  List<BuyerOrderDetailsModel> _filteredBuyerOrderList = [];
+  List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
+
+
+  //
+
+  List<BuyerOrderBreakdown> _buyerOrderBreakdown = [];
+  List<BuyerOrderBreakdown> get buyerOrderBreakdown => _buyerOrderBreakdown;
+
   Future<bool> getAllBuyerOrderDetails(String id) async {
     var data = await apiService.getData('api/Merchandising/BuyerOrderBreakdown/$id');
-    //var data=await apiService.getData('api/Merchandising/BuyerOrderAppList');
-    debugPrint('Buyer Order Details Data: $data');
+    for (var i in data['data']) {
+      _buyerOrderBreakdown.add(BuyerOrderBreakdown.fromJson(i));
+    }
+
+    debugPrint('_buyerOrderBreakdown ${_buyerOrderBreakdown.length}');
       return true;
   }
 

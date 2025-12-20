@@ -228,18 +228,18 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         },
       ),
 
-      DashboardMenuItem(
-        name: 'NID Extractor',
-        icon: Icons.badge_outlined, // More specific for ID/documents
-        cardColor: Colors.purple.shade50, // Light purple
-        iconColor: Colors.purple.shade700, // Dark purple
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NidExtractorScreen())
-          );
-        },
-      ),
+      // DashboardMenuItem(
+      //   name: 'NID Extractor',
+      //   icon: Icons.badge_outlined, // More specific for ID/documents
+      //   cardColor: Colors.purple.shade50, // Light purple
+      //   iconColor: Colors.purple.shade700, // Dark purple
+      //   onTap: () {
+      //     Navigator.push(
+      //         context,
+      //         MaterialPageRoute(builder: (context) => NidExtractorScreen())
+      //     );
+      //   },
+      // ),
 
       DashboardMenuItem(
         name: 'Management\nAppointment',

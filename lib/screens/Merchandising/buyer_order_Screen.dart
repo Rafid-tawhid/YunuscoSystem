@@ -1,10 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../../models/buyer_order_details_model.dart';
 import '../../providers/merchandising_provider.dart';
 import '../../utils/colors.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
+import 'buyer_order_details_screen.dart';
 
 class BuyerOrderScreen extends StatefulWidget {
   const BuyerOrderScreen({super.key});
@@ -202,190 +207,184 @@ class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: InkWell(
-        onTap: () {
-          // Navigate to order details screen
-          // Navigator.push(context, MaterialPageRoute(
-          //   builder: (context) => BuyerOrderDetailScreen(order: order),
-          // ));
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with order code and status
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          merOrder?.masterOrderCode ?? 'N/A',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          order.buyerName ?? 'No Buyer Name',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with order code and status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildStatusChip(merOrder?.approvalStatus),
+                      Text(
+                        merOrder?.masterOrderCode ?? 'N/A',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          if (isLocked)
-                            Icon(
-                              Icons.lock,
-                              size: 16,
-                              color: Colors.orange[700],
-                            ),
-                          if (isSubmitted)
-                            Icon(
-                              Icons.send,
-                              size: 16,
-                              color: Colors.green[700],
-                            ),
-                        ],
+                      Text(
+                        order.buyerName ?? 'No Buyer Name',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Order Details
-              _buildDetailRow(
-                icon: Icons.numbers,
-                label: 'Order Number',
-                value: merOrder?.orderNumber ?? 'N/A',
-              ),
-              _buildDetailRow(
-                icon: Icons.date_range,
-                label: 'Order Date',
-                value: _formatDate(merOrder?.orderDate),
-              ),
-              _buildDetailRow(
-                icon: Icons.person,
-                label: 'Submitted To',
-                value: merOrder?.submitToName ?? 'N/A',
-              ),
-              _buildDetailRow(
-                icon: Icons.category,
-                label: 'Order Type',
-                value: _getOrderType(merOrder?.orderType),
-              ),
-              _buildDetailRow(
-                icon: Icons.attach_money,
-                label: 'LC Value',
-                value: merOrder?.lcvalue != null
-                    ? '\$${merOrder!.lcvalue!.toStringAsFixed(2)}'
-                    : 'N/A',
-              ),
-              _buildDetailRow(
-                icon: Icons.confirmation_number,
-                label: 'LC Number',
-                value: merOrder?.mlcnumber ?? 'N/A',
-              ),
-              _buildDetailRow(
-                icon: Icons.safety_check,
-                label: 'Season',
-                value: merOrder?.season?.toString() ?? 'N/A',
-              ),
-              _buildDetailRow(
-                icon: Icons.flag,
-                label: 'Export Country',
-                value: merOrder?.exportCountry?.toString() ?? 'N/A',
-              ),
-
-              const SizedBox(height: 16),
-
-              // Buyer Info Section
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      'Creator Information',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[700],
-                      ),
+                    _buildStatusChip(merOrder?.approvalStatus),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        if (isLocked)
+                          Icon(
+                            Icons.lock,
+                            size: 16,
+                            color: Colors.orange[700],
+                          ),
+                        if (isSubmitted)
+                          Icon(
+                            Icons.send,
+                            size: 16,
+                            color: Colors.green[700],
+                          ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    _buildBuyerInfoRow('Name', order.fullName),
-                    _buildBuyerInfoRow('Designation', order.designationName),
-                    _buildBuyerInfoRow('Department', order.departmentName),
                   ],
                 ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Order Details
+            _buildDetailRow(
+              icon: Icons.numbers,
+              label: 'Order Number',
+              value: merOrder?.orderNumber ?? 'N/A',
+            ),
+            _buildDetailRow(
+              icon: Icons.date_range,
+              label: 'Order Date',
+              value: _formatDate(merOrder?.orderDate),
+            ),
+            _buildDetailRow(
+              icon: Icons.person,
+              label: 'Submitted To',
+              value: merOrder?.submitToName ?? 'N/A',
+            ),
+            _buildDetailRow(
+              icon: Icons.category,
+              label: 'Order Type',
+              value: _getOrderType(merOrder?.orderType),
+            ),
+            _buildDetailRow(
+              icon: Icons.attach_money,
+              label: 'LC Value',
+              value: merOrder?.lcvalue != null
+                  ? '\$${merOrder!.lcvalue!.toStringAsFixed(2)}'
+                  : 'N/A',
+            ),
+            _buildDetailRow(
+              icon: Icons.confirmation_number,
+              label: 'LC Number',
+              value: merOrder?.mlcnumber ?? 'N/A',
+            ),
+            _buildDetailRow(
+              icon: Icons.safety_check,
+              label: 'Season',
+              value: merOrder?.season?.toString() ?? 'N/A',
+            ),
+            _buildDetailRow(
+              icon: Icons.flag,
+              label: 'Export Country',
+              value: merOrder?.exportCountry?.toString() ?? 'N/A',
+            ),
+
+            const SizedBox(height: 16),
+
+            // Buyer Info Section
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
               ),
-
-              const SizedBox(height: 16),
-
-              // Action Buttons
-              Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    'Creator Information',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildBuyerInfoRow('Name', order.fullName),
+                  _buildBuyerInfoRow('Designation', order.designationName),
+                  _buildBuyerInfoRow('Department', order.departmentName),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      var mp=context.read<MerchandisingProvider>();
+                      EasyLoading.show(maskType: EasyLoadingMaskType.black);
+                      await mp.getAllBuyerOrderDetails(order.merMasterBuyerOrder!.masterOrderCode??'');
+                      EasyLoading.dismiss();
+                      if(mp.buyerOrderBreakdown.isNotEmpty){
+                        Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerOrderBreakdownScreen(orderBreakdownList: mp.buyerOrderBreakdown,)));
+                      }
+                    },
+                    icon: const Icon(Icons.visibility, size: 16),
+                    label: const Text('View Details'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                      side: const BorderSide(color: Colors.blue),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (merOrder?.approvalStatus?.toLowerCase() == 'pending')
                   Expanded(
-                    child: OutlinedButton.icon(
+                    child: ElevatedButton.icon(
                       onPressed: () {
-                        // View full details
-                        //BuyerOrderBreakdown
-                        var provider = context.read<MerchandisingProvider>();
-                       // provider.getAllBuyerOrderDetails(order.);
+                        // Approve action
                       },
-                      icon: const Icon(Icons.visibility, size: 16),
-                      label: const Text('View Details'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.blue,
-                        side: const BorderSide(color: Colors.blue),
+                      icon: const Icon(Icons.check, size: 16),
+                      label: const Text('Approve'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  if (merOrder?.approvalStatus?.toLowerCase() == 'pending')
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          // Approve action
-                        },
-                        icon: const Icon(Icons.check, size: 16),
-                        label: const Text('Approve'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );

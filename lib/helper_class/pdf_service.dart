@@ -5,7 +5,6 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:printing/printing.dart';
 
 class PdfService {
   static Future<File> generateComparativeStatementPDF(
@@ -366,51 +365,51 @@ class PdfService {
 
 
 
-class PdfPreviewScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> selectedData;
-  final String code;
-  final double grandTotal;
-
-  const PdfPreviewScreen({
-    super.key,
-    required this.selectedData,
-    required this.code,
-    required this.grandTotal,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Preview PDF'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.download),
-            onPressed: () async {
-              await PdfService.generateAndDownloadPDF(selectedData, code, grandTotal,context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('PDF downloaded to app directory')),
-              );
-            },
-          ),
-        ],
-      ),
-      body: FutureBuilder<File>(
-        future: PdfService.generateComparativeStatementPDF(selectedData, code, grandTotal),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text('Error generating PDF'));
-          }
-          return PdfPreview(
-            build: (format) async => snapshot.data!.readAsBytes(),
-            allowPrinting: true,
-            allowSharing: true,
-          );
-        },
-      ),
-    );
-  }
-}
+// class PdfPreviewScreen extends StatelessWidget {
+//   final List<Map<String, dynamic>> selectedData;
+//   final String code;
+//   final double grandTotal;
+//
+//   const PdfPreviewScreen({
+//     super.key,
+//     required this.selectedData,
+//     required this.code,
+//     required this.grandTotal,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Preview PDF'),
+//         actions: [
+//           IconButton(
+//             icon: Icon(Icons.download),
+//             onPressed: () async {
+//               await PdfService.generateAndDownloadPDF(selectedData, code, grandTotal,context);
+//               ScaffoldMessenger.of(context).showSnackBar(
+//                 const SnackBar(content: Text('PDF downloaded to app directory')),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//       body: FutureBuilder<File>(
+//         future: PdfService.generateComparativeStatementPDF(selectedData, code, grandTotal),
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+//           if (snapshot.hasError || !snapshot.hasData) {
+//             return const Center(child: Text('Error generating PDF'));
+//           }
+//           return PdfPreview(
+//             build: (format) async => snapshot.data!.readAsBytes(),
+//             allowPrinting: true,
+//             allowSharing: true,
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
