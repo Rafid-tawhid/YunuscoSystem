@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/utils/colors.dart';
-
 import '../../models/accessories_issuee_model.dart';
-import '../../models/accessories_req_details.dart';
 import '../../providers/riverpods/inventory_provider.dart';
 import 'accessories_req_details.dart';
 
@@ -118,8 +116,7 @@ class _AccessoriesIssuesScreenState
           }
 
           // Show search results info
-          final displayList =
-          searchQuery.isEmpty ? issuesList : filteredList;
+          final displayList = searchQuery.isEmpty ? issuesList : filteredList;
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -364,12 +361,12 @@ class _IssueCard extends StatelessWidget {
                 _buildDetailRow('Slip No', issue.slipNo.toString()),
 
               if (issue.hasRemarks)
-                Column(
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 8),
                     const Text(
-                      'Remarks:',
+                      'Remarks: ',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -377,11 +374,13 @@ class _IssueCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      issue.remarks!,
-                      style: const TextStyle(fontSize: 14),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Expanded(
+                      child: Text(
+                        issue.remarks!,
+                        style: const TextStyle(fontSize: 14),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
