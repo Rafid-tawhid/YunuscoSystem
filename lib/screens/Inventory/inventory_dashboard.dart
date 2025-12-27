@@ -77,7 +77,7 @@ class InventoryHomeScreen extends StatelessWidget {
         }, // dummy
       ),
       DashboardMenuItem(
-        name: 'Chalan\nReport',
+        name: 'Challan\nReport',
         icon: Icons.document_scanner,
         cardColor: Colors.yellow.shade50, // Soft orange
         iconColor: Colors.yellow.shade800,
@@ -91,7 +91,6 @@ class InventoryHomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Inventory Menu',
-
           style: customTextStyle(18, Colors.white, FontWeight.w600),
         ),
         centerTitle: true,

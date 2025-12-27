@@ -65,8 +65,7 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.green.shade700,
         onTap: () => Navigator.push(
           context,
-          CupertinoPageRoute(
-              builder: (context) => EfficiencyScreen()),
+          CupertinoPageRoute(builder: (context) => EfficiencyScreen()),
         ),
       ),
       DashboardMenuItem(
@@ -76,8 +75,7 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.orange.shade700,
         onTap: () => Navigator.push(
           context,
-          CupertinoPageRoute(
-              builder: (context) => ProductionStrengthScreen()),
+          CupertinoPageRoute(builder: (context) => ProductionStrengthScreen()),
         ),
       ),
       DashboardMenuItem(
@@ -87,8 +85,7 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.purple.shade700,
         onTap: () => Navigator.push(
           context,
-          CupertinoPageRoute(
-              builder: (context) => ShipmentInfoScreen()),
+          CupertinoPageRoute(builder: (context) => ShipmentInfoScreen()),
         ),
       ),
       DashboardMenuItem(
@@ -98,8 +95,7 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.green.shade700,
         onTap: () => Navigator.push(
           context,
-          CupertinoPageRoute(
-              builder: (context) => DHUScreen()),
+          CupertinoPageRoute(builder: (context) => DHUScreen()),
         ),
       ),
       DashboardMenuItem(
@@ -109,9 +105,9 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.indigo.shade700,
         onTap: dropdownInfo?.departments?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
@@ -121,9 +117,9 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.teal.shade700,
         onTap: dropdownInfo?.sections?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => SectionScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => SectionScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
@@ -133,19 +129,19 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.deepOrange.shade700,
         onTap: dropdownInfo?.units?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => UnitScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => UnitScreen()),
+                )
             : () {},
       ),
-
       DashboardMenuItem(
         name: "Kaizan",
         icon: Icons.auto_awesome_rounded,
         cardColor: Colors.amber.shade50,
         iconColor: Colors.amber.shade700,
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>KaizanCountScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => KaizanCountScreen()));
         },
       ),
       DashboardMenuItem(
@@ -154,7 +150,8 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         cardColor: Colors.red.shade50,
         iconColor: Colors.red.shade700,
         onTap: () {
-          Navigator.push(context, CupertinoPageRoute(builder: (context)=>AnnouncementScreen()));
+          Navigator.push(context,
+              CupertinoPageRoute(builder: (context) => AnnouncementScreen()));
         },
       ),
     ];

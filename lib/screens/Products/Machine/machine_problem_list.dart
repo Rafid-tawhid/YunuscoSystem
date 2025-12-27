@@ -25,9 +25,12 @@ class MachineBreakdownListScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(machineBreakdownListProvider),
-            tooltip: 'Refresh',
+            icon: const Icon(Icons.add),
+            onPressed: () {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MachineProblemRequestScreen()));
+            },
+            tooltip: 'Setup',
           ),
           IconButton(
             icon: const Icon(Icons.qr_code_scanner),
@@ -38,49 +41,54 @@ class MachineBreakdownListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      body: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(machineBreakdownListProvider);
+          },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
-          Expanded(
-            child: breakdownsAsync.when(
-              data: (breakdowns) {
-                if (breakdowns.isEmpty) {
-                  return const Center(
-                    child: Text('No machine breakdowns found.'),
+            Expanded(
+              child: breakdownsAsync.when(
+                data: (breakdowns) {
+                  if (breakdowns.isEmpty) {
+                    return const Center(
+                      child: Text('No machine breakdowns found.'),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: breakdowns.length,
+                    itemBuilder: (context, index) {
+                      final breakdown = breakdowns[index];
+
+                      return MachineBreakdownCard(breakdown: breakdown);
+                    },
                   );
-                }
-                return ListView.builder(
-                  itemCount: breakdowns.length,
-                  itemBuilder: (context, index) {
-                    final breakdown = breakdowns[index];
-
-                    return MachineBreakdownCard(breakdown: breakdown);
-                  },
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(
-                child: Text('Error loading data: $error'),
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Text('Error loading data: $error'),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.add),
-              label: const Text('Add Machine Problem Request'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColors.primaryColor,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(50),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                label: const Text('Add Machine Problem Request'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: myColors.primaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(50),
+                ),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>BeautifulQRScannerScreen()));
+                },
               ),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>BeautifulQRScannerScreen()));
-              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -8,12 +8,11 @@ import 'package:yunusco_group/models/process_name_model.dart';
 import 'package:yunusco_group/providers/riverpods/management_provider.dart';
 import '../../../providers/riverpods/production_provider.dart';
 
-
 class MachineProblemRequestScreen extends ConsumerStatefulWidget {
-  final MachineBreakdownModel breakdownModel;
+  final MachineBreakdownModel? breakdownModel;
   const MachineProblemRequestScreen({
     super.key,
-    required this.breakdownModel,
+    this.breakdownModel,
   });
 
   @override
@@ -31,7 +30,8 @@ class _MachineProblemRequestScreenState
   TimeOfDay? _workEndTime;
   String _mechanicWorkTime = '00:00';
 
-  final TextEditingController _problemDescriptionController = TextEditingController();
+  final TextEditingController _problemDescriptionController =
+  TextEditingController();
   final TextEditingController _solutionController = TextEditingController();
 
   bool _isLoading = false;
@@ -77,7 +77,9 @@ class _MachineProblemRequestScreenState
   @override
   void initState() {
     super.initState();
-    _problemDescriptionController.text = widget.breakdownModel.machineName ?? '';
+    _problemDescriptionController.text = widget.breakdownModel != null
+        ? widget.breakdownModel!.machineName ?? ''
+        : '';
     _selectedWaitingTime = '00:30'; // Default waiting time
     _loadDropdownData();
   }
@@ -156,7 +158,8 @@ class _MachineProblemRequestScreenState
       int minutes = diffMinutes % 60;
 
       setState(() {
-        _mechanicWorkTime = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+        _mechanicWorkTime =
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
       });
     }
   }
@@ -191,9 +194,29 @@ class _MachineProblemRequestScreenState
         _selectedProcessName != null &&
         _workStartTime != null &&
         _workEndTime != null &&
-        _selectedWaitingTime != null &&
-        _problemDescriptionController.text.isNotEmpty &&
-        _solutionController.text.isNotEmpty;
+        _selectedWaitingTime != null;
+  }
+
+  // Helper method to get filtered maintenance types
+  List<MaintananceTypeModel> _getFilteredMaintenanceTypes(
+      List<MaintananceTypeModel> allTypes) {
+    if (widget.breakdownModel == null) {
+      // If machine model is null, remove first item only
+      if (allTypes.length > 1) {
+        return allTypes.sublist(1); // Remove first item, keep rest
+      }
+      return allTypes; // Return as is if only 1 item or empty
+    } else {
+      // If machine model is not null, return all items
+      return [allTypes.first];
+    }
+  }
+
+  // Helper method to get the first item to select
+  MaintananceTypeModel? _getFirstItemToSelect(
+      List<MaintananceTypeModel> filteredTypes) {
+    if (filteredTypes.isEmpty) return null;
+    return filteredTypes.first;
   }
 
   @override
@@ -243,7 +266,9 @@ class _MachineProblemRequestScreenState
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _buildInfoRow('Machine:', widget.breakdownModel.machineName ?? 'N/A'),
+                        if (widget.breakdownModel != null)
+                          _buildInfoRow('Machine:',
+                              widget.breakdownModel!.machineName ?? 'N/A'),
                       ],
                     ),
                   ),
@@ -254,25 +279,40 @@ class _MachineProblemRequestScreenState
                 _buildSectionTitle('Maintenance Information'),
                 const SizedBox(height: 8),
                 maintenanceTypesAsync.when(
-                  data: (maintenanceTypes) {
-                    if (_selectedMaintenanceType == null && maintenanceTypes.isNotEmpty) {
+                  data: (allMaintenanceTypes) {
+                    // Get filtered list based on machine model
+                    final filteredMaintenanceTypes =
+                    _getFilteredMaintenanceTypes(allMaintenanceTypes);
+
+                    // Set first item as selected if not already selected
+                    if (_selectedMaintenanceType == null &&
+                        filteredMaintenanceTypes.isNotEmpty) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         setState(() {
-                          _selectedMaintenanceType = maintenanceTypes.first;
+                          _selectedMaintenanceType =
+                              _getFirstItemToSelect(filteredMaintenanceTypes);
                         });
                       });
                     }
-                    return _buildMaintenanceTypeDropdown(maintenanceTypes);
+
+                    debugPrint(
+                        'Total types: ${allMaintenanceTypes.length}, Filtered: ${filteredMaintenanceTypes.length}');
+
+                    return _buildMaintenanceTypeDropdown(
+                        filteredMaintenanceTypes);
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stackTrace) => _buildErrorWidget(error.toString()),
+                  loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+                  error: (error, stackTrace) =>
+                      _buildErrorWidget(error.toString()),
                 ),
                 const SizedBox(height: 16),
 
                 // Process Name Dropdown
                 processNameList.when(
                   data: (processNames) {
-                    if (_selectedProcessName == null && processNames.isNotEmpty) {
+                    if (_selectedProcessName == null &&
+                        processNames.isNotEmpty) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         setState(() {
                           _selectedProcessName = processNames.first;
@@ -281,8 +321,10 @@ class _MachineProblemRequestScreenState
                     }
                     return _buildProcessNameDropdown(processNames);
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stackTrace) => _buildErrorWidget(error.toString()),
+                  loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+                  error: (error, stackTrace) =>
+                      _buildErrorWidget(error.toString()),
                 ),
                 const SizedBox(height: 16),
 
@@ -335,7 +377,8 @@ class _MachineProblemRequestScreenState
 
                 // Mechanic Work Time (Auto-calculated)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8),
@@ -446,7 +489,8 @@ class _MachineProblemRequestScreenState
     );
   }
 
-  Widget _buildMaintenanceTypeDropdown(List<MaintananceTypeModel> maintenanceTypes) {
+  Widget _buildMaintenanceTypeDropdown(
+      List<MaintananceTypeModel> maintenanceTypes) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -463,7 +507,9 @@ class _MachineProblemRequestScreenState
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             border: Border.all(
-              color: _selectedMaintenanceType == null ? Colors.red : Colors.grey.shade300,
+              color: _selectedMaintenanceType == null
+                  ? Colors.red
+                  : Colors.grey.shade300,
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -517,7 +563,9 @@ class _MachineProblemRequestScreenState
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             border: Border.all(
-              color: _selectedProcessName == null ? Colors.red : Colors.grey.shade300,
+              color: _selectedProcessName == null
+                  ? Colors.red
+                  : Colors.grey.shade300,
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -586,7 +634,8 @@ class _MachineProblemRequestScreenState
                   value: time,
                   child: Row(
                     children: [
-                      const Icon(Icons.timer_outlined, size: 16, color: Colors.orange),
+                      const Icon(Icons.timer_outlined,
+                          size: 16, color: Colors.orange),
                       const SizedBox(width: 8),
                       Text(time),
                     ],
@@ -617,28 +666,27 @@ class _MachineProblemRequestScreenState
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 120,
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
+            Expanded(
+              child: Text(
+                value,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),],
+        )
     );
   }
 
@@ -691,7 +739,8 @@ class _MachineProblemRequestScreenState
                   child: Text(
                     value == 'Not selected' ? hint : value,
                     style: TextStyle(
-                      color: value == 'Not selected' ? Colors.grey : Colors.black,
+                      color:
+                      value == 'Not selected' ? Colors.grey : Colors.black,
                       fontSize: 16,
                     ),
                   ),
@@ -731,7 +780,8 @@ class _MachineProblemRequestScreenState
     if (!_validateForm()) return;
 
     final data = {
-      "date": DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd'),
+      "date": DashboardHelpers.convertDateTime(DateTime.now().toString(),
+          pattern: 'yyyy-MM-dd'),
       "operationId": 3,
       "taskId": _selectedProcessName!.taskId,
       "mechanicInfoTime": _getCurrentDateTimeISO(),
@@ -739,7 +789,9 @@ class _MachineProblemRequestScreenState
       "workEndTime": _formatDateTimeForAPI(_workEndTime),
       "mechanicWorkTime": _mechanicWorkTime,
       "employeeId": DashboardHelpers.currentUser!.employeeId,
-      "machineNumber": widget.breakdownModel.machineName,
+      "machineNumber": widget.breakdownModel != null
+          ? widget.breakdownModel!.machineName
+          : '',
       "maintenanceTypeId": _selectedMaintenanceType!.maintenanceTypeId,
       "waitingTime": _selectedWaitingTime,
       "solution": _solutionController.text,

@@ -176,7 +176,9 @@ class DeletePostNotifier extends StateNotifier<AsyncValue<void>> {
 
 
 
-final selectedDateProvider = StateProvider<String>((ref) => '');
+final selectedDateProvider = StateProvider<String>((ref) {
+  return DateFormat('yyyy-MM-dd').format(DateTime.now());
+});
 
 final efficiencyDataProvider = FutureProvider<List<ItemEfficiencyModel>>((ref) async {
   final date = ref.watch(selectedDateProvider);
