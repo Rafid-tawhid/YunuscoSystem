@@ -53,6 +53,89 @@ const List<String> problemTasks = [
   'Dust Collection Problem',
 ];
 
+// ==================== WIDGET VISIBILITY CONTROLLER ====================
+class _WidgetVisibilityController {
+  bool showMachineDetails = true;
+  bool showDateCard = true;
+  bool showMaintenanceSection = true;
+  bool showProcessSection = true;
+  bool showTimeSection = true;
+  bool showDynamicFields = true;
+  bool showSolutionSection = true;
+  bool showSubmitButton = true;
+  bool showProgressIndicator = true;
+
+  void toggleAll({bool? show}) {
+    if (show != null) {
+      showMachineDetails = show;
+      showDateCard = show;
+      showMaintenanceSection = show;
+      showProcessSection = show;
+      showTimeSection = show;
+      showDynamicFields = show;
+      showSolutionSection = show;
+      showSubmitButton = show;
+      showProgressIndicator = show;
+    } else {
+      // Toggle all
+      final newState = !showMachineDetails;
+      showMachineDetails = newState;
+      showDateCard = newState;
+      showMaintenanceSection = newState;
+      showProcessSection = newState;
+      showTimeSection = newState;
+      showDynamicFields = newState;
+      showSolutionSection = newState;
+      showSubmitButton = newState;
+      showProgressIndicator = newState;
+    }
+  }
+
+  void setVisibility({
+    bool? machineDetails,
+    bool? dateCard,
+    bool? maintenanceSection,
+    bool? processSection,
+    bool? timeSection,
+    bool? dynamicFields,
+    bool? solutionSection,
+    bool? submitButton,
+    bool? progressIndicator,
+  }) {
+    if (machineDetails != null) showMachineDetails = machineDetails;
+    if (dateCard != null) showDateCard = dateCard;
+    if (maintenanceSection != null) showMaintenanceSection = maintenanceSection;
+    if (processSection != null) showProcessSection = processSection;
+    if (timeSection != null) showTimeSection = timeSection;
+    if (dynamicFields != null) showDynamicFields = dynamicFields;
+    if (solutionSection != null) showSolutionSection = solutionSection;
+    if (submitButton != null) showSubmitButton = submitButton;
+    if (progressIndicator != null) showProgressIndicator = progressIndicator;
+  }
+
+  void showOnly({
+    bool machineDetails = false,
+    bool dateCard = false,
+    bool maintenanceSection = false,
+    bool processSection = false,
+    bool timeSection = false,
+    bool dynamicFields = false,
+    bool solutionSection = false,
+    bool submitButton = false,
+    bool progressIndicator = false,
+  }) {
+    showMachineDetails = machineDetails;
+    showDateCard = dateCard;
+    showMaintenanceSection = maintenanceSection;
+    showProcessSection = processSection;
+    showTimeSection = timeSection;
+    showDynamicFields = dynamicFields;
+    showSolutionSection = solutionSection;
+    showSubmitButton = submitButton;
+    showProgressIndicator = progressIndicator;
+  }
+}
+
 // ==================== WIDGET CLASSES ====================
 
 class MachineProblemRequestScreen extends ConsumerStatefulWidget {
@@ -72,6 +155,7 @@ class _MachineProblemRequestScreenState
   // State variables
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
+  final _widgetVisibility = _WidgetVisibilityController();
 
   // Form data
   MaintananceTypeModel? _selectedMaintenanceType;
@@ -117,6 +201,77 @@ class _MachineProblemRequestScreenState
     _remarksController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  // ==================== WIDGET VISIBILITY CONTROL METHODS ====================
+  void showAllWidgets() {
+    setState(() {
+      _widgetVisibility.toggleAll(show: true);
+    });
+  }
+
+  void hideAllWidgets() {
+    setState(() {
+      _widgetVisibility.toggleAll(show: false);
+    });
+  }
+
+  void toggleAllWidgets() {
+    setState(() {
+      _widgetVisibility.toggleAll();
+    });
+  }
+
+  void setWidgetVisibility({
+    bool? machineDetails,
+    bool? dateCard,
+    bool? maintenanceSection,
+    bool? processSection,
+    bool? timeSection,
+    bool? dynamicFields,
+    bool? solutionSection,
+    bool? submitButton,
+    bool? progressIndicator,
+  }) {
+    setState(() {
+      _widgetVisibility.setVisibility(
+        machineDetails: machineDetails,
+        dateCard: dateCard,
+        maintenanceSection: maintenanceSection,
+        processSection: processSection,
+        timeSection: timeSection,
+        dynamicFields: dynamicFields,
+        solutionSection: solutionSection,
+        submitButton: submitButton,
+        progressIndicator: progressIndicator,
+      );
+    });
+  }
+
+  void showOnly({
+    bool machineDetails = false,
+    bool dateCard = false,
+    bool maintenanceSection = false,
+    bool processSection = false,
+    bool timeSection = false,
+    bool dynamicFields = false,
+    bool solutionSection = false,
+    bool submitButton = false,
+    bool progressIndicator = false,
+  }) {
+    setState(() {
+      _widgetVisibility.showOnly(
+        machineDetails: machineDetails,
+        dateCard: dateCard,
+        maintenanceSection: maintenanceSection,
+        processSection: processSection,
+        timeSection: timeSection,
+        dynamicFields: dynamicFields,
+        solutionSection: solutionSection,
+        submitButton: submitButton,
+        progressIndicator: progressIndicator,
+      );
+    });
   }
 
   // ==================== DATA LOADING ====================
@@ -405,7 +560,8 @@ class _MachineProblemRequestScreenState
         child: Column(
           children: [
             // Progress indicator
-            if (_isSubmitting) _buildProgressIndicator(),
+            if (_isSubmitting && _widgetVisibility.showProgressIndicator)
+              _buildProgressIndicator(),
 
             Expanded(
               child: _buildMainContent(
@@ -442,37 +598,41 @@ class _MachineProblemRequestScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Machine Details (only for existing breakdowns)
-            if (widget.breakdownModel != null) _buildMachineDetailsCard(),
+            if (widget.breakdownModel != null && _widgetVisibility.showMachineDetails)
+              _buildMachineDetailsCard(),
 
             // Current Date Card
-            _buildDateCard(),
+            if (_widgetVisibility.showDateCard) _buildDateCard(),
 
             const SizedBox(height: 20),
 
             // Maintenance Type Section
-            _buildMaintenanceTypeSection(maintenanceTypesAsync),
+            if (_widgetVisibility.showMaintenanceSection)
+              _buildMaintenanceTypeSection(maintenanceTypesAsync),
 
             const SizedBox(height: 20),
 
             // Process Name (only for existing breakdowns)
-            if (widget.breakdownModel != null)
+            if (widget.breakdownModel != null && _widgetVisibility.showProcessSection)
               _buildProcessNameSection(processNameList),
 
             // Time Selection Section
-            _buildTimeSelectionSection(),
+            if (_widgetVisibility.showTimeSection) _buildTimeSelectionSection(),
 
             const SizedBox(height: 20),
 
             // Dynamic Fields based on Maintenance Type
-            if (_selectedMaintenanceType != null) _buildDynamicFieldsSection(),
+            if (_selectedMaintenanceType != null && _widgetVisibility.showDynamicFields)
+              _buildDynamicFieldsSection(),
 
             // Solution Field (only for new requests)
-            if (widget.breakdownModel == null) _buildSolutionSection(),
+            if (widget.breakdownModel == null && _widgetVisibility.showSolutionSection)
+              _buildSolutionSection(),
 
             const SizedBox(height: 32),
 
             // Submit Button
-            _buildSubmitButton(),
+            if (_widgetVisibility.showSubmitButton) _buildSubmitButton(),
 
             const SizedBox(height: 16),
           ],
