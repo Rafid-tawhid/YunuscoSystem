@@ -23,10 +23,8 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
   final _machineCodesController = TextEditingController();
   final _problemTaskCodesController = TextEditingController();
   final _machineTypeController = TextEditingController();
-  Operations? _selectedOperation;
   ProductionLines? _productionLines;
-  Employees? _employees;
-  Tasks? _tasks;
+
 
   @override
   void dispose() {
