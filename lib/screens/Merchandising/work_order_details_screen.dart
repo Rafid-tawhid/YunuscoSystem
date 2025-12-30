@@ -291,9 +291,11 @@ class _EnhancedProductDisplayScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(item.styleName,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(item.styleNumber),
+              Flexible(
+                child: Text(item.styleName,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              Flexible(child: Text(item.styleNumber)),
             ],
           ),
           SizedBox(height: 4),
@@ -353,9 +355,16 @@ class _EnhancedProductDisplayScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(item.styleName,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(item.styleRef),
+              Flexible(
+                child: Text(item.styleName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis),
+              ),
+              SizedBox(width: 8), // Add spacing
+              Flexible(
+                child: Text(item.styleRef,
+                    overflow: TextOverflow.ellipsis),
+              ),
             ],
           ),
           SizedBox(height: 4),
@@ -411,11 +420,13 @@ class _EnhancedProductDisplayScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                isSummary ? 'Summary' : item.styleName,
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Flexible(
+                child: Text(
+                  isSummary ? 'Summary' : item.styleName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-              Text(item.styleRef),
+              Flexible(child: Text(item.styleRef)),
             ],
           ),
           if (item.remarks != null && item.remarks!.isNotEmpty) ...[

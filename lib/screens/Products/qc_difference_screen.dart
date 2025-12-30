@@ -293,13 +293,14 @@ class _QcDifferenceDashboardState extends ConsumerState<QcDifferenceDashboard> {
         ? 0
         : _filteredItems.fold(0, (sum, item) => sum + (item.defectDifference!.toInt() ?? 0)) / _filteredItems.length;
 
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16), // Reduced vertical padding
       child: Row(
         children: [
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12), // Reduced from 16
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -313,24 +314,24 @@ class _QcDifferenceDashboardState extends ConsumerState<QcDifferenceDashboard> {
               ),
               child: Column(
                 children: [
-                  Icon(Icons.trending_up, color: Colors.green, size: 32),
-                  const SizedBox(height: 8),
+                  Icon(Icons.trending_up, color: Colors.green, size: 24), // Reduced from 32
+                  const SizedBox(height: 6), // Reduced from 8
                   Text(
                     '$totalImprovements',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Reduced from 20
                   ),
                   Text(
                     'Improving',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 10), // Reduced from 12
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8), // Reduced from 12
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12), // Reduced from 16
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -344,24 +345,24 @@ class _QcDifferenceDashboardState extends ConsumerState<QcDifferenceDashboard> {
               ),
               child: Column(
                 children: [
-                  Icon(Icons.trending_down, color: Colors.red, size: 32),
-                  const SizedBox(height: 8),
+                  Icon(Icons.trending_down, color: Colors.red, size: 24), // Reduced from 32
+                  const SizedBox(height: 6), // Reduced from 8
                   Text(
                     '$totalDeclines',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Reduced from 20
                   ),
                   Text(
                     'Declining',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 10), // Reduced from 12
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8), // Reduced from 12
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12), // Reduced from 16
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -375,19 +376,19 @@ class _QcDifferenceDashboardState extends ConsumerState<QcDifferenceDashboard> {
               ),
               child: Column(
                 children: [
-                  Icon(Icons.analytics, color: Colors.blue, size: 32),
-                  const SizedBox(height: 8),
+                  Icon(Icons.analytics, color: Colors.blue, size: 24), // Reduced from 32
+                  const SizedBox(height: 6), // Reduced from 8
                   Text(
                     avgDefectChange.toStringAsFixed(1),
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 16, // Reduced from 20
                       fontWeight: FontWeight.bold,
                       color: _getDifferenceColor(avgDefectChange, false),
                     ),
                   ),
                   Text(
                     'Avg Change',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 10), // Reduced from 12
                   ),
                 ],
               ),
