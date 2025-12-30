@@ -227,8 +227,8 @@ class _EnhancedProductDisplayScreenState
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+      body: isLoading ?
+      const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

@@ -10,6 +10,7 @@ import 'package:yunusco_group/utils/constants.dart';
 import '../../../common_widgets/animated_images.dart';
 import '../../../models/purchase_requisation_list_model.dart';
 import '../../../models/requisition_details_model.dart';
+import '../../testing/testing2.dart';
 import '../cs_report_screen.dart';
 import '../purchase_requisation_list.dart';
 import 'accepted_requisation_number.dart';
@@ -90,10 +91,18 @@ class _RequisitionDetailsScreenState extends State<RequisitionDetailsScreen> {
                       var pp = context.read<ProductProvider>();
                       if (await pp.getSingleCSInfoByCode(widget.csCode)) {
                         if (pp.csRequisationList.isNotEmpty) {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => SupplierSelectionScreen(
+                          //       requisitions: pp.csRequisationList,
+                          //     ),
+                          //   ),
+                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SupplierSelectionScreen(
+                              builder: (context) => SupplierSelectionScreen2(
                                 requisitions: pp.csRequisationList,
                               ),
                             ),
