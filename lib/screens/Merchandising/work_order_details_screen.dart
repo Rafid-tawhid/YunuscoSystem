@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:convert';
 
+import 'package:yunusco_group/utils/colors.dart';
+
 class Product {
   final String styleName;
   final String styleNumber;
@@ -212,6 +214,8 @@ class _EnhancedProductDisplayScreenState
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: const Text('Work Order Details'),
         centerTitle: true,
         elevation: 1,
