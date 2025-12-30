@@ -370,4 +370,10 @@ CsRequisationModel copyWith({  String? code,
     return map;
   }
 
+  @override
+  String toString() {
+    return 'CsRequisationModel{_code: $_code, _productId: $_productId, _productName: $_productName, _currencyName: $_currencyName, _creditPeriod: $_creditPeriod, _payMode: $_payMode, _purchaseRequisitionCode: $_purchaseRequisitionCode, _cSDate: $_cSDate, _userName: $_userName, _purchaseType: $_purchaseType, _productCategoryName: $_productCategoryName, _uomName: $_uomName, _brandName: $_brandName, _storeType: $_storeType, _lastPurQty: $_lastPurQty, _lastPurRate: $_lastPurRate, _lastPurDate: $_lastPurDate, _csQty: $_csQty, _supplierName: $_supplierName, _rate: $_rate, _csg: $_csg, _discount: $_discount, _tax: $_tax, _vat: $_vat, _caringCost: $_caringCost, _inTax: $_inTax, _inVat: $_inVat, _oldRate: $_oldRate, _adiRate: $_adiRate, _fcRate: $_fcRate, _mgRate: $_mgRate, _comment: $_comment, _adComment: $_adComment, _fcComment: $_fcComment, _mgComment: $_mgComment, _supplierId: $_supplierId, _mtf: $_mtf, _mgt: $_mgt, _v: $_v, _t: $_t, _gateCost: $_gateCost, _warranty: $_warranty, _taxP: $_taxP, _vatP: $_vatP, _supplierChose: $_supplierChose}';
+  }
+
+
 }

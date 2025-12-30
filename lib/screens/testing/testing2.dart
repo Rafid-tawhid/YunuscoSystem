@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../../models/cs_requisation_model.dart';
 
@@ -60,7 +62,7 @@ class _SupplierSelectionScreen2State extends State<SupplierSelectionScreen2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: _buildAppBar(),
       body: _buildBody(),
       bottomNavigationBar: _buildBottomBar(),
@@ -164,6 +166,7 @@ class _SupplierSelectionScreen2State extends State<SupplierSelectionScreen2> {
     return Card(
       margin: EdgeInsets.only(bottom: 12),
       elevation: 2,
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
@@ -784,6 +787,11 @@ class _SupplierSelectionScreen2State extends State<SupplierSelectionScreen2> {
   List<ProductSelection> _getSelectedItems() {
     return _selectedProducts.values.toList();
   }
+
+
+
+
+
 }
 
 // Summary Screen for review
@@ -808,12 +816,13 @@ class SummaryScreen extends StatelessWidget {
     final currency = selections.isNotEmpty ? selections.first.supplier.currencyName : '';
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Review Selections'),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
-            onPressed: () => _saveSelections(context),
+            onPressed: () => _saveSelections(context,selections,originalRequisitions),
           ),
         ],
       ),
@@ -861,6 +870,7 @@ class SummaryScreen extends StatelessWidget {
             // Global Notes
             if (globalNotes.isNotEmpty)
               Card(
+                color: Colors.white,
                 child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -893,7 +903,7 @@ class SummaryScreen extends StatelessWidget {
               );
 
               return _buildComparisonCard(selection, original);
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -914,7 +924,7 @@ class SummaryScreen extends StatelessWidget {
             SizedBox(width: 12),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () => _saveSelections(context),
+                onPressed: () => _saveSelections(context,selections,originalRequisitions),
                 icon: Icon(Icons.save),
                 label: Text('Save All'),
                 style: ElevatedButton.styleFrom(
@@ -1034,7 +1044,8 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  void _saveSelections(BuildContext context) async {
+  void _saveSelections(BuildContext context,List<ProductSelection> selection,List<CsRequisationModel> requisitions) async {
+    _generateAndPrintComparisonData(selections);
     // Implement save logic
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -1044,9 +1055,283 @@ class SummaryScreen extends StatelessWidget {
     );
 
     // Navigate back
-    Navigator.pop(context);
-    Navigator.pop(context); // Back to previous screen
+    // Navigator.pop(context);
+    // Navigator.pop(context); // Back to previous screen
   }
+
+
+  void _generateAndPrintComparisonData(List<ProductSelection> selections) {
+    final comparisonData = _generateComparisonJSON(selections);
+
+    // Pretty print the JSON
+    final encoder = JsonEncoder.withIndent('  ');
+    final prettyJson = encoder.convert(comparisonData);
+
+    print('=' * 80);
+    print('COMPLETE COMPARISON DATA');
+    print('=' * 80);
+    print(prettyJson);
+    print('=' * 80);
+
+    // Also log to debug console
+    debugPrint(prettyJson);
+
+    // Optional: Show a snackbar with summary
+    _showComparisonSummary(comparisonData);
+  }
+
+  Map<String, dynamic> _generateComparisonJSON(List<ProductSelection> selections) {
+    final timestamp = DateTime.now().toIso8601String();
+    final allComparisons = <Map<String, dynamic>>[];
+
+    double grandTotalOriginal = 0;
+    double grandTotalSelected = 0;
+    int changedProducts = 0;
+
+    for (final selection in selections) {
+      // Find original requisition for this product
+      final original = originalRequisitions.firstWhere(
+            (req) => req.productName == selection.supplier.productName,
+        orElse: () => selection.supplier,
+      );
+
+      // Generate comparison for this product
+      final comparison = _generateProductComparison(original, selection);
+      allComparisons.add(comparison);
+
+      // Update totals
+      final originalTotal = comparison['originalTotal'] as double;
+      final selectedTotal = comparison['selectedTotal'] as double;
+
+      grandTotalOriginal += originalTotal;
+      grandTotalSelected += selectedTotal;
+
+      if (comparison['hasChanges'] == true) {
+        changedProducts++;
+      }
+    }
+
+    final netDifference = grandTotalSelected - grandTotalOriginal;
+
+    return {
+      'metadata': {
+        'timestamp': timestamp,
+        'generatedBy': 'SupplierSelectionScreen',
+        'totalProducts': selections.length,
+        'changedProducts': changedProducts,
+        'unchangedProducts': selections.length - changedProducts,
+      },
+      'financialSummary': {
+        'grandTotalOriginal': grandTotalOriginal,
+        'grandTotalSelected': grandTotalSelected,
+        'netDifference': netDifference,
+        'percentageChange': grandTotalOriginal > 0
+            ? ((netDifference / grandTotalOriginal) * 100).toStringAsFixed(2)
+            : '0.00',
+        'totalSavings': netDifference < 0 ? netDifference.abs() : 0,
+        'totalIncrease': netDifference > 0 ? netDifference : 0,
+      },
+      'comparisons': allComparisons,
+      'summaryBySupplier': _generateSupplierSummary(allComparisons),
+      'summaryByCategory': _generateCategorySummary(allComparisons),
+    };
+  }
+
+
+  double _calculateTotal(CsRequisationModel model, int quantity) {
+    final baseAmount = quantity * (model.rate ?? 0);
+    final discountAmount = baseAmount * ((model.discount ?? 0) / 100);
+    final csgAmount = model.csg ?? 0;
+    final caringCost = model.caringCost ?? 0;
+    final taxAmount = model.taxP ?? 0;
+    final vatAmount = model.vatP ?? 0;
+    final gateCost = model.gateCost ?? 0;
+
+    return baseAmount - discountAmount + csgAmount + caringCost +
+        taxAmount + vatAmount + gateCost;
+  }
+
+  void _addChangeIfDifferent(
+      Map<String, dynamic> changes,
+      String fieldName,
+      dynamic originalValue,
+      dynamic newValue,
+      ) {
+    if (originalValue != newValue) {
+      changes[fieldName] = {
+        'original': originalValue,
+        'new': newValue,
+        'changedAt': DateTime.now().toIso8601String(),
+      };
+    }
+  }
+
+  Map<String, dynamic> _generateCategorySummary(List<Map<String, dynamic>> comparisons) {
+    final summary = <String, Map<String, dynamic>>{};
+
+    for (final comp in comparisons) {
+      final category = comp['category'] as String? ?? 'Uncategorized';
+      final originalTotal = comp['originalTotal'] as double;
+      final selectedTotal = comp['selectedTotal'] as double;
+
+      if (!summary.containsKey(category)) {
+        summary[category] = {
+          'count': 0,
+          'originalTotal': 0.0,
+          'selectedTotal': 0.0,
+          'difference': 0.0,
+          'products': [],
+        };
+      }
+
+      final data = summary[category]!;
+      data['count'] = (data['count'] as int) + 1;
+      data['originalTotal'] = (data['originalTotal'] as double) + originalTotal;
+      data['selectedTotal'] = (data['selectedTotal'] as double) + selectedTotal;
+      data['difference'] = (data['difference'] as double) + (selectedTotal - originalTotal);
+      (data['products'] as List).add(comp['productName']);
+    }
+
+    return summary;
+  }
+
+
+  Map<String, dynamic> _generateSupplierSummary(List<Map<String, dynamic>> comparisons) {
+    final summary = <String, Map<String, dynamic>>{};
+
+    for (final comp in comparisons) {
+      final supplier = comp['selectedSupplier']['name'] as String? ?? 'Unknown';
+      final amount = comp['selectedTotal'] as double;
+
+      if (!summary.containsKey(supplier)) {
+        summary[supplier] = {
+          'count': 0,
+          'totalAmount': 0.0,
+          'products': [],
+          'averageAmount': 0.0,
+        };
+      }
+
+      final data = summary[supplier]!;
+      data['count'] = (data['count'] as int) + 1;
+      data['totalAmount'] = (data['totalAmount'] as double) + amount;
+      (data['products'] as List).add({
+        'name': comp['productName'],
+        'amount': amount,
+        'quantity': comp['quantities']['selected'],
+      });
+    }
+
+    // Calculate average
+    for (final entry in summary.entries) {
+      final data = entry.value;
+      final count = data['count'] as int;
+      final total = data['totalAmount'] as double;
+      data['averageAmount'] = count > 0 ? total / count : 0;
+    }
+
+    return summary;
+  }
+  void _showComparisonSummary(Map<String, dynamic> comparisonData) {
+    final metadata = comparisonData['metadata'] as Map<String, dynamic>;
+    final financial = comparisonData['financialSummary'] as Map<String, dynamic>;
+
+  }
+
+  Map<String, dynamic> _generateProductComparison(
+      CsRequisationModel original,
+      ProductSelection selection,
+      ) {
+    // Calculate totals
+    final originalTotal = _calculateTotal(original, original.csQty!.toInt() ?? 0);
+    final selectedTotal = _calculateTotal(selection.supplier, selection.quantity);
+
+    // Find all changes
+    final changes = <String, Map<String, dynamic>>{};
+
+    // Compare all fields
+    _addChangeIfDifferent(changes, 'supplierName',
+        original.supplierName, selection.supplier.supplierName);
+    _addChangeIfDifferent(changes, 'supplierId',
+        original.supplierId, selection.supplier.supplierId);
+    _addChangeIfDifferent(changes, 'rate',
+        original.rate, selection.supplier.rate);
+    _addChangeIfDifferent(changes, 'quantity',
+        original.csQty, selection.quantity);
+    _addChangeIfDifferent(changes, 'discount',
+        original.discount, selection.supplier.discount);
+    _addChangeIfDifferent(changes, 'csg',
+        original.csg, selection.supplier.csg);
+    _addChangeIfDifferent(changes, 'tax',
+        original.tax, selection.supplier.tax);
+    _addChangeIfDifferent(changes, 'vat',
+        original.vat, selection.supplier.vat);
+    _addChangeIfDifferent(changes, 'taxP',
+        original.taxP, selection.supplier.taxP);
+    _addChangeIfDifferent(changes, 'vatP',
+        original.vatP, selection.supplier.vatP);
+    _addChangeIfDifferent(changes, 'caringCost',
+        original.caringCost, selection.supplier.caringCost);
+    _addChangeIfDifferent(changes, 'gateCost',
+        original.gateCost, selection.supplier.gateCost);
+    _addChangeIfDifferent(changes, 'warranty',
+        original.warranty, selection.supplier.warranty);
+    _addChangeIfDifferent(changes, 'creditPeriod',
+        original.creditPeriod, selection.supplier.creditPeriod);
+    _addChangeIfDifferent(changes, 'payMode',
+        original.payMode, selection.supplier.payMode);
+
+    return {
+      'productId': original.productId,
+      'productName': original.productName,
+      'productCode': original.code,
+      'category': original.productCategoryName,
+      'brand': original.brandName,
+      'uom': original.uomName,
+
+      'originalSupplier': {
+        'name': original.supplierName,
+        'id': original.supplierId,
+      },
+      'selectedSupplier': {
+        'name': selection.supplier.supplierName,
+        'id': selection.supplier.supplierId,
+      },
+
+      'pricing': {
+        'originalRate': original.rate,
+        'selectedRate': selection.supplier.rate,
+        'currency': original.currencyName,
+        'originalDiscount': original.discount,
+        'selectedDiscount': selection.supplier.discount,
+      },
+
+      'quantities': {
+        'original': original.csQty,
+        'selected': selection.quantity,
+        'uom': original.uomName,
+      },
+
+      'totals': {
+        'original': originalTotal,
+        'selected': selectedTotal,
+        'difference': selectedTotal - originalTotal,
+        'currency': original.currencyName,
+      },
+
+      'changes': changes,
+      'hasChanges': changes.isNotEmpty,
+      'originalTotal': originalTotal,
+      'selectedTotal': selectedTotal,
+      'difference': selectedTotal - originalTotal,
+
+      'notes': selection.notes,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+  }
+
+
+
 }
 
 // Helper Classes
@@ -1084,4 +1369,22 @@ class ProductGroup {
     required this.suppliers,
     required this.commonData,
   });
+
+  @override
+  String toString() {
+    return 'ProductGroup{productName: $productName, suppliers: $suppliers, commonData: $commonData}';
+  }
+
+
+
+
+
 }
+
+
+
+///none
+///
+///
+
+// In _SupplierSelectionScreenState class
