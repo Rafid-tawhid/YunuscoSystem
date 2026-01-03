@@ -20,8 +20,19 @@ const List<String> problemTasks = [
   'Emergency Repair',
 ];
 
-class MachineMultipleProblemRequestScreen extends ConsumerStatefulWidget {
+// Machine codes and types lists
+const List<String> _machineCodes = [
+  'MC-001', 'MC-002', 'MC-003',
+  'MC-004', 'MC-005', 'MC-006',
+];
 
+const List<String> _machineTypes = [
+  'CNC Machine', 'Lathe Machine', 'Milling Machine',
+  'Drilling Machine', 'Grinding Machine', 'Welding Machine',
+  'Cutting Machine', 'Press Machine',
+];
+
+class MachineMultipleProblemRequestScreen extends ConsumerStatefulWidget {
   const MachineMultipleProblemRequestScreen({
     super.key
   });
@@ -40,9 +51,9 @@ class _MachineMultipleProblemRequestScreenState
   String? _problemTask;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
-
+  String? _selectedMachineCode;
+  String? _selectedMachineType;
   bool _isSubmitting = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +62,7 @@ class _MachineMultipleProblemRequestScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Repair Request'),
+        title: const Text('Machine Repair'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
       ),
@@ -65,7 +76,6 @@ class _MachineMultipleProblemRequestScreenState
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => _errorWidget(e.toString()),
               data: (processList) {
-
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -79,19 +89,46 @@ class _MachineMultipleProblemRequestScreenState
 
                     //  _processDropdown(processList),
 
-                    ProcessDropdown(
-                      processes: processList,
-                      selectedProcess: _process,
-                      onChanged: (ProcessNameModel? p1) {
-                        setState(() {
-                          _process=p1;
-                        });
+                  if(_maintenanceType!=null&&_maintenanceType!.maintenanceTypeId!=4)  Column(
+                    children: [
+                      ProcessDropdown(
+                          processes: processList,
+                          selectedProcess: _process,
+                          onChanged: (ProcessNameModel? p1) {
+                            setState(() {
+                              _process=p1;
+                            });
+                          },),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
 
-                      },),
-                    const SizedBox(height: 16),
 
-                    _problemDropdown(),
-                    const SizedBox(height: 16),
+                    if(_maintenanceType!=null&&_maintenanceType!.maintenanceTypeId!=3)    Column(
+                      children: [
+                        _problemDropdown(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+
+
+                    // Machine Code Dropdown
+                    if(_maintenanceType!=null&&_maintenanceType!.maintenanceTypeId!=2)  Column(
+                      children: [
+                        _machineCodeDropdown(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+
+
+                    // Machine Type Dropdown
+                    if(_maintenanceType!=null&&_maintenanceType!.maintenanceTypeId!=2) Column(
+                      children: [
+                        _machineTypeDropdown(),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+
 
                     _timePicker(
                       label: 'Work Start Time',
@@ -162,6 +199,7 @@ class _MachineMultipleProblemRequestScreenState
   // ---------------- DROPDOWNS ----------------
 
   Widget _maintenanceDropdown(List<MaintananceTypeModel> types) {
+    types.removeWhere((e)=>e.maintenanceTypeId==1);
 
     return DropdownButtonFormField<MaintananceTypeModel>(
       value: _maintenanceType,
@@ -182,6 +220,45 @@ class _MachineMultipleProblemRequestScreenState
     );
   }
 
+  Widget _machineCodeDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedMachineCode,
+      decoration: const InputDecoration(
+        labelText: 'Machine Code *',
+        border: OutlineInputBorder(),
+      ),
+      items: _machineCodes
+          .map(
+            (e) => DropdownMenuItem(
+          value: e,
+          child: Text(e),
+        ),
+      )
+          .toList(),
+      validator: (v) => v == null ? 'Required' : null,
+      onChanged: (v) => setState(() => _selectedMachineCode = v),
+    );
+  }
+
+  Widget _machineTypeDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedMachineType,
+      decoration: const InputDecoration(
+        labelText: 'Machine Type *',
+        border: OutlineInputBorder(),
+      ),
+      items: _machineTypes
+          .map(
+            (e) => DropdownMenuItem(
+          value: e,
+          child: Text(e),
+        ),
+      )
+          .toList(),
+      validator: (v) => v == null ? 'Required' : null,
+      onChanged: (v) => setState(() => _selectedMachineType = v),
+    );
+  }
 
   Widget _maintenanceTypeText(MaintananceTypeModel type) {
     return Container(
@@ -217,8 +294,6 @@ class _MachineMultipleProblemRequestScreenState
     );
   }
 
-
-
   Widget _problemDropdown() {
     return DropdownButtonFormField<String>(
       value: _problemTask,
@@ -246,18 +321,36 @@ class _MachineMultipleProblemRequestScreenState
     required TimeOfDay? time,
     required Function(TimeOfDay) onPicked,
   }) {
+    // Custom 12-hour format function
+    String _format12Hour(TimeOfDay? timeOfDay) {
+      if (timeOfDay == null) return 'Select time';
+
+      final hour = timeOfDay.hourOfPeriod == 0 ? 12 : timeOfDay.hourOfPeriod;
+      final minute = timeOfDay.minute.toString().padLeft(2, '0');
+      final period = timeOfDay.period == DayPeriod.am ? 'AM' : 'PM';
+      return '$hour:$minute $period';
+    }
+
     return ListTile(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(color: Colors.grey.shade300),
       ),
       title: Text(label),
-      subtitle: Text(time?.format(context) ?? 'Select time'),
+      subtitle: Text(_format12Hour(time)), // Use custom formatter
       trailing: const Icon(Icons.access_time),
       onTap: () async {
         final picked = await showTimePicker(
           context: context,
           initialTime: TimeOfDay.now(),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                alwaysUse24HourFormat: false, // Force 12-hour format
+              ),
+              child: child!,
+            );
+          },
         );
         if (picked != null) onPicked(picked);
       },
@@ -276,7 +369,7 @@ class _MachineMultipleProblemRequestScreenState
         ),
         child: _isSubmitting
             ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('Submit Request'),
+            : const Text('Submit Request',style: TextStyle(color: Colors.white),),
       ),
     );
   }
@@ -300,12 +393,14 @@ class _MachineMultipleProblemRequestScreenState
         "workEndTime": _toApiTime(_endTime!),
         "employeeId": DashboardHelpers.currentUser?.employeeId ?? 0,
         "machineNumber": '',
+        "machineCode": _selectedMachineCode,
+        "machineType": _selectedMachineType,
       };
 
-      await apiService.postData(
-        'api/Manufacturing/UpdateRequisition',
-        payload,
-      );
+      // await apiService.postData(
+      //   'api/Manufacturing/UpdateRequisition',
+      //   payload,
+      // );
 
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -318,7 +413,8 @@ class _MachineMultipleProblemRequestScreenState
   String _toApiTime(TimeOfDay t) {
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, t.hour, t.minute);
-    return DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dt);
+    // 'h' for 12-hour format, 'a' for AM/PM
+    return DateFormat("yyyy-MM-dd'T'hh:mm:ss a").format(dt).toLowerCase();
   }
 
   // ---------------- HELPERS ----------------
