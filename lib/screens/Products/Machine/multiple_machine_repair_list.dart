@@ -20,21 +20,19 @@ const List<String> problemTasks = [
   'Emergency Repair',
 ];
 
-class MachineProblemRequestScreen extends ConsumerStatefulWidget {
-  final MachineBreakdownModel breakdownModel;
+class MachineMultipleProblemRequestScreen extends ConsumerStatefulWidget {
 
-  const MachineProblemRequestScreen({
-    super.key,
-    required this.breakdownModel,
+  const MachineMultipleProblemRequestScreen({
+    super.key
   });
 
   @override
-  ConsumerState<MachineProblemRequestScreen> createState() =>
-      _MachineProblemRequestScreenState();
+  ConsumerState<MachineMultipleProblemRequestScreen> createState() =>
+      _MachineMultipleProblemRequestScreenState();
 }
 
-class _MachineProblemRequestScreenState
-    extends ConsumerState<MachineProblemRequestScreen> {
+class _MachineMultipleProblemRequestScreenState
+    extends ConsumerState<MachineMultipleProblemRequestScreen> {
   final _formKey = GlobalKey<FormState>();
 
   MaintananceTypeModel? _maintenanceType;
@@ -71,15 +69,15 @@ class _MachineProblemRequestScreenState
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    _machineInfoCard(),
+                    //_machineInfoCard(),
                     const SizedBox(height: 16),
 
                     _maintenanceDropdown(types),
 
-                   // _maintenanceTypeText(types.first),
+                    // _maintenanceTypeText(types.first),
                     const SizedBox(height: 16),
 
-                  //  _processDropdown(processList),
+                    //  _processDropdown(processList),
 
                     ProcessDropdown(
                       processes: processList,
@@ -134,9 +132,9 @@ class _MachineProblemRequestScreenState
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            _infoRow('Machine', widget.breakdownModel.machineName ?? 'N/A'),
-            _infoRow('Section', widget.breakdownModel.sectionName ?? 'N/A'),
-            _infoRow('Line', widget.breakdownModel.lineName ?? 'N/A'),
+            // _infoRow('Machine', widget.breakdownModel.machineName ?? 'N/A'),
+            // _infoRow('Section', widget.breakdownModel.sectionName ?? 'N/A'),
+            // _infoRow('Line', widget.breakdownModel.lineName ?? 'N/A'),
           ],
         ),
       ),
@@ -301,7 +299,7 @@ class _MachineProblemRequestScreenState
         "workStartTime": _toApiTime(_startTime!),
         "workEndTime": _toApiTime(_endTime!),
         "employeeId": DashboardHelpers.currentUser?.employeeId ?? 0,
-        "machineNumber": widget.breakdownModel.machineName,
+        "machineNumber": '',
       };
 
       await apiService.postData(

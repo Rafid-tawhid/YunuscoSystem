@@ -9,6 +9,7 @@ import '../../../models/machine_breakdown_model.dart';
 import '../../../providers/riverpods/production_provider.dart';
 import 'machine_problem_request.dart';
 import 'machine_repair_screen.dart';
+import 'multiple_machine_repair_list.dart';
 
 class MachineBreakdownListScreen extends ConsumerWidget {
   const MachineBreakdownListScreen({super.key});
@@ -27,7 +28,7 @@ class MachineBreakdownListScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>MachineProblemRequestScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MachineMultipleProblemRequestScreen()));
             },
             tooltip: 'Setup',
           ),

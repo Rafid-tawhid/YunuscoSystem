@@ -6,15 +6,10 @@ import 'package:yunusco_group/utils/constants.dart';
 
 import '../../models/purchase_order_model.dart';
 
-
-
 class PurchaseOrdersListScreen extends StatefulWidget {
-  final List<PurchaseOrderModel> purchaseOrders;
-
-  const PurchaseOrdersListScreen({Key? key, required this.purchaseOrders}) : super(key: key);
-
   @override
-  _PurchaseOrdersListScreenState createState() => _PurchaseOrdersListScreenState();
+  _PurchaseOrdersListScreenState createState() =>
+      _PurchaseOrdersListScreenState();
 }
 
 class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
@@ -29,38 +24,40 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
 
   @override
   void initState() {
-   // getPurchaseInfo();
+    getPurchaseInfo();
     super.initState();
   }
-  void getPurchaseInfo() {
-    var pp=context.read<ProductProvider>();
-   // pp.getAllPurchaseList();
+
+  Future<void> getPurchaseInfo() async {
+    WidgetsBinding.instance.addPostFrameCallback((v) async {
+      var pp = context.read<ProductProvider>();
+      await pp.getAllPurchaseList('1', '50');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: _isSearching
             ? TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: "Search...",
-            border: InputBorder.none,
-          ),
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          onChanged: (value) {
-            // 🔍 Handle search logic here
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: "Search...",
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                onChanged: (value) {
+                  // 🔍 Handle search logic here
 
-              var pp=context.read<ProductProvider>();
-              pp.getAllPurchaseSearchList(value);
+                  var pp = context.read<ProductProvider>();
+                  pp.getAllPurchaseSearchList(value);
 
-            print("Searching for $value");
-          },
-        )
+                  print("Searching for $value");
+                },
+              )
             : const Text("Purchase Orders"),
         backgroundColor: myColors.primaryColor, // your myColors.primaryColor
         foregroundColor: Colors.white,
@@ -73,9 +70,8 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
                 _isSearching = !_isSearching;
                 if (!_isSearching) {
                   _searchController.clear();
-                  var pp=context.read<ProductProvider>();
-                  pp.getAllPurchaseList('$_currentPage','50');
-
+                  var pp = context.read<ProductProvider>();
+                  pp.getAllPurchaseList('$_currentPage', '50');
                 }
               });
             },
@@ -84,7 +80,6 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
       ),
       body: Column(
         children: [
-
           // Results count
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -92,7 +87,7 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Consumer<ProductProvider>(
-                  builder: (context,pro,_)=>Text(
+                  builder: (context, pro, _) => Text(
                     '${pro.purchaseList.length} orders found',
                     style: TextStyle(
                       color: Colors.grey.shade600,
@@ -121,50 +116,60 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
           ),
           const SizedBox(height: 8),
           // Purchase orders list
-          Expanded(
-            child: widget.purchaseOrders.isEmpty
-                ? _buildEmptyState()
-                : Consumer<ProductProvider>(
-                  builder: (context,pro,_)=>pro.isLoading?Center(child: SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: CircularProgressIndicator())):ListView.builder(
-                    itemCount: widget.purchaseOrders.length,
-                    itemBuilder: (context, index) {
-                      return _buildOrderCard(widget.purchaseOrders[index]);
-                    },
-                  ),
-                ),
+          Consumer<ProductProvider>(
+            builder: (context, pp, _) => Expanded(
+              child: pp.isLoading
+                  ? Center(
+                      child: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: CircularProgressIndicator()))
+                  : pp.purchaseList.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          itemCount: pp.purchaseList.length,
+                          itemBuilder: (context, index) {
+                            return _buildOrderCard(pp.purchaseList[index]);
+                          },
+                        ),
+            ),
           ),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
               Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: IconButton(onPressed: () async {
-                  setState(() {
-                    _currentPage=_currentPage-1;
-                  });
-                  debugPrint('_currentPage $_currentPage');
-                  var pp=context.read<ProductProvider>();
-                  await pp.getAllPurchaseList(_currentPage.toString(),'50');
-                }, icon: Icon(Icons.arrow_back_ios)),
+                child: IconButton(
+                    onPressed: () async {
+                      setState(() {
+                        _currentPage = _currentPage - 1;
+                      });
+                      debugPrint('_currentPage $_currentPage');
+                      var pp = context.read<ProductProvider>();
+                      await pp.getAllPurchaseList(
+                          _currentPage.toString(), '50');
+                    },
+                    icon: Icon(Icons.arrow_back_ios)),
               ),
-              Text(_currentPage.toString(),style: customTextStyle(20, Colors.black, FontWeight.bold),),
+              Text(
+                _currentPage.toString(),
+                style: customTextStyle(20, Colors.black, FontWeight.bold),
+              ),
               Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: IconButton(onPressed: () async {
-                  setState(() {
-                    _currentPage=_currentPage+1;
-                  });
-                  var pp=context.read<ProductProvider>();
-                  debugPrint('_currentPage $_currentPage');
-                  await pp.getAllPurchaseList(_currentPage.toString(),'50');
-                }, icon: Icon(Icons.arrow_forward_ios)),
+                child: IconButton(
+                    onPressed: () async {
+                      setState(() {
+                        _currentPage = _currentPage + 1;
+                      });
+                      var pp = context.read<ProductProvider>();
+                      debugPrint('_currentPage $_currentPage');
+                      await pp.getAllPurchaseList(
+                          _currentPage.toString(), '50');
+                    },
+                    icon: Icon(Icons.arrow_forward_ios)),
               ),
-
             ],
           ),
           // PaginationBox(
@@ -178,7 +183,6 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
           //     debugPrint('_currentPage $_currentPage');
           //   },
           // ),
-
         ],
       ),
     );
@@ -212,15 +216,20 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: order.isConfirmed == true ? Colors.green.shade100 : Colors.orange.shade100,
+                      color: order.isConfirmed == true
+                          ? Colors.green.shade100
+                          : Colors.orange.shade100,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       order.isConfirmed == true ? 'Confirmed' : 'Pending',
                       style: TextStyle(
-                        color: order.isConfirmed == true ? Colors.green.shade800 : Colors.orange.shade800,
+                        color: order.isConfirmed == true
+                            ? Colors.green.shade800
+                            : Colors.orange.shade800,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -234,9 +243,11 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
               const SizedBox(height: 8),
               _buildDetailRow('Order Date', _formatDate(order.orderDate)),
               const SizedBox(height: 8),
-              _buildDetailRow('Type', '${order.orderType} • ${order.purchaseType}'),
+              _buildDetailRow(
+                  'Type', '${order.orderType} • ${order.purchaseType}'),
               const SizedBox(height: 8),
-              if (order.approve != null) _buildDetailRow('Approver', order.approve!),
+              if (order.approve != null)
+                _buildDetailRow('Approver', order.approve!),
               if (order.remarks != null && order.remarks!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 _buildDetailRow('Remarks', order.remarks!),
@@ -245,15 +256,6 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  List<dynamic> get _currentPageItems {
-    final startIndex = (_currentPage - 1) * _itemsPerPage;
-    final endIndex = startIndex + _itemsPerPage;
-    return widget.purchaseOrders.sublist(
-      startIndex,
-      endIndex > widget.purchaseOrders.length ? widget.purchaseOrders.length : endIndex,
     );
   }
 
@@ -314,8 +316,6 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
     );
   }
 
-
-
   void _showOrderDetails(PurchaseOrderModel order) {
     showModalBottomSheet(
       context: context,
@@ -356,15 +356,20 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: order.isConfirmed == true ? Colors.green.shade100 : Colors.orange.shade100,
+                            color: order.isConfirmed == true
+                                ? Colors.green.shade100
+                                : Colors.orange.shade100,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             order.isConfirmed == true ? 'Confirmed' : 'Pending',
                             style: TextStyle(
-                              color: order.isConfirmed == true ? Colors.green.shade800 : Colors.orange.shade800,
+                              color: order.isConfirmed == true
+                                  ? Colors.green.shade800
+                                  : Colors.orange.shade800,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -381,12 +386,18 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildDetailItem('Supplier', order.supplierName ?? 'N/A'),
-                    _buildDetailItem('Order Date', _formatDate(order.orderDate)),
+                    _buildDetailItem(
+                        'Order Date', _formatDate(order.orderDate)),
                     _buildDetailItem('Order Type', order.orderType ?? 'N/A'),
-                    _buildDetailItem('Purchase Type', order.purchaseType ?? 'N/A'),
-                    if (order.approvalFieldCode != null) _buildDetailItem('Approval Code', order.approvalFieldCode.toString()),
-                    if (order.approve != null) _buildDetailItem('Approver', order.approve!),
-                    if (order.remarks != null && order.remarks!.isNotEmpty) _buildDetailItem('Remarks', order.remarks!),
+                    _buildDetailItem(
+                        'Purchase Type', order.purchaseType ?? 'N/A'),
+                    if (order.approvalFieldCode != null)
+                      _buildDetailItem(
+                          'Approval Code', order.approvalFieldCode.toString()),
+                    if (order.approve != null)
+                      _buildDetailItem('Approver', order.approve!),
+                    if (order.remarks != null && order.remarks!.isNotEmpty)
+                      _buildDetailItem('Remarks', order.remarks!),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
@@ -401,7 +412,11 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child:  Text('View Full Details',style: customTextStyle(18, Colors.white, FontWeight.normal),),
+                        child: Text(
+                          'View Full Details',
+                          style: customTextStyle(
+                              18, Colors.white, FontWeight.normal),
+                        ),
                       ),
                     ),
                   ],
@@ -452,5 +467,3 @@ class _PurchaseOrdersListScreenState extends State<PurchaseOrdersListScreen> {
     }
   }
 }
-
-
