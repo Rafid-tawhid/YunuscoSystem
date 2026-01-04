@@ -1,6 +1,8 @@
 // announcements_screen.dart
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/screens/Management/widgets/create_post_screen.dart';
 import '../../models/announcement_model.dart';
 import '../../providers/riverpods/management_provider.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +27,13 @@ class AnnouncementsScreen extends ConsumerWidget {
         centerTitle: true,
         elevation: 0,
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, CupertinoPageRoute(builder: (context)=>AnnouncementPostScreen()));
+            },
+            icon: const Icon(Icons.add),
+            tooltip: 'Create',
+          ),
           IconButton(
             onPressed: () {
               ref.invalidate(announcementsProvider);

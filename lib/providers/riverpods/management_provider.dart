@@ -271,8 +271,72 @@ final announcementsProvider = FutureProvider<List<AnnouncementModel>>((ref) asyn
       announcementList.add(AnnouncementModel.fromJson(i));
     }
   }
-
-
   return announcementList;
 });
 
+
+
+final announcementServiceProvider = Provider((ref) => ApiService());
+
+// management_provider.dart - Add this to your existing file
+final postAnnouncementProvider = StateNotifierProvider.autoDispose<
+    PostAnnouncementNotifier, PostAnnouncementState>(
+      (ref) => PostAnnouncementNotifier(ref.read(announcementServiceProvider)),
+);
+
+class PostAnnouncementState {
+  final bool isLoading;
+  final bool isSuccess;
+  final String? error;
+
+  PostAnnouncementState({
+    this.isLoading = false,
+    this.isSuccess = false,
+    this.error,
+  });
+
+  PostAnnouncementState copyWith({
+    bool? isLoading,
+    bool? isSuccess,
+    String? error,
+  }) {
+    return PostAnnouncementState(
+      isLoading: isLoading ?? this.isLoading,
+      isSuccess: isSuccess ?? this.isSuccess,
+      error: error ?? this.error,
+    );
+  }
+}
+
+class PostAnnouncementNotifier extends StateNotifier<PostAnnouncementState> {
+  final ApiService _service;
+
+  PostAnnouncementNotifier(this._service) : super(PostAnnouncementState());
+
+  Future<void> postAnnouncement(Map<String, dynamic> data) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null, isSuccess: false);
+
+      // Adjust endpoint based on your API
+      final response = await _service.postData('api/Support/SaveAnnouncement', data);
+
+      if (response != null) {
+        state = state.copyWith(isLoading: false, isSuccess: true);
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Failed to post announcement',
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Error: $e',
+      );
+    }
+  }
+
+  void reset() {
+    state = PostAnnouncementState();
+  }
+}
