@@ -151,7 +151,7 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         iconColor: Colors.red.shade700,
         onTap: () {
           Navigator.push(context,
-              CupertinoPageRoute(builder: (context) => AnnouncementScreen()));
+              CupertinoPageRoute(builder: (context) => AnnouncementsScreen()));
         },
       ),
     ];

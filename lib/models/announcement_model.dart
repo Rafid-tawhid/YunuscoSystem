@@ -1,94 +1,86 @@
-// models/AnnouncementModel_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class AnnouncementModel {
-   String id;
-  final String userId;
-  final String userName;
-  final String designation;
-  final String content;
-  final DateTime timestamp;
-  final List<String> likes;
-  final int likesCount;
-  final int commentsCount;
-  final bool isActive;
-
   AnnouncementModel({
-    required this.id,
-    required this.userId,
-    required this.userName,
-    required this.designation,
-    required this.content,
-    required this.timestamp,
-    required this.likes,
-    required this.likesCount,
-    required this.commentsCount,
-    required this.isActive,
-  });
-
-  factory AnnouncementModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return AnnouncementModel(
-      id: doc.id,
-      userId: data['userId'] ?? '',
-      designation: data['designation'] ?? '',
-      userName: data['userName'] ?? '',
-      content: data['content'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
-      likes: List<String>.from(data['likes'] ?? []),
-      likesCount: data['likesCount'] ?? 0,
-      commentsCount: data['commentsCount'] ?? 0,
-      isActive: data['isActive'] ?? true,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'userName': userName,
-      'content': content,
-      'timestamp': Timestamp.fromDate(timestamp),
-      'likes': likes,
-      'likesCount': likesCount,
-      'commentsCount': commentsCount,
-      'isActive': isActive,
-    };
-  }
+      num? announcementId, 
+      String? title, 
+      String? description, 
+      String? category, 
+      String? publishDate, 
+      String? createdBy, 
+      String? createdAt, 
+      num? commentCount, 
+      num? reactionCount,}){
+    _announcementId = announcementId;
+    _title = title;
+    _description = description;
+    _category = category;
+    _publishDate = publishDate;
+    _createdBy = createdBy;
+    _createdAt = createdAt;
+    _commentCount = commentCount;
+    _reactionCount = reactionCount;
 }
 
+  AnnouncementModel.fromJson(dynamic json) {
+    _announcementId = json['AnnouncementId'];
+    _title = json['Title'];
+    _description = json['Description'];
+    _category = json['Category'];
+    _publishDate = json['PublishDate'];
+    _createdBy = json['CreatedBy'];
+    _createdAt = json['CreatedAt'];
+    _commentCount = json['CommentCount'];
+    _reactionCount = json['ReactionCount'];
+  }
+  num? _announcementId;
+  String? _title;
+  String? _description;
+  String? _category;
+  String? _publishDate;
+  String? _createdBy;
+  String? _createdAt;
+  num? _commentCount;
+  num? _reactionCount;
+AnnouncementModel copyWith({  num? announcementId,
+  String? title,
+  String? description,
+  String? category,
+  String? publishDate,
+  String? createdBy,
+  String? createdAt,
+  num? commentCount,
+  num? reactionCount,
+}) => AnnouncementModel(  announcementId: announcementId ?? _announcementId,
+  title: title ?? _title,
+  description: description ?? _description,
+  category: category ?? _category,
+  publishDate: publishDate ?? _publishDate,
+  createdBy: createdBy ?? _createdBy,
+  createdAt: createdAt ?? _createdAt,
+  commentCount: commentCount ?? _commentCount,
+  reactionCount: reactionCount ?? _reactionCount,
+);
+  num? get announcementId => _announcementId;
+  String? get title => _title;
+  String? get description => _description;
+  String? get category => _category;
+  String? get publishDate => _publishDate;
+  String? get createdBy => _createdBy;
+  String? get createdAt => _createdAt;
+  num? get commentCount => _commentCount;
+  num? get reactionCount => _reactionCount;
 
-class Comment {
-   String id;
-  final String userId;
-  final String userName;
-  final String content;
-  final DateTime timestamp;
-
-  Comment({
-    required this.id,
-    required this.userId,
-    required this.userName,
-    required this.content,
-    required this.timestamp,
-  });
-
-  factory Comment.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return Comment(
-      id: doc.id,
-      userId: data['userId'] ?? '',
-      userName: data['userName'] ?? '',
-      content: data['content'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
-    );
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['AnnouncementId'] = _announcementId;
+    map['Title'] = _title;
+    map['Description'] = _description;
+    map['Category'] = _category;
+    map['PublishDate'] = _publishDate;
+    map['CreatedBy'] = _createdBy;
+    map['CreatedAt'] = _createdAt;
+    map['CommentCount'] = _commentCount;
+    map['ReactionCount'] = _reactionCount;
+    return map;
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'userName': userName,
-      'content': content,
-      'timestamp': Timestamp.fromDate(timestamp),
-    };
-  }
 }
