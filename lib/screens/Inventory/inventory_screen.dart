@@ -27,7 +27,7 @@ class _InventoryStockScreenState extends State<InventoryStockScreen> {
     try {
       await context
           .read<InventoryPorvider>()
-          .getInventoryStockSummery(date, storeType);
+          .getInventoryStockSummary(date, storeType);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error loading data: ${e.toString()}")),

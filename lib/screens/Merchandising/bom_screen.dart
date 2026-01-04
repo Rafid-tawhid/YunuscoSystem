@@ -67,13 +67,15 @@ class _BomListScreenState extends State<BomListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: Consumer<MerchandisingProvider>(
           builder: (context, provider, _) {
             return TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search BOM...',
-                hintStyle: TextStyle(color: Colors.black.withOpacity(0.7)),
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
                 border: InputBorder.none,
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -85,7 +87,7 @@ class _BomListScreenState extends State<BomListScreen> {
                       )
                     : null,
               ),
-              style: const TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.white),
               onChanged: (value) => provider.searchBoms(value),
             );
           },
@@ -99,7 +101,7 @@ class _BomListScreenState extends State<BomListScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.calendar_today, size: 16),
-                    label: Text(_dateFormat.format(_fromDate)),
+                    label: Text(_dateFormat.format(_fromDate),style: TextStyle(color: Colors.white),),
                     onPressed: () => _selectFromDate(context),
                   ),
                 ),
@@ -110,7 +112,7 @@ class _BomListScreenState extends State<BomListScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.calendar_today, size: 16),
-                    label: Text(_dateFormat.format(_toDate)),
+                    label: Text(_dateFormat.format(_toDate),style: TextStyle(color: Colors.white),),
                     onPressed: () => _selectToDate(context),
                   ),
                 ),

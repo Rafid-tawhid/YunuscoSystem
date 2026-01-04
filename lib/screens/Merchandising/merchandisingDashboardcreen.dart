@@ -4,7 +4,7 @@ import 'package:yunusco_group/screens/Merchandising/merchandisingSummaryScreen.d
 import 'package:yunusco_group/screens/Merchandising/purchase_approval_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/bom_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/work_order_screen.dart';
-import 'package:yunusco_group/screens/Report/report_screen.dart';
+import 'package:yunusco_group/screens/Management/production_strength_screen.dart';
 import 'package:yunusco_group/screens/Merchandising/buyer_order_Screen.dart';
 import 'package:yunusco_group/screens/Merchandising/costing_approval_screen.dart';
 import '../../common_widgets/dashboard_item_card.dart';
@@ -74,14 +74,7 @@ class _MerchandisingScreenState extends State<MerchandisingScreen> {
         onTap: () => Navigator.push(
             context, CupertinoPageRoute(builder: (_) => WorkOrderScreen())),
       ),
-      DashboardMenuItem(
-        name: "Report",
-        icon: Icons.analytics,
-        cardColor: const Color(0xFFE1F5FE), // Light blue
-        iconColor: const Color(0xFF2196F3), // Blue
-        onTap: () => Navigator.push(context,
-            CupertinoPageRoute(builder: (_) => ProductionStrengthScreen())),
-      ),
+
     ];
   }
 

@@ -58,8 +58,8 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             // NDK debug symbol configuration (if needed)
             ndk {
                 // debugSymbolLevel is not available in current AGP versions
@@ -74,11 +74,12 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0")  // Update Kotlin
-    implementation("androidx.appcompat:appcompat:1.6.1")  // Add AppCompat
-    implementation("com.google.android.material:material:1.10.0")  // Add Material
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0")  // Update Kotlin
+    implementation("androidx.appcompat:appcompat:1.7.1")  // Add AppCompat
+    implementation("com.google.android.material:material:1.13.0")  // Add Material
     // ... other dependencies
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
 
 }
 

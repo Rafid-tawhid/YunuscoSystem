@@ -52,6 +52,8 @@ class _WorkOrderScreenState extends State<WorkOrderScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: const Text('Work Orders'),
         centerTitle: true,
         elevation: 0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/members_model.dart';
 
@@ -55,16 +56,20 @@ class _PersonSelectionScreenState extends State<PersonSelectionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: _isSearching
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
+
                 decoration: const InputDecoration(
                   hintText: 'Search...',
                   border: InputBorder.none,
                   hintStyle: TextStyle(color: Colors.white70),
+
                 ),
-                style: const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.white),
               )
             : const Text('Select Persons'),
         actions: [
