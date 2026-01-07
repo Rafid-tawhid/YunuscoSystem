@@ -6,6 +6,7 @@ import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/appointment_model.dart';
 import 'package:yunusco_group/models/buyer_wise_value_model.dart';
 import 'package:yunusco_group/models/production_strength_model.dart';
+import 'package:yunusco_group/models/shipment_breakdown_model.dart';
 import 'package:yunusco_group/models/shipment_info_model.dart';
 import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
@@ -340,3 +341,18 @@ class PostAnnouncementNotifier extends StateNotifier<PostAnnouncementState> {
     state = PostAnnouncementState();
   }
 }
+
+final shipmentBreakdownInfo = FutureProvider.autoDispose<List<ShipmentBreakdownModel>>((ref) async {
+  List<ShipmentBreakdownModel> shipmentList = [];
+  final apiService = ref.read(apiServiceProvider);
+  final res = await apiService.getData('api/Merchandising/ShipmentBreakdown');
+  if (res != null) {
+    for(var i in res['returnvalue']){
+      shipmentList.add(ShipmentBreakdownModel.fromJson(i));
+    }
+  }
+
+  debugPrint('shipmentList ${shipmentList.length}');
+  return shipmentList;
+});
+

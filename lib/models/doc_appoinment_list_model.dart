@@ -25,7 +25,7 @@ class DocAppoinmentListModel {
 }
 
   DocAppoinmentListModel.fromJson(dynamic json) {
-    _gateId = json['GateId'];
+    _gateId = json['PrescriptionId'];
     _fullName = json['FullName'];
     _idCardNo = json['IdCardNo'];
     _requestDate = json['RequestDate'];
@@ -33,7 +33,7 @@ class DocAppoinmentListModel {
     _serialNo = json['SerialNo'];
     _status = json['Status'];
     _urgencyType = json['UrgencyType'];
-    _gatePassStatus = json['GatePassStatus'];
+    _gatePassStatus = json['GatePassStatus']??0;
     _remarks = json['Remarks'];
     _createdBy = json['CreatedBy'];
   }
@@ -85,7 +85,7 @@ DocAppoinmentListModel copyWith({  num? gateId,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['GateId'] = _gateId;
+    map['PrescriptionId'] = _gateId;
     map['FullName'] = _fullName;
     map['IdCardNo'] = _idCardNo;
     map['RequestDate'] = _requestDate;

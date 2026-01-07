@@ -191,6 +191,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                                   Positioned(
                                     top: 4,
                                     right: 4,
+                                 // child: Text(appointment.gatePassStatus.toString()),
                                     child: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
                                   )
                                 ],
@@ -367,12 +368,14 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-  Widget _buildUrgencyChip(int? urgency, bool? gatePass) {
+  Widget _buildUrgencyChip(int? urgency, int? gatePass) {
     if (urgency == null) return const SizedBox();
+
+    final bool isApproved = gatePass == 1;
 
     return Container(
       decoration: BoxDecoration(
-        color: gatePass == true
+        color: isApproved
             ? Colors.green
             : urgency == 1
             ? Colors.orangeAccent
@@ -385,16 +388,21 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2),
         child: Text(
-          gatePass == true
+          isApproved
               ? 'Approved'
               : urgency == 1
               ? 'Regular'
               : 'Emergency',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
   }
+
+
 
   Future<void> getAllStuffMemberList() async {
     var hp = context.read<HrProvider>();

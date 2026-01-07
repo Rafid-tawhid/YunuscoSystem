@@ -77,10 +77,10 @@ void showAppointmentBottomSheet({
                       'Urgency:', _getUrgencyText(appointment.urgencyType)),
                   _buildInfoRow(
                     'Gate Pass:',
-                    appointment.gatePassStatus == true
+                    appointment.gatePassStatus == 1
                         ? 'Approved'
                         : 'Not Approved',
-                    valueColor: appointment.gatePassStatus == true
+                    valueColor: appointment.gatePassStatus == 1
                         ? Colors.green
                         : Colors.orange,
                   ),
