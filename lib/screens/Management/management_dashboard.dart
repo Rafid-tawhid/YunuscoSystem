@@ -8,7 +8,7 @@ import 'package:yunusco_group/screens/Management/widgets/kaizan_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_departments.dart';
 import 'package:yunusco_group/screens/Products/linewise_manpower.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_sections.dart';
-import 'package:yunusco_group/screens/Management/widgets/unit_screen.dart';
+import 'package:yunusco_group/screens/Management/widgets/needle_dashboard.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../common_widgets/dashboard_item_card.dart';
 import 'mmr_dhu_screen.dart';
@@ -123,14 +123,14 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
             : () {},
       ),
       DashboardMenuItem(
-        name: "Units",
+        name: "Needle\nDashboard",
         icon: Icons.apartment_rounded,
         cardColor: Colors.deepOrange.shade50,
         iconColor: Colors.deepOrange.shade700,
         onTap: dropdownInfo?.units?.isNotEmpty == true
             ? () => Navigator.push(
                   context,
-                  CupertinoPageRoute(builder: (context) => UnitScreen()),
+                  CupertinoPageRoute(builder: (context) => NeedleDashboard()),
                 )
             : () {},
       ),

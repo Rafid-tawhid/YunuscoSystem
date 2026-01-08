@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/models/appointment_model.dart';
+import 'package:yunusco_group/models/broken_needle_model.dart';
 import 'package:yunusco_group/models/buyer_wise_value_model.dart';
 import 'package:yunusco_group/models/production_strength_model.dart';
 import 'package:yunusco_group/models/shipment_breakdown_model.dart';
@@ -351,8 +352,22 @@ final shipmentBreakdownInfo = FutureProvider.autoDispose<List<ShipmentBreakdownM
       shipmentList.add(ShipmentBreakdownModel.fromJson(i));
     }
   }
-
   debugPrint('shipmentList ${shipmentList.length}');
   return shipmentList;
 });
 
+
+//jan 8
+
+final brokenNeedleSummary = FutureProvider.autoDispose<List<BrokenNeedleModel>>((ref) async {
+  List<BrokenNeedleModel> brokenNeedleSummary = [];
+  final apiService = ref.read(apiServiceProvider);
+  final res = await apiService.getData('api/Production/GetAllBrokenNeedleSummary');
+  if (res != null) {
+    for(var i in res['data']){
+      brokenNeedleSummary.add(BrokenNeedleModel.fromJson(i));
+    }
+  }
+  debugPrint('brokenNeedleSummary ${brokenNeedleSummary.length}');
+  return brokenNeedleSummary;
+});
