@@ -346,7 +346,7 @@ class PostAnnouncementNotifier extends StateNotifier<PostAnnouncementState> {
 final shipmentBreakdownInfo = FutureProvider.autoDispose<List<ShipmentBreakdownModel>>((ref) async {
   List<ShipmentBreakdownModel> shipmentList = [];
   final apiService = ref.read(apiServiceProvider);
-  final res = await apiService.getData('api/Merchandising/ShipmentBreakdown');
+  final res = await apiService.getData('api/Merchandising/ShipmentBreakdown?page=1&pageSize=2000');
   if (res != null) {
     for(var i in res['returnvalue']){
       shipmentList.add(ShipmentBreakdownModel.fromJson(i));

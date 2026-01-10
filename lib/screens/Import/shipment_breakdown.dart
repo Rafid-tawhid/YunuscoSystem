@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
-
 import '../../models/shipment_breakdown_model.dart';
 import '../../providers/riverpods/management_provider.dart';
 
@@ -20,48 +19,42 @@ class _ShipmentBreakdownDashboardState
   String _selectedMonth = 'All';
   List<String> _buyerList = [];
   List<String> _monthList = [];
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final shipmentAsyncValue = ref.watch(shipmentBreakdownInfo);
+    final searchTerm = _searchController.text.trim();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Shipment Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue[800],
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: () {
-              _showFilterDialog(context);
-            },
-            tooltip: 'Filter',
-          ),
-          IconButton(
-            icon: const Icon(Icons.download),
-            onPressed: () {
-              _exportData();
-            },
-            tooltip: 'Export',
-          ),
-        ],
-      ),
+      appBar: _isSearching ? _buildSearchAppBar() : _buildNormalAppBar(),
       body: shipmentAsyncValue.when(
-        data: (shipments) {
-          if (shipments.isEmpty) {
+        data: (allShipments) {
+          if (allShipments.isEmpty) {
             return _buildEmptyState();
           }
 
           // Process data for filters and charts
-          _processData(shipments);
-          final filteredShipments = _filterShipments(shipments);
+          _processData(allShipments);
+
+          // Filter shipments based on search
+          List<ShipmentBreakdownModel> filteredShipments = allShipments;
+          if (searchTerm.isNotEmpty) {
+            filteredShipments = allShipments.where((shipment) {
+              return _matchesSearch(shipment, searchTerm);
+            }).toList();
+          }
+
+          // Apply additional filters if any
+          filteredShipments = _filterShipments(filteredShipments);
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -71,6 +64,9 @@ class _ShipmentBreakdownDashboardState
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
+                  // Search Info Chip
+                  if (searchTerm.isNotEmpty) _buildSearchInfoChip(filteredShipments.length, allShipments.length),
+
                   // Summary Cards
                   _buildSummaryCards(filteredShipments),
 
@@ -79,11 +75,11 @@ class _ShipmentBreakdownDashboardState
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
-                        _buildMonthlyChart(shipments),
+                        _buildMonthlyChart(allShipments),
                         const SizedBox(height: 20),
-                        _buildBuyerWiseChart(shipments),
+                        _buildBuyerWiseChart(allShipments),
                         const SizedBox(height: 20),
-                        _buildStyleWiseChart(shipments),
+                        _buildStyleWiseChart(allShipments),
                       ],
                     ),
                   ),
@@ -106,6 +102,121 @@ class _ShipmentBreakdownDashboardState
         child: const Icon(Icons.refresh, color: Colors.white),
       ),
     );
+  }
+
+  AppBar _buildNormalAppBar() {
+    return AppBar(
+      title: const Text(
+        'Shipment Dashboard',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.blue[800],
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            setState(() {
+              _isSearching = true;
+            });
+          },
+          tooltip: 'Search',
+        ),
+      ],
+    );
+  }
+
+  AppBar _buildSearchAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.blue[800],
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            _isSearching = false;
+            _searchController.clear();
+          });
+        },
+      ),
+      title: TextField(
+        controller: _searchController,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: 'Search by Order, Buyer, Style, PO...',
+          border: InputBorder.none,
+          hintStyle: TextStyle(color: Colors.grey[600]),
+        ),
+        style: TextStyle(
+          color: Colors.blue[800],
+          fontSize: 16,
+        ),
+        onChanged: (value) {
+          setState(() {});
+        },
+      ),
+      actions: [
+        if (_searchController.text.isNotEmpty)
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              setState(() {
+                _searchController.clear();
+              });
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _buildSearchInfoChip(int filteredCount, int totalCount) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.search, size: 16, color: Colors.blue[800]),
+          const SizedBox(width: 6),
+          Text(
+            '$filteredCount of $totalCount shipments found',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.blue[800],
+            ),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: () {
+              setState(() {
+                _searchController.clear();
+                _isSearching = false;
+              });
+            },
+            child: Icon(Icons.close, size: 16, color: Colors.blue[800]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _matchesSearch(ShipmentBreakdownModel shipment, String searchTerm) {
+    final lowerSearch = searchTerm.toLowerCase();
+
+    return (shipment.masterOrderCode?.toLowerCase().contains(lowerSearch) ?? false) ||
+        (shipment.buyerName?.toLowerCase().contains(lowerSearch) ?? false) ||
+        (shipment.style?.toLowerCase().contains(lowerSearch) ?? false) ||
+        (shipment.buyerPoNumber?.toLowerCase().contains(lowerSearch) ?? false) ||
+        (shipment.colorName?.toLowerCase().contains(lowerSearch) ?? false) ||
+        (shipment.sizeName?.toLowerCase().contains(lowerSearch) ?? false);
   }
 
   void _processData(List<ShipmentBreakdownModel> shipments) {
@@ -190,7 +301,7 @@ class _ShipmentBreakdownDashboardState
                   color: Colors.blue[800],
                 ),
               ),
-              if (_selectedBuyer != 'All' || _selectedMonth != 'All')
+              if (_selectedBuyer != 'All' || _selectedMonth != 'All' || _searchController.text.isNotEmpty)
                 Chip(
                   label: Text('${shipments.length} items'),
                   backgroundColor: Colors.blue[50],
@@ -503,10 +614,7 @@ class _ShipmentBreakdownDashboardState
                     color: Colors.blue[800],
                   ),
                 ),
-                Chip(
-                  label: Text('${shipments.length} shipments'),
-                  backgroundColor: Colors.blue[50],
-                ),
+                Text('${shipments.length}+ shipments')
               ],
             ),
           ),

@@ -184,9 +184,14 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
             child: Row(
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: myColors.primaryColor,
+                    foregroundColor: Colors.white
+                  ),
                   onPressed: _loadPrevious,
                   child: const Text('Previous'),
                 ),
+                //
                 Expanded(
                   child: Text(
                     'Page: $_currentPage',
