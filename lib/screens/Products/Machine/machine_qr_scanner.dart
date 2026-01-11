@@ -4,6 +4,10 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'machine_problem_request.dart'; // Add this package
 
 class BeautifulQRScannerScreen extends StatefulWidget {
+  final bool? fromMultipleScreen;
+
+  const BeautifulQRScannerScreen({super.key, this.fromMultipleScreen});
+
   @override
   State<BeautifulQRScannerScreen> createState() => _BeautifulQRScannerScreenState();
 }
@@ -95,6 +99,10 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                 centerTitle: true,
                 actions: [
                   IconButton(onPressed: (){
+                    if(widget.fromMultipleScreen==true){
+                      Navigator.pop(context);
+                      return;
+                    }
                     Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen()));
                   }, icon: Icon(Icons.list))
                 ],
@@ -195,7 +203,10 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              //_parsedNames.removeRange(0, 2);
+                              if(widget.fromMultipleScreen==true){
+                                Navigator.pop(context, _parsedNames);
+                                return;
+                              }
                               Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen(machineInfo: _parsedNames,)));
                             },
                             icon: Icon(Icons.qr_code_scanner),

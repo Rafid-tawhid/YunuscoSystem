@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/models/error_summery_model.dart';
 import 'package:yunusco_group/models/hourly_sweing_model.dart';
+import 'package:yunusco_group/models/machine_repair_task_model.dart';
 import 'package:yunusco_group/models/product_history_model.dart';
 import 'package:yunusco_group/models/qc_pass_summary_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
@@ -337,6 +338,10 @@ final productHistoryListProvider =
 
 
 //dec 13
+// Provider for the notifier
+final maintenanceTypeProvider = AsyncNotifierProvider<MaintenanceTypeNotifier, List<MaintananceTypeModel>>(
+      () => MaintenanceTypeNotifier(),
+);
 
 // AsyncNotifier for state management
 class MaintenanceTypeNotifier extends AsyncNotifier<List<MaintananceTypeModel>> {
@@ -352,11 +357,27 @@ class MaintenanceTypeNotifier extends AsyncNotifier<List<MaintananceTypeModel>> 
   }
 }
 
-// Provider for the notifier
-final maintenanceTypeProvider = AsyncNotifierProvider<MaintenanceTypeNotifier, List<MaintananceTypeModel>>(
-      () => MaintenanceTypeNotifier(),
+
+
+  final maintenanceTaskList = AsyncNotifierProvider<MaintanceTasksNotifier, List<MachineRepairTaskModel>>(
+      () => MaintanceTasksNotifier(),
 );
 
+
+
+
+class MaintanceTasksNotifier extends AsyncNotifier<List<MachineRepairTaskModel>> {
+  @override
+  Future<List<MachineRepairTaskModel>> build() async {
+    List <MachineRepairTaskModel> taskList = [];
+    // Initial load
+    var response= await ref.read(apiServiceProvider).getData('api/Manufacturing/TaskList');
+    for(var i in response['returnvalue']){
+      taskList.add(MachineRepairTaskModel.fromJson(i));
+    }
+    return taskList;
+  }
+}
 
 class ProcessNameNotifier extends AsyncNotifier<List<ProcessNameModel>> {
   @override
