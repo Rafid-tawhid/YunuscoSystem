@@ -53,7 +53,7 @@ class ReusableDashboardCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: menu.iconColor.withOpacity(0.2),
+                    color: menu.icon==Icons.workspace_premium?Colors.white: menu.iconColor.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

@@ -16,9 +16,10 @@ class DocAppoinmentReq extends StatefulWidget {
 
 class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _remarksController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+   bool _showSearch=false;
 
   int? _urgencyType;
   final Map<String, int> _urgencyOptions = {
@@ -36,6 +37,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
   void dispose() {
     _remarksController.dispose();
     _idController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -72,12 +74,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Dr. Appointment'),
-        centerTitle: true,
-        elevation: 0,
-        actions: [],
-      ),
+      appBar: _buildAppBar(context),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Form(
@@ -85,101 +82,122 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SizedBox(
-                height: 8,
-              ),
-              if (DashboardHelpers.currentUser!.iDnum != '37068')
-                Consumer<HrProvider>(
-                    builder: (context, pro, _) => ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size.zero, // Set minimum size to zero
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          backgroundColor: Colors.green.shade800,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6), // ← Adjust this value
-                          ),
+              const SizedBox(height: 8),
+
+              Consumer<HrProvider>(
+                builder: (context, pro, _) => Row(
+                  children: [
+                   if(!pro.showForm) Text(
+                      'Found : ${pro.filteredDocAppointmentList.length}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Spacer(),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: Colors.green.shade800,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        onPressed: () {
-                          pro.showHideDocForm();
-                        },
-                        child: Text(
-                          pro.showForm ? 'Requisition List' : 'Create +',
-                          style: TextStyle(color: Colors.white),
-                        ))),
-              SizedBox(
-                height: 8,
+                      ),
+                      onPressed: () {
+                        pro.showHideDocForm();
+                        // Clear search when switching to form
+                        if (pro.showForm) {
+                          _searchController.clear();
+                          pro.clearSearch();
+                        }
+                      },
+                      child: Text(
+                        pro.showForm ? 'Requisition List' : 'Create +',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 8),
+
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       Consumer<HrProvider>(
-                        builder: (context, pro, _) => pro.showForm ? DocReqForm() : SizedBox.shrink(),
+                        builder: (context, pro, _) => pro.showForm ? DocReqForm() : const SizedBox.shrink(),
                       ),
-                      // ID Card Number Field
+
+                      // Appointment List
                       Consumer<HrProvider>(
                         builder: (context, pro, _) {
                           return pro.showForm
-                              ? SizedBox.shrink()
-                              : pro.docAppointmentList.isEmpty
-                                  ? Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                                    child: Center(
-                                        child: Text('No request yet'),
+                              ? const SizedBox.shrink()
+                              : pro.filteredDocAppointmentList.isEmpty
+                              ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: Center(
+                              child: _searchController.text.isEmpty
+                                  ? const Text('No request yet')
+                                  : const Text('No results found'),
+                            ),
+                          )
+                              : ListView.builder(
+                            padding: const EdgeInsets.all(8),
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: pro.filteredDocAppointmentList.length,
+                            itemBuilder: (context, index) {
+                              final appointment = pro.filteredDocAppointmentList[index];
+                              return Stack(
+                                children: [
+                                  Card(
+                                    color: Colors.white,
+                                    child: ListTile(
+                                      title: Text('${appointment.fullName} (ID: ${appointment.idCardNo ?? 'N/A'})', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+
+                                          Text(
+                                            'Serial: ${appointment.serialNo ?? 'N/A'}',
+                                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                          ),
+                                          Text('Date: ${DashboardHelpers.convertDateTime(appointment.createdDate ?? '')}'),
+                                          if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
+                                        ],
                                       ),
-                                  )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.all(8),
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: pro.docAppointmentList.length,
-                                      itemBuilder: (context, index) {
-                                        final appointment = pro.docAppointmentList[index];
-                                        return Stack(
-                                          children: [
-                                            Card(
-                                              color: Colors.white,
-                                              child: ListTile(
-                                                title: Text(
-                                                  'Serial: ${appointment.serialNo ?? 'N/A'}',
-                                                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                                                ),
-                                                subtitle: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text('ID: ${appointment.idCardNo ?? 'N/A'}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
-                                                    Text('Date: ${DashboardHelpers.convertDateTime(appointment.createdDate ?? '')}'),
-                                                    if (appointment.remarks?.isNotEmpty ?? false) Text('Remarks: ${appointment.remarks}'),
-                                                  ],
-                                                ),
-                                                onTap: () async {
-                                                  if (appointment.status == 2) {
-                                                    var hp = context.read<HrProvider>();
-                                                    var data = await hp.gatePassDetailsInfo(appointment);
-                                                    if (data != null) {
-                                                      showAppointmentBottomSheet(
-                                                        context: context,
-                                                        appointment: appointment, // Your DocAppoinmentListModel instance
-                                                        medicineName: data['FullName'] ?? "No Name",
-                                                        doctorAdvice: data['Advice'] ?? "None",
-                                                        medicineTime: data["PrescriptionDate"],
-                                                        leaveNotes: data['Remarks'] ?? "None",
-                                                      );
-                                                    }
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 4,
-                                              right: 4,
-                                              child: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
-                                            )
-                                          ],
-                                        );
+                                      onTap: () async {
+                                        if (appointment.status == 2) {
+                                          var hp = context.read<HrProvider>();
+                                          var data = await hp.gatePassDetailsInfo(appointment);
+                                          if (data != null) {
+                                            showAppointmentBottomSheet(
+                                              context: context,
+                                              appointment: appointment,
+                                              medicineName: data['FullName'] ?? "No Name",
+                                              doctorAdvice: data['Advice'] ?? "None",
+                                              medicineTime: data["PrescriptionDate"],
+                                              leaveNotes: data['Remarks'] ?? "None",
+                                            );
+                                          }
+                                        }
                                       },
-                                    );
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                 // child: Text(appointment.gatePassStatus.toString()),
+                                    child: _buildUrgencyChip(appointment.urgencyType!.toInt(), appointment.gatePassStatus),
+                                  )
+                                ],
+                              );
+                            },
+                          );
                         },
                       ),
                     ],
@@ -193,23 +211,83 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: myColors.primaryColor,
+      foregroundColor: Colors.white,
+      title: _showSearch
+          ? Consumer<HrProvider>(
+        builder: (context,pro,_)=>TextField(
+          controller: _searchController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Search by Id or Name...',
+            border: InputBorder.none,
+            hintStyle: TextStyle(color: Colors.white),
+          ),
+          style: const TextStyle(color: Colors.white),
+          onChanged: (value) {
+            pro.searchAppointments(value);
+          },
+        )
+      )
+          : const Text('Dr. Appointment'),
+      actions: [
+        _showSearch
+            ? IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            var hp=context.read<HrProvider>();
+            hp.clearSearch();
+            setState(() {
+              _showSearch = false;
+              _searchController.clear();
+
+            });
+          },
+        )
+            : IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            setState(() {
+              _showSearch = true;
+            });
+          },
+        ),
+      ],
+    );
+  }
+  Widget _buildSearchField(HrProvider pro) {
+    return TextField(
+      controller: _searchController,
+      style: const TextStyle(color: Colors.white, fontSize: 16),
+      decoration: InputDecoration(
+        hintText: 'Search by ID or Name...',
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+        border: InputBorder.none,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.7)),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+          icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.7)),
+          onPressed: () {
+            _searchController.clear();
+            pro.clearSearch();
+            FocusScope.of(context).unfocus();
+          },
+        )
+            : null,
+      ),
+      onChanged: (value) {
+        pro.searchAppointments(value);
+      },
+    );
+  }
+
   Widget DocReqForm() {
     return Column(
       children: [
-        // TextFormField(
-        //   controller: _idCardController,
-        //   decoration: const InputDecoration(
-        //     labelText: "ID Card No",
-        //     border: OutlineInputBorder(),
-        //   ),
-        //   keyboardType: TextInputType.number,
-        //   onChanged: (val){
-        //     var hp=context.read<HrProvider>();
-        //     hp.searchStuffList(val);
-        //   },
-        //   validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
-        // ),
-
         Consumer<HrProvider>(
           builder: (context, pro, _) {
             return TypeAheadField<Map<String, dynamic>>(
@@ -218,7 +296,7 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
               },
               builder: (context, textController, focusNode) {
                 return TextFormField(
-                  controller: textController, // persistent controller
+                  controller: textController,
                   focusNode: focusNode,
                   validator: (value) => value == null || value.isEmpty ? 'ID is required' : null,
                   decoration: const InputDecoration(
@@ -228,7 +306,6 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                 );
               },
               controller: _idController,
-              //
               itemBuilder: (context, suggestion) {
                 return ListTile(
                   title: Text(suggestion["name"]),
@@ -236,11 +313,10 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
                 );
               },
               onSelected: (suggestion) {
-                // show ID in the field
                 setState(() {
                   _idController.text = suggestion["id"];
                 });
-                FocusScope.of(context).unfocus(); // close keyboard
+                FocusScope.of(context).unfocus();
               },
             );
           },
@@ -256,16 +332,17 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
           items: _urgencyOptions.entries
               .map(
                 (entry) => DropdownMenuItem<int>(
-                  value: entry.value,
-                  child: Text(entry.key),
-                ),
-              )
+              value: entry.value,
+              child: Text(entry.key),
+            ),
+          )
               .toList(),
           value: _urgencyType,
           onChanged: (value) => setState(() => _urgencyType = value),
           validator: (_) => _urgencyType == null ? 'Urgency type is required' : null,
         ),
         const SizedBox(height: 16),
+
         // Remarks Field
         TextFormField(
           controller: _remarksController,
@@ -291,17 +368,19 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
     );
   }
 
-  Widget _buildUrgencyChip(int? urgency, bool? gatePass) {
+  Widget _buildUrgencyChip(int? urgency, int? gatePass) {
     if (urgency == null) return const SizedBox();
+
+    final bool isApproved = gatePass == 1;
 
     return Container(
       decoration: BoxDecoration(
-        color: gatePass == true
+        color: isApproved
             ? Colors.green
             : urgency == 1
-                ? Colors.orangeAccent
-                : Colors.red,
-        borderRadius: BorderRadius.only(
+            ? Colors.orangeAccent
+            : Colors.red,
+        borderRadius: const BorderRadius.only(
           topRight: Radius.circular(10.0),
           bottomLeft: Radius.circular(10.0),
         ),
@@ -309,16 +388,21 @@ class _DocAppoinmentReqState extends State<DocAppoinmentReq> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2),
         child: Text(
-          gatePass == true
+          isApproved
               ? 'Approved'
               : urgency == 1
-                  ? 'Regular'
-                  : 'Emergency',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ? 'Regular'
+              : 'Emergency',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
   }
+
+
 
   Future<void> getAllStuffMemberList() async {
     var hp = context.read<HrProvider>();

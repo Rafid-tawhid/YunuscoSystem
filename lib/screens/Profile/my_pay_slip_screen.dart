@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/hr_provider.dart';
 import 'package:yunusco_group/screens/Profile/widgets/payslip.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../common_widgets/custom_button.dart';
 
@@ -131,8 +132,6 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
     final DateTime previousMonth = DateTime(now.year, now.month - 1, 1);
     _selectedMonth = DateFormat.MMMM().format(previousMonth); // Full month name
     _selectedYear = now.year;
-
-    _employeeIdController.text = DashboardHelpers.currentUser!.iDnum ?? '';
     super.initState();
   }
 
@@ -148,6 +147,8 @@ class _EmployeePaySlipState extends State<EmployeePaySlip> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Employee Pay Slip'),
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

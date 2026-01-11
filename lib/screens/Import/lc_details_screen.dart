@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 class LCDetailScreen extends StatelessWidget {
   final Map<String, dynamic> lcData;
@@ -16,6 +17,8 @@ class LCDetailScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('LC Details: ${lcData['MasterLCNo']}'),
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

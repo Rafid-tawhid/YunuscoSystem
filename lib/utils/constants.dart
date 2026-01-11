@@ -2,22 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../screens/home_page.dart';
 
+
+
+
 class AppConstants {
   // 🔗 API Base URLs
   //Testing
-  static const String baseUrl = "https://192.168.15.6:5630/";
-  // demo
-  //static const String baseUrl = "http://192.168.15.6:8090/";
+ //static const String baseUrl = "https://192.168.15.6:5630/";
+
+
   // static const String
-  //static final  baseUrl = "http://202.74.243.118:8090/"; //real public
+
+  static final  baseUrl = "http://202.74.243.118:8090/"; //real public
+
+  static const String imageUrl = "http://192.168.15.6/api/inventoryapi/";
+  //static const String imageUrl = "http://202.74.243.118:1726/api/inventoryapi/";
+//
 
  // static const String apiKey = "AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY";
+
   static String token = ''; // 📱 Screen Dimensions
   static const int screenWidth = 428;
   static const int screenHeight = 926;
   static const int screenRegWidth = 428;
   static const int screenRegHeight = 841; // 📝 Text Styles
 
+  //
   static TextStyle title = GoogleFonts.inter(
     fontSize: 16,
     color: Colors.black,
@@ -49,6 +59,9 @@ class AppConstants {
         color: Colors.black,
         fontWeight: FontWeight.normal,
       );
+
+
+
 }
 
 TextStyle customTextStyle(double size, Color color, FontWeight weight) =>
@@ -57,8 +70,11 @@ TextStyle customTextStyle(double size, Color color, FontWeight weight) =>
       color: color,
       fontWeight: weight,
     ); //
+
+
 List<Menu> fullModuleList = [
   Menu(7, 'assets/images/purchase.png', 'Purchasing', false), // ID matched from moduleList
+  Menu(51, 'assets/images/notification.png', 'Notification', false), // ID matched from moduleList
   Menu(44, 'assets/images/management.png', 'Management', false), // ID matched
   Menu(1, 'assets/images/hrbold.png', 'HR & Payroll', false), // ID matched
   Menu(6, 'assets/images/button-merch.png', 'Merchandising', false), // ID matched

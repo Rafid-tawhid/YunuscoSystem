@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/performence_screen.dart';
+import 'package:yunusco_group/screens/HR&PayRoll/searching_screen_appointment.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/vehicle_requisition_screen.dart';
 import 'package:yunusco_group/screens/Profile/self_leave_application.dart';
 import 'package:yunusco_group/utils/colors.dart';
@@ -12,9 +13,11 @@ import '../Profile/leave_history.dart';
 import '../Profile/leave_history_screen.dart';
 import '../Profile/my_pay_slip_screen.dart';
 import 'attandence_screen.dart';
+import 'attendance_board_screen.dart';
 import 'board_room_booking_screen.dart';
 import '../Profile/employee_jobcard_report.dart';
 import 'it_ticketing_webview.dart';
+import 'appointment_list_screen.dart';
 import 'meeting_screen_new.dart';
 import 'it_ticketing_generate_screen.dart';
 
@@ -34,6 +37,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Color(0xFFFCE4EC),
     Color(0xFFE0F7FA),
     Color(0xFFE8EAF6),
+    Color(0xFFF6EBB3),
   ];
 
   final List<Color> iconColors = [
@@ -44,6 +48,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
     Colors.pink[600]!,
     Colors.cyan[700]!,
     Colors.indigo[700]!,
+    Colors.amber
   ];
 
   List<DashboardMenuItem> menuItems = [];
@@ -94,7 +99,7 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         }
         break;
       case 1:
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceReportScreen()));
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => PerformanceEvaluationScreen()));
         break;
       case 2:
         Navigator.push(context, CupertinoPageRoute(builder: (context) => LeaveHistoryScreen()));
@@ -119,6 +124,10 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         Navigator.push(context, CupertinoPageRoute(builder: (context) => VehicleRequisitionForm()));
         break;
 
+      case 9:
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => AttandanceBoardScreen()));
+        break;
+
     }
   }
 
@@ -132,8 +141,15 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
         onTap: () => goToScreen(0),
       ),
       DashboardMenuItem(
-        name: "Performance",
-        icon: Icons.favorite,
+        name: "Attendance\nBoard",
+        icon: Icons.workspace_premium,
+        cardColor: cardColors[7],
+        iconColor: iconColors[7],
+        onTap: () => goToScreen(9),
+      ),
+      DashboardMenuItem(
+        name: "Evaluation",
+        icon: Icons.reply_all_outlined,
         cardColor: cardColors[1],
         iconColor: iconColors[1],
         onTap: () => goToScreen(1),
@@ -201,24 +217,53 @@ class _DepartmentListScreenState extends State<HrMainMenuScreen> {
 
       DashboardMenuItem(
         name: 'IT Ticket',
-        icon: Icons.wallet,
-        cardColor: Colors.green.shade100,
-        iconColor: Colors.greenAccent.shade700,
+        icon: Icons.support_agent, // More relevant for IT support
+        cardColor: Colors.blue.shade50, // Soft blue for tech/IT
+        iconColor: Colors.blue.shade700, // Deeper blue for contrast
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => UrlLauncherScreen()));
+              context,
+              MaterialPageRoute(builder: (context) => UrlLauncherScreen())
+          );
+        },
+      ),
+
+      // DashboardMenuItem(
+      //   name: 'NID Extractor',
+      //   icon: Icons.badge_outlined, // More specific for ID/documents
+      //   cardColor: Colors.purple.shade50, // Light purple
+      //   iconColor: Colors.purple.shade700, // Dark purple
+      //   onTap: () {
+      //     Navigator.push(
+      //         context,
+      //         MaterialPageRoute(builder: (context) => NidExtractorScreen())
+      //     );
+      //   },
+      // ),
+
+      DashboardMenuItem(
+        name: 'Management\nAppointment',
+        icon: Icons.business_center, // Represents management/business
+        cardColor: Colors.orange.shade50, // Soft orange
+        iconColor: Colors.orange.shade800, // Dark orange for visibility
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AppointmentListScreen())
+          );
         },
       ),
 
       DashboardMenuItem(
-        name: 'NID Extractor',
-        icon: Icons.add_card_outlined,
-        cardColor: Colors.white,
-        iconColor: Colors.purple.shade700,
+        name: 'Appointment',
+        icon: Icons.calendar_today, // Standard appointment icon
+        cardColor: Colors.green.shade50, // Light green
+        iconColor: Colors.green.shade700, // Dark green
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NidExtractorScreen()));
-
+              context,
+              MaterialPageRoute(builder: (context) => NetworkSearchingScreen())
+          );
         },
       ),
     ];

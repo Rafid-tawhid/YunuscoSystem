@@ -49,15 +49,14 @@ class PurchasingDashboard extends StatelessWidget {
         },
       ),
       DashboardMenuItem(
-        name: "Order\n List",
+        name: "Purchase\n Order",
         icon: Icons.list,
         cardColor: Colors.purple.shade100,
         iconColor: Colors.purple,
         onTap: () async {
           //
-          var pp=context.read<ProductProvider>();
-          await pp.getAllPurchaseList('1','50');
-          Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseOrdersListScreen(purchaseOrders: pp.purchaseList)));
+
+          Navigator.push(context, CupertinoPageRoute(builder: (context)=>PurchaseOrdersListScreen()));
         },
       ),
 

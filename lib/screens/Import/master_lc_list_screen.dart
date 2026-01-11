@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/master_lc_model.dart';
 import 'lc_details_screen.dart';
@@ -119,6 +120,8 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: _isSearching
             ? TextField(
                 controller: _searchController,
@@ -126,9 +129,9 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
                 decoration: InputDecoration(
                   hintText: 'Search Master LC...',
                   border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.black),
+                  hintStyle: TextStyle(color: Colors.white),
                 ),
-                style: const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.white),
                 onChanged: (value) => _onSearchChanged(),
                 onSubmitted: (value) {
                   _searchData();
@@ -181,9 +184,14 @@ class _MasterLCListScreenState extends State<MasterLCListScreen> {
             child: Row(
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: myColors.primaryColor,
+                    foregroundColor: Colors.white
+                  ),
                   onPressed: _loadPrevious,
                   child: const Text('Previous'),
                 ),
+                //
                 Expanded(
                   child: Text(
                     'Page: $_currentPage',

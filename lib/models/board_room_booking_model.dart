@@ -36,6 +36,12 @@ class BoardRoomBookingModel {
     _modifiedDate = modifiedDate;
 }
 
+  String? get status => _status;
+
+  set status(String? value) {
+    _status = value;
+  }
+
   BoardRoomBookingModel.fromJson(dynamic json) {
     _id = json['Id'];
     _meetingTitle = json['MeetingTitle'];
@@ -120,7 +126,9 @@ BoardRoomBookingModel copyWith({  num? id,
   String? get decisions => _decisions;
   String? get actionItems => _actionItems;
   String? get notes => _notes;
-  String? get status => _status;
+
+
+
   String? get createdDate => _createdDate;
   dynamic get modifiedBy => _modifiedBy;
   String? get modifiedDate => _modifiedDate;

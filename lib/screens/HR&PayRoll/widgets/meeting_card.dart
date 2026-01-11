@@ -125,7 +125,7 @@ class _MeetingCardState extends State<MeetingCard> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          widget.meeting.status ?? '',
+                          '${widget.meeting.status}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -443,6 +443,8 @@ class _MeetingCardState extends State<MeetingCard> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
+      case 'completed':
+        return Colors.blue;
       case 'confirmed':
         return Colors.green;
       case 'pending':
@@ -453,4 +455,6 @@ class _MeetingCardState extends State<MeetingCard> {
         return Colors.grey;
     }
   }
+
+
 }
