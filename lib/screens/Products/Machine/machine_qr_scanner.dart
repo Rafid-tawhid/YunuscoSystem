@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../../../models/machine_scan_model.dart';
 import 'machine_problem_request.dart'; // Add this package
 
 class BeautifulQRScannerScreen extends StatefulWidget {
   final bool? fromMultipleScreen;
-
   const BeautifulQRScannerScreen({super.key, this.fromMultipleScreen});
 
   @override
@@ -14,8 +16,7 @@ class BeautifulQRScannerScreen extends StatefulWidget {
 
 class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
   MobileScannerController cameraController = MobileScannerController();
-  String? _scannedResult;
-  List<String> _parsedNames = [];
+  MachineScanModel? _scannedMachine;
   bool _isScanning = true;
 
   @override
@@ -24,27 +25,19 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
     super.dispose();
   }
 
-  void _parseQRResult(String result) {
-    // Split by * and clean up the names
-    _parsedNames = result.split('*').map((name) {
-      return name.trim(); // Remove whitespace
-    }).where((name) => name.isNotEmpty).toList();
-  }
-
   void _onQRCodeDetect(BarcodeCapture capture) {
     final barcodes = capture.barcodes;
 
     if (barcodes.isNotEmpty) {
-      final barcode = barcodes.first;
-      if (barcode.rawValue != null) {
+      //barcodes.map((e) => debugPrint('Barcode found! ${e.rawValue}')).toList();
+      var machine = parseFromLogFormat(barcodes.first.rawValue!);
+
+      if (machine!= null) {
         setState(() {
           _isScanning = false;
-          _scannedResult = barcode.rawValue!;
-          _parseQRResult(_scannedResult!);
-
-          // Vibrate on success
-          // HapticFeedback.lightImpact(); // Uncomment if you have haptic feedback package
+         _scannedMachine=machine;
         });
+      //  
 
         // Stop camera after successful scan
         cameraController.stop();
@@ -60,10 +53,43 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
     }
   }
 
+
+
+  // Example usage in your QR scanner callback
+  MachineScanModel? parseFromLogFormat(String logData) {
+    // Split by lines and filter out empty lines
+    final lines = logData.split('\n').where((line) => line.trim().isNotEmpty).toList();
+    Map<String, dynamic> data = {};
+
+    for (var line in lines) {
+      // Remove Flutter log prefix if present
+      line = line.replaceFirst(RegExp(r'^I/flutter \(\s*\d+\): '), '');
+
+      if (line.contains(':')) {
+        final parts = line.split(':');
+        if (parts.length >= 2) {
+          final key = parts[0].trim();
+          final value = parts.sublist(1).join(':').trim();
+
+          // Debug print to see what's being parsed
+          print('Parsing: $key -> $value');
+
+          // Convert to appropriate types
+          if (key == 'MachineId' || key == 'MachineModelId' || key == 'Count') {
+            data[key] = int.tryParse(value) ?? 0;
+          } else {
+            data[key] = value;
+          }
+        }
+      }
+    }
+
+    return MachineScanModel.fromJson(data);
+  }
+
   void _resetScanner() {
     setState(() {
-      _scannedResult = null;
-      _parsedNames.clear();
+      _scannedMachine = null;
       _isScanning = true;
     });
     cameraController.start();
@@ -170,7 +196,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                 color: Colors.black.withOpacity(0.7),
                 child: Column(
                   children: [
-                    if (_scannedResult != null)
+                    if (_scannedMachine != null)
                       _buildResultSection()
                     else
                       _buildInstructions(),
@@ -178,12 +204,12 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                     SizedBox(height: 20),
 
                     // Action Button
-                    _scannedResult != null?  Row(
+                    _scannedMachine != null?  Row(
                       children: [
                         SizedBox(width: 8,),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _scannedResult != null ? _resetScanner : null,
+                            onPressed: _scannedMachine != null ? _resetScanner : null,
                             icon: Icon(Icons.qr_code_scanner),
                             label: Text(
                                 'Scan Again',
@@ -204,10 +230,13 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                           child: ElevatedButton.icon(
                             onPressed: () {
                               if(widget.fromMultipleScreen==true){
-                                Navigator.pop(context, _parsedNames);
+                                Navigator.pop(context, _scannedMachine);
                                 return;
                               }
-                              Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen(machineInfo: _parsedNames,)));
+                              if(_scannedMachine!=null){
+                                Navigator.push(context, CupertinoPageRoute(builder: (context)=>MachineRepairScreen(machineInfo: _scannedMachine!,)));
+                              }
+
                             },
                             icon: Icon(Icons.qr_code_scanner),
                             label: Text(
@@ -229,7 +258,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
                     )
                         :
                     ElevatedButton.icon(
-                      onPressed: _scannedResult != null ? _resetScanner : null,
+                      onPressed: _scannedMachine != null ? _resetScanner : null,
                       icon: Icon(Icons.qr_code_scanner),
                       label: Text(
                         'Scanning',
@@ -300,7 +329,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
         ),
         SizedBox(height: 5),
         Text(
-          'Scan QR codes with * separated names',
+          'Scan QR codes',
           style: TextStyle(
             color: Colors.white70,
             fontSize: 14,
@@ -390,66 +419,36 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: Colors.blue,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
-              children: _parsedNames.asMap().entries.map((entry) {
-                return Container(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: entry.key < _parsedNames.length - 1
-                          ? BorderSide(color: Colors.blue.shade100)
-                          : BorderSide.none,
+              children: [
+                Center(
+                  child: Text(
+                    '${_scannedMachine!.machineName}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${entry.key + 1}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          entry.value,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.blue.shade900,
-                          ),
-                        ),
-                      ),
-                    ],
+                ),
+                Center(
+                  child: Text(
+                    '${_scannedMachine!.machineCode}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                );
-              }).toList(),
+                ),
+              ],
             ),
           ),
 
           SizedBox(height: 8),
-          Text(
-            'Total Names: ${_parsedNames.length}',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
-          ),
         ],
       ),
     );

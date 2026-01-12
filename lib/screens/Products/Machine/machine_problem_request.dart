@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/machine_breakdown_dropdown.dart';
+import '../../../models/machine_scan_model.dart';
 import '../../../providers/riverpods/production_provider.dart';
 import 'machine_problem_list.dart';
 
 class MachineRepairScreen extends ConsumerStatefulWidget {
-  List<String> machineInfo;
-  MachineRepairScreen({super.key, this.machineInfo = const []});
+  MachineScanModel? machineInfo;
+
+
+  MachineRepairScreen({this.machineInfo});
 
   @override
   ConsumerState<MachineRepairScreen> createState() => _MachineRepairScreenState();
@@ -169,7 +172,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Parsed names
-          if(widget.machineInfo.isNotEmpty)Column(
+          if(widget.machineInfo==null)Column(
             children: [
               Text(
                 'Machine Info:',
@@ -187,55 +190,52 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
                   color: Colors.blue.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
-                  children: widget.machineInfo
-                      .asMap()
-                      .entries
-                      .map((entry) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: entry.key < 1 // only first element gets bottom border
-                              ? BorderSide(color: Colors.blue.shade100)
-                              : BorderSide.none,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.blue.shade100)
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        widget.machineInfo!.machineName??'',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue.shade900,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${entry.key + 1}', // numbers will be 1,2 for the last 2 elements
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              entry.value,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.blue.shade900,
-                              ),
-                            ),
-                          ),
-                        ],
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.blue.shade100)
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        widget.machineInfo!.machineModelId.toString()??'',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue.shade900,
+                        ),
                       ),
-                    );
-                  }).toList(),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -398,8 +398,8 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
 
 
     var data={
-      "machineId": widget.machineInfo[0],
-      "machineTypeId": widget.machineInfo[1],
+      "machineId": widget.machineInfo!.machineId,
+      "machineTypeId": widget.machineInfo!.machineModelId,
       "lineId": _productionLines!.lineId
     };
 
