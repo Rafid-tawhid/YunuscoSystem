@@ -194,8 +194,8 @@ class MachineBreakdownCard extends StatelessWidget {
                   if (breakdown.sectionName != null || breakdown.lineName != null)
                     _buildDetailRow(
                       icon: Icons.location_on,
-                      label: 'Location',
-                      value: '${breakdown.sectionName ?? ''}${breakdown.lineName != null ? ' - ${breakdown.lineName!}' : ''}',
+                      label: 'Line No',
+                      value: '${breakdown.sectionName ?? ''}${breakdown.lineName != null ? '${breakdown.lineName!}' : ''}',
                       textColor: textColor,
                     ),
 

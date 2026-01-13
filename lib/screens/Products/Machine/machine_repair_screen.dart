@@ -8,20 +8,14 @@ import 'package:yunusco_group/models/process_name_model.dart';
 import 'package:yunusco_group/providers/riverpods/management_provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
+import '../../../models/machine_repair_task_model.dart';
 import '../../../providers/riverpods/production_provider.dart';
 
-const List<String> problemTasks = [
-  'Machine Overheating',
-  'Electrical Issue',
-  'Bearing Failure',
-  'Motor Failure',
-  'Mechanical Jam',
-  'Preventive Maintenance',
-  'Emergency Repair',
-];
+
 
 class MachineProblemRequestScreen extends ConsumerStatefulWidget {
   final MachineBreakdownModel breakdownModel;
+
 
   const MachineProblemRequestScreen({
     super.key,
@@ -43,6 +37,7 @@ class _MachineProblemRequestScreenState
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
   String _workDuration = '00:00';
+  MachineRepairTaskModel? _selectedTask;
 
   bool _isSubmitting = false;
 
@@ -50,6 +45,7 @@ class _MachineProblemRequestScreenState
   Widget build(BuildContext context) {
     final maintenanceTypes = ref.watch(maintenanceTypeProvider);
     final processNames = ref.watch(processNameProvider);
+    final taskList = ref.watch(maintenanceTaskList);
 
     return Scaffold(
       appBar: AppBar(
@@ -88,7 +84,15 @@ class _MachineProblemRequestScreenState
                     ),
                     const SizedBox(height: 16),
 
-                    _problemDropdown(),
+                    AsyncProblemTaskDropdown(
+                      taskList: taskList, // This is AsyncValue<List<MachineRepairTaskModel>>
+                      selectedTask: _selectedTask,
+                      onChanged: (MachineRepairTaskModel? task) {
+                        setState(() {
+                          _selectedTask = task;
+                        });
+                      },
+                    ),
                     const SizedBox(height: 16),
 
                     _timePicker(
@@ -225,25 +229,6 @@ class _MachineProblemRequestScreenState
     );
   }
 
-  Widget _problemDropdown() {
-    return DropdownButtonFormField<String>(
-      value: _problemTask,
-      decoration: const InputDecoration(
-        labelText: 'Problem Task *',
-        border: OutlineInputBorder(),
-      ),
-      items: problemTasks
-          .map(
-            (e) => DropdownMenuItem(
-          value: e,
-          child: Text(e),
-        ),
-      )
-          .toList(),
-      validator: (v) => v == null ? 'Required' : null,
-      onChanged: (v) => setState(() => _problemTask = v),
-    );
-  }
 
   // ---------------- TIME PICKER ----------------
 
@@ -409,5 +394,65 @@ class _MachineProblemRequestScreenState
 
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+}
+
+
+
+
+class AsyncProblemTaskDropdown extends StatelessWidget {
+  final AsyncValue<List<MachineRepairTaskModel>> taskList;
+  final MachineRepairTaskModel? selectedTask;
+  final ValueChanged<MachineRepairTaskModel?> onChanged;
+
+  const AsyncProblemTaskDropdown({
+    super.key,
+    required this.taskList,
+    required this.selectedTask,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return taskList.when(
+      data: (tasks) => ProblemTaskDropdown(
+        tasks: tasks,
+        selectedTask: selectedTask,
+        onChanged: onChanged,
+      ),
+      loading: () => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Row(
+          children: [
+            CircularProgressIndicator(strokeWidth: 1),
+            SizedBox(width: 8),
+            Text('Loading tasks...'),
+          ],
+        ),
+      ),
+      error: (error, stackTrace) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.red),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 16),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Failed to load tasks',
+                style: TextStyle(color: Colors.red[700]),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

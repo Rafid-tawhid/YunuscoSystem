@@ -2,7 +2,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yunusco_group/screens/Management/widgets/announcement_details.dart';
 import 'package:yunusco_group/screens/Management/widgets/create_post_screen.dart';
+import 'package:yunusco_group/utils/colors.dart';
 import '../../models/announcement_model.dart';
 import '../../providers/riverpods/management_provider.dart';
 import 'package:intl/intl.dart';
@@ -15,8 +17,10 @@ class AnnouncementsScreen extends ConsumerWidget {
     final announcementsAsync = ref.watch(announcementsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: myColors.primaryColor,
+        foregroundColor: Colors.white,
         title: const Text(
           'Announcements',
           style: TextStyle(
@@ -248,154 +252,159 @@ class AnnouncementsScreen extends ConsumerWidget {
           final announcement = announcements[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
-            child: _buildAnnouncementCard(announcement),
+            child: _buildAnnouncementCard(announcement,context),
           );
         },
       ),
     );
   }
 
-  Widget _buildAnnouncementCard(AnnouncementModel announcement) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Category and Date row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (announcement.category != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getCategoryColor(announcement.category!),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      announcement.category!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                if (announcement.publishDate != null)
-                  Text(
-                    _formatDate(announcement.publishDate!),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-              ],
+  Widget _buildAnnouncementCard(AnnouncementModel announcement,BuildContext context) {
+    return InkWell(
+      onTap: (){
+        Navigator.push(context, CupertinoPageRoute(builder: (context)=>AnnouncementDetails(model: announcement,)));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-            const SizedBox(height: 16),
-
-            // Title
-            if (announcement.title != null && announcement.title!.isNotEmpty)
-              Text(
-                announcement.title!,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                  height: 1.3,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            const SizedBox(height: 12),
-
-            // Description
-            if (announcement.description != null && announcement.description!.isNotEmpty)
-              Text(
-                announcement.description!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                  height: 1.5,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            const SizedBox(height: 20),
-
-            // Footer with author and stats
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Author
-                if (announcement.createdBy != null)
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.blue[100],
-                        child: Text(
-                          announcement.createdBy!.isNotEmpty
-                              ? announcement.createdBy![0].toUpperCase()
-                              : 'A',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blue,
-                          ),
-                        ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Category and Date row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (announcement.category != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        announcement.createdBy!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[700],
+                      decoration: BoxDecoration(
+                        color: _getCategoryColor(announcement.category!),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        announcement.category!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                    ),
+                  if (announcement.publishDate != null)
+                    Text(
+                      _formatDate(announcement.publishDate!),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+      
+              // Title
+              if (announcement.title != null && announcement.title!.isNotEmpty)
+                Text(
+                  announcement.title!,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    height: 1.3,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 12),
+      
+              // Description
+              if (announcement.description != null && announcement.description!.isNotEmpty)
+                Text(
+                  announcement.description!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                    height: 1.5,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 20),
+      
+              // Footer with author and stats
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Author
+                  if (announcement.createdBy != null)
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.blue[100],
+                          child: Text(
+                            announcement.createdBy!.isNotEmpty
+                                ? announcement.createdBy![0].toUpperCase()
+                                : 'A',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          announcement.createdBy!,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+      
+                  // Stats
+                  Row(
+                    children: [
+                      // Comments
+                      if (announcement.commentCount != null)
+                        _buildStatItem(
+                          Icons.chat_bubble_outline_rounded,
+                          announcement.commentCount!.toString(),
+                          Colors.blue,
+                        ),
+                      const SizedBox(width: 16),
+      
+                      // Reactions
+                      if (announcement.reactionCount != null)
+                        _buildStatItem(
+                          Icons.thumb_up_outlined,
+                          announcement.reactionCount!.toString(),
+                          Colors.red,
+                        ),
                     ],
                   ),
-
-                // Stats
-                Row(
-                  children: [
-                    // Comments
-                    if (announcement.commentCount != null)
-                      _buildStatItem(
-                        Icons.chat_bubble_outline_rounded,
-                        announcement.commentCount!.toString(),
-                        Colors.blue,
-                      ),
-                    const SizedBox(width: 16),
-
-                    // Reactions
-                    if (announcement.reactionCount != null)
-                      _buildStatItem(
-                        Icons.thumb_up_outlined,
-                        announcement.reactionCount!.toString(),
-                        Colors.red,
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

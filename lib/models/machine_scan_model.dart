@@ -12,7 +12,7 @@ class MachineScanModel {
 
   MachineScanModel.fromJson(dynamic json) {
     _machineId = json['MachineId']??'';
-    _machineModelId = json['MachineModelId'];
+    _machineModelId = json['MachineTypeId'];
     _machineCode = json['MachineCode'];
     _machineName = json['MachineName'];
   }
@@ -37,7 +37,7 @@ MachineScanModel copyWith({  num? machineId,
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['MachineId'] = _machineId;
-    map['MachineModelId'] = _machineModelId;
+    map['MachineTypeId'] = _machineModelId;
     map['MachineCode'] = _machineCode;
     map['MachineName'] = _machineName;
     return map;

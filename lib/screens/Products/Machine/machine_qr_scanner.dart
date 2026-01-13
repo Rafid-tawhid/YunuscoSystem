@@ -75,7 +75,7 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
           print('Parsing: $key -> $value');
 
           // Convert to appropriate types
-          if (key == 'MachineId' || key == 'MachineModelId' || key == 'Count') {
+          if (key == 'MachineId' || key == 'MachineTypeId') {
             data[key] = int.tryParse(value) ?? 0;
           } else {
             data[key] = value;
@@ -447,7 +447,6 @@ class _BeautifulQRScannerScreenState extends State<BeautifulQRScannerScreen> {
               ],
             ),
           ),
-
           SizedBox(height: 8),
         ],
       ),
