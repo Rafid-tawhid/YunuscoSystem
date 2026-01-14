@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:yunusco_group/common_widgets/process_dropdown.dart';
+import 'package:yunusco_group/models/machine_scan_model.dart';
 import 'package:yunusco_group/models/maintanance_type_model.dart';
 import 'package:yunusco_group/models/process_name_model.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
@@ -30,10 +31,8 @@ class _MachineMultipleProblemRequestScreenState
   MachineRepairTaskModel? _selectedTask;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
-  String? _selectedMachineModel;
-  String? _selectedMachineType;
   bool _isSubmitting = false;
-  List<String> _scannedMachineInfo = [];
+  MachineScanModel? _scannedMachineInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class _MachineMultipleProblemRequestScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Machine Repair'),
+        title: const Text('Machine Repair 3'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
       ),
@@ -131,7 +130,7 @@ class _MachineMultipleProblemRequestScreenState
                                             ),
                                             const SizedBox(height: 2),
                                             Text(
-                                              _scannedMachineInfo.isNotEmpty
+                                              _scannedMachineInfo==null
                                                   ? 'Tap to scan another'
                                                   : 'Required for this maintenance type',
                                               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
@@ -141,7 +140,7 @@ class _MachineMultipleProblemRequestScreenState
                                       ),
                                       IconButton(
                                         icon: Icon(
-                                          _scannedMachineInfo.isNotEmpty
+                                          _scannedMachineInfo!=null
                                               ? Icons.refresh
                                               : Icons.arrow_forward_ios,
                                           color: myColors.primaryColor,
@@ -153,12 +152,14 @@ class _MachineMultipleProblemRequestScreenState
                                                   builder: (context) => BeautifulQRScannerScreen(fromMultipleScreen: true)
                                               )
                                           ).then((value) {
-                                            if(value != null && value is List<String>) {
-                                              debugPrint('Scanned Value: $value');
+                                            debugPrint('Scanned Value: $value');
+                                            if(value != null) {
                                               setState(() {
                                                 _scannedMachineInfo = value;
-                                                if(value.length > 2) _selectedMachineModel = value[2];
-                                                if(value.length > 3) _selectedMachineType = value[3];
+                                                debugPrint('Scanned Machine Code: ${_scannedMachineInfo!.machineCode}');
+                                                debugPrint('Scanned MachineModelId: ${_scannedMachineInfo!.machineModelId}');
+                                                debugPrint('Scanned Machine Id: ${_scannedMachineInfo!.machineId}');
+                                                debugPrint('Scanned Machine Name: ${_scannedMachineInfo!.machineName}');
                                               });
                                             }
                                           });
@@ -171,12 +172,12 @@ class _MachineMultipleProblemRequestScreenState
                               const SizedBox(height: 12),
 
                               // Scanned Machine Info Card
-                              if(_scannedMachineInfo.isNotEmpty)
+                              if(_scannedMachineInfo!=null)
                                 Card(
                                   elevation: 2,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    side: BorderSide(color: myColors.primaryColor.withOpacity(0.3), width: 1.5),
+                                    side: BorderSide(color: myColors.primaryColor.withValues(alpha: 0.3), width: 1.5),
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(16),
@@ -195,23 +196,23 @@ class _MachineMultipleProblemRequestScreenState
                                         ),
                                         const SizedBox(height: 12),
 
-                                        if(_selectedMachineModel != null && _selectedMachineModel!.isNotEmpty)
+                                        if(_scannedMachineInfo != null)
                                           Column(
                                             children: [
                                               _machineDetailRow(
                                                 icon: Icons.precision_manufacturing,
-                                                label: 'Machine Model',
-                                                value: _selectedMachineModel!,
+                                                label: 'Machine Code',
+                                                value: _scannedMachineInfo!.machineCode.toString(),
                                               ),
                                               const SizedBox(height: 8),
                                             ],
                                           ),
 
-                                        if(_selectedMachineType != null && _selectedMachineType!.isNotEmpty)
+                                        if(_scannedMachineInfo != null)
                                           _machineDetailRow(
                                             icon: Icons.category,
                                             label: 'Machine Type',
-                                            value: _selectedMachineType!,
+                                            value: _scannedMachineInfo!.machineName.toString(),
                                           ),
                                       ],
                                     ),
@@ -254,7 +255,7 @@ class _MachineMultipleProblemRequestScreenState
     types.removeWhere((e) => e.maintenanceTypeId == 1);
 
     return DropdownButtonFormField<MaintananceTypeModel>(
-      value: _maintenanceType,
+      initialValue: _maintenanceType,
       decoration: const InputDecoration(
         labelText: 'Maintenance Type *',
         border: OutlineInputBorder(),
@@ -274,9 +275,7 @@ class _MachineMultipleProblemRequestScreenState
         if(v?.maintenanceTypeId == 4) _process = null;
         if(v?.maintenanceTypeId == 3) _selectedTask = null;
         if(v?.maintenanceTypeId == 2) {
-          _scannedMachineInfo = [];
-          _selectedMachineModel = null;
-          _selectedMachineType = null;
+          _scannedMachineInfo = null;
         }
       }),
     );
@@ -435,7 +434,7 @@ class _MachineMultipleProblemRequestScreenState
     // The ProblemTaskDropdown handles its own validation through the Form
     // No need to manually check for _selectedTask
 
-    if (_maintenanceType!.maintenanceTypeId != 2 && _scannedMachineInfo.isEmpty) {
+    if (_maintenanceType!.maintenanceTypeId != 2 && _scannedMachineInfo==null) {
       _showError('Please scan machine QR code');
       return;
     }
@@ -458,18 +457,17 @@ class _MachineMultipleProblemRequestScreenState
         "problemTask": _selectedTask?.taskName ?? '',
         "workStartTime": _formatApiDateTime(_toApiDateTime(_startTime!)),
         "workEndTime": _formatApiDateTime(_toApiDateTime(_endTime!)),
-        "employeeId": DashboardHelpers.currentUser?.employeeId ?? 0,
-        "machineNumber": _selectedMachineModel,
-        "machineCode": _scannedMachineInfo.isNotEmpty ? _scannedMachineInfo[1] : '',
-        "machineType": _selectedMachineType,
+        "machineNumber": _scannedMachineInfo!.machineModelId,
+        "machineCode": _scannedMachineInfo!.machineCode,
+        "machineType": _scannedMachineInfo!.machineName,
       };
       //
       debugPrint('Payload: $payload');
 
-      await apiService.postData(
-        'api/Manufacturing/UpdateRequisition',
-        payload,
-      );
+      // await apiService.postData(
+      //   'api/Manufacturing/UpdateRequisition',
+      //   payload,
+      // );
 
       if (mounted) {
         Navigator.pop(context, true);
@@ -483,11 +481,6 @@ class _MachineMultipleProblemRequestScreenState
     }
   }
 
-  String _toApiTime(TimeOfDay t) {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, t.hour, t.minute);
-    return DateFormat("HH:mm:ss").format(dt);
-  }
   DateTime _toApiDateTime(TimeOfDay t) {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, t.hour, t.minute);

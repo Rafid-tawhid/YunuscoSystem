@@ -5,17 +5,13 @@ import 'package:yunusco_group/common_widgets/process_dropdown.dart';
 import 'package:yunusco_group/models/machine_breakdown_model.dart';
 import 'package:yunusco_group/models/maintanance_type_model.dart';
 import 'package:yunusco_group/models/process_name_model.dart';
-import 'package:yunusco_group/providers/riverpods/management_provider.dart';
-import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/machine_repair_task_model.dart';
+import '../../../providers/riverpods/management_provider.dart';
 import '../../../providers/riverpods/production_provider.dart';
-
-
 
 class MachineProblemRequestScreen extends ConsumerStatefulWidget {
   final MachineBreakdownModel breakdownModel;
-
 
   const MachineProblemRequestScreen({
     super.key,
@@ -30,16 +26,39 @@ class MachineProblemRequestScreen extends ConsumerStatefulWidget {
 class _MachineProblemRequestScreenState
     extends ConsumerState<MachineProblemRequestScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _scrollController = ScrollController();
 
-  MaintananceTypeModel? _maintenanceType;
-  ProcessNameModel? _process;
-  String? _problemTask;
+  ProcessNameModel? _selectedProcess;
+  MachineRepairTaskModel? _selectedTask;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
   String _workDuration = '00:00';
-  MachineRepairTaskModel? _selectedTask;
-
   bool _isSubmitting = false;
+
+  // Validation flags
+  bool _processError = false;
+  bool _taskError = false;
+  bool _startTimeError = false;
+  bool _endTimeError = false;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToError() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        // Scroll to top to ensure errors are visible
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,81 +67,118 @@ class _MachineProblemRequestScreenState
     final taskList = ref.watch(maintenanceTaskList);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Repair Request'),
         backgroundColor: myColors.primaryColor,
         foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
       ),
       body: Form(
         key: _formKey,
         child: maintenanceTypes.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => _errorWidget(e.toString()),
+          loading: () => _buildLoading(),
+          error: (error, _) => _buildError(error.toString()),
           data: (types) {
             return processNames.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => _errorWidget(e.toString()),
+              loading: () => _buildLoading(),
+              error: (error, _) => _buildError(error.toString()),
               data: (processList) {
-                return ListView(
-                  padding: const EdgeInsets.all(16),
+                return Column(
                   children: [
-                    // _maintenanceDropdown(types),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Machine Info Header
+                            _buildMachineHeader(),
+                            const SizedBox(height: 8),
 
-                    _maintenanceTypeText(types.first),
-                    const SizedBox(height: 16),
+                            // Maintenance Type (Read-only)
+                            _buildMaintenanceTypeCard(types.first),
+                            const SizedBox(height: 12),
 
-                    //  _processDropdown(processList),
+                            // Process Selection
+                            _buildSectionTitle('Select Process'),
+                            const SizedBox(height: 8),
+                            _buildProcessDropdown(processList),
+                            if (_processError) _buildErrorText('Please select a process'),
+                            const SizedBox(height: 8),
 
-                    ProcessDropdown(
-                      processes: processList,
-                      selectedProcess: _process,
-                      onChanged: (ProcessNameModel? p1) {
-                        setState(() {
-                          _process = p1;
-                        });
-                      },
+                            // Task Selection
+                            _buildSectionTitle('Select Task'),
+                            const SizedBox(height: 8),
+                            _buildTaskDropdown(taskList),
+                            if (_taskError) _buildErrorText('Please select a task'),
+                            const SizedBox(height: 24),
+
+                            // Time Selection
+                            _buildSectionTitle('Work Time'),
+
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTimePicker(
+                                    label: 'Start Time',
+                                    time: _startTime,
+                                    isError: _startTimeError,
+                                    onPicked: (time) {
+                                      setState(() {
+                                        _startTime = time;
+                                        _startTimeError = false;
+                                        _calculateWorkDuration();
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildTimePicker(
+                                    label: 'End Time',
+                                    time: _endTime,
+                                    isError: _endTimeError,
+                                    onPicked: (time) {
+                                      setState(() {
+                                        _endTime = time;
+                                        _endTimeError = false;
+                                        _calculateWorkDuration();
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Work Duration Display
+                            if (_startTime != null && _endTime != null)
+                              _buildWorkDurationCard(),
+                          ],
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 16),
 
-                    AsyncProblemTaskDropdown(
-                      taskList: taskList, // This is AsyncValue<List<MachineRepairTaskModel>>
-                      selectedTask: _selectedTask,
-                      onChanged: (MachineRepairTaskModel? task) {
-                        setState(() {
-                          _selectedTask = task;
-                        });
-                      },
+                    // Submit Button
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(top: BorderSide(color: Colors.grey.shade300)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: _buildSubmitButton(types.first),
                     ),
-                    const SizedBox(height: 16),
-
-                    _timePicker(
-                      label: 'Work Start Time',
-                      time: _startTime,
-                      onPicked: (t) => setState(() {
-                        _startTime = t;
-                        _calculateWorkDuration();
-                      }),
-                    ),
-                    const SizedBox(height: 12),
-
-                    _timePicker(
-                      label: 'Work End Time',
-                      time: _endTime,
-                      onPicked: (t) => setState(() {
-                        _endTime = t;
-                        _calculateWorkDuration();
-                      }),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Mechanic Work Time Field
-                   if(_startTime!=null&&_endTime!=null) _workTimeDisplay(),
-                    const SizedBox(height: 12),
-
-                    _machineInfoCard(),
-                    const SizedBox(height: 36),
-
-                    _submitButton(types.first),
                   ],
                 );
               },
@@ -133,95 +189,427 @@ class _MachineProblemRequestScreenState
     );
   }
 
-  // ---------------- MACHINE INFO ----------------
+  // ==================== WIDGET BUILDERS ====================
 
-  Widget _machineInfoCard() {
-    return Card(
+  Widget _buildLoading() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text(
+            'Loading data...',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildError(String error) {
+    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Machine Information',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red.shade400,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
             ),
             const SizedBox(height: 8),
-            _infoRow('Machine', widget.breakdownModel.machineName ?? 'N/A'),
-            _infoRow('Line', widget.breakdownModel.lineName ?? 'N/A'),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => setState(() {}),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: myColors.primaryColor,
+              ),
+              child: const Text(
+                'Try Again',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+  Widget _buildMachineHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: myColors.primaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: myColors.primaryColor.withOpacity(0.2)),
+      ),
       child: Row(
         children: [
-          SizedBox(
-            width: 90,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w500),
+          Icon(
+            Icons.build_circle_outlined,
+            color: myColors.primaryColor,
+            size: 32,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.breakdownModel.machineName ?? 'Unknown Machine',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.breakdownModel.lineName ?? 'No line specified',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
           ),
-          Expanded(child: Text(value)),
         ],
       ),
     );
   }
 
-  // ---------------- DROPDOWNS ----------------
-
-  Widget _maintenanceDropdown(List<MaintananceTypeModel> types) {
-    return DropdownButtonFormField<MaintananceTypeModel>(
-      value: _maintenanceType,
-      decoration: const InputDecoration(
-        labelText: 'Maintenance Type *',
-        border: OutlineInputBorder(),
+  Widget _buildMaintenanceTypeCard(MaintananceTypeModel type) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      items: types
-          .map(
-            (e) => DropdownMenuItem(
-          value: e,
-          child: Text(e.maintenanceName ?? ''),
-        ),
-      )
-          .toList(),
-      validator: (v) => v == null ? 'Required' : null,
-      onChanged: (v) => setState(() => _maintenanceType = v),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: myColors.primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.category_outlined,
+              color: myColors.primaryColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Maintenance Type',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  type.maintenanceName ?? 'General Maintenance',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _maintenanceTypeText(MaintananceTypeModel type) {
+  Widget  _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: Colors.black87,
+      ),
+    );
+  }
+
+  Widget _buildProcessDropdown(List<ProcessNameModel> processes) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: _processError ? Colors.red.shade400 : Colors.transparent,
+          width: _processError ? 1.5 : 1,
+        ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Label
-          const Text(
-            'Maintenance Type',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Material(
+          color: Colors.white,
+          child: ProcessDropdown(
+            processes: processes,
+            selectedProcess: _selectedProcess,
+            onChanged: (ProcessNameModel? process) {
+              setState(() {
+                _selectedProcess = process;
+                _processError = false;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskDropdown(AsyncValue<List<MachineRepairTaskModel>> taskList) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: _taskError ? Colors.red.shade400 : Colors.grey.shade300,
+          width: _taskError ? 1.5 : 1,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: taskList.when(
+          data: (tasks) => ProblemTaskDropdown(
+            tasks: tasks,
+            selectedTask: _selectedTask,
+            onChanged: (MachineRepairTaskModel? task) {
+              setState(() {
+                _selectedTask = task;
+                _taskError = false;
+              });
+            },
+          ),
+          loading: () => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: myColors.primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Loading tasks...',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 4),
-          // Type Name
-          Text(
-            type.maintenanceName ?? '',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-              fontWeight: FontWeight.w400,
+          error: (error, _) => Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red.shade400,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Failed to load tasks. Tap to retry.',
+                    style: TextStyle(
+                      color: Colors.red.shade600,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => ref.invalidate(maintenanceTaskList),
+                  icon: const Icon(Icons.refresh),
+                  color: Colors.grey.shade600,
+                  iconSize: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimePicker({
+    required String label,
+    required TimeOfDay? time,
+    required bool isError,
+    required Function(TimeOfDay) onPicked,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: isError ? Colors.red.shade600 : Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () async {
+            final picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+                child: child!,
+              ),
+            );
+            if (picked != null) onPicked(picked);
+          },
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isError ? Colors.red.shade400 : Colors.grey.shade300,
+                width: isError ? 1.5 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.access_time,
+                  color: isError ? Colors.red.shade400 : Colors.grey.shade600,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    time == null ? 'Select time' : _formatTime(time),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: time == null ? Colors.grey.shade500 : Colors.black87,
+                    ),
+                  ),
+                ),
+                if (time != null)
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (label.contains('Start')) {
+                          _startTime = null;
+                          _startTimeError = false;
+                        } else {
+                          _endTime = null;
+                          _endTimeError = false;
+                        }
+                        _calculateWorkDuration();
+                      });
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                      size: 20,
+                      color: Colors.grey.shade500,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWorkDurationCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: myColors.primaryColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: myColors.primaryColor.withOpacity(0.1)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.timer_outlined,
+                color: myColors.primaryColor,
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Work Duration',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    '$_workDuration hours',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: myColors.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '${_startTime != null && _endTime != null ? _calculateTotalMinutes() : 0} min',
+              style: TextStyle(
+                color: myColors.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -229,66 +617,77 @@ class _MachineProblemRequestScreenState
     );
   }
 
-
-  // ---------------- TIME PICKER ----------------
-
-  Widget _timePicker({
-    required String label,
-    required TimeOfDay? time,
-    required Function(TimeOfDay) onPicked,
-  }) {
-    // Custom 12-hour format function
-    String _format12Hour(TimeOfDay time) {
-      final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-      final minute = time.minute.toString().padLeft(2, '0');
-      final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-      return '$hour:$minute $period';
-    }
-
-    return ListTile(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: Colors.grey.shade300),
+  Widget _buildErrorText(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, top: 4),
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 14,
+            color: Colors.red.shade600,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.red.shade600,
+            ),
+          ),
+        ],
       ),
-      title: Text(label),
-      subtitle: Text(
-        time == null ? 'Select time' : _format12Hour(time),
-      ),
-      trailing: const Icon(Icons.access_time),
-      onTap: () async {
-        final picked = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-          builder: (BuildContext context, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                alwaysUse24HourFormat: false, // Force 12-hour format
-              ),
-              child: child!,
-            );
-          },
-        );
-        if (picked != null) onPicked(picked);
-      },
     );
   }
 
-  // ---------------- WORK TIME DISPLAY ----------------
-
-  Widget _workTimeDisplay() {
-    return ListTile(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: Colors.grey.shade300),
+  Widget _buildSubmitButton(MaintananceTypeModel type) {
+    return SizedBox(
+      height: 56,
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _isSubmitting ? null : () => _validateAndSubmit(type),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: myColors.primaryColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 2,
+        ),
+        child: _isSubmitting
+            ? SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.white,
+          ),
+        )
+            : const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.send_outlined, size: 20),
+            SizedBox(width: 8),
+            Text(
+              'SUBMIT REQUEST',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
-      title: const Text('Mechanic Work Time'),
-      subtitle: Text(
-        _startTime != null && _endTime != null
-            ? '$_workDuration hours'
-            : 'Select start and end time',
-      ),
-      trailing: const Icon(Icons.timer_outlined, color: Colors.blue),
     );
+  }
+
+  // ==================== HELPER METHODS ====================
+
+  String _formatTime(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
   }
 
   void _calculateWorkDuration() {
@@ -297,87 +696,142 @@ class _MachineProblemRequestScreenState
       return;
     }
 
-    final startMinutes = _startTime!.hour * 60 + _startTime!.minute;
-    final endMinutes = _endTime!.hour * 60 + _endTime!.minute;
-
-    int diffMinutes = endMinutes - startMinutes;
-    if (diffMinutes < 0) diffMinutes += 24 * 60;
-
-    final hours = diffMinutes ~/ 60;
-    final minutes = diffMinutes % 60;
+    final totalMinutes = _calculateTotalMinutes();
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
 
     setState(() {
       _workDuration = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
     });
   }
 
-  // ---------------- SUBMIT ----------------
+  int _calculateTotalMinutes() {
+    final startMinutes = _startTime!.hour * 60 + _startTime!.minute;
+    final endMinutes = _endTime!.hour * 60 + _endTime!.minute;
 
-  Widget _submitButton(MaintananceTypeModel types) {
-    return SizedBox(
-      height: 48,
-      child: ElevatedButton(
-        onPressed: _isSubmitting ? null : (){_submit(types);},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: myColors.primaryColor,
-        ),
-        child: _isSubmitting
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text(
-          'Submit Request',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-    );
+    int diffMinutes = endMinutes - startMinutes;
+    if (diffMinutes < 0) diffMinutes += 24 * 60;
+
+    return diffMinutes;
   }
 
-  Future<void> _submit(MaintananceTypeModel types) async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_startTime == null || _endTime == null) {
-      _showError('Please select start & end time');
-      return;
+  void _validateAndSubmit(MaintananceTypeModel type) {
+    bool isValid = true;
+
+    // Reset errors
+    setState(() {
+      _processError = _selectedProcess == null;
+      _taskError = _selectedTask == null;
+      _startTimeError = _startTime == null;
+      _endTimeError = _endTime == null;
+    });
+
+    // Check all validations
+    if (_processError || _taskError || _startTimeError || _endTimeError) {
+      isValid = false;
+      _scrollToError();
     }
 
+    // Check if end time is after start time
+    if (_startTime != null && _endTime != null) {
+      final totalMinutes = _calculateTotalMinutes();
+      if (totalMinutes <= 0) {
+        isValid = false;
+        _showError('End time must be after start time');
+        return;
+      }
+    }
+
+    if (isValid) {
+      _submitRequest(type);
+    }
+  }
+
+  Future<void> _submitRequest(MaintananceTypeModel type) async {
     setState(() => _isSubmitting = true);
 
-    //   "mechanicWorkTime": _workDuration,
-    // "date": "2025-01-13",
-    //  "operationId": 3,
-    //  "taskId": 7,
-    //  "mechanicInfoTime": "2025-01-13T09:30:00",
-    //  "workStartTime": "2025-01-13T10:00:00",
-    //  "workEndTime": "2025-01-13T12:15:00",
-    //  "mechanicWorkTime": "02:15",
-    //  "employeeId": 1025,
-    //  "machineNumber": "MC-2204",
-    //  "maintenanceTypeId": 1,
-    //  "waitingTime": "00:30"
     try {
-      final payload = {
-        "date": DateFormat('yyyy-MM-dd').format(DateTime.now()),
-        "operationId": 3,
-        "taskId": _process!.taskId,
-        "workStartTime": _toApiTime(_startTime!),
-        "workEndTime": _toApiTime(_endTime!),
-        "employeeId": DashboardHelpers.currentUser?.employeeId ?? 0,
-        "machineNumber": widget.breakdownModel.machineName,
-        "maintenanceTypeId": types.maintenanceTypeId
+      // final payload = {
+      //   "date": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      //   "operationId": 3,
+      //   "taskId": _selectedTask?.taskId ?? 0,
+      //   "workStartTime": _toApiTime(_startTime!),
+      //   "workEndTime": _toApiTime(_endTime!),
+      //   "employeeId": DashboardHelpers.currentUser?.employeeId ?? 0,
+      //   "machineNumber": widget.breakdownModel.machineName,
+      //   "maintenanceTypeId": type.maintenanceTypeId,
+      //   "processId": _selectedProcess?.taskId ?? 0,
+      // };
+
+      final payload={
+        "Id":widget.breakdownModel.repairId,
+        "OperationId": 1,
+        "TaskId": _selectedTask!.taskId,
+        "WorkStartTime": _toApiTime(_startTime!),
+        "WorkEndTime": _toApiTime(_endTime!),
+        "MechanicWorkTime": _workDuration
       };
 
-      debugPrint(types.maintenanceTypeId.toString());
+      // TODO: Replace with your actual API call
+      debugPrint('Submitting: $payload');
+      await apiService.postData('api/Manufacturing/UpdateRequisition', payload);
 
-      await apiService.postData(
-        'api/Manufacturing/UpdateRequisition',
-        payload,
-      );
+      // Show success
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Repair request submitted successfully!'),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
 
-      if (mounted) Navigator.pop(context, true);
+        // Wait a moment before navigating back
+        await Future.delayed(const Duration(milliseconds: 1500));
+        Navigator.pop(context, true);
+      }
     } catch (e) {
-      debugPrint('Error $e ${_maintenanceType!.maintenanceTypeId}');
-      _showError(e.toString());
+      debugPrint('Submission error: $e');
+      if (mounted) {
+        _showError('Failed to submit request: ${e.toString()}');
+      }
     } finally {
-      if (mounted) setState(() => _isSubmitting = false);
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
+  }
+
+
+  String formatDuration(Duration duration) {
+    // Handle negative durations if needed
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+
+    return '${twoDigits(hours)}:${twoDigits(minutes)}';
+  }
+
+  String getTimeDifference(TimeOfDay start, TimeOfDay end) {
+    // Convert TimeOfDay to minutes
+    final startMinutes = start.hour * 60 + start.minute;
+    final endMinutes = end.hour * 60 + end.minute;
+
+    // Calculate difference
+    int diffMinutes;
+    if (endMinutes >= startMinutes) {
+      diffMinutes = endMinutes - startMinutes;
+    } else {
+      // Handle overnight duration (crossing midnight)
+      diffMinutes = (24 * 60 - startMinutes) + endMinutes;
+    }
+
+    final duration = Duration(minutes: diffMinutes);
+    return formatDuration(duration);
   }
 
   String _toApiTime(TimeOfDay t) {
@@ -386,19 +840,19 @@ class _MachineProblemRequestScreenState
     return DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dt);
   }
 
-  // ---------------- HELPERS ----------------
-
-  Widget _errorWidget(String message) {
-    return Center(child: Text(message));
-  }
-
-  void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
   }
 }
-
-
-
 
 class AsyncProblemTaskDropdown extends StatelessWidget {
   final AsyncValue<List<MachineRepairTaskModel>> taskList;
