@@ -138,6 +138,7 @@ class _MachineMultipleProblemRequestScreenState
                                           ],
                                         ),
                                       ),
+                                      //
                                       IconButton(
                                         icon: Icon(
                                           _scannedMachineInfo!=null
