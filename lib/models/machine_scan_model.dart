@@ -1,23 +1,23 @@
 class MachineScanModel {
   MachineScanModel({
     num? machineId,
-    num? machineModelId,
+    num? machineTypeId,
       String? machineCode, 
       String? machineName,}){
     _machineId = machineId;
-    _machineModelId = machineModelId;
+    _machineTypeId = machineTypeId;
     _machineCode = machineCode;
     _machineName = machineName;
 }
 
   MachineScanModel.fromJson(dynamic json) {
     _machineId = json['MachineId']??'';
-    _machineModelId = json['MachineTypeId'];
+    _machineTypeId = json['MachineTypeId'];
     _machineCode = json['MachineCode'];
     _machineName = json['MachineName'];
   }
   num? _machineId;
-  num? _machineModelId;
+  num? _machineTypeId;
   String? _machineCode;
   String? _machineName;
 MachineScanModel copyWith({  num? machineId,
@@ -25,19 +25,19 @@ MachineScanModel copyWith({  num? machineId,
   String? machineCode,
   String? machineName,
 }) => MachineScanModel(  machineId: machineId ?? _machineId,
-  machineModelId: machineModelId ?? _machineModelId,
+  machineTypeId: machineModelId ?? _machineTypeId,
   machineCode: machineCode ?? _machineCode,
   machineName: machineName ?? _machineName,
 );
   num? get machineId => _machineId;
-  num? get machineModelId => _machineModelId;
+  num? get machineTypeId => _machineTypeId;
   String? get machineCode => _machineCode;
   String? get machineName => _machineName;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['MachineId'] = _machineId;
-    map['MachineTypeId'] = _machineModelId;
+    map['MachineTypeId'] = _machineTypeId;
     map['MachineCode'] = _machineCode;
     map['MachineName'] = _machineName;
     return map;

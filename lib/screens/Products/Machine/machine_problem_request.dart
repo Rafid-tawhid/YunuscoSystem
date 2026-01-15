@@ -6,6 +6,7 @@ import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/machine_breakdown_dropdown.dart';
 import '../../../models/machine_scan_model.dart';
 import '../../../providers/riverpods/production_provider.dart';
+import '../widgets/machine_line_dropdown.dart';
 import 'machine_problem_list.dart';
 
 class MachineRepairScreen extends ConsumerStatefulWidget {
@@ -227,7 +228,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
                   child: Row(
                     children: [
                       Text(
-                        widget.machineInfo!.machineModelId.toString()??'',
+                        widget.machineInfo!.machineTypeId.toString()??'',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -243,13 +244,12 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
 
           SizedBox(height: 8),
 
-          _buildProductionLineDropdown(
-            label: 'Line # :',
-            lines: dropdownData.productionLines ?? [],
-            selectedLine: _productionLines,
-            onChanged: (line) {
+          ProductionLineDropdown(
+            label: 'Production Line',
+            selectedLine: _productionLines, // Your state variable
+            onChanged: (newLine) {
               setState(() {
-                _productionLines = line;
+                _productionLines = newLine;
               });
             },
           ),
@@ -263,108 +263,14 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
     );
   }
 
-  Widget _buildTaskDropdown({
-    required String label,
-    required List<Tasks> tasks,
-    required Tasks? selectedTask,
-    required Function(Tasks?) onChanged,
-  }) {
-    return _buildGenericDropdown<Tasks>(
-      label: label,
-      value: selectedTask,
-      items: tasks,
-      displayText: (task) => '${task.taskName} (${task.taskCode})',
-      hintText: 'Select Task',
-      onChanged: onChanged,
-    );
-  }
 
 
-  Widget _buildOperationDropdown({
-    required String label,
-    required List<Operations> operations,
-    required Operations? selectedOperation,
-    required Function(Operations?) onChanged,
-  }) {
-    return _buildGenericDropdown<Operations>(
-      label: label,
-      value: selectedOperation,
-      items: operations,
-      displayText: (operation) => operation.operationName ?? 'Unknown',
-      hintText: 'Select Operation',
-      onChanged: onChanged,
-    );
-  }
-
-  Widget _buildProductionLineDropdown({
-    required String label,
-    required List<ProductionLines> lines,
-    required ProductionLines? selectedLine,
-    required Function(ProductionLines?) onChanged,
-  }) {
-    return _buildGenericDropdown<ProductionLines>(
-      label: label,
-      value: selectedLine,
-      items: lines,
-      displayText: (line) => line.name ?? line.shortName ?? 'Unknown',
-      hintText: 'Select Production Line',
-      onChanged: onChanged,
-    );
-  }
 
 
-  Widget _buildGenericDropdown<T>({
-    required String label,
-    required T? value,
-    required List<T> items,
-    required String Function(T) displayText,
-    required String hintText,
-    required Function(T?) onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<T>(
-              value: value,
-              isExpanded: true,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-              hint: Text(
-                hintText,
-                style: TextStyle(color: Colors.grey[500]),
-              ),
-              items: items.map((T item) {
-                return DropdownMenuItem<T>(
-                  value: item,
-                  child: Text(
-                    displayText(item),
-                    style: const TextStyle(fontSize: 16),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              }).toList(),
-              onChanged: onChanged,
-              icon: const Icon(Icons.arrow_drop_down),
-              iconSize: 24,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
+
+
+
 
 
   Widget _buildActionButtons() {
@@ -399,7 +305,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
 
     var data={
       "machineId": widget.machineInfo!.machineId,
-      "machineTypeId": widget.machineInfo!.machineModelId,
+      "machineTypeId": widget.machineInfo!.machineTypeId,
       "lineId": _productionLines!.lineId
     };
 
