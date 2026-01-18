@@ -12,7 +12,8 @@ class AnnouncementDetails extends ConsumerStatefulWidget {
   const AnnouncementDetails({super.key, required this.model});
 
   @override
-  ConsumerState<AnnouncementDetails> createState() => _AnnouncementDetailsState();
+  ConsumerState<AnnouncementDetails> createState() =>
+      _AnnouncementDetailsState();
 }
 
 class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
@@ -36,15 +37,13 @@ class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
     try {
       final apiService = ref.read(apiServiceProvider);
       final response = await apiService.getData(
-          'api/Support/GetAnnouncementDetails/${widget.model.announcementId}'
-      );
+          'api/Support/GetAnnouncementDetails/${widget.model.announcementId}');
 
       debugPrint('API Response: $response');
 
       if (response != null &&
           response['data'] != null &&
           response['data']['Comments'] != null) {
-
         final List<AnnouncementCommentModel> loadedComments = [];
 
         for (var item in response['data']['Comments']) {
@@ -316,6 +315,7 @@ class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
   Widget _buildEmptyComments() {
     return Container(
       padding: const EdgeInsets.all(32),
+      alignment: Alignment.center,
       child: Column(
         children: [
           Icon(
@@ -371,7 +371,8 @@ class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Category Chip
-                    if (widget.model.category != null && widget.model.category!.isNotEmpty)
+                    if (widget.model.category != null &&
+                        widget.model.category!.isNotEmpty)
                       Chip(
                         label: Text(
                           widget.model.category!,
@@ -392,10 +393,11 @@ class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
                     // Title
                     Text(
                       widget.model.title ?? 'No Title',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
                     ),
 
                     const SizedBox(height: 8),
@@ -501,9 +503,10 @@ class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
                       children: [
                         Text(
                           'Comments',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         const SizedBox(width: 8),
                         Container(
@@ -588,20 +591,21 @@ class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
                       ),
                       suffixIcon: isPosting
                           ? const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
+                              padding: EdgeInsets.all(12.0),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            )
                           : _commentController.text.isNotEmpty
-                          ? IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: _postComment,
-                        color: Theme.of(context).primaryColor,
-                      )
-                          : null,
+                              ? IconButton(
+                                  icon: const Icon(Icons.send),
+                                  onPressed: _postComment,
+                                  color: Theme.of(context).primaryColor,
+                                )
+                              : null,
                     ),
                     onSubmitted: (_) => _postComment(),
                     textInputAction: TextInputAction.send,

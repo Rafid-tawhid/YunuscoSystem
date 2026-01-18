@@ -377,7 +377,7 @@ class _MachineProblemRequestScreenState
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(4),
         child: Material(
           color: Colors.white,
           child: ProcessDropdown(
@@ -405,7 +405,7 @@ class _MachineProblemRequestScreenState
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(4),
         child: taskList.when(
           data: (tasks) => ProblemTaskDropdown(
             tasks: tasks,

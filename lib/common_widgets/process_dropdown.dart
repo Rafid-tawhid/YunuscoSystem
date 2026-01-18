@@ -61,7 +61,7 @@ class _ProcessDropdownState extends State<ProcessDropdown> {
           .toList(),
       suggestionState: Suggestion.expand,
       searchInputDecoration: SearchInputDecoration(
-        labelText: 'Process Name *',
+        hint: Text('Process Name *'),
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         suffixIcon: _selectedProcess != null
@@ -154,7 +154,7 @@ class _ProblemTaskDropdownState extends State<ProblemTaskDropdown> {
           .toList(),
       suggestionState: Suggestion.expand,
       searchInputDecoration: SearchInputDecoration(
-        labelText: 'Problem Task *',
+        hint: Text('Problem Task *'),
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         suffixIcon: _selectedTask != null

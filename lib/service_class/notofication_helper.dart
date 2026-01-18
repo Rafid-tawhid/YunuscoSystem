@@ -9,14 +9,19 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/machine_breakdown_model.dart';
+import 'package:yunusco_group/models/machine_scan_model.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/screens/HR&PayRoll/meeting_screen_new.dart';
+import 'package:yunusco_group/screens/Products/Machine/machine_problem_list.dart';
+import 'package:yunusco_group/screens/Products/Machine/machine_problem_request.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../common_widgets/blank_screen_notification.dart';
 import '../screens/HR&PayRoll/doc_appointment_requisation.dart';
 import '../screens/HR&PayRoll/requested_car_list.dart';
+import '../screens/Products/Machine/machine_repair_screen.dart';
 import '../screens/Purchasing/purchase_requisation_list.dart';
 import '../screens/login_screen.dart';
 import 'api_services.dart';
@@ -236,7 +241,8 @@ class NotificationServices {
   static void _navigateToRouteFromNotification(Map<String, dynamic> data) {
     debugPrint('This Is The Notification Navigation Data');
     debugPrint('-----------------------------------------');
-    debugPrint('Data: $data');
+    debugPrint('Notification Clicked Data: $data');
+
 
     final context = NavigationService.navigatorKey.currentContext;
     if (context == null) return;
@@ -275,6 +281,9 @@ class NotificationServices {
       );
     }
 
+    else if (type == "Breakdown") {
+      handleNotificationNavigation(context, data);
+    }
     //
     else {
       // ✅ Default: Show BlankScreenNotification with title/body
@@ -284,6 +293,50 @@ class NotificationServices {
             builder: (context) => BlankScreenNotification(data: data)),
       );
     }
+  }
+
+
+
+
+}
+
+
+void handleNotificationNavigation(BuildContext context, Map<String, dynamic> data) {
+  try {
+    debugPrint('Navigating to MachineProblemListScreen with data: $data');
+
+    /// STEP 1: Extract data
+    var rawMachineData = data['data'];
+
+    /// STEP 2: Decode if needed
+    Map<String, dynamic> machineData =
+    rawMachineData is String ? jsonDecode(rawMachineData) : rawMachineData;
+
+    debugPrint('Machine data map: $machineData');
+    debugPrint('Machine Id: ${machineData['MachineId']}');
+    debugPrint('Line Id: ${machineData['LineId']}');
+    debugPrint('Machine Type Id: ${machineData['MachineTypeId']}');
+
+    /// STEP 3: Create model safely
+    MachineBreakdownModel machineInfo = MachineBreakdownModel(
+      repairId: machineData['Id'] ?? 0,
+      requisitionCode: machineData['RequisitionCode']?.toString() ?? '0',
+      machineName: 'Sewing',
+      maintenanceName: machineData['MachineTypeId'] ?? '0',
+    );
+
+    debugPrint('Created machineInfo: ${machineInfo.toJson()}');
+
+    /// STEP 4: Navigate
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => MachineProblemRequestScreen(breakdownModel: machineInfo,),
+      ),
+    );
+  } catch (e, stack) {
+    debugPrint('❌ Notification navigation error: $e');
+    debugPrint('$stack');
   }
 }
 

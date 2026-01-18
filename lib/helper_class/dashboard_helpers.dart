@@ -893,7 +893,8 @@ class DashboardHelpers {
 
   static UserModel? currentUser;
 
-  static navigationUser(BuildContext context) {
+  static
+  navigationUser(BuildContext context) {
     var ap = context.read<AuthProvider>();
     if (ap.isAuthenticated && ap.user != null) {
       Navigator.pushReplacement(

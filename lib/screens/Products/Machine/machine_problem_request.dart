@@ -313,7 +313,7 @@ class _MachineRepairScreenState extends ConsumerState<MachineRepairScreen> {
 
     // Call the function with your data
     final response = await submitFunction(data);
-    if(response['Success']){
+    if(response['RequisitionCode']!=null){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Repair information submitted successfully!'),
