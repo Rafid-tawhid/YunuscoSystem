@@ -13,6 +13,7 @@ import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'dart:math';
 import '../../helper_class/firebase_helpers.dart';
+import '../../models/announcement_comment_model.dart';
 import '../../models/announcement_model.dart';
 import '../../models/dhu_model.dart';
 import '../../models/item_efficiency_model.dart';
@@ -371,3 +372,111 @@ final brokenNeedleSummary = FutureProvider.autoDispose<List<BrokenNeedleModel>>(
   debugPrint('brokenNeedleSummary ${brokenNeedleSummary.length}');
   return brokenNeedleSummary;
 });
+
+
+
+
+
+
+
+// Provider for comments state
+final commentsProvider = StateNotifierProvider<CommentsNotifier, List<AnnouncementCommentModel>>(
+      (ref) => CommentsNotifier(ref),
+);
+
+class CommentsNotifier extends StateNotifier<List<AnnouncementCommentModel>> {
+  final Ref ref;
+
+  CommentsNotifier(this.ref) : super([]);
+
+  // Add new comment
+  void addComment(AnnouncementCommentModel comment) {
+    state = [...state, comment];
+  }
+
+  // Load all comments
+  Future<void> loadComments(num announcementId) async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      final data = await apiService.getData(
+          'api/Support/GetAnnouncementDetails/$announcementId'
+      );
+
+      if (data != null && data['data'] != null && data['data']['Comments'] != null) {
+        final List<AnnouncementCommentModel> loadedComments = [];
+
+        for (var item in data['data']['Comments']) {
+          loadedComments.add(AnnouncementCommentModel(
+            commentId: item['CommentId'],
+            userId: item['UserId'] ?? '',
+            userName: item['UserName'] ?? '',
+            commentText: item['CommentText'] ?? '',
+            parentCommentId: item['ParentCommentId'],
+            createdAt: item['CreatedAt'] ?? '',
+          ));
+        }
+
+        state = loadedComments;
+      }
+    } catch (e) {
+      print('Error loading comments: $e');
+      state = []; // Clear state on error
+    }
+  }
+
+  // Clear all comments
+  void clearComments() {
+    state = [];
+  }
+}
+
+// Provider for posting comment
+final postCommentProvider = FutureProvider.family<void, PostCommentParams>(
+      (ref, params) async {
+    final apiService = ref.read(apiServiceProvider);
+
+    final comment = {
+      "announcementId": params.announcementId,
+      "userId": params.userId,
+      "userName": params.userName,
+      "commentText": params.commentText.trim(),
+      "parentCommentId": params.announcementId,
+    };
+
+    await apiService.postData('api/Support/AddComment', comment);
+
+    // Refresh comments after posting
+    ref.read(commentsProvider.notifier).loadComments(params.announcementId);
+  },
+);
+
+class PostCommentParams {
+  final num announcementId;
+  final String userId;
+  final String userName;
+  final String commentText;
+
+  PostCommentParams({
+    required this.announcementId,
+    required this.userId,
+    required this.userName,
+    required this.commentText,
+  });
+}
+
+// Provider for announcement details (if you need more announcement data)
+final announcementDetailsProvider = FutureProvider.family<AnnouncementModel?, int>(
+      (ref, announcementId) async {
+    final apiService = ref.read(apiServiceProvider);
+
+    final data = await apiService.getData(
+        'api/Support/GetAnnouncementDetails/$announcementId'
+    );
+
+    if (data != null && data['data'] != null) {
+      return AnnouncementModel.fromJson(data['data']['Announcement']);
+    }
+
+    return null;
+  },
+);

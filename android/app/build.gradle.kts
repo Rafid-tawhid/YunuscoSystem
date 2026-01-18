@@ -74,6 +74,7 @@ android {
 }
 
 dependencies {
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0")  // Update Kotlin
     implementation("androidx.appcompat:appcompat:1.7.1")  // Add AppCompat
     implementation("com.google.android.material:material:1.13.0")  // Add Material

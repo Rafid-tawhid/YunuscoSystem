@@ -1,13 +1,10 @@
-// lib/screens/machine_breakdown_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yunusco_group/common_widgets/custom_button.dart';
 import 'package:yunusco_group/screens/Products/Machine/machine_qr_scanner.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../../helper_class/dashboard_helpers.dart';
 import '../../../models/machine_breakdown_model.dart';
 import '../../../providers/riverpods/production_provider.dart';
-import 'machine_problem_request.dart';
 import 'machine_repair_screen.dart';
 import 'multiple_machine_repair_list.dart';
 
@@ -32,13 +29,13 @@ class MachineBreakdownListScreen extends ConsumerWidget {
             },
             tooltip: 'Setup',
           ),
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>BeautifulQRScannerScreen()));
-            },
-            tooltip: 'Refresh',
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.qr_code_scanner),
+          //   onPressed: () {
+          //     Navigator.push(context, MaterialPageRoute(builder: (context)=>BeautifulQRScannerScreen()));
+          //   },
+          //   tooltip: 'Refresh',
+          // ),
         ],
       ),
       body: RefreshIndicator(

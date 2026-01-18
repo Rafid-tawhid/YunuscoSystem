@@ -196,8 +196,8 @@ class ProductHomeScreen extends ConsumerWidget {
       DashboardMenuItem(
         name: 'Machine\nBreakdown',
         icon: Icons.settings,
-        cardColor: Colors.grey.shade50, // Light orange
-        iconColor: Colors.grey.shade700, // Deep orange
+        cardColor: Colors.greenAccent.shade100, // Light orange
+        iconColor: Colors.greenAccent.shade700, // Deep orange
         onTap: () async {
           Navigator.push(
             context,

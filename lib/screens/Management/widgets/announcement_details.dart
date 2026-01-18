@@ -1,70 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../../models/announcement_model.dart';
+import '../../../providers/riverpods/management_provider.dart';
+import 'comments_tile.dart';
 
-class AnnouncementDetails extends StatefulWidget {
+class AnnouncementDetails extends ConsumerStatefulWidget {
   final AnnouncementModel model;
   const AnnouncementDetails({super.key, required this.model});
 
   @override
-  State<AnnouncementDetails> createState() => _AnnouncementDetailsState();
+  ConsumerState<AnnouncementDetails> createState() => _AnnouncementDetailsState();
 }
 
-class _AnnouncementDetailsState extends State<AnnouncementDetails> {
+class _AnnouncementDetailsState extends ConsumerState<AnnouncementDetails> {
   final TextEditingController _commentController = TextEditingController();
-  final List<Comment> _comments = [
-    Comment(
-      id: 1,
-      userName: 'John Doe',
-      userAvatar: 'JD',
-      comment: 'This is very helpful, thanks for sharing!',
-      time: '2 hours ago',
-      likes: 5,
-    ),
-    Comment(
-      id: 2,
-      userName: 'Sarah Wilson',
-      userAvatar: 'SW',
-      comment: 'Could you provide more details about the implementation?',
-      time: '1 day ago',
-      likes: 3,
-    ),
-    Comment(
-      id: 3,
-      userName: 'Mike Chen',
-      userAvatar: 'MC',
-      comment: 'Looking forward to this update!',
-      time: '2 days ago',
-      likes: 12,
-    ),
-  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Load comments when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(commentsProvider.notifier).loadComments(widget.model.announcementId!);
+    });
+  }
 
   @override
   void dispose() {
     _commentController.dispose();
+    // Optional: Clear comments when leaving screen
+    ref.read(commentsProvider.notifier).clearComments();
     super.dispose();
   }
 
-  void _postComment() {
+  Future<void> _postComment() async {
     if (_commentController.text.trim().isEmpty) return;
 
-    final newComment = Comment(
-      id: _comments.length + 1,
-      userName: 'You',
-      userAvatar: 'ME',
-      comment: _commentController.text,
-      time: 'Just now',
-      likes: 0,
-    );
+    final userId = DashboardHelpers.currentUser!.iDnum;
+    final userName = DashboardHelpers.currentUser!.userName;
 
-    setState(() {
-      _comments.insert(0, newComment);
-      _commentController.clear();
-    });
+    if (userId == null || userName == null) return;
 
     // Hide keyboard
     FocusScope.of(context).unfocus();
+
+    // Post comment using Riverpod
+    await ref.read(postCommentProvider(
+      PostCommentParams(
+        announcementId: widget.model.announcementId!,
+        userId: userId,
+        userName: userName,
+        commentText: _commentController.text.trim(),
+      ),
+    ).future);
+
+    // Clear text field
+    _commentController.clear();
 
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -88,6 +81,16 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final comments = ref.watch(commentsProvider);
+    final postCommentAsync = ref.watch(postCommentProvider(
+      PostCommentParams(
+        announcementId: widget.model.announcementId!,
+        userId: DashboardHelpers.currentUser!.iDnum ?? '',
+        userName: DashboardHelpers.currentUser!.userName ?? '',
+        commentText: _commentController.text.trim(),
+      ),
+    ));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -215,7 +218,7 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
                         children: [
                           _buildStatItem(
                             icon: Icons.comment_outlined,
-                            count: widget.model.commentCount ?? 0,
+                            count: widget.model.commentCount ?? comments.length,
                             label: 'Comments',
                           ),
                           _buildStatItem(
@@ -254,7 +257,7 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            _comments.length.toString(),
+                            comments.length.toString(),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -267,44 +270,25 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
                     const SizedBox(height: 16),
 
                     // Comments List
-                    if (_comments.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.comment_outlined,
-                              size: 64,
-                              color: Colors.grey[300],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No comments yet',
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Be the first to comment!',
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                    if (comments.isEmpty)
+                      _buildEmptyComments()
                     else
-                      ..._comments.map((comment) => _buildCommentTile(comment)),
+                      ...comments.map((comment) => CommentTile(
+                        comment: comment,
+                        onLike: () {
+                          // Handle like
+                        },
+                        onReply: () {
+                          // Handle reply - you could focus the text field and set it to reply mode
+                        },
+                      )),
                   ],
                 ),
               ),
             ),
           ),
 
-          // Comment Input Section
+          // Comment Input Section with loading state
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -340,7 +324,16 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
                         horizontal: 20,
                         vertical: 12,
                       ),
-                      suffixIcon: _commentController.text.isNotEmpty
+                      suffixIcon: postCommentAsync.isLoading
+                          ? const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                          : _commentController.text.isNotEmpty
                           ? IconButton(
                         icon: const Icon(Icons.send),
                         onPressed: _postComment,
@@ -353,7 +346,7 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
                     maxLines: null,
                   ),
                 ),
-                if (_commentController.text.isEmpty)
+                if (_commentController.text.isEmpty && !postCommentAsync.isLoading)
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: IconButton(
@@ -404,147 +397,34 @@ class _AnnouncementDetailsState extends State<AnnouncementDetails> {
     );
   }
 
-  Widget _buildCommentTile(Comment comment) {
+  Widget _buildEmptyComments() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.all(32),
+      child: Column(
         children: [
-          // Avatar
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: _getAvatarColor(comment.userAvatar),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                comment.userAvatar,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
+          Icon(
+            Icons.comment_outlined,
+            size: 64,
+            color: Colors.grey[300],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No comments yet',
+            style: TextStyle(
+              color: Colors.grey[500],
+              fontSize: 16,
             ),
           ),
-
-          const SizedBox(width: 12),
-
-          // Comment Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      comment.userName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      comment.time,
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  comment.comment,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.favorite_border,
-                        size: 18,
-                        color: Colors.grey[500],
-                      ),
-                      onPressed: () {
-                        // Handle like
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      comment.likes.toString(),
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    IconButton(
-                      icon: Icon(
-                        Icons.reply_outlined,
-                        size: 18,
-                        color: Colors.grey[500],
-                      ),
-                      onPressed: () {
-                        // Handle reply
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-              ],
+          const SizedBox(height: 8),
+          Text(
+            'Be the first to comment!',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
             ),
           ),
         ],
       ),
     );
   }
-
-  Color _getAvatarColor(String initials) {
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-    ];
-    final index = initials.codeUnits.fold(0, (a, b) => a + b) % colors.length;
-    return colors[index];
-  }
-}
-
-// Comment Model (Add this class in a separate file or at the bottom)
-class Comment {
-  final int id;
-  final String userName;
-  final String userAvatar;
-  final String comment;
-  final String time;
-  int likes;
-
-  Comment({
-    required this.id,
-    required this.userName,
-    required this.userAvatar,
-    required this.comment,
-    required this.time,
-    required this.likes,
-  });
 }
