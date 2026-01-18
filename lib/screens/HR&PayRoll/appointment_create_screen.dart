@@ -7,7 +7,7 @@ import 'package:yunusco_group/utils/colors.dart';
 
 import '../../models/members_model.dart';
 import '../../providers/riverpods/employee_provider.dart';
-import '../../providers/riverpods/management_provider.dart';
+import '../../providers/riverpods/management_provider.dart' hide apiServiceProvider;
 
 class CreateAppointmentScreen extends ConsumerStatefulWidget {
   const CreateAppointmentScreen({super.key});

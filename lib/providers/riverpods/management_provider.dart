@@ -377,106 +377,16 @@ final brokenNeedleSummary = FutureProvider.autoDispose<List<BrokenNeedleModel>>(
 
 
 
+// Provider for API service
+final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
 
+// Simple state for comments
+final commentsListProvider = StateProvider<List<AnnouncementCommentModel>>((ref) {
+  return [];
+});
 
-// Provider for comments state
-final commentsProvider = StateNotifierProvider<CommentsNotifier, List<AnnouncementCommentModel>>(
-      (ref) => CommentsNotifier(ref),
-);
+// Loading state
+final isLoadingCommentsProvider = StateProvider<bool>((ref) => false);
 
-class CommentsNotifier extends StateNotifier<List<AnnouncementCommentModel>> {
-  final Ref ref;
-
-  CommentsNotifier(this.ref) : super([]);
-
-  // Add new comment
-  void addComment(AnnouncementCommentModel comment) {
-    state = [...state, comment];
-  }
-
-  // Load all comments
-  Future<void> loadComments(num announcementId) async {
-    try {
-      final apiService = ref.read(apiServiceProvider);
-      final data = await apiService.getData(
-          'api/Support/GetAnnouncementDetails/$announcementId'
-      );
-
-      if (data != null && data['data'] != null && data['data']['Comments'] != null) {
-        final List<AnnouncementCommentModel> loadedComments = [];
-
-        for (var item in data['data']['Comments']) {
-          loadedComments.add(AnnouncementCommentModel(
-            commentId: item['CommentId'],
-            userId: item['UserId'] ?? '',
-            userName: item['UserName'] ?? '',
-            commentText: item['CommentText'] ?? '',
-            parentCommentId: item['ParentCommentId'],
-            createdAt: item['CreatedAt'] ?? '',
-          ));
-        }
-
-        state = loadedComments;
-      }
-    } catch (e) {
-      print('Error loading comments: $e');
-      state = []; // Clear state on error
-    }
-  }
-
-  // Clear all comments
-  void clearComments() {
-    state = [];
-  }
-}
-
-// Provider for posting comment
-final postCommentProvider = FutureProvider.family<void, PostCommentParams>(
-      (ref, params) async {
-    final apiService = ref.read(apiServiceProvider);
-
-    final comment = {
-      "announcementId": params.announcementId,
-      "userId": params.userId,
-      "userName": params.userName,
-      "commentText": params.commentText.trim(),
-      "parentCommentId": params.announcementId,
-    };
-
-    await apiService.postData('api/Support/AddComment', comment);
-
-    // Refresh comments after posting
-    ref.read(commentsProvider.notifier).loadComments(params.announcementId);
-  },
-);
-
-class PostCommentParams {
-  final num announcementId;
-  final String userId;
-  final String userName;
-  final String commentText;
-
-  PostCommentParams({
-    required this.announcementId,
-    required this.userId,
-    required this.userName,
-    required this.commentText,
-  });
-}
-
-// Provider for announcement details (if you need more announcement data)
-final announcementDetailsProvider = FutureProvider.family<AnnouncementModel?, int>(
-      (ref, announcementId) async {
-    final apiService = ref.read(apiServiceProvider);
-
-    final data = await apiService.getData(
-        'api/Support/GetAnnouncementDetails/$announcementId'
-    );
-
-    if (data != null && data['data'] != null) {
-      return AnnouncementModel.fromJson(data['data']['Announcement']);
-    }
-
-    return null;
-  },
-);
+// Posting state
+final isPostingCommentProvider = StateProvider<bool>((ref) => false);

@@ -3,7 +3,7 @@ import 'package:yunusco_group/models/JobCardDropdownModel.dart';
 import 'package:yunusco_group/models/appointment_model_new.dart';
 import 'package:yunusco_group/models/board_room_booking_model.dart';
 import 'package:yunusco_group/providers/riverpods/management_provider.dart';
-import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart';
+import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart' hide apiServiceProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
