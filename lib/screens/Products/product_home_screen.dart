@@ -1,26 +1,42 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/qc_difference_model.dart';
+import 'package:yunusco_group/models/qc_pass_summary_model.dart';
 import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/screens/Products/hourly_sewing_status.dart';
 import 'package:yunusco_group/screens/Products/production_dashboard.dart';
 import 'package:yunusco_group/screens/Products/production_efficiency_screen.dart';
+import 'package:yunusco_group/screens/Products/production_qc_screen.dart';
+import 'package:yunusco_group/screens/Products/qc_difference_screen.dart';
+import 'package:yunusco_group/screens/Products/qc_monthly_summary.dart';
 import 'package:yunusco_group/screens/Products/widgets/production_screen.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 
 import '../../common_widgets/dashboard_item_card.dart';
+import '../../models/production_qc_model.dart';
+import '../../providers/riverpods/production_provider.dart';
+import 'Machine/machine_problem_list.dart';
+import 'Machine/machine_qr_scanner.dart';
+import 'error_summary.dart';
 import 'get_all_style_screen.dart';
+import 'Machine/machine_problem_request.dart';
+import 'linewise_manpower.dart';
 import 'widgets/buyers_screen.dart';
+import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProductHomeScreen extends StatelessWidget {
-  const ProductHomeScreen({super.key});
+class ProductHomeScreen extends ConsumerWidget {
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     final List<DashboardMenuItem> menuItems = [
       DashboardMenuItem(
         name: 'Production\nSummary',
-        icon: Icons.assessment,
+        icon: Icons.summarize,
         cardColor: const Color(0xFFE3F2FD), // Light blue
         iconColor: const Color(0xFF1976D2), // Dark blue
         onTap: () async {
@@ -36,8 +52,20 @@ class ProductHomeScreen extends StatelessWidget {
         },
       ),
       DashboardMenuItem(
+        name: "Linewise\nManpower",
+        icon: Icons.schema_rounded,
+        cardColor: Colors.orange.shade50,
+        iconColor: Colors.orange.shade700,
+        onTap: () {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => LinewiseManpowerScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
         name: 'Production\nEfficiency',
-        icon: Icons.assured_workload,
+        icon: Icons.trending_up,
         cardColor: const Color(0xFFE8F5E9), // Light green
         iconColor: const Color(0xFF388E3C), // Dark green
         onTap: () async {
@@ -52,8 +80,21 @@ class ProductHomeScreen extends StatelessWidget {
         },
       ),
       DashboardMenuItem(
+        name: 'Hourly\nSewing',
+        icon: Icons.calendar_today,
+        cardColor: Colors.green.shade50, // Light red
+        iconColor: Colors.green.shade700, // Dark red
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const HourlySewingStatusScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
         name: 'Production\nMonthly/Yearly',
-        icon: Icons.calendar_month,
+        icon: Icons.calendar_today,
         cardColor: const Color(0xFFFFEBEE), // Light red
         iconColor: const Color(0xFFD32F2F), // Dark red
         onTap: () {
@@ -66,7 +107,7 @@ class ProductHomeScreen extends StatelessWidget {
       ),
       DashboardMenuItem(
         name: 'Buyers',
-        icon: Icons.people_alt_outlined,
+        icon: Icons.business_center,
         cardColor: const Color(0xFFF3E5F5), // Light purple
         iconColor: const Color(0xFF7B1FA2), // Dark purple
         onTap: () {
@@ -78,7 +119,7 @@ class ProductHomeScreen extends StatelessWidget {
       ),
       DashboardMenuItem(
         name: 'Stylewise\nEfficiency',
-        icon: Icons.style_sharp,
+        icon: Icons.insights,
         cardColor: const Color(0xFFFFF8E1), // Light amber
         iconColor: const Color(0xFFFFA000), // Dark amber
         onTap: () async {
@@ -90,6 +131,78 @@ class ProductHomeScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => StyleSelectionScreen()),
             );
           }
+        },
+      ),
+      DashboardMenuItem(
+        name: 'QC\nReport',
+        icon: Icons.analytics,
+        cardColor: const Color(0xFFE0F2F1), // Light teal
+        iconColor: const Color(0xFF00796B), // Dark teal
+        onTap: () async {
+          final today = DateTime.now();
+          final yesterday = today.subtract(const Duration(days: 1));
+          final yesterdayFormatted = DashboardHelpers.convertDateTime(yesterday.toString(), pattern: 'yyyy-MM-dd');
+          await ref.read(qcDataProvider.notifier).loadQcData(yesterdayFormatted);
+          final qcDataAsync = ref.watch(qcDataProvider);
+
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => ProductionQcListScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
+        name: 'QC\nDifference',
+        icon: Icons.compare_arrows,
+        cardColor: const Color(0xFFFCE4EC), // Light pink
+        iconColor: const Color(0xFFC2185B), // Dark pink
+        onTap: () async {
+          final today = DateTime.now();
+          final yesterday = today.subtract(const Duration(days: 1));
+          final todayFormatted = DashboardHelpers.convertDateTime(DateTime.now().toString(), pattern: 'yyyy-MM-dd');
+          final yesterdayFormatted = DashboardHelpers.convertDateTime(yesterday.toString(), pattern: 'yyyy-MM-dd');
+          await ref.read(differenceDataProvider.notifier).loadDifferenceData(todayFormatted, yesterdayFormatted);
+          final asyncDiffData = ref.watch(differenceDataProvider);
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => QcDifferenceDashboard()),
+          );
+        },
+      ),
+      DashboardMenuItem(
+        name: 'QC\nSummary',
+        icon: Icons.analytics,
+        cardColor: const Color(0xFFEFF6FF), // Light blue
+        iconColor: const Color(0xFF1D4ED8), // Deep blue
+        onTap: () async {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => QcPassSummaryScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
+        name: 'Error\nSummary',
+        icon: Icons.insights,
+        cardColor: const Color(0xFFFFF4E6), // Light orange
+        iconColor: const Color(0xFFEA580C), // Deep orange
+        onTap: () async {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => ErrorSummaryScreen()),
+          );
+        },
+      ),
+      DashboardMenuItem(
+        name: 'Machine\nBreakdown',
+        icon: Icons.settings,
+        cardColor: Colors.greenAccent.shade100, // Light orange
+        iconColor: Colors.greenAccent.shade700, // Deep orange
+        onTap: () async {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(builder: (context) => MachineBreakdownListScreen()),
+          );
         },
       ),
     ];
@@ -141,3 +254,4 @@ class ProductHomeScreen extends StatelessWidget {
     return '$year-$month-$day';
   }
 }
+

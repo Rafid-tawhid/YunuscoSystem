@@ -8,8 +8,7 @@ class SelectedPeopleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HrProvider>(context);
-    final selectedMembers =
-        provider.member_list.where((m) => m.isSelected).toList();
+    final selectedMembers = provider.member_list.where((m) => m.isSelected).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

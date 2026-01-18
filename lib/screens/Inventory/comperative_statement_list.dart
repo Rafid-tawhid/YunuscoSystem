@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/models/css_model.dart';
 import 'package:yunusco_group/providers/inventory_provider.dart';
+import 'package:yunusco_group/providers/product_provider.dart';
+import 'package:yunusco_group/providers/purchase_provider.dart';
 import 'package:yunusco_group/utils/colors.dart';
+
+import '../Purchasing/widgets/requisition_product_details.dart';
 
 class ComperativeStatementList extends StatefulWidget {
   const ComperativeStatementList({super.key});
@@ -133,72 +137,97 @@ class RequisitionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              requisition.purchaseRequisitionCode ?? '',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              requisition.userName ?? '',
-              style: TextStyle(color: Colors.grey[700], fontSize: 14),
-            ),
-          ],
+    return InkWell(
+      onTap: () async {
+        ///api/Inventory/SingleGenPurReqMaster&Detail?Code=GPR0000000047054
+        var pp=context.read<ProductProvider>();
+        var res=await pp.getRequisationProductDetails(requisition.purchaseRequisitionCode);
+
+
+        if (res) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => RequisitionDetailsScreen(requisitionsList: pp.requisationProductDetails,csCode: requisition.code,)));
+        }
+      },
+      child: Card(
+        color: Colors.white,
+        elevation: 3,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _buildChip(requisition.purchaseType ?? '',
-                    Colors.blue[100]!, Colors.blue[800]!),
-                const SizedBox(width: 8),
-                _buildChip(requisition.type ?? '',
-                    Colors.green[100]!, Colors.green[800]!),
-              ],
-            ),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              requisition.code ?? '',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              requisition.createdDate ?? '',
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left Side Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header: Code + User Name
+                    Text(
+                      requisition.purchaseRequisitionCode ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      requisition.userName ?? '',
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 14,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+                    Divider(height: 1, thickness: .6, color: Colors.grey[300]),
+                    const SizedBox(height: 12),
+
+                    // Additional Info
+                    Text(
+                      'Purchase Type: ${requisition.purchaseType}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Product Type: ${requisition.type}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Right Side Trailing Information
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    requisition.code ?? '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    requisition.createdDate ?? '',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildChip(String label, Color backgroundColor, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(color: textColor, fontSize: 12),
-      ),
-    );
-  }
+
 }
 

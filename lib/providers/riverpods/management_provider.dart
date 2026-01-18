@@ -1,11 +1,25 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
+import 'package:yunusco_group/models/appointment_model.dart';
+import 'package:yunusco_group/models/broken_needle_model.dart';
+import 'package:yunusco_group/models/buyer_wise_value_model.dart';
+import 'package:yunusco_group/models/production_strength_model.dart';
+import 'package:yunusco_group/models/shipment_breakdown_model.dart';
+import 'package:yunusco_group/models/shipment_info_model.dart';
+import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'dart:math';
 import '../../helper_class/firebase_helpers.dart';
+import '../../models/announcement_comment_model.dart';
 import '../../models/announcement_model.dart';
+import '../../models/dhu_model.dart';
+import '../../models/item_efficiency_model.dart';
+import 'package:intl/intl.dart';
+
+import '../../models/members_model.dart';
 
 ApiService apiService=ApiService();
 
@@ -58,105 +72,321 @@ final firebaseServiceProvider = Provider<FirebaseService>((ref) {
   return FirebaseService();
 });
 
-// Posts Stream Provider
-final postsStreamProvider = StreamProvider<List<AnnouncementModel>>((ref) {
-  final firebaseService = ref.watch(firebaseServiceProvider);
-  return firebaseService.getPosts();
+
+
+
+
+
+/// nov 5
+///
+
+
+
+final selectedDateProvider = StateProvider<String>((ref) {
+  return DateFormat('yyyy-MM-dd').format(DateTime.now());
 });
 
-// Comments Stream Provider (family)
-final commentsStreamProvider = StreamProvider.family<List<Comment>, String>((ref, postId) {
-  final firebaseService = ref.watch(firebaseServiceProvider);
-  return firebaseService.getComments(postId);
+final efficiencyDataProvider = FutureProvider<List<ItemEfficiencyModel>>((ref) async {
+  final date = ref.watch(selectedDateProvider);
+  return fetchEfficiencyByDate(date);
 });
 
-// Create Post Provider
-final createPostProvider = StateNotifierProvider<CreatePostNotifier, bool>((ref) {
-  final firebaseService = ref.watch(firebaseServiceProvider);
-  return CreatePostNotifier(firebaseService);
+final strengthDataProvider=FutureProvider<List<ProductionStrengthModel>>((ref) async{
+  final date = ref.watch(selectedDateProvider);
+  return productionStrengthyByDate(date);
 });
 
-class CreatePostNotifier extends StateNotifier<bool> {
-  final FirebaseService _firebaseService;
+Future<List<ItemEfficiencyModel>> fetchEfficiencyByDate(String date) async {
 
-  CreatePostNotifier(this._firebaseService) : super(false);
+  List<ItemEfficiencyModel> jsonList=[];
+  var data= await apiService.getData('api/Finishing/ItemWiseEffi?ProductionDate=$date');
 
-  Future<void> createPost(String content) async {
-    state = true;
-    try {
-      await _firebaseService.createPost(content);
-    } finally {
-      state = false;
+  if (data!=null) {
+    for(var i in data['Results']){
+      jsonList.add(ItemEfficiencyModel.fromJson(i));
     }
+
+    debugPrint('jsonList ${jsonList.length}');
+
+    return jsonList;
+  } else {
+    throw Exception('Failed to load efficiency data');
   }
 }
 
-// Like Post Provider
-final likePostProvider = StateNotifierProvider.family<LikePostNotifier, AsyncValue<void>, String>((ref, postId) {
-  final firebaseService = ref.watch(firebaseServiceProvider);
-  return LikePostNotifier(firebaseService, postId);
-});
+Future<List<ProductionStrengthModel>> productionStrengthyByDate(String date) async {
 
-class LikePostNotifier extends StateNotifier<AsyncValue<void>> {
-  final FirebaseService _firebaseService;
-  final String postId;
+  List<ProductionStrengthModel> jsonList=[];
+  var data= await apiService.getData('api/Dashboard/ProductionStregnth?date=$date');
 
-  LikePostNotifier(this._firebaseService, this.postId) : super(const AsyncValue.data(null));
-
-  Future<void> toggleLike() async {
-    state = const AsyncValue.loading();
-    try {
-      await _firebaseService.toggleLike(postId);
-      state = const AsyncValue.data(null);
-    } catch (error, stack) {
-      state = AsyncValue.error(error, stack);
+  if (data!=null) {
+    for(var i in data['returnvalue']){
+      jsonList.add(ProductionStrengthModel.fromJson(i));
     }
+    debugPrint('production strength ${jsonList.length}');
+
+    return jsonList;
+  } else {
+    throw Exception('Failed to load efficiency data');
   }
 }
 
-// Add Comment Provider
-final addCommentProvider = StateNotifierProvider.family<AddCommentNotifier, AsyncValue<void>, String>((ref, postId) {
-  final firebaseService = ref.watch(firebaseServiceProvider);
-  return AddCommentNotifier(firebaseService, postId);
+
+
+
+
+// Add these providers to your provider file:
+final shipmentFromDateProvider = StateProvider<String>((ref) {
+  final now = DateTime.now();
+  final firstDayOfLastMonth = DateTime(now.year, now.month - 1, 1);
+  return DateFormat('yyyy-MM-dd').format(firstDayOfLastMonth);
 });
 
-class AddCommentNotifier extends StateNotifier<AsyncValue<void>> {
-  final FirebaseService _firebaseService;
-  final String postId;
+final shipmentToDateProvider = StateProvider<String>((ref) {
+  return DateFormat('yyyy-MM-dd').format(DateTime.now());
+});
 
-  AddCommentNotifier(this._firebaseService, this.postId) : super(const AsyncValue.data(null));
+final shipmentInfoProvider = FutureProvider<List<ShipmentInfoModel>>((ref) async {
+  final fromDate = ref.watch(shipmentFromDateProvider);
+  final toDate = ref.watch(shipmentToDateProvider);
+  return getShipmentInfo(fromDate, toDate);
+});
 
-  Future<void> addComment(String content) async {
-    state = const AsyncValue.loading();
-    try {
-      await _firebaseService.addComment(postId, content);
-      state = const AsyncValue.data(null);
-    } catch (error, stack) {
-      state = AsyncValue.error(error, stack);
+
+
+Future<List<ShipmentInfoModel>> getShipmentInfo(String formDate,String toDate) async {
+
+  ///api/Dashboard/MonthlyTAndAAnalysis?FromDate=2025-08-01&ToDate=2025-08-31
+  List<ShipmentInfoModel> jsonList=[];
+  var data= await apiService.getData('api/Dashboard/MonthlyTAndAAnalysis?FromDate=$formDate&ToDate=$toDate');
+
+  if (data!=null) {
+    for(var i in data['returnvalue']){
+      jsonList.add(ShipmentInfoModel.fromJson(i));
     }
+    debugPrint('shipment info ${jsonList.length}');
+
+    return jsonList;
+  } else {
+    throw Exception('Failed to load efficiency data');
   }
 }
 
-// Delete Post Provider
-final deletePostProvider = StateNotifierProvider.family<DeletePostNotifier, AsyncValue<void>, String>((ref, postId) {
-  final firebaseService = ref.watch(firebaseServiceProvider);
-  return DeletePostNotifier(firebaseService, postId);
+
+final mmrValueProvider=FutureProvider.family((ref,date) async {
+  final apiService=ref.watch(apiServiceProvider);
+  final data=await apiService.getData('api/Dashboard/GetMMRRatio?date=$date');
+
+  return data;
 });
 
-class DeletePostNotifier extends StateNotifier<AsyncValue<void>> {
-  final FirebaseService _firebaseService;
-  final String postId;
 
-  DeletePostNotifier(this._firebaseService, this.postId) : super(const AsyncValue.data(null));
+final dhuDataProvider = FutureProvider.family<DHUResponse, String>((ref, date) async {
+  final apiService = ref.watch(apiServiceProvider);
+  final data = await apiService.getData('api/QMS/GetDHU?qmsDate=$date');
 
-  Future<void> deletePost() async {
-    state = const AsyncValue.loading();
-    try {
-      await _firebaseService.deletePost(postId);
-      state = const AsyncValue.data(null);
-    } catch (error, stack) {
-      state = AsyncValue.error(error, stack);
+  return DHUResponse.fromJson(data);
+});
+
+
+
+
+
+final allStaffListProvider = FutureProvider.family<List<MembersModel>,String>((ref,id) async {
+  final apiService = ref.read(apiServiceProvider);
+
+  final data = await apiService.getData('api/Test/AllEmpData');
+
+  if (data == null) return [];
+
+  List<MembersModel> dataList =
+  data.map<MembersModel>((e) => MembersModel.fromJson(e)).toList();
+
+  List<MembersModel> managementList = dataList
+      .where((e) => e.departmentName == 'Management')
+      .toList();
+
+  debugPrint('managementList ${managementList.length}');
+  return managementList;
+});
+
+
+//get all appointment list
+
+final allAppointmentListProvider =
+FutureProvider.autoDispose<List<AppointmentModel>>((ref) async {
+  final apiService = ref.read(apiServiceProvider);
+
+  final data = await apiService.getData('api/Support/appointments');
+
+  if (data == null) return [];
+
+  /// Convert json → model list
+  List<AppointmentModel> dataList =
+  data['data']
+      .map<AppointmentModel>((e) => AppointmentModel.fromJson(e))
+      .toList();
+
+  // /// Filter: keep only items whose status is NOT "Completed"
+  // List<AppointmentModel> filteredList = dataList
+  //     .where((item) => item.status?.toLowerCase() != "completed")
+  //     .toList();
+
+  /// Reverse the list to show newest appointments first
+  List<AppointmentModel> reversedList = dataList.reversed.toList();
+
+  debugPrint('Filtered appointmentList ${dataList.length}');
+  debugPrint('Reversed appointmentList ${reversedList.length}');
+
+  return reversedList;
+});
+
+
+// -------------------- Provider --------------------
+final updateProvider = StateProvider<bool>((ref) => false);
+
+// -------------------- Function --------------------
+Future<void> createManagementMeeting(WidgetRef ref, Map<String, dynamic> body) async {
+  try {
+    final apiService = ref.read(apiServiceProvider);
+
+    final response = await apiService.postData('api/support/Appointments', body);
+
+    if (response != null) {
+      ref.read(updateProvider.notifier).state = true; // Success
+    } else {
+      ref.read(updateProvider.notifier).state = false;
+      throw Exception('Update failed with status: ${response?.statusCode}');
     }
+  } catch (e) {
+    ref.read(updateProvider.notifier).state = false;
+    print('Update error: $e');
+    rethrow;
   }
 }
 
+final announcementsProvider = FutureProvider<List<AnnouncementModel>>((ref) async {
+  List<AnnouncementModel> announcementList = [];
+  final apiService = ref.read(apiServiceProvider);
+  final res = await apiService.getData('api/Support/GetAnnouncements');
+  if (res != null) {
+    for(var i in res['data']){
+      announcementList.add(AnnouncementModel.fromJson(i));
+    }
+  }
+  return announcementList;
+});
+
+
+
+final announcementServiceProvider = Provider((ref) => ApiService());
+
+// management_provider.dart - Add this to your existing file
+final postAnnouncementProvider = StateNotifierProvider.autoDispose<
+    PostAnnouncementNotifier, PostAnnouncementState>(
+      (ref) => PostAnnouncementNotifier(ref.read(announcementServiceProvider)),
+);
+
+class PostAnnouncementState {
+  final bool isLoading;
+  final bool isSuccess;
+  final String? error;
+
+  PostAnnouncementState({
+    this.isLoading = false,
+    this.isSuccess = false,
+    this.error,
+  });
+
+  PostAnnouncementState copyWith({
+    bool? isLoading,
+    bool? isSuccess,
+    String? error,
+  }) {
+    return PostAnnouncementState(
+      isLoading: isLoading ?? this.isLoading,
+      isSuccess: isSuccess ?? this.isSuccess,
+      error: error ?? this.error,
+    );
+  }
+}
+
+class PostAnnouncementNotifier extends StateNotifier<PostAnnouncementState> {
+  final ApiService _service;
+
+  PostAnnouncementNotifier(this._service) : super(PostAnnouncementState());
+
+  Future<void> postAnnouncement(Map<String, dynamic> data) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null, isSuccess: false);
+
+      // Adjust endpoint based on your API
+      final response = await _service.postData('api/Support/SaveAnnouncement', data);
+
+      if (response != null) {
+        state = state.copyWith(isLoading: false, isSuccess: true);
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Failed to post announcement',
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Error: $e',
+      );
+    }
+  }
+
+  void reset() {
+    state = PostAnnouncementState();
+  }
+}
+
+final shipmentBreakdownInfo = FutureProvider.autoDispose<List<ShipmentBreakdownModel>>((ref) async {
+  List<ShipmentBreakdownModel> shipmentList = [];
+  final apiService = ref.read(apiServiceProvider);
+  final res = await apiService.getData('api/Merchandising/ShipmentBreakdown?page=1&pageSize=2000');
+  if (res != null) {
+    for(var i in res['returnvalue']){
+      shipmentList.add(ShipmentBreakdownModel.fromJson(i));
+    }
+  }
+  debugPrint('shipmentList ${shipmentList.length}');
+  return shipmentList;
+});
+
+
+//jan 8
+
+final brokenNeedleSummary = FutureProvider.autoDispose<List<BrokenNeedleModel>>((ref) async {
+  List<BrokenNeedleModel> brokenNeedleSummary = [];
+  final apiService = ref.read(apiServiceProvider);
+  final res = await apiService.getData('api/Production/GetAllBrokenNeedleSummary');
+  if (res != null) {
+    for(var i in res['data']){
+      brokenNeedleSummary.add(BrokenNeedleModel.fromJson(i));
+    }
+  }
+  debugPrint('brokenNeedleSummary ${brokenNeedleSummary.length}');
+  return brokenNeedleSummary;
+});
+
+
+
+
+
+// Provider for API service
+final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
+
+// Simple state for comments
+final commentsListProvider = StateProvider<List<AnnouncementCommentModel>>((ref) {
+  return [];
+});
+
+// Loading state
+final isLoadingCommentsProvider = StateProvider<bool>((ref) => false);
+
+// Posting state
+final isPostingCommentProvider = StateProvider<bool>((ref) => false);

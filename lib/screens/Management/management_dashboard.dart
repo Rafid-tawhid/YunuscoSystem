@@ -3,14 +3,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/providers/management_provider.dart';
+import 'package:yunusco_group/screens/Management/shipment_info_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/kaizan_screen.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_departments.dart';
-import 'package:yunusco_group/screens/Management/widgets/show_lines.dart';
+import 'package:yunusco_group/screens/Products/linewise_manpower.dart';
 import 'package:yunusco_group/screens/Management/widgets/show_sections.dart';
-import 'package:yunusco_group/screens/Management/widgets/unit_screen.dart';
+import 'package:yunusco_group/screens/Management/widgets/needle_dashboard.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import '../../common_widgets/dashboard_item_card.dart';
+import 'mmr_dhu_screen.dart';
+import 'production_strength_screen.dart';
 import 'announcement_screen.dart';
+import 'efficiency_report_screen.dart';
 import 'management_screen.dart';
 
 class ManagementDashboardScreen extends StatefulWidget {
@@ -45,7 +49,7 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
     menuItems = [
       DashboardMenuItem(
         name: "Production\nSummary",
-        icon: Icons.business,
+        icon: Icons.analytics_outlined,
         cardColor: Colors.blue.shade50,
         iconColor: Colors.blue.shade700,
         onTap: () => Navigator.push(
@@ -55,87 +59,99 @@ class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
         ),
       ),
       DashboardMenuItem(
-        name: "Departments",
-        icon: Icons.business,
+        name: "Item wise\nEfficiency",
+        icon: Icons.trending_up_rounded,
         cardColor: Colors.green.shade50,
         iconColor: Colors.green.shade700,
+        onTap: () => Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => EfficiencyScreen()),
+        ),
+      ),
+      DashboardMenuItem(
+        name: "Production\nStrength",
+        icon: Icons.bolt_rounded,
+        cardColor: Colors.orange.shade50,
+        iconColor: Colors.orange.shade700,
+        onTap: () => Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => ProductionStrengthScreen()),
+        ),
+      ),
+      DashboardMenuItem(
+        name: "Shipment\nInfo",
+        icon: Icons.local_shipping_rounded,
+        cardColor: Colors.purple.shade50,
+        iconColor: Colors.purple.shade700,
+        onTap: () => Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => ShipmentInfoScreen()),
+        ),
+      ),
+      DashboardMenuItem(
+        name: "DHU",
+        icon: Icons.punch_clock_sharp,
+        cardColor: Colors.green.shade50,
+        iconColor: Colors.green.shade700,
+        onTap: () => Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => DHUScreen()),
+        ),
+      ),
+      DashboardMenuItem(
+        name: "Departments",
+        icon: Icons.account_tree_rounded,
+        cardColor: Colors.indigo.shade50,
+        iconColor: Colors.indigo.shade700,
         onTap: dropdownInfo?.departments?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => DepartmentsScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
         name: "Sections",
-        icon: Icons.view_list,
-        cardColor: Colors.orange.shade50,
-        iconColor: Colors.orange.shade700,
+        icon: Icons.view_quilt_rounded,
+        cardColor: Colors.teal.shade50,
+        iconColor: Colors.teal.shade700,
         onTap: dropdownInfo?.sections?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => SectionScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => SectionScreen()),
+                )
             : () {},
       ),
       DashboardMenuItem(
-        name: "Lines",
-        icon: Icons.line_style,
-        cardColor: Colors.purple.shade50,
-        iconColor: Colors.purple.shade700,
-        onTap: dropdownInfo?.lines?.isNotEmpty == true
-            ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => LineScreen()),
-        )
-            : () {},
-      ),
-      DashboardMenuItem(
-        name: "Units",
-        icon: Icons.location_city,
-        cardColor: Colors.red.shade50,
-        iconColor: Colors.red.shade700,
+        name: "Needle\nDashboard",
+        icon: Icons.apartment_rounded,
+        cardColor: Colors.deepOrange.shade50,
+        iconColor: Colors.deepOrange.shade700,
         onTap: dropdownInfo?.units?.isNotEmpty == true
             ? () => Navigator.push(
-          context,
-          CupertinoPageRoute(builder: (context) => UnitScreen()),
-        )
+                  context,
+                  CupertinoPageRoute(builder: (context) => NeedleDashboard()),
+                )
             : () {},
-      ),
-      DashboardMenuItem(
-        name: "Designations",
-        icon: Icons.work,
-        cardColor: Colors.grey.shade100,
-        iconColor: Colors.grey.shade700,
-        onTap: () {
-          print('Designations tapped');
-        },
-      ),
-      DashboardMenuItem(
-        name: "Divisions",
-        icon: Icons.category,
-        cardColor: Colors.grey.shade100,
-        iconColor: Colors.grey.shade700,
-        onTap: () {
-          print('Divisions tapped');
-        },
       ),
       DashboardMenuItem(
         name: "Kaizan",
-        icon: Icons.cabin,
-        cardColor: Colors.deepOrange.shade50,
-        iconColor: Colors.deepOrange.shade700,
+        icon: Icons.auto_awesome_rounded,
+        cardColor: Colors.amber.shade50,
+        iconColor: Colors.amber.shade700,
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>KaizanCountScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => KaizanCountScreen()));
         },
       ),
       DashboardMenuItem(
         name: "Announcement",
-        icon: Icons.add_business_outlined,
-        cardColor: Colors.blue.shade50,
-        iconColor: Colors.blue.shade700,
+        icon: Icons.campaign_rounded,
+        cardColor: Colors.red.shade50,
+        iconColor: Colors.red.shade700,
         onTap: () {
-          Navigator.push(context, CupertinoPageRoute(builder: (context)=>AnnouncementScreen()));
+          Navigator.push(context,
+              CupertinoPageRoute(builder: (context) => AnnouncementsScreen()));
         },
       ),
     ];

@@ -5,6 +5,7 @@ import 'package:yunusco_group/models/purchase_approval_model.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 
 import '../models/bom_model.dart';
+import '../models/buyer_order_breakdown.dart';
 import '../models/buyer_order_details_model.dart';
 import '../models/costing_approval_list_model.dart';
 import '../models/work_order_model.dart';
@@ -27,16 +28,14 @@ class MerchandisingProvider extends ChangeNotifier {
   }
 
   final List<BuyerOrderDetailsModel> _allBuyerOrderList = [];
-  List<BuyerOrderDetailsModel> _filteredBuyerOrderList = [];
-  List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
+
 
   Future<bool> getAllBuyerOrders() async {
-    var data = await apiService.getData(
-        'api/Merchandising/BuyerOrderAppListDateRange?fromDate=2025-01-01&toDate=2025-07-21');
+    var data = await apiService.getData('api/Merchandising/BuyerOrder');
     //var data=await apiService.getData('api/Merchandising/BuyerOrderAppList');
     if (data != null) {
       _allBuyerOrderList.clear();
-      for (var i in data['result']['Result']) {
+      for (var i in data['result']) {
         _allBuyerOrderList.add(BuyerOrderDetailsModel.fromJson(i));
       }
       _filteredBuyerOrderList = _allBuyerOrderList;
@@ -48,27 +47,28 @@ class MerchandisingProvider extends ChangeNotifier {
     }
   }
 
-  //search
-  void searchOrders(String query) {
-    if (query.isEmpty) {
-      _filteredBuyerOrderList = _allBuyerOrderList;
-    } else {
-      _filteredBuyerOrderList = _allBuyerOrderList.where((order) {
-        return (order.masterOrderCode
-                    ?.toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false) ||
-            (order.styleName?.toString().contains(query) ?? false) ||
-            (order.buyerName?.toLowerCase().contains(query.toLowerCase()) ??
-                false) ||
-            (order.masterOrderCode
-                    ?.toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false);
-      }).toList();
+
+
+  List<BuyerOrderDetailsModel> _filteredBuyerOrderList = [];
+  List<BuyerOrderDetailsModel> get allBuyerOrderList => _filteredBuyerOrderList;
+
+
+  //
+
+  List<BuyerOrderBreakdown> _buyerOrderBreakdown = [];
+  List<BuyerOrderBreakdown> get buyerOrderBreakdown => _buyerOrderBreakdown;
+
+  Future<bool> getAllBuyerOrderDetails(String id) async {
+    var data = await apiService.getData('api/Merchandising/BuyerOrderBreakdown/$id');
+    for (var i in data['data']) {
+      _buyerOrderBreakdown.add(BuyerOrderBreakdown.fromJson(i));
     }
-    notifyListeners();
+
+    debugPrint('_buyerOrderBreakdown ${_buyerOrderBreakdown.length}');
+      return true;
   }
+
+
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -196,7 +196,7 @@ class MerchandisingProvider extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> purchaseDetailsByPO(PurchaseApprovalModel purchase) async {
+  Future<dynamic>  purchaseDetailsByPO(PurchaseApprovalModel purchase) async {
     return apiService.postData('api/Merchandising/DetailPurOrderMasterInfo',
         {"PO": purchase.purchaseOrderCode, "Version": purchase.version});
   }

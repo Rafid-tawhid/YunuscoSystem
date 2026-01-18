@@ -22,7 +22,7 @@ class InventoryPorvider extends ChangeNotifier {
   }
 
   //
-  Future<bool> getInventoryStockSummery(DateTime date, String type) async {
+  Future<bool> getInventoryStockSummary(DateTime date, String type) async {
     debugPrint('This is type $type');
     final formattedDate = formatDateSlash(date);
     var data = await apiService.getData(
@@ -80,7 +80,7 @@ class InventoryPorvider extends ChangeNotifier {
 
   Future<void> getAllCs() async{
     setLoading(true);
-    var data=await apiService.getData('api/inventory/InvCSSList');
+    var data=await apiService.getData('api/inventory/InvCSSList?pageIndex=1&pageSize=100000');
     setLoading(false);
     if(data!=null){
       _requisitions.clear();

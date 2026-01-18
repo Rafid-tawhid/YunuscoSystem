@@ -147,7 +147,7 @@ class KaizanCountScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            Text(nums.toString()),
+            // Text(nums.toString()),
             // Clear Dates Button
             if (dates['fromDate'] != null || dates['toDate'] != null)
               Padding(
@@ -171,6 +171,7 @@ class KaizanCountScreen extends ConsumerWidget {
                   loading: () => const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      //
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
                       Text('Loading Kaizan Count...'),

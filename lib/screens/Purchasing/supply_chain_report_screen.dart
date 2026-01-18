@@ -13,7 +13,6 @@ class SupplyChainRecordsScreen extends StatefulWidget {
 class _SupplyChainRecordsScreenState extends State<SupplyChainRecordsScreen> {
   List<RequisitionSupplierSummary> _requisitionSummaries = [];
   bool _isLoading = true;
-  String _selectedFilter = 'all';
 
   @override
   void initState() {

@@ -67,6 +67,7 @@ void showAppointmentBottomSheet({
               _buildInfoSection(
                 title: 'Basic Information',
                 children: [
+                  _buildInfoRow('Name:', appointment.fullName ?? 'N/A'),
                   _buildInfoRow('ID Card No:', appointment.idCardNo ?? 'N/A'),
                   _buildInfoRow('Serial No:', appointment.serialNo ?? 'N/A'),
                   _buildInfoRow('Name:', medicineName ?? ''),
@@ -76,10 +77,10 @@ void showAppointmentBottomSheet({
                       'Urgency:', _getUrgencyText(appointment.urgencyType)),
                   _buildInfoRow(
                     'Gate Pass:',
-                    appointment.gatePassStatus == true
+                    appointment.gatePassStatus == 1
                         ? 'Approved'
                         : 'Not Approved',
-                    valueColor: appointment.gatePassStatus == true
+                    valueColor: appointment.gatePassStatus == 1
                         ? Colors.green
                         : Colors.orange,
                   ),
@@ -130,9 +131,8 @@ void showAppointmentBottomSheet({
                 children: [
                   _buildInfoRow('Created:',
                       _formatDate(appointment.createdDate) ?? 'N/A'),
-                  if (appointment.updatedDate != null)
-                    _buildInfoRow('Last Updated:',
-                        _formatDate(appointment.updatedDate) ?? 'N/A'),
+                  if (appointment.createdBy != null)
+                    _buildInfoRow('Created By:', '${appointment.createdBy}'),
                 ],
               ),
 

@@ -1,20 +1,27 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:yunusco_group/helper_class/dashboard_helpers.dart';
 import 'package:yunusco_group/providers/notofication_provider.dart';
 import 'package:yunusco_group/screens/Inventory/inventory_dashboard.dart';
 import 'package:yunusco_group/screens/notification_screen.dart';
 import 'package:yunusco_group/providers/auth_provider.dart';
+import 'package:yunusco_group/service_class/internet_service.dart';
 import 'package:yunusco_group/service_class/notofication_helper.dart';
 import 'package:yunusco_group/utils/colors.dart';
 import 'package:yunusco_group/utils/constants.dart';
 import '../common_widgets/drawer.dart';
+import '../common_widgets/network_alert_dialoge.dart';
+import '../common_widgets/version_control_widgets.dart';
 import '../providers/auth_provider.dart';
 import '../providers/hr_provider.dart';
+import 'Import/export_import_dashboard.dart';
+import 'Import/shipment_breakdown.dart';
+import 'Notification/tna_notification_screen.dart';
 import 'Purchasing/purchase_requisation_list.dart';
 import 'Accounts/account_menu_screen.dart';
 import 'HR&PayRoll/doc_appointment_requisation.dart';
@@ -25,13 +32,15 @@ import 'Management/management_dashboard.dart';
 import 'Planning/planning_screen.dart';
 import 'Products/product_home_screen.dart';
 import 'Purchasing/purchasing_dashboard.dart';
-import 'Report/report_screen.dart';
+import 'Management/production_strength_screen.dart';
 import 'login_screen.dart';
 import 'Merchandising/merchandisingDashboardcreen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? buttonLabel;
   final bool? isOnTp;
+
   const HomeScreen({super.key, this.buttonLabel, this.isOnTp});
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -41,9 +50,15 @@ class _HomeScreenState extends State<HomeScreen> {
   int myIndex = 0;
   final ScrollController _scrollController = ScrollController();
   bool _showLogo = false;
-  double _scrollPosition = 0; // List<Menu> menus = [];
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  double _scrollPosition = 0;
+  String version='';
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  bool _isNoInternetDialogShown = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -59,13 +74,61 @@ class _HomeScreenState extends State<HomeScreen> {
             50; // Adjust this value for when the logo should appear
       });
     });
+
+    initConnectivity();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(
+          _updateConnectionStatus,
+        );
+
+   // getVersions();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
+
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      developer.log('Couldn\'t check connectivity status', error: e);
+      return;
+    }
+
+    if (!mounted) return;
+    return _updateConnectionStatus(result);
+  }
+
+
+
+  Future<void> _updateConnectionStatus(
+      List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+
+    final bool hasInternet = result.any(
+          (element) => element != ConnectivityResult.none,
+    );
+
+    if (!hasInternet && !_isNoInternetDialogShown) {
+      _isNoInternetDialogShown = true;
+      showNoInternetDialog(context);
+    }
+
+    if (hasInternet && _isNoInternetDialogShown) {
+      _isNoInternetDialogShown = false;
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
+
 
   Future<void> _getModules() async {
     var ap = context.read<AuthProvider>();
@@ -75,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context)  {
     return Scaffold(
       drawer: MyDrawer(),
       appBar: AppBar(
@@ -162,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _scrollController,
           child: Column(
             children: [
+              UpdateWidget(),
               Image.asset(
                 'assets/images/icon.png',
                 height: 120,
@@ -246,11 +310,9 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(context,
             CupertinoPageRoute(builder: (context) => HrMainMenuScreen()));
       case 14:
-        Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => MasterLCListScreen()));
-      case 4: //Navigator.push(context, CupertinoPageRoute(builder: (context) => PfListScreen()));
-        Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => AccountMenuScreen()));
+        Navigator.push(context, CupertinoPageRoute(builder: (context) => ExportImportDashboard()));
+        // Navigator.push(context,
+        //     CupertinoPageRoute(builder: (context) => AccountMenuScreen()));
         break;
       case 46:
         Navigator.push(
@@ -258,9 +320,9 @@ class _HomeScreenState extends State<HomeScreen> {
             CupertinoPageRoute(
                 builder: (context) => ProductionStrengthScreen()));
       case 52:
+
         var hp = context.read<HrProvider>();
-        await hp
-            .getAllDocAppointment(); //go to different screen depending on designation
+        await hp.getAllDocAppointment(); //go to different screen depending on designation
         if (DashboardHelpers.currentUser!.designation == 'Medical Officer') {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => AppointmentListScreen()));
@@ -269,11 +331,23 @@ class _HomeScreenState extends State<HomeScreen> {
               CupertinoPageRoute(builder: (context) => DocAppoinmentReq()));
         }
         break;
+
+      case 51:
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => TnaNotificationScreen()),
+        );
+        break;
       default:
         DashboardHelpers.showAlert(msg: 'Not Available');
         return;
     }
   }
+
+
+  // Future<void> getVersions() async {
+  //   version=await getVersion();
+  // }
 }
 
 class Menu {

@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:yunusco_group/models/JobCardDropdownModel.dart';
+import 'package:yunusco_group/models/appointment_model_new.dart';
 import 'package:yunusco_group/models/board_room_booking_model.dart';
-import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart';
+import 'package:yunusco_group/providers/riverpods/management_provider.dart';
+import 'package:yunusco_group/providers/riverpods/purchase_order_riverpod.dart' hide apiServiceProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:yunusco_group/service_class/api_services.dart';
 import 'package:yunusco_group/utils/constants.dart';
+
+import '../../helper_class/firebase_helpers.dart';
+import '../../models/appointment_model.dart';
 
 
 // Separate providers for each API
@@ -16,7 +21,13 @@ final allBookingsProvider = FutureProvider<List<BoardRoomBookingModel>>((ref) as
   if (response != null) {
     List<BoardRoomBookingModel> bookings = [];
     for (var item in response) {
-      bookings.add(BoardRoomBookingModel.fromJson(item));
+      var data= BoardRoomBookingModel.fromJson(item);
+      if(isPastDateTime(data.endTime.toString())){
+        data.status='completed' ;
+      }
+      if(data.status!='cancelled'){
+        bookings.add(data);
+      }
     }
     return bookings;
   } else {
@@ -31,13 +42,33 @@ final todaysBookingsProvider = FutureProvider<List<BoardRoomBookingModel>>((ref)
   if (response != null) {
     List<BoardRoomBookingModel> bookings = [];
     for (var item in response) {
-      bookings.add(BoardRoomBookingModel.fromJson(item));
+     var data= BoardRoomBookingModel.fromJson(item);
+     if(isPastDateTime(data.endTime.toString())){
+       data.status='completed' ;
+     }
+     if(data.status!='cancelled'){
+       bookings.add(data);
+     }
+
+
     }
     return bookings;
   } else {
     throw Exception('Failed to load today\'s bookings');
   }
 });
+
+
+bool isPastDateTime(String dateTimeString) {
+  try {
+    final dateTime = DateTime.parse(dateTimeString);
+    final now = DateTime.now();
+    return now.isAfter(dateTime);
+  } catch (e) {
+    print('Invalid date format: $e');
+    return false;
+  }
+}
 
 final selectedDeptProvider = StateProvider<Departments?>((ref) => null);
 
@@ -104,3 +135,10 @@ void deleteItem(WidgetRef ref, String id) async {
     print('Delete error: $e');
   }
 }
+
+
+//
+final appointmentStreamProvider = StreamProvider.autoDispose.family<List<AppointmentModelNew>, String>((ref, userId) {
+  final firebaseService = FirebaseService();
+  return firebaseService.getAllAppointmentRequest(userId);
+});

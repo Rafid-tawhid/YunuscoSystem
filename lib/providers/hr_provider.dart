@@ -115,12 +115,11 @@ class HrProvider extends ChangeNotifier {
 
   Future<void> getLeaveApplicationInfo() async {
     setLoading(true);
-    var data = await apiService.getData(
-        'api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
+    var data = await apiService.getData('api/Leave/GetSingleEmpLeaveBalance/${DashboardHelpers.currentUser!.iDnum}');
     setLoading(false);
 
     if (data != null) {
-      _selfLeaveInfo = SelfLeaveInfo.fromJson(data['Results']);
+      _selfLeaveInfo = SelfLeaveInfo.fromJson(data['Data']);
       _leaveTypeList = convertToLeaveBalances(_selfLeaveInfo!.toJson());
     }
     debugPrint('leaveList ${_leaveTypeList.length}');
@@ -295,7 +294,8 @@ class HrProvider extends ChangeNotifier {
 
   Future<void> getAllStuffList() async {
     //
-    var data = await apiService.getData('api/Test/StaffEmpData');
+    //StaffEmpData
+    var data = await apiService.getData('api/Test/AllEmpData');
     if (data != null) {
       _member_list.clear();
       for (var i in data) {
@@ -527,5 +527,40 @@ class HrProvider extends ChangeNotifier {
 
     debugPrint('filterList ${filterList.length}');
     return filterList;
+  }
+
+  void sendNotification({required String sendTo, required String title, required String body, required String type}) async{
+
+    apiService.postData('api/dashboard/IndividualNotificationSender', {
+          "userId": sendTo,
+          "title": title,
+          "body": body,
+          "type": type
+    });
+  }
+
+
+
+  String _searchQuery = '';
+  // In HrProvider class
+  List<DocAppoinmentListModel> get filteredDocAppointmentList {
+    return _searchQuery.isEmpty
+        ? docAppointmentList
+        : docAppointmentList.where((appointment) {
+      final id = appointment.idCardNo?.toLowerCase() ?? '';
+      final name = appointment.fullName?.toLowerCase() ?? '';
+      final query = _searchQuery.toLowerCase();
+      return id.contains(query) || name.contains(query);
+    }).toList();
+  }
+
+  void searchAppointments(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _searchQuery = '';
+    notifyListeners();
   }
 }

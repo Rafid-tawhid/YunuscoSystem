@@ -1,6 +1,7 @@
 class RequisitionDetailsModel {
   RequisitionDetailsModel({
     num? sl,
+    String? detaildId,
     String? requisitionCode,
     String? requisitionDate,
     String? section,
@@ -34,6 +35,7 @@ class RequisitionDetailsModel {
   }) {
     _sl = sl;
     _requisitionCode = requisitionCode;
+    _detailId = detaildId;
     _requisitionDate = requisitionDate;
     _section = section;
     _department = department;
@@ -68,6 +70,7 @@ class RequisitionDetailsModel {
   RequisitionDetailsModel.fromJson(dynamic json) {
     _sl = json['SL'];
     _requisitionCode = json['RequisitionCode'];
+    _detailId = json['DetailId'].toString();
     _requisitionDate = json['RequisitionDate'];
     _section = json['Section'];
     _department = json['Department'];
@@ -99,6 +102,7 @@ class RequisitionDetailsModel {
     _totalPurchaseAmount = json['TotalPurchaseAmount'];
   }
   num? _sl;
+  String? _detailId;
   String? _requisitionCode;
   String? _requisitionDate;
   String? _section;
@@ -132,6 +136,7 @@ class RequisitionDetailsModel {
   RequisitionDetailsModel copyWith({
     num? sl,
     String? requisitionCode,
+    String? detailId,
     String? requisitionDate,
     String? section,
     String? department,
@@ -197,6 +202,7 @@ class RequisitionDetailsModel {
       );
   num? get sl => _sl;
   String? get requisitionCode => _requisitionCode;
+  String? get detailId => _detailId;
   String? get requisitionDate => _requisitionDate;
   String? get section => _section;
   String? get department => _department;

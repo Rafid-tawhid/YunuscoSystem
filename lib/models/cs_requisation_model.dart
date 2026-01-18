@@ -2,7 +2,7 @@ class CsRequisationModel {
   CsRequisationModel({
       String? code, 
       num? productId, 
-      String? productName, 
+      String? productName,
       String? currencyName, 
       String? creditPeriod, 
       String? payMode, 
@@ -41,7 +41,8 @@ class CsRequisationModel {
       num? t, 
       num? gateCost, 
       String? warranty, 
-      num? taxP, 
+      String? supplierId,
+      num? taxP,
       num? vatP, 
       num? supplierChose,}){
     _code = code;
@@ -88,6 +89,7 @@ class CsRequisationModel {
     _taxP = taxP;
     _vatP = vatP;
     _supplierChose = supplierChose;
+    _supplierId=supplierId;
 }
 
   CsRequisationModel.fromJson(dynamic json) {
@@ -135,6 +137,7 @@ class CsRequisationModel {
     _taxP = json['TaxP'];
     _vatP = json['VatP'];
     _supplierChose = json['SupplierChose'];
+    _supplierId = json['SupplierId'].toString();
   }
   String? _code;
   num? _productId;
@@ -171,6 +174,7 @@ class CsRequisationModel {
   String? _adComment;
   String? _fcComment;
   String? _mgComment;
+  String? _supplierId;
   num? _mtf;
   num? _mgt;
   num? _v;
@@ -194,6 +198,7 @@ CsRequisationModel copyWith({  String? code,
   String? uomName,
   String? brandName,
   String? storeType,
+  String? supplierId,
   num? lastPurQty,
   num? lastPurRate,
   String? lastPurDate,
@@ -268,10 +273,12 @@ CsRequisationModel copyWith({  String? code,
   taxP: taxP ?? _taxP,
   vatP: vatP ?? _vatP,
   supplierChose: supplierChose ?? _supplierChose,
+  supplierId: supplierId ?? _supplierId,
 );
   String? get code => _code;
   num? get productId => _productId;
   String? get productName => _productName;
+  String? get supplierId => _supplierId;
   String? get currencyName => _currencyName;
   String? get creditPeriod => _creditPeriod;
   String? get payMode => _payMode;
@@ -362,5 +369,11 @@ CsRequisationModel copyWith({  String? code,
     map['SupplierChose'] = _supplierChose;
     return map;
   }
+
+  @override
+  String toString() {
+    return 'CsRequisationModel{_code: $_code, _productId: $_productId, _productName: $_productName, _currencyName: $_currencyName, _creditPeriod: $_creditPeriod, _payMode: $_payMode, _purchaseRequisitionCode: $_purchaseRequisitionCode, _cSDate: $_cSDate, _userName: $_userName, _purchaseType: $_purchaseType, _productCategoryName: $_productCategoryName, _uomName: $_uomName, _brandName: $_brandName, _storeType: $_storeType, _lastPurQty: $_lastPurQty, _lastPurRate: $_lastPurRate, _lastPurDate: $_lastPurDate, _csQty: $_csQty, _supplierName: $_supplierName, _rate: $_rate, _csg: $_csg, _discount: $_discount, _tax: $_tax, _vat: $_vat, _caringCost: $_caringCost, _inTax: $_inTax, _inVat: $_inVat, _oldRate: $_oldRate, _adiRate: $_adiRate, _fcRate: $_fcRate, _mgRate: $_mgRate, _comment: $_comment, _adComment: $_adComment, _fcComment: $_fcComment, _mgComment: $_mgComment, _supplierId: $_supplierId, _mtf: $_mtf, _mgt: $_mgt, _v: $_v, _t: $_t, _gateCost: $_gateCost, _warranty: $_warranty, _taxP: $_taxP, _vatP: $_vatP, _supplierChose: $_supplierChose}';
+  }
+
 
 }

@@ -16,7 +16,7 @@ class NewRequisitionListScreen extends StatefulWidget {
 class _NewRequisitionListScreenState extends State<NewRequisitionListScreen> {
   List<Map<String, dynamic>> _requisitions = [];
   bool _isLoading = true;
-  String _selectedFilter = 'all'; // all, pending, approved, rejected
+  final String _selectedFilter = 'all'; // all, pending, approved, rejected
 
   @override
   void initState() {

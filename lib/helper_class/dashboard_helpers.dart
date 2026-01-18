@@ -15,8 +15,6 @@ import '../models/user_model.dart';
 import '../screens/login_screen.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:intl/date_time_patterns.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
@@ -269,11 +267,18 @@ class DashboardHelpers {
   }
 
   static String getFistAndLastNmaeByFullName(String fullname) {
+    String initials;
     // Split the full name by spaces
-    List<String> names = fullname.split(' ');
+    try {
+      List<String> names = fullname.split(' ');
 
-    // Take the first letter of each part of the name
-    String initials = names.map((name) => name[0]).join();
+      // Take the first letter of each part of the name
+      initials = names.map((name) => name[0]).join();
+    }
+    catch (e)
+    {
+       initials='N/A';
+    }
 
     // Return the initials in uppercase
     return initials.toUpperCase();
@@ -888,7 +893,8 @@ class DashboardHelpers {
 
   static UserModel? currentUser;
 
-  static navigationUser(BuildContext context) {
+  static
+  navigationUser(BuildContext context) {
     var ap = context.read<AuthProvider>();
     if (ap.isAuthenticated && ap.user != null) {
       Navigator.pushReplacement(
@@ -973,6 +979,7 @@ class DashboardHelpers {
 
 
   static DateTime parseDateOrNow(String? dateStr) {
+
     try {
       if (dateStr == null || dateStr.isEmpty) {
         return DateTime.now();
@@ -984,5 +991,36 @@ class DashboardHelpers {
   }
 
 
+  static Future<DateTime?> getTodaysTimeFromUser(BuildContext context) async {
+    // Get today's date
+    DateTime today = DateTime.now();
 
+    // Get time from user
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (selectedTime != null) {
+      // Combine today's date with selected time
+      return DateTime(
+        today.year,
+        today.month,
+        today.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
+    }
+    return null;
+  }
+
+
+}
+//'Completed' OR [Status]='Resolved' OR [Status]='In Progress' OR [Status]='Awaiting' OR [Status]='Reported'
+class MachineBreakdownStatus {
+  static const String reported = 'Reported';
+  static const String awaiting = 'Awaiting';
+  static const String in_progress = 'In Progress';
+  static const String resolved = 'Resolved';
+  static const String completed = 'Completed';
 }
